@@ -1,1 +1,1 @@
-# flink-university
+# flink-training
