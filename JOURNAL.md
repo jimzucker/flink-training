@@ -9,17 +9,21 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 
 | Step | Deliverable | Branch | Status |
 |---|---|---|---|
-| 00 | Scaffold | `step-00-scaffold` | in review |
+| 00 | Scaffold | `step-00-scaffold` | done |
 | 01 | Pipeline design | `step-01-pipeline-design` | not started |
 | 02 | Generators | `step-02-generators` | not started |
-| 03 | Part 1 — positions | `step-03-part1-positions` | not started |
-| 04 | Part 2 — market value | `step-04-part2-marketvalue` | not started |
-| 05 | Correctness demo | `step-05-correctness-demo` | not started |
-| 06 | Local Docker demo | `step-06-docker-local` | not started |
-| 07 | Latency | `step-07-latency` | not started |
-| 08 | Scale | `step-08-scale` | not started |
-| 09 | AWS | `step-09-aws` | not started |
-| 10 | Final demo | `step-10-final-deck` | not started |
+| 03 | CI | `step-03-ci` | not started |
+| 04 | Part 1 — positions | `step-04-part1-positions` | not started |
+| 05 | Part 2 — market value | `step-05-part2-marketvalue` | not started |
+| 06 | Correctness demo | `step-06-correctness-demo` | not started |
+| 07 | Local Docker demo | `step-07-docker-local` | not started |
+| 08 | Latency | `step-08-latency` | not started |
+| 09 | Scale | `step-09-scale` | not started |
+| 10 | AWS | `step-10-aws` | not started |
+| 11 | Final demo | `step-11-final-deck` | not started |
+
+CI lands at step 03: after the first module with tests exists, and before the
+Flink jobs it needs to guard.
 
 ---
 
@@ -77,4 +81,14 @@ be evidence of anything.
 
 ### Review
 
-_Pending._
+Round 1 feedback confirmed Flink 1.20, the `groupId`, and the scala-free image;
+asked that `.claude/` not be tracked, that changes be pushed, and that CI be
+added to the plan.
+
+- `.claude/` added to `.gitignore`
+- `main` and `step-00-scaffold` pushed to origin
+- CI added as step 03; former steps 03–10 shifted to 04–11
+
+Full exchange: [`docs/reviews/step-00.md`](docs/reviews/step-00.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-00`.

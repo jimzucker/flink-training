@@ -38,3 +38,6 @@ logs/
 # Local env overrides
 .env
 .env.local
+
+# Local agent/tooling config
+.claude/
