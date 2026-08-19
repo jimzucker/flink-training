@@ -1,0 +1,17 @@
+orders  (expecting 100 over 10s at 10/sec)
+  record count                                   100        OK
+  unique symbols (sink 3 keys)                   4          OK
+  allocations (sink 4 rate)                      400        OK
+  unique account keys (sink 4)                   16         OK
+  allocations sum to block qty                   0          OK
+  sides present                                  2          OK
+  duplicate tradeIds                             0          OK
+  buy/sell mix:   42 BUY   58 SELL 
+
+prices  (expecting 40 over 10s at 1 tick/sec x 4 symbols)
+  record count                                   40         OK
+  unique symbols                                 4          OK
+  non-positive prices                            0          OK
+  prices off a quarter                           0          OK
+
+all checks passed
