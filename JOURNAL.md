@@ -10,7 +10,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | Step | Deliverable | Local stack after this step | Branch | Status |
 |---|---|---|---|---|
 | 00 | Scaffold | — | `step-00-scaffold` | done |
-| 01 | Pipeline design | — | `step-01-pipeline-design` | in review |
+| 01 | Pipeline design | — | `step-01-pipeline-design` | done |
 | 02 | Generators | Kafka | `step-02-generators` | not started |
 | 03 | CI | Kafka | `step-03-ci` | not started |
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | not started |
@@ -189,4 +189,19 @@ questions, and renamed the topics.
 
 Full exchange: [`docs/reviews/step-01.md`](../docs/reviews/step-01.md)
 
-**Outcome:** awaiting round 2.
+Round 2 corrected an error in my own review question. I had asked how late
+prices should be handled; prices are keyed by symbol, so each symbol lands on a
+single partition where Kafka preserves order, and a single seeded generator emits
+them in event-time order. No price can arrive late, so the watermark uses
+monotonically-increasing timestamps and allowed lateness is zero.
+
+The real risk is **idleness**, not lateness: each join advances at its slower
+input, so a quiet partition stalls the watermark and the one-minute windows stop
+firing even though every record was in order — sinks 5 and 6 go silent, which
+during a demo is indistinguishable from a broken pipeline. Handled with an
+idle-source timeout and verified in step 05.
+
+Also confirmed: keys with no activity still emit (which is what makes the counts
+steady rather than activity-dependent), and every key starts flat at zero.
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-01`.

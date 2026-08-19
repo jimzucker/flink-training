@@ -111,12 +111,40 @@ The demo has to be reproducible and the numbers have to be explainable, so:
   not catch an inverted sign; asserting the exact signed quantity does.
 - **The sign is tested in both directions.** Fixtures cover a key whose net is
   positive, one whose net is negative, and one that nets to zero.
+- **Every key starts flat.** Positions open at zero; there is no opening book to
+  load, so the state at any point is derivable from the trades alone.
+- **Every key emits every minute.** A key with no trade during a minute still
+  holds a position, so it still emits. That is what makes sinks 5 and 6 a steady
+  4 and 16 per minute rather than a number that varies with activity.
 - **Fixed reference data.** Exactly 4 symbols, 4 accounts, 4 allocations per
   trade — the numbers above are arithmetic, not statistics.
 - **Event time, not processing time.** Windows key off an event timestamp stamped
   at the generator, so a slow consumer changes latency but never changes results.
 - **Every record carries `tradeId`.** A single trade can be followed from ① through
   to ⑤ and ⑥ in the logs, so any number on screen can be traced back to its input.
+
+## Ordering and watermarks
+
+**Prices arrive in order, by construction.** The `prices` topic is keyed by
+`symbol`, so every price for a symbol lands on one partition, and Kafka preserves
+order within a partition. A single seeded generator emits them in event-time
+order. There is no path by which a price for a symbol overtakes an earlier one,
+so the windows use a **monotonically-increasing timestamp** watermark rather than
+bounded out-of-orderness, and allowed lateness is zero. Nothing arrives late
+because nothing can.
+
+**Idleness is the real risk, not lateness.** Each join has two inputs and its
+watermark advances at the slower of them. If an input goes quiet — a symbol with
+no price for a while, or a partition with no traffic — the watermark stalls and
+the one-minute windows stop firing, even though every record that did arrive was
+perfectly in order. Sinks 5 and 6 would simply go silent, which looks identical
+to a broken pipeline during a demo.
+
+The fix is an **idle-source timeout**: after a short period with no records, a
+partition stops holding the watermark back and lets the rest of the stream
+advance. This is configuration, not semantics — it changes when a window fires,
+never what it contains. Verified in step 05 by running with fewer active symbols
+than partitions and confirming sinks 5 and 6 still emit on the minute.
 
 ## Diagram compliance
 
