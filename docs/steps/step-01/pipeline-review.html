@@ -1,0 +1,441 @@
+<title>Block Trade Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Serif:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+  :root{
+    --ground:#F6F7F9; --surface:#FFFFFF; --plate:#FFFFFF;
+    --ink:#16202B; --muted:#5A6675; --faint:#8A94A2;
+    --rule:#DDE2E8; --rule-soft:#EBEEF2;
+    --blue:#2F6FB2; --amber:#B07A12; --green:#2E7D5B;
+    --chip:#EDF1F6;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#131A21; --surface:#1A232C; --plate:#F7F8FA;
+      --ink:#E6EBF0; --muted:#98A5B4; --faint:#7A8796;
+      --rule:#2A3540; --rule-soft:#222C36;
+      --blue:#6FA8DC; --amber:#D8A93F; --green:#5FB891;
+      --chip:#23303B;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#131A21; --surface:#1A232C; --plate:#F7F8FA;
+    --ink:#E6EBF0; --muted:#98A5B4; --faint:#7A8796;
+    --rule:#2A3540; --rule-soft:#222C36;
+    --blue:#6FA8DC; --amber:#D8A93F; --green:#5FB891;
+    --chip:#23303B;
+  }
+
+  *{box-sizing:border-box}
+  body{
+    margin:0; background:var(--ground); color:var(--ink);
+    font-family:"IBM Plex Serif",Georgia,serif; font-size:17px; line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:1180px; margin:0 auto; padding:0 28px 96px}
+  .col{max-width:68ch}
+
+  header.masthead{
+    border-bottom:1px solid var(--rule); margin-bottom:44px;
+    padding:56px 0 30px;
+    display:flex; flex-direction:column; gap:14px;
+  }
+  .eyebrow{
+    font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase;
+    color:var(--blue); font-weight:500;
+  }
+  h1{
+    font-family:"IBM Plex Sans",system-ui,sans-serif; font-weight:700;
+    font-size:clamp(34px,5vw,52px); line-height:1.08; letter-spacing:-.022em;
+    margin:0; text-wrap:balance;
+  }
+  .standfirst{margin:0; max-width:64ch; color:var(--muted); font-size:19px}
+
+  h2{
+    font-family:"IBM Plex Sans",system-ui,sans-serif; font-weight:600;
+    font-size:24px; letter-spacing:-.012em; margin:0; text-wrap:balance;
+  }
+  h3{
+    font-family:"IBM Plex Sans",system-ui,sans-serif; font-weight:600;
+    font-size:17px; margin:0; letter-spacing:-.004em;
+  }
+  section{display:flex; flex-direction:column; gap:18px; margin-bottom:56px}
+  p{margin:0}
+  .lede{font-size:18px}
+
+  code,.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-size:.88em}
+  code{background:var(--chip); padding:.12em .38em; border-radius:3px}
+
+  /* diagram plate: always light, because the drawing paints its own white */
+  .plate{
+    background:var(--plate); border:1px solid var(--rule);
+    border-radius:6px; padding:18px; overflow-x:auto;
+  }
+  .plate svg{display:block; height:auto; min-width:1180px; max-width:100%}
+  figure{margin:0; display:flex; flex-direction:column; gap:12px}
+  figcaption{color:var(--faint); font-size:14px}
+
+  table{border-collapse:collapse; width:100%; font-size:15px}
+  caption{text-align:left; color:var(--faint); font-size:14px; padding-bottom:8px}
+  th,td{
+    text-align:left; padding:9px 14px 9px 0; border-bottom:1px solid var(--rule-soft);
+    vertical-align:top;
+  }
+  th{
+    font-family:"IBM Plex Sans",system-ui,sans-serif; font-weight:600; font-size:13px;
+    letter-spacing:.03em; text-transform:uppercase; color:var(--muted);
+    border-bottom:1px solid var(--rule);
+  }
+  td.num{font-variant-numeric:tabular-nums; font-family:"IBM Plex Mono",monospace}
+  .scroller{overflow-x:auto}
+
+  .marker{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:22px; height:22px; border-radius:50%;
+    background:var(--ink); color:var(--ground);
+    font-family:"IBM Plex Sans",sans-serif; font-weight:700; font-size:12px;
+    font-variant-numeric:tabular-nums;
+  }
+  .part1{color:var(--blue); font-weight:600}
+  .part2{color:var(--amber); font-weight:600}
+
+  .cards{display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+  .card{
+    background:var(--surface); border:1px solid var(--rule); border-radius:6px;
+    padding:18px 20px; display:flex; flex-direction:column; gap:8px;
+  }
+  .card p{font-size:15.5px; color:var(--muted)}
+  .card.q{border-left:3px solid var(--amber)}
+  .card.d{border-left:3px solid var(--blue)}
+
+  .rules{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px}
+  .rules li{
+    display:grid; grid-template-columns:26px 1fr; gap:12px; align-items:baseline;
+    padding:8px 0; border-bottom:1px solid var(--rule-soft); font-size:15.5px;
+  }
+  .tick{color:var(--green); font-weight:700; font-family:"IBM Plex Sans",sans-serif}
+
+  .formula{
+    background:var(--surface); border:1px solid var(--rule); border-radius:6px;
+    padding:16px 20px; font-family:"IBM Plex Mono",monospace; font-size:14px;
+    line-height:1.75; color:var(--ink); overflow-x:auto;
+  }
+  footer{border-top:1px solid var(--rule); padding-top:22px; color:var(--faint); font-size:14px}
+  @media (prefers-reduced-motion:no-preference){ html{scroll-behavior:smooth} }
+</style>
+<div class="wrap">
+
+<header class="masthead">
+  <span class="eyebrow">Step 01 · design review</span>
+  <h1>Block Trade Pipeline</h1>
+  <p class="standfirst">Block trades in, positions and market value out — aggregated two ways in parallel. This is the design for review before any code is written.</p>
+</header>
+
+<section>
+  <figure>
+    <div class="plate">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 790" width="1800" height="790" role="img" aria-label="Pipeline: block trades to positions to market value"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <desc>Left to right: block trade and price generators publish to Kafka; Part 1 splits block
+        trades by allocation and aggregates positions by symbol and by account; Part 2 joins
+        prices to positions and emits market value once per minute.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a4a4a"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#B07A12"/>
+    </marker>
+
+    <!-- Kafka topic -->
+    <g id="kafka">
+      <g stroke="#3d3d3d" stroke-width="2.6" fill="none">
+        <line x1="11" y1="-19" x2="11" y2="19"/>
+        <line x1="-15" y1="0" x2="11" y2="-19"/>
+        <line x1="-15" y1="0" x2="11" y2="19"/>
+      </g>
+      <g fill="#3d3d3d">
+        <circle cx="11"  cy="-19" r="7.5"/>
+        <circle cx="11"  cy="19"  r="7.5"/>
+        <circle cx="-15" cy="0"   r="6.5"/>
+      </g>
+    </g>
+  </defs>
+
+  <style>
+    .op    { fill:#ffffff; stroke:#4a4a4a; stroke-width:1.6; rx:4; }
+    .gen   { fill:#ffffff; stroke:#2E7D5B; stroke-width:1.8; rx:4; }
+    .grp   { fill:none; stroke-width:1.4; stroke-dasharray:7 5; rx:8; }
+    .oplbl { font-size:13.5px; fill:#1a1a1a; text-anchor:middle; }
+    .genlbl{ font-size:13.5px; fill:#1a1a1a; text-anchor:middle; font-weight:600; }
+    .top   { font-size:13px; fill:#1a1a1a; text-anchor:middle; font-weight:600; }
+    .kv    { font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+             font-size:10.5px; fill:#555555; text-anchor:middle; }
+    .grplbl{ font-size:14.5px; font-weight:700; }
+    .edge  { stroke:#4a4a4a; stroke-width:1.8; fill:none; marker-end:url(#arrow); }
+    .price { stroke:#B07A12; stroke-width:1.8; fill:none; marker-end:url(#arrowAmber); }
+    .badge { fill:#3d3d3d; }
+    .bnum  { font-size:12px; font-weight:700; fill:#ffffff; text-anchor:middle; }
+    .note  { font-size:12.5px; fill:#666666; text-anchor:start; }
+    .leg   { font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+             font-size:11px; fill:#555555; text-anchor:start; }
+  </style>
+
+  <rect width="1800" height="790" fill="#ffffff"/>
+
+  <!-- ============ stage groups ============ -->
+  <rect class="grp" x="380" y="120" width="520" height="420" stroke="#2F6FB2"/>
+  <text class="grplbl" x="396" y="145" fill="#2F6FB2">Part 1 — positions</text>
+
+  <rect class="grp" x="1160" y="120" width="510" height="420" stroke="#B07A12"/>
+  <text class="grplbl" x="1176" y="145" fill="#B07A12">Part 2 — market value</text>
+
+  <!-- ============ sources ============ -->
+  <rect class="gen" x="30" y="298" width="160" height="54"/>
+  <text class="genlbl" x="110" y="320">Block Trade</text>
+  <text class="genlbl" x="110" y="338">Generator</text>
+
+  <rect class="gen" x="30" y="623" width="160" height="54"/>
+  <text class="genlbl" x="110" y="645">Price</text>
+  <text class="genlbl" x="110" y="663">Generator</text>
+
+  <!-- (1) orders -->
+  <use href="#kafka" transform="translate(330,325)"/>
+  <text class="top" x="330" y="374">orders</text>
+  <circle class="badge" cx="296" cy="291" r="11"/>
+  <text class="bnum" x="296" y="295">1</text>
+
+  <!-- (2) prices -->
+  <use href="#kafka" transform="translate(330,650)"/>
+  <text class="top" x="330" y="699">prices</text>
+  <circle class="badge" cx="296" cy="616" r="11"/>
+  <text class="bnum" x="296" y="620">2</text>
+
+  <!-- ============ Part 1 operators ============ -->
+  <rect class="op" x="410" y="298" width="160" height="54"/>
+  <text class="oplbl" x="490" y="320">Split</text>
+  <text class="oplbl" x="490" y="338">by allocation</text>
+  <text class="kv" x="490" y="372" fill="#666">BUY +qty  /  SELL -qty</text>
+
+  <rect class="op" x="700" y="163" width="160" height="54"/>
+  <text class="oplbl" x="780" y="185">Aggregate</text>
+  <text class="oplbl" x="780" y="203">by symbol</text>
+
+  <rect class="op" x="700" y="433" width="160" height="54"/>
+  <text class="oplbl" x="780" y="455">Aggregate</text>
+  <text class="oplbl" x="780" y="473">by account</text>
+
+  <!-- ============ position topics ============ -->
+  <use href="#kafka" transform="translate(1070,190)"/>
+  <text class="top" x="1070" y="239">positions-by-symbol</text>
+  <circle class="badge" cx="1036" cy="156" r="11"/>
+  <text class="bnum" x="1036" y="160">3</text>
+
+  <use href="#kafka" transform="translate(1070,460)"/>
+  <text class="top" x="1070" y="509">positions-by-account</text>
+  <circle class="badge" cx="1036" cy="426" r="11"/>
+  <text class="bnum" x="1036" y="430">4</text>
+
+  <!-- ============ Part 2 operators ============ -->
+  <rect class="op" x="1190" y="163" width="160" height="54"/>
+  <text class="oplbl" x="1270" y="185">Join</text>
+  <text class="oplbl" x="1270" y="203">price × position</text>
+
+  <rect class="op" x="1490" y="163" width="160" height="54"/>
+  <text class="oplbl" x="1570" y="185">Window 1 min</text>
+  <text class="oplbl" x="1570" y="203">MV @ close</text>
+
+  <rect class="op" x="1190" y="433" width="160" height="54"/>
+  <text class="oplbl" x="1270" y="455">Join</text>
+  <text class="oplbl" x="1270" y="473">price × position</text>
+
+  <rect class="op" x="1490" y="433" width="160" height="54"/>
+  <text class="oplbl" x="1570" y="455">Window 1 min</text>
+  <text class="oplbl" x="1570" y="473">MV @ close</text>
+
+  <!-- ============ market value topics ============ -->
+  <use href="#kafka" transform="translate(1750,190)"/>
+  <text class="top" x="1750" y="239">mv-by-symbol</text>
+  <circle class="badge" cx="1716" cy="156" r="11"/>
+  <text class="bnum" x="1716" y="160">5</text>
+
+  <use href="#kafka" transform="translate(1750,460)"/>
+  <text class="top" x="1750" y="509">mv-by-account</text>
+  <circle class="badge" cx="1716" cy="426" r="11"/>
+  <text class="bnum" x="1716" y="430">6</text>
+
+  <!-- ============ edges: sources ============ -->
+  <path class="edge" d="M 190 325 H 300"/>
+  <text class="kv" x="245" y="313">K: tradeId</text>
+  <text class="kv" x="245" y="345">V: BlockTrade</text>
+
+  <path class="price" d="M 190 650 H 300"/>
+  <text class="kv" x="245" y="638" fill="#8a5f0a">K: symbol</text>
+  <text class="kv" x="245" y="670" fill="#8a5f0a">V: Price</text>
+
+  <!-- orders -> split -->
+  <path class="edge" d="M 360 325 H 406"/>
+
+  <!-- split -> aggregate by symbol -->
+  <path class="edge" d="M 570 312 H 635 V 190 H 696"/>
+  <text class="kv" x="645" y="255">K: symbol</text>
+  <text class="kv" x="645" y="269">V: Allocation</text>
+
+  <!-- split -> aggregate by account -->
+  <path class="edge" d="M 570 338 H 635 V 460 H 696"/>
+  <text class="kv" x="655" y="386">K: acct/sub/sym</text>
+  <text class="kv" x="655" y="400">V: Allocation</text>
+
+  <!-- aggregates -> position topics -->
+  <path class="edge" d="M 860 190 H 1038"/>
+  <text class="kv" x="949" y="178">K: symbol</text>
+  <text class="kv" x="949" y="210">V: Position</text>
+
+  <path class="edge" d="M 860 460 H 1038"/>
+  <text class="kv" x="965" y="448">K: acct/sub/sym</text>
+  <text class="kv" x="965" y="480">V: Position</text>
+
+  <!-- ============ price feed into Part 2, routed under the diagram ============ -->
+  <path class="price" d="M 360 650 H 1175 V 203 H 1186"/>
+  <circle cx="1175" cy="473" r="4.5" fill="#B07A12"/>
+  <path class="price" d="M 1175 473 H 1186"/>
+  <text class="kv" x="740" y="638" fill="#8a5f0a">K: symbol   V: Price   (shared by both joins)</text>
+
+  <!-- position topics -> joins; the lower edge hops over the price riser -->
+  <path class="edge" d="M 1102 178 H 1186"/>
+  <path class="edge" d="M 1102 448 H 1167 A 8 8 0 0 1 1183 448 H 1186"/>
+
+  <!-- joins -> windows -->
+  <path class="edge" d="M 1350 190 H 1486"/>
+  <text class="kv" x="1418" y="178">K: symbol</text>
+  <text class="kv" x="1418" y="210">V: MarketValue</text>
+
+  <path class="edge" d="M 1350 460 H 1486"/>
+  <text class="kv" x="1418" y="448">K: acct/sub/sym</text>
+  <text class="kv" x="1418" y="480">V: MarketValue</text>
+
+  <!-- windows -> mv topics -->
+  <path class="edge" d="M 1650 190 H 1718"/>
+  <path class="edge" d="M 1650 460 H 1718"/>
+
+  <!-- ============ legend ============ -->
+  <text class="leg"  x="30" y="742">K: partition key    V: value    acct/sub/sym = account / sub-account / symbol</text>
+  <text class="note" x="30" y="764">Sinks 3 and 4 emit on every change. Sinks 5 and 6 emit once per minute: position × last price at window close.</text>
+</svg>
+
+    </div>
+    <figcaption>Numbered left to right, in the order the demo walks through them. Sources on the left, sinks on the right.</figcaption>
+  </figure>
+</section>
+
+<section class="col">
+  <h2>What it does</h2>
+  <p class="lede">A block trade is one order split across several accounts. A trade of 400 shares allocated to four accounts becomes four allocations of 100.</p>
+  <p>That split is the whole point of the exercise. The same stream is aggregated two different ways at the same time: by <strong>symbol</strong>, giving one key per symbol, and by <strong>account / sub-account / symbol</strong>, giving one key per account-and-symbol pair. <span class="part1">Part 1</span> produces positions. <span class="part2">Part 2</span> joins prices to those positions and produces market value.</p>
+</section>
+
+<section>
+  <h2>Topics</h2>
+  <div class="scroller">
+  <table>
+    <thead><tr><th>#</th><th>Topic</th><th>Key</th><th>Value</th><th>Produced by</th></tr></thead>
+    <tbody>
+      <tr><td><span class="marker">1</span></td><td><code>orders</code></td><td class="mono">tradeId</td><td class="mono">BlockTrade</td><td>Block Trade Generator</td></tr>
+      <tr><td><span class="marker">2</span></td><td><code>prices</code></td><td class="mono">symbol</td><td class="mono">Price</td><td>Price Generator</td></tr>
+      <tr><td><span class="marker">3</span></td><td><code>positions-by-symbol</code></td><td class="mono">symbol</td><td class="mono">Position</td><td class="part1">Part 1</td></tr>
+      <tr><td><span class="marker">4</span></td><td><code>positions-by-account</code></td><td class="mono">acct/sub/sym</td><td class="mono">Position</td><td class="part1">Part 1</td></tr>
+      <tr><td><span class="marker">5</span></td><td><code>mv-by-symbol</code></td><td class="mono">symbol</td><td class="mono">MarketValue</td><td class="part2">Part 2</td></tr>
+      <tr><td><span class="marker">6</span></td><td><code>mv-by-account</code></td><td class="mono">acct/sub/sym</td><td class="mono">MarketValue</td><td class="part2">Part 2</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section>
+  <h2>Expected inputs and outputs</h2>
+  <p class="col">The numbers the demo is verified against. Every output ties back to a numbered element on the diagram, and every figure is arithmetic rather than an observation.</p>
+  <div class="scroller">
+  <table>
+    <caption>Input</caption>
+    <thead><tr><th>Parameter</th><th>Value</th></tr></thead>
+    <tbody>
+      <tr><td>Trades</td><td class="num">10 / sec</td></tr>
+      <tr><td>Symbols</td><td class="num">4 unique</td></tr>
+      <tr><td>Accounts</td><td class="num">4 unique</td></tr>
+      <tr><td>Allocations per trade</td><td class="num">4</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <div class="scroller">
+  <table>
+    <caption>Output</caption>
+    <thead><tr><th>#</th><th>Sink</th><th>Rate</th><th>Unique keys</th><th>Why</th></tr></thead>
+    <tbody>
+      <tr><td><span class="marker">3</span></td><td><code>positions-by-symbol</code></td><td class="num">10 / sec</td><td class="num">4</td><td>one key per symbol</td></tr>
+      <tr><td><span class="marker">4</span></td><td><code>positions-by-account</code></td><td class="num">40 / sec</td><td class="num">16</td><td>10 trades × 4 allocations; 4 accounts × 4 symbols</td></tr>
+      <tr><td><span class="marker">5</span></td><td><code>mv-by-symbol</code></td><td class="num">4 / min</td><td class="num">4</td><td>one emit per key per minute</td></tr>
+      <tr><td><span class="marker">6</span></td><td><code>mv-by-account</code></td><td class="num">16 / min</td><td class="num">16</td><td>one emit per key per minute</td></tr>
+    </tbody>
+  </table>
+  </div>
+</section>
+
+<section class="col">
+  <h2>How market value is computed</h2>
+  <p>A tumbling one-minute window, taking <strong>the price at window close</strong> — not an average or a VWAP across the window.</p>
+  <div class="formula">marketValue = position quantity at window close<br>            × last price for that symbol at or before window close</div>
+  <p>Both inputs are read as of the same instant, so the number is a snapshot that reconciles against the position topic at that timestamp. An averaged price would match nothing observable anywhere in the system, which makes it impossible to explain when someone asks where a figure came from.</p>
+</section>
+
+<section class="col">
+  <h2>Buys and sells</h2>
+  <p><strong>BUY increases the position, SELL decreases it.</strong> Position is a running signed sum, not a count, so a key whose sells exceed its buys holds a legitimate negative — a short position.</p>
+  <p>The generator emits a random mix of both, because a demo where everything is a buy proves nothing about sign handling. Random does not mean unverifiable: the generator is seeded, so the mix is identical on every run and the expected net position for each key is arithmetic that can be asserted exactly. Fixtures cover a key that nets positive, one that nets negative, and one that nets to zero.</p>
+  <p>Side affects values only. It changes the quantity on a key; it never changes how many keys exist or how often they update — so every rate and key count above holds regardless of the buy/sell mix.</p>
+</section>
+
+<section>
+  <h2>Design decisions</h2>
+  <div class="cards">
+    <div class="card d"><h3>Numbering follows the assignment</h3><p>The requirements already name the outputs sinks 3 – 6, which fixes 1 and 2 as the sources. The diagram, the table above and the Grafana panel order all use the same six numbers, so a figure on a dashboard maps to the diagram without translation.</p></div>
+    <div class="card d"><h3>Two aggregations, one source</h3><p>Both position aggregations are keyed off a single split of the order stream, running in parallel. Demonstrating that is the exercise.</p></div>
+    <div class="card d"><h3>One shared price stream</h3><p>Prices are consumed once and used by both joins, keyed on symbol in both cases. For the account-keyed join the symbol is extracted from the composite key.</p></div>
+    <div class="card d"><h3>Event time, not processing time</h3><p>Windows key off a timestamp stamped at the generator. A slow consumer changes latency but never changes results.</p></div>
+    <div class="card d"><h3>Every record carries tradeId</h3><p>A single trade can be followed from <span class="mono">orders</span> through to both market value topics in the logs, so any number on screen traces back to its input.</p></div>
+    <div class="card d"><h3>Hand-drawn SVG</h3><p>Kafka icons, numbered badges and key/value labels on every edge are all required. Mermaid renders none of them cleanly, and SVG scales into the final deck without redrawing.</p></div>
+  </div>
+</section>
+
+<section>
+  <h2>Diagram rules</h2>
+  <p class="col">The assignment sets six rules for a pipeline diagram. Checked one at a time.</p>
+  <ul class="rules">
+    <li><span class="tick">✓</span><span><strong>Keys and values between operators</strong> — every edge labelled <span class="mono">K:</span> / <span class="mono">V:</span>, with the notation defined in the legend</span></li>
+    <li><span class="tick">✓</span><span><strong>Sources and sinks shown</strong> — generators outlined green on the left, topic glyph on all six topics</span></li>
+    <li><span class="tick">✓</span><span><strong>Colours used sparingly</strong> — three only: blue for Part 1, amber for Part 2 and the price stream, green for generators. Everything else greyscale</span></li>
+    <li><span class="tick">✓</span><span><strong>Numbered left to right in talk order</strong> — sources first, then Part 1 sinks, then Part 2 sinks</span></li>
+    <li><span class="tick">✓</span><span><strong>Kafka icons for Kafka</strong> — topic glyph on all six; generators are plain boxes because they are not Kafka</span></li>
+    <li><span class="tick">✓</span><span><strong>Boxes name the operation</strong> — Split, Aggregate, Join, Window</span></li>
+  </ul>
+  <p class="col">The single line crossing — the price stream passing the <span class="mono">positions-by-account</span> feed — is drawn as a hop, so it reads as passing over rather than connecting to.</p>
+</section>
+
+<section>
+  <h2>Open for review</h2>
+  <div class="cards">
+    <div class="card q"><h3>Late and out-of-order prices</h3><p>Allowed lateness on the one-minute window is not yet specified. If a price arrives after its window closed, the choice is to drop it or to emit an update. This lands in Part 2 and is worth settling before it is built.</p></div>
+    <div class="card q"><h3>Position at window close</h3><p>Market value uses the position as of window close. If no trade touched a key during a minute, that key still has a position — so it still emits, which is what makes the count a steady 4 and 16 per minute rather than a varying number.</p></div>
+    <div class="card q"><h3>Starting positions</h3><p>Every key starts flat at zero. Nothing in the requirements suggests loading opening positions, but if the demo should start from a non-zero book that changes the generator.</p></div>
+  </div>
+</section>
+
+<footer>
+  Step 01 of 12 · design only, no code yet · the requirements ask for the design to be reviewed before implementation begins
+</footer>
+
+</div>

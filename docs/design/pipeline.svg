@@ -83,6 +83,7 @@
   <rect class="op" x="410" y="298" width="160" height="54"/>
   <text class="oplbl" x="490" y="320">Split</text>
   <text class="oplbl" x="490" y="338">by allocation</text>
+  <text class="kv" x="490" y="372" fill="#666">BUY +qty  /  SELL -qty</text>
 
   <rect class="op" x="700" y="163" width="160" height="54"/>
   <text class="oplbl" x="780" y="185">Aggregate</text>
@@ -94,12 +95,12 @@
 
   <!-- ============ position topics ============ -->
   <use href="#kafka" transform="translate(1070,190)"/>
-  <text class="top" x="1070" y="239">positions.by-symbol</text>
+  <text class="top" x="1070" y="239">positions-by-symbol</text>
   <circle class="badge" cx="1036" cy="156" r="11"/>
   <text class="bnum" x="1036" y="160">3</text>
 
   <use href="#kafka" transform="translate(1070,460)"/>
-  <text class="top" x="1070" y="509">positions.by-account</text>
+  <text class="top" x="1070" y="509">positions-by-account</text>
   <circle class="badge" cx="1036" cy="426" r="11"/>
   <text class="bnum" x="1036" y="430">4</text>
 
@@ -110,7 +111,7 @@
 
   <rect class="op" x="1490" y="163" width="160" height="54"/>
   <text class="oplbl" x="1570" y="185">Window 1 min</text>
-  <text class="oplbl" x="1570" y="203">market value</text>
+  <text class="oplbl" x="1570" y="203">MV @ close</text>
 
   <rect class="op" x="1190" y="433" width="160" height="54"/>
   <text class="oplbl" x="1270" y="455">Join</text>
@@ -118,16 +119,16 @@
 
   <rect class="op" x="1490" y="433" width="160" height="54"/>
   <text class="oplbl" x="1570" y="455">Window 1 min</text>
-  <text class="oplbl" x="1570" y="473">market value</text>
+  <text class="oplbl" x="1570" y="473">MV @ close</text>
 
   <!-- ============ market value topics ============ -->
   <use href="#kafka" transform="translate(1750,190)"/>
-  <text class="top" x="1750" y="239">mv.by-symbol</text>
+  <text class="top" x="1750" y="239">mv-by-symbol</text>
   <circle class="badge" cx="1716" cy="156" r="11"/>
   <text class="bnum" x="1716" y="160">5</text>
 
   <use href="#kafka" transform="translate(1750,460)"/>
-  <text class="top" x="1750" y="509">mv.by-account</text>
+  <text class="top" x="1750" y="509">mv-by-account</text>
   <circle class="badge" cx="1716" cy="426" r="11"/>
   <text class="bnum" x="1716" y="430">6</text>
 
@@ -187,5 +188,5 @@
 
   <!-- ============ legend ============ -->
   <text class="leg"  x="30" y="742">K: partition key    V: value    acct/sub/sym = account / sub-account / symbol</text>
-  <text class="note" x="30" y="764">Sinks 3 and 4 emit on every change; sinks 5 and 6 emit once per minute.</text>
+  <text class="note" x="30" y="764">Sinks 3 and 4 emit on every change. Sinks 5 and 6 emit once per minute: position × last price at window close.</text>
 </svg>

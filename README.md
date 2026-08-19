@@ -39,10 +39,10 @@ element in the diagram.
 
 | # | Sink | Rate | Unique keys |
 |---|---|---|---|
-| 3 | `positions.by-symbol` | 10 / sec | **4** |
-| 4 | `positions.by-account` | 40 / sec | **16** |
-| 5 | `mv.by-symbol` | 4 / min | **4** |
-| 6 | `mv.by-account` | 16 / min | **16** |
+| 3 | `positions-by-symbol` | 10 / sec | **4** |
+| 4 | `positions-by-account` | 40 / sec | **16** |
+| 5 | `mv-by-symbol` | 4 / min | **4** |
+| 6 | `mv-by-account` | 16 / min | **16** |
 
 _Verified end to end in step 7._
 

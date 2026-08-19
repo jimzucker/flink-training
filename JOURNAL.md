@@ -174,4 +174,19 @@ assignment's stated figures.
 
 ### Review
 
-_Pending._
+Round 1 confirmed the signed-position design and settled the two open semantics
+questions, and renamed the topics.
+
+- **Buys and sells**: generator emits a random mix from a seeded sequence — the
+  mix is identical every run, so expected net positions stay computable rather
+  than merely observable. Side affects values only, never key counts or rates.
+- **Price at close**: `position at close × last price at or before close`. An
+  averaged price would reconcile against nothing observable in the system.
+- **Topic prefixes** now use `-` rather than `.`: `positions-by-symbol`,
+  `positions-by-account`, `mv-by-symbol`, `mv-by-account`.
+- **Review page** published so the diagram can be looked at and shared:
+  https://claude.ai/code/artifact/65b81ff2-fe6f-4690-b323-3b8f256da462
+
+Full exchange: [`docs/reviews/step-01.md`](../docs/reviews/step-01.md)
+
+**Outcome:** awaiting round 2.
