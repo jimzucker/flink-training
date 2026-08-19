@@ -9,15 +9,42 @@ Requirements come from [`assignment.pptx`](assignment.pptx).
 
 ## Problem statement
 
-_Added in step 1._
+Process a stream of **block trades** and publish **positions** aggregated two ways
+in parallel — by symbol, and by account/sub-account/symbol. Then join **prices**
+to those positions and publish **market value** the same two ways, emitted once
+per minute.
+
+A block trade is one order split across several accounts: a trade of 400 shares
+allocated to 4 accounts becomes 4 allocations of 100. That split is why the two
+aggregations differ — one key per symbol, versus one key per account and symbol.
 
 ## Pipeline design
 
-_Added in step 1 — `docs/design/pipeline.svg`._
+![Pipeline](docs/design/pipeline.svg)
+
+Numbered left to right, in the order the demo talks through them. Full walkthrough,
+object model and design rationale: [`docs/design/pipeline-design.md`](docs/design/pipeline-design.md).
 
 ## Expected inputs and outputs
 
-_Added in step 2._
+The numbers the demo is verified against — each output ties back to a numbered
+element in the diagram.
+
+| Parameter | Input |
+|---|---|
+| Trades | 10 / sec |
+| Symbols | 4 unique |
+| Accounts | 4 unique |
+| Allocations per trade | 4 |
+
+| # | Sink | Rate | Unique keys |
+|---|---|---|---|
+| 3 | `positions-by-symbol` | 10 / sec | **4** |
+| 4 | `positions-by-account` | 40 / sec | **16** |
+| 5 | `mv-by-symbol` | 4 / min | **4** |
+| 6 | `mv-by-account` | 16 / min | **16** |
+
+_Verified end to end in step 7._
 
 ## Quick start
 
