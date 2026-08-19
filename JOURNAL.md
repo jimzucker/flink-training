@@ -7,20 +7,31 @@ Steps follow the deliverable order the assignment lists. Each is developed on it
 own branch, reviewed, reworked if the review calls for it, then squash-merged to
 `main`. Branches are kept so the working history stays inspectable.
 
-| Step | Deliverable | Branch | Status |
-|---|---|---|---|
-| 00 | Scaffold | `step-00-scaffold` | done |
-| 01 | Pipeline design | `step-01-pipeline-design` | not started |
-| 02 | Generators | `step-02-generators` | not started |
-| 03 | CI | `step-03-ci` | not started |
-| 04 | Part 1 — positions | `step-04-part1-positions` | not started |
-| 05 | Part 2 — market value | `step-05-part2-marketvalue` | not started |
-| 06 | Correctness demo | `step-06-correctness-demo` | not started |
-| 07 | Local Docker demo | `step-07-docker-local` | not started |
-| 08 | Latency | `step-08-latency` | not started |
-| 09 | Scale | `step-09-scale` | not started |
-| 10 | AWS | `step-10-aws` | not started |
-| 11 | Final demo | `step-11-final-deck` | not started |
+| Step | Deliverable | Local stack after this step | Branch | Status |
+|---|---|---|---|---|
+| 00 | Scaffold | — | `step-00-scaffold` | done |
+| 01 | Pipeline design | — | `step-01-pipeline-design` | not started |
+| 02 | Generators | Kafka | `step-02-generators` | not started |
+| 03 | CI | Kafka | `step-03-ci` | not started |
+| 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | not started |
+| 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | not started |
+| 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | not started |
+| 07 | Correctness demo | full | `step-07-correctness-demo` | not started |
+| 08 | Local Docker demo | full | `step-08-docker-local` | not started |
+| 09 | Latency | full | `step-09-latency` | not started |
+| 10 | Scale | full | `step-10-scale` | not started |
+| 11 | AWS | full | `step-11-aws` | not started |
+| 12 | Final demo | full | `step-12-final-deck` | not started |
+
+The local Docker stack is stood up early and grown one service at a time, rather
+than assembled whole near the end. Everything runs against real Kafka and a real
+Flink cluster from the first line of code, so no wiring is built twice.
+
+The assignment lists its deliverables as demo milestones, not as a build order.
+Both orderings satisfy the same milestones in the same sequence; this one puts
+the infrastructure in place before the step that needs it. In particular
+"demo numbers are correct using Grafana metrics" (step 07) cannot run before
+Grafana exists, so observability (step 06) has to precede it either way.
 
 CI lands at step 03: after the first module with tests exists, and before the
 Flink jobs it needs to guard.

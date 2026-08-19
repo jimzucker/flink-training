@@ -67,6 +67,7 @@ so both are held at 1.20.4 to keep the cluster and the job jars identical.
 
 ```
 assignment.pptx        the requirements
+docker/                local stack: Kafka, Flink, Prometheus, Grafana
 pom.xml                parent POM — versions, dependency and plugin management
 scripts/               helper scripts
 docs/design/           pipeline diagram and design notes
@@ -77,9 +78,13 @@ JOURNAL.md             what was built at each step, and how it was verified
 
 ## How this project is built
 
-Delivered in the order the assignment lists its deliverables. Each step is
+Delivered against the order the assignment lists its deliverables. Each step is
 developed on its own branch, reviewed, then squash-merged to `main` so that
 `main` carries exactly one commit per completed step. Step branches are kept
 for inspection.
+
+The local Docker stack is stood up early and grown one service at a time, so
+every step runs against real Kafka and a real Flink cluster rather than against
+scaffolding that is later replaced.
 
 See [`JOURNAL.md`](JOURNAL.md) for the step-by-step record.
