@@ -1,0 +1,191 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 790" width="1800" height="790"
+     font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>Block trades to positions to market value</title>
+  <desc>Left to right: block trade and price generators publish to Kafka; Part 1 splits block
+        trades by allocation and aggregates positions by symbol and by account; Part 2 joins
+        prices to positions and emits market value once per minute.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a4a4a"/>
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#B07A12"/>
+    </marker>
+
+    <!-- Kafka topic -->
+    <g id="kafka">
+      <g stroke="#3d3d3d" stroke-width="2.6" fill="none">
+        <line x1="11" y1="-19" x2="11" y2="19"/>
+        <line x1="-15" y1="0" x2="11" y2="-19"/>
+        <line x1="-15" y1="0" x2="11" y2="19"/>
+      </g>
+      <g fill="#3d3d3d">
+        <circle cx="11"  cy="-19" r="7.5"/>
+        <circle cx="11"  cy="19"  r="7.5"/>
+        <circle cx="-15" cy="0"   r="6.5"/>
+      </g>
+    </g>
+  </defs>
+
+  <style>
+    .op    { fill:#ffffff; stroke:#4a4a4a; stroke-width:1.6; rx:4; }
+    .gen   { fill:#ffffff; stroke:#2E7D5B; stroke-width:1.8; rx:4; }
+    .grp   { fill:none; stroke-width:1.4; stroke-dasharray:7 5; rx:8; }
+    .oplbl { font-size:13.5px; fill:#1a1a1a; text-anchor:middle; }
+    .genlbl{ font-size:13.5px; fill:#1a1a1a; text-anchor:middle; font-weight:600; }
+    .top   { font-size:13px; fill:#1a1a1a; text-anchor:middle; font-weight:600; }
+    .kv    { font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+             font-size:10.5px; fill:#555555; text-anchor:middle; }
+    .grplbl{ font-size:14.5px; font-weight:700; }
+    .edge  { stroke:#4a4a4a; stroke-width:1.8; fill:none; marker-end:url(#arrow); }
+    .price { stroke:#B07A12; stroke-width:1.8; fill:none; marker-end:url(#arrowAmber); }
+    .badge { fill:#3d3d3d; }
+    .bnum  { font-size:12px; font-weight:700; fill:#ffffff; text-anchor:middle; }
+    .note  { font-size:12.5px; fill:#666666; text-anchor:start; }
+    .leg   { font-family:ui-monospace, SFMono-Regular, Menlo, monospace;
+             font-size:11px; fill:#555555; text-anchor:start; }
+  </style>
+
+  <rect width="1800" height="790" fill="#ffffff"/>
+
+  <!-- ============ stage groups ============ -->
+  <rect class="grp" x="380" y="120" width="520" height="420" stroke="#2F6FB2"/>
+  <text class="grplbl" x="396" y="145" fill="#2F6FB2">Part 1 — positions</text>
+
+  <rect class="grp" x="1160" y="120" width="510" height="420" stroke="#B07A12"/>
+  <text class="grplbl" x="1176" y="145" fill="#B07A12">Part 2 — market value</text>
+
+  <!-- ============ sources ============ -->
+  <rect class="gen" x="30" y="298" width="160" height="54"/>
+  <text class="genlbl" x="110" y="320">Block Trade</text>
+  <text class="genlbl" x="110" y="338">Generator</text>
+
+  <rect class="gen" x="30" y="623" width="160" height="54"/>
+  <text class="genlbl" x="110" y="645">Price</text>
+  <text class="genlbl" x="110" y="663">Generator</text>
+
+  <!-- (1) orders -->
+  <use href="#kafka" transform="translate(330,325)"/>
+  <text class="top" x="330" y="374">orders</text>
+  <circle class="badge" cx="296" cy="291" r="11"/>
+  <text class="bnum" x="296" y="295">1</text>
+
+  <!-- (2) prices -->
+  <use href="#kafka" transform="translate(330,650)"/>
+  <text class="top" x="330" y="699">prices</text>
+  <circle class="badge" cx="296" cy="616" r="11"/>
+  <text class="bnum" x="296" y="620">2</text>
+
+  <!-- ============ Part 1 operators ============ -->
+  <rect class="op" x="410" y="298" width="160" height="54"/>
+  <text class="oplbl" x="490" y="320">Split</text>
+  <text class="oplbl" x="490" y="338">by allocation</text>
+
+  <rect class="op" x="700" y="163" width="160" height="54"/>
+  <text class="oplbl" x="780" y="185">Aggregate</text>
+  <text class="oplbl" x="780" y="203">by symbol</text>
+
+  <rect class="op" x="700" y="433" width="160" height="54"/>
+  <text class="oplbl" x="780" y="455">Aggregate</text>
+  <text class="oplbl" x="780" y="473">by account</text>
+
+  <!-- ============ position topics ============ -->
+  <use href="#kafka" transform="translate(1070,190)"/>
+  <text class="top" x="1070" y="239">positions.by-symbol</text>
+  <circle class="badge" cx="1036" cy="156" r="11"/>
+  <text class="bnum" x="1036" y="160">3</text>
+
+  <use href="#kafka" transform="translate(1070,460)"/>
+  <text class="top" x="1070" y="509">positions.by-account</text>
+  <circle class="badge" cx="1036" cy="426" r="11"/>
+  <text class="bnum" x="1036" y="430">4</text>
+
+  <!-- ============ Part 2 operators ============ -->
+  <rect class="op" x="1190" y="163" width="160" height="54"/>
+  <text class="oplbl" x="1270" y="185">Join</text>
+  <text class="oplbl" x="1270" y="203">price × position</text>
+
+  <rect class="op" x="1490" y="163" width="160" height="54"/>
+  <text class="oplbl" x="1570" y="185">Window 1 min</text>
+  <text class="oplbl" x="1570" y="203">market value</text>
+
+  <rect class="op" x="1190" y="433" width="160" height="54"/>
+  <text class="oplbl" x="1270" y="455">Join</text>
+  <text class="oplbl" x="1270" y="473">price × position</text>
+
+  <rect class="op" x="1490" y="433" width="160" height="54"/>
+  <text class="oplbl" x="1570" y="455">Window 1 min</text>
+  <text class="oplbl" x="1570" y="473">market value</text>
+
+  <!-- ============ market value topics ============ -->
+  <use href="#kafka" transform="translate(1750,190)"/>
+  <text class="top" x="1750" y="239">mv.by-symbol</text>
+  <circle class="badge" cx="1716" cy="156" r="11"/>
+  <text class="bnum" x="1716" y="160">5</text>
+
+  <use href="#kafka" transform="translate(1750,460)"/>
+  <text class="top" x="1750" y="509">mv.by-account</text>
+  <circle class="badge" cx="1716" cy="426" r="11"/>
+  <text class="bnum" x="1716" y="430">6</text>
+
+  <!-- ============ edges: sources ============ -->
+  <path class="edge" d="M 190 325 H 300"/>
+  <text class="kv" x="245" y="313">K: tradeId</text>
+  <text class="kv" x="245" y="345">V: BlockTrade</text>
+
+  <path class="price" d="M 190 650 H 300"/>
+  <text class="kv" x="245" y="638" fill="#8a5f0a">K: symbol</text>
+  <text class="kv" x="245" y="670" fill="#8a5f0a">V: Price</text>
+
+  <!-- orders -> split -->
+  <path class="edge" d="M 360 325 H 406"/>
+
+  <!-- split -> aggregate by symbol -->
+  <path class="edge" d="M 570 312 H 635 V 190 H 696"/>
+  <text class="kv" x="645" y="255">K: symbol</text>
+  <text class="kv" x="645" y="269">V: Allocation</text>
+
+  <!-- split -> aggregate by account -->
+  <path class="edge" d="M 570 338 H 635 V 460 H 696"/>
+  <text class="kv" x="655" y="386">K: acct/sub/sym</text>
+  <text class="kv" x="655" y="400">V: Allocation</text>
+
+  <!-- aggregates -> position topics -->
+  <path class="edge" d="M 860 190 H 1038"/>
+  <text class="kv" x="949" y="178">K: symbol</text>
+  <text class="kv" x="949" y="210">V: Position</text>
+
+  <path class="edge" d="M 860 460 H 1038"/>
+  <text class="kv" x="965" y="448">K: acct/sub/sym</text>
+  <text class="kv" x="965" y="480">V: Position</text>
+
+  <!-- ============ price feed into Part 2, routed under the diagram ============ -->
+  <path class="price" d="M 360 650 H 1175 V 203 H 1186"/>
+  <circle cx="1175" cy="473" r="4.5" fill="#B07A12"/>
+  <path class="price" d="M 1175 473 H 1186"/>
+  <text class="kv" x="740" y="638" fill="#8a5f0a">K: symbol   V: Price   (shared by both joins)</text>
+
+  <!-- position topics -> joins; the lower edge hops over the price riser -->
+  <path class="edge" d="M 1102 178 H 1186"/>
+  <path class="edge" d="M 1102 448 H 1167 A 8 8 0 0 1 1183 448 H 1186"/>
+
+  <!-- joins -> windows -->
+  <path class="edge" d="M 1350 190 H 1486"/>
+  <text class="kv" x="1418" y="178">K: symbol</text>
+  <text class="kv" x="1418" y="210">V: MarketValue</text>
+
+  <path class="edge" d="M 1350 460 H 1486"/>
+  <text class="kv" x="1418" y="448">K: acct/sub/sym</text>
+  <text class="kv" x="1418" y="480">V: MarketValue</text>
+
+  <!-- windows -> mv topics -->
+  <path class="edge" d="M 1650 190 H 1718"/>
+  <path class="edge" d="M 1650 460 H 1718"/>
+
+  <!-- ============ legend ============ -->
+  <text class="leg"  x="30" y="742">K: partition key    V: value    acct/sub/sym = account / sub-account / symbol</text>
+  <text class="note" x="30" y="764">Sinks 3 and 4 emit on every change; sinks 5 and 6 emit once per minute.</text>
+</svg>

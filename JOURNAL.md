@@ -10,7 +10,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | Step | Deliverable | Local stack after this step | Branch | Status |
 |---|---|---|---|---|
 | 00 | Scaffold | — | `step-00-scaffold` | done |
-| 01 | Pipeline design | — | `step-01-pipeline-design` | not started |
+| 01 | Pipeline design | — | `step-01-pipeline-design` | in review |
 | 02 | Generators | Kafka | `step-02-generators` | not started |
 | 03 | CI | Kafka | `step-03-ci` | not started |
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | not started |
@@ -103,3 +103,75 @@ added to the plan.
 Full exchange: [`docs/reviews/step-00.md`](docs/reviews/step-00.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-00`.
+
+---
+
+## Step 01 — Pipeline design
+
+- **Branch:** `step-01-pipeline-design`
+- **Prompt:** Produce the pipeline design: a diagram meeting all six of the
+  assignment's diagram rules, the sink numbering that the verification table and
+  Grafana panel order will both key off, and the design write-up.
+
+### Approach
+
+- **Hand-authored SVG, not Mermaid.** The assignment asks for Kafka icons,
+  numbered badges in reading order, and `K:`/`V:` labels on every edge. Mermaid
+  renders none of those cleanly. SVG also scales into the final deck without
+  re-drawing.
+- **Numbering follows the assignment's own table.** It already calls the outputs
+  sinks 3, 4, 5 and 6, which fixes 1 and 2 as the two sources. Sources first,
+  then Part 1 sinks, then Part 2 sinks — the same order the demo talks through.
+- **One numbering, three artefacts.** The diagram badges, the expected-output
+  table and the eventual Grafana panel order all use ①–⑥, so a number on a
+  dashboard can be pointed at on the diagram without translation.
+- **Composite key shortened to `acct/sub/sym`** on the diagram, defined in the
+  legend and spelled out in the design doc. At full length it collided with the
+  Part 1 boundary and the ④ badge.
+
+### Commands
+
+```bash
+python3 -c "import xml.dom.minidom as m; m.parse('docs/design/pipeline.svg')"
+python3 -m http.server 8791 --bind 127.0.0.1     # serve for rendering
+# rendered and screenshotted in Chrome at each revision
+```
+
+### Results
+
+The diagram went through four rendered revisions. Rendering it rather than
+trusting the markup is what caught every one of these:
+
+| Revision | Problem found by rendering | Fix |
+|---|---|---|
+| 1 | Kafka glyph read as a 4-point asterisk, not a topic | Redrew as a 3-node graph |
+| 1 | `K:`/`V:` labels collided with topic glyphs and names | Centred labels on edge midpoints, widened gaps |
+| 1 | Price riser tangled with the position feeds | Re-routed under the diagram, added a line hop |
+| 1 | Canvas overflowed the viewport | Widened viewBox, built a scaled preview page |
+| 2 | `K: acct/subAcct/symbol` overlapped badge ④ | Shifted right-hand geometry +40px |
+| 3 | Same label straddled the Part 1 group boundary | Shortened to `acct/sub/sym`, defined in legend |
+| 3 | Legend inherited `text-anchor:middle`, ran off-canvas | Gave it its own anchor-start class |
+| 4 | 250px of vertical dead space | Raised the price row, trimmed canvas to 790px |
+
+Final render: [`docs/steps/step-01/pipeline-render.jpg`](../docs/steps/step-01/pipeline-render.jpg)
+
+### Verification
+
+Against the assignment's six diagram rules:
+
+| # | Rule | Met |
+|---|---|---|
+| 1 | Keys and values between operators | every edge labelled `K:` / `V:` |
+| 2 | Sources and sinks shown | generators green on the left, six topic glyphs |
+| 3 | Colours used sparingly | three — blue, amber, green; rest greyscale |
+| 4 | Numbered left to right in talk order | ①–⑥, matching the expected-output table |
+| 5 | Kafka icons for Kafka | topic glyph on all six topics |
+| 6 | Boxes name the operation | Split, Aggregate, Join, Window |
+
+Arithmetic checked against the assignment's table: sink 4 at 40/sec is 10 trades
+× 4 allocations, and 16 keys is 4 accounts × 4 symbols. Both reproduce the
+assignment's stated figures.
+
+### Review
+
+_Pending._
