@@ -1,0 +1,40 @@
+# Maven
+target/
+pom.xml.versionsBackup
+dependency-reduced-pom.xml
+
+# Java
+*.class
+*.jar
+!.mvn/wrapper/maven-wrapper.jar
+hs_err_pid*.log
+replay_pid*.log
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.settings/
+.project
+.classpath
+
+# macOS / editors
+.DS_Store
+*.swp
+*~
+
+# Office lock files
+~$*
+
+# Flink / runtime state
+data/checkpoints/
+data/savepoints/
+log/
+logs/
+*.out
+
+# Local env overrides
+.env
+.env.local
