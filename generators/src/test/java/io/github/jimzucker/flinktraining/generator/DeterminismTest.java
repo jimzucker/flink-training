@@ -27,10 +27,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DeterminismTest {
 
     private static final long SEED = GeneratorConfig.DEFAULT_SEED;
-    private static final long START = GeneratorConfig.DEFAULT_START_EPOCH_MILLIS;
+    private static final long START = GeneratorConfig.REPLAY_START_EPOCH_MILLIS;
 
     private static String tradesJson(long seed, int count) {
-        BlockTradeGenerator generator = new BlockTradeGenerator(seed, START, 100L);
+        BlockTradeGenerator generator = BlockTradeGenerator.replaying(seed, START, 100L);
         StringBuilder out = new StringBuilder();
         for (int i = 0; i < count; i++) {
             out.append(Json.toJson(generator.next())).append('\n');
@@ -38,13 +38,11 @@ class DeterminismTest {
         return out.toString();
     }
 
-    private static String pricesJson(long seed, int ticks) {
-        PriceGenerator generator = new PriceGenerator(seed, START, 1_000L);
+    private static String pricesJson(long seed, int count) {
+        PriceGenerator generator = PriceGenerator.replaying(seed, START, 1_000L);
         StringBuilder out = new StringBuilder();
-        for (int i = 0; i < ticks; i++) {
-            for (Price price : generator.next()) {
-                out.append(Json.toJson(price)).append('\n');
-            }
+        for (int i = 0; i < count; i++) {
+            out.append(Json.toJson(generator.next())).append('\n');
         }
         return out.toString();
     }
@@ -78,20 +76,52 @@ class DeterminismTest {
     }
 
     @Test
+    @DisplayName("wall clock changes timestamps but never the trade content")
+    void wallClockLeavesContentUnchanged() {
+        // Live mode is what the demo runs in, so latency is measurable. The
+        // reproducibility guarantee still has to hold for everything except the
+        // timestamp, or the same seed would not mean the same trades.
+        List<BlockTrade> live = new ArrayList<>();
+        BlockTradeGenerator a = BlockTradeGenerator.live(SEED);
+        for (int i = 0; i < 200; i++) {
+            live.add(a.next());
+        }
+        BlockTradeGenerator b = BlockTradeGenerator.replaying(SEED, START, 100L);
+        for (int i = 0; i < 200; i++) {
+            BlockTrade replayed = b.next();
+            BlockTrade wall = live.get(i);
+            assertThat(wall.tradeId()).isEqualTo(replayed.tradeId());
+            assertThat(wall.symbol()).isEqualTo(replayed.symbol());
+            assertThat(wall.side()).isEqualTo(replayed.side());
+            assertThat(wall.quantity()).isEqualTo(replayed.quantity());
+            assertThat(wall.allocations()).isEqualTo(replayed.allocations());
+        }
+    }
+
+    @Test
+    @DisplayName("wall-clock event times are recent, so latency is measurable")
+    void wallClockIsNow() {
+        long before = System.currentTimeMillis();
+        BlockTrade trade = BlockTradeGenerator.live(SEED).next();
+        long after = System.currentTimeMillis();
+        assertThat(trade.eventTime()).isBetween(before, after);
+    }
+
+    @Test
     @DisplayName("the demo sequence is pinned by hash")
     void demoSequenceIsPinned() {
         // Guards against an unnoticed change to generation order or JSON shape.
         // If this fails deliberately, re-pin it and say so in the journal.
         assertThat(sha256(tradesJson(SEED, 100)))
-                .isEqualTo("241903ac4ea9b746407516075275b694c42bb3a372c107df48ecd8b69d83fdae");
+                .isEqualTo("59066419435bd9fb545fb0238c8b777579cf25703ca2c395397eaf0850fd02c3");
         assertThat(sha256(pricesJson(SEED + 1, 100)))
-                .isEqualTo("16d012bc277e838d0b62ec377bc5ad61e96b01d0c3b1cec90fc3a920eb4f6ecb");
+                .isEqualTo("6b7ab3fd12d404cb4ca0b74ee3849aa4252a07cc5f502813e8a1f88cc0f80dab");
     }
 
     @Test
     @DisplayName("net position per key is exact arithmetic, not an approximation")
     void netPositionIsExact() {
-        BlockTradeGenerator generator = new BlockTradeGenerator(SEED, START, 100L);
+        BlockTradeGenerator generator = BlockTradeGenerator.replaying(SEED, START, 100L);
         Map<String, Long> netBySymbol = new HashMap<>();
         for (int i = 0; i < 1_000; i++) {
             BlockTrade trade = generator.next();
@@ -103,7 +133,7 @@ class DeterminismTest {
         assertThat(netBySymbol).hasSize(4);
         long total = netBySymbol.values().stream().mapToLong(Long::longValue).sum();
 
-        BlockTradeGenerator again = new BlockTradeGenerator(SEED, START, 100L);
+        BlockTradeGenerator again = BlockTradeGenerator.replaying(SEED, START, 100L);
         long recomputed = 0;
         for (int i = 0; i < 1_000; i++) {
             recomputed += again.next().signedQuantity();
@@ -114,10 +144,10 @@ class DeterminismTest {
     @Test
     @DisplayName("prices stay positive and land on exact quarters")
     void pricesAreExactQuarters() {
-        PriceGenerator generator = new PriceGenerator(SEED, START, 1_000L);
+        PriceGenerator generator = PriceGenerator.replaying(SEED, START, 1_000L);
         List<BigDecimal> seen = new ArrayList<>();
-        for (int tick = 0; tick < 500; tick++) {
-            generator.next().forEach(p -> seen.add(p.price()));
+        for (int i = 0; i < 2_000; i++) {
+            seen.add(generator.next().price());
         }
         assertThat(seen).isNotEmpty();
         for (BigDecimal price : seen) {

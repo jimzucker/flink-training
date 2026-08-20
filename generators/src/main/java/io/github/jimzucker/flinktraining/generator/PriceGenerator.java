@@ -4,24 +4,25 @@ import io.github.jimzucker.flinktraining.model.Price;
 import io.github.jimzucker.flinktraining.model.ReferenceData;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.function.LongSupplier;
 
 /**
- * Produces a price for every symbol on each tick, as a pure seeded sequence.
+ * Produces one price per call, cycling through the symbols in order.
+ *
+ * <p>Round-robin rather than a burst of every symbol at once, so the configured
+ * rate is a straightforward count of prices per second and every symbol is
+ * repriced at an even cadence. No symbol can go quiet, which is one half of the
+ * idleness problem the design has to avoid.
  *
  * <p>Prices walk in quarter increments from a round opening price. Quarters are
  * exactly representable and keep the arithmetic checkable by eye, which matters
  * when someone asks where a market value came from.
- *
- * <p>Emitting all symbols on every tick is deliberate: it means no symbol can go
- * quiet, so the price side never stalls a watermark on its own.
  */
-public final class PriceGenerator implements Iterator<List<Price>> {
+public final class PriceGenerator implements Iterator<Price> {
 
     private static final BigDecimal STEP = new BigDecimal("0.25");
     private static final int MAX_STEPS = 4;
@@ -29,20 +30,27 @@ public final class PriceGenerator implements Iterator<List<Price>> {
     private static final BigDecimal FLOOR = new BigDecimal("1.00");
 
     private final Random random;
-    private final long startEpochMillis;
-    private final long intervalMillis;
+    private final LongSupplier clock;
     private final Map<String, BigDecimal> current = new HashMap<>();
 
-    private long tick;
+    private int cursor;
 
-    public PriceGenerator(long seed, long startEpochMillis, long intervalMillis) {
+    public PriceGenerator(long seed, LongSupplier clock) {
+        this.random = new Random(seed);
+        this.clock = clock;
+        this.current.putAll(ReferenceData.OPENING_PRICES);
+    }
+
+    public static PriceGenerator replaying(long seed, long startEpochMillis, long intervalMillis) {
         if (intervalMillis <= 0) {
             throw new IllegalArgumentException("intervalMillis must be positive");
         }
-        this.random = new Random(seed);
-        this.startEpochMillis = startEpochMillis;
-        this.intervalMillis = intervalMillis;
-        this.current.putAll(ReferenceData.OPENING_PRICES);
+        long[] n = {0};
+        return new PriceGenerator(seed, () -> startEpochMillis + n[0]++ * intervalMillis);
+    }
+
+    public static PriceGenerator live(long seed) {
+        return new PriceGenerator(seed, System::currentTimeMillis);
     }
 
     @Override
@@ -50,24 +58,18 @@ public final class PriceGenerator implements Iterator<List<Price>> {
         return true;
     }
 
-    /** One price per symbol, in a stable symbol order so the sequence is byte-stable. */
     @Override
-    public List<Price> next() {
-        long eventTime = startEpochMillis + tick * intervalMillis;
-        List<Price> prices = new ArrayList<>(ReferenceData.SYMBOLS.size());
+    public Price next() {
+        String symbol = ReferenceData.SYMBOLS.get(cursor);
+        cursor = (cursor + 1) % ReferenceData.SYMBOLS.size();
 
-        for (String symbol : ReferenceData.SYMBOLS) {
-            int steps = random.nextInt(2 * MAX_STEPS + 1) - MAX_STEPS;
-            BigDecimal moved = current.get(symbol).add(STEP.multiply(BigDecimal.valueOf(steps)));
-            if (moved.compareTo(FLOOR) < 0) {
-                moved = FLOOR;
-            }
-            current.put(symbol, moved);
-            prices.add(new Price(symbol, moved, eventTime));
+        int steps = random.nextInt(2 * MAX_STEPS + 1) - MAX_STEPS;
+        BigDecimal moved = current.get(symbol).add(STEP.multiply(BigDecimal.valueOf(steps)));
+        if (moved.compareTo(FLOOR) < 0) {
+            moved = FLOOR;
         }
-
-        tick++;
-        return prices;
+        current.put(symbol, moved);
+        return new Price(symbol, moved, clock.getAsLong());
     }
 
     /** Latest price per symbol, for assertions and for logging what the demo is running with. */

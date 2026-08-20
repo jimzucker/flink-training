@@ -292,4 +292,31 @@ showing the wrong number during a demo.
 
 ### Review
 
-_Pending._
+Round 1 asked for prices at 1000/sec, ten sub-accounts per account, and
+wall-clock event times so latency can be measured from creation to sink.
+
+- **Prices restructured to round-robin**, one per call rather than a burst of
+  every symbol, so the configured rate is a plain count of prices per second.
+  Verified even at 2501 per symbol out of 10004, spread 0.
+- **Ten sub-accounts per account.** Account keys go from 16 to **160**. The
+  40/sec rate is unchanged since it follows from four allocations per trade.
+  This differs from the 16 the assignment prints, and was raised as such.
+- **Event time now comes from a `LongSupplier`.** `live()` uses the wall clock
+  and is the default; `replaying()` uses a counter for byte-identical runs.
+  Reproducibility splits in two as a result: the seed fixes the *content* of the
+  sequence in both modes, and replay exists for when identical bytes must be
+  shown. Asserted rather than assumed.
+- **Key coverage is now a function of run length** — 160 of 160 at 45s, but 147
+  at 10s, which is what coupon-collector predicts for 400 draws over 160 keys.
+  A short demo shows the count climbing rather than settled.
+- **The pinned sequence hash failed on purpose** and was re-pinned: drawing a
+  sub-account consumes extra randomness, so the sequence legitimately changed.
+- **Two bugs found in the verification script itself**, both false alarms rather
+  than defects in the generators: a fixed-size prefix read slices unevenly
+  across partitions and made an exactly-even round-robin look uneven, and a run
+  ends mid-cycle so the record count is nominal ±1. Rates are now checked with a
+  tolerance while the invariants stay exact.
+
+Full exchange: [`docs/reviews/step-02.md`](../docs/reviews/step-02.md)
+
+**Outcome:** awaiting round 2.

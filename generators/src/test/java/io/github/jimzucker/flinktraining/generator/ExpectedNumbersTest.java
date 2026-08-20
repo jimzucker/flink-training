@@ -11,6 +11,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,12 +28,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ExpectedNumbersTest {
 
     private static final long SEED = GeneratorConfig.DEFAULT_SEED;
-    private static final long START = GeneratorConfig.DEFAULT_START_EPOCH_MILLIS;
+    private static final long START = GeneratorConfig.REPLAY_START_EPOCH_MILLIS;
     private static final int TRADES_PER_SECOND = GeneratorConfig.DEMO_TRADES_PER_SECOND;
 
     private static List<BlockTrade> oneSecondOfTrades() {
         BlockTradeGenerator generator =
-                new BlockTradeGenerator(SEED, START, 1_000L / TRADES_PER_SECOND);
+                BlockTradeGenerator.replaying(SEED, START, 1_000L / TRADES_PER_SECOND);
         List<BlockTrade> trades = new ArrayList<>();
         for (int i = 0; i < TRADES_PER_SECOND; i++) {
             trades.add(generator.next());
@@ -61,7 +63,7 @@ class ExpectedNumbersTest {
 
         // Over a longer run every symbol must appear, or the key count on the
         // dashboard would never reach 4.
-        BlockTradeGenerator longer = new BlockTradeGenerator(SEED, START, 100L);
+        BlockTradeGenerator longer = BlockTradeGenerator.replaying(SEED, START, 100L);
         Set<String> seen = new HashSet<>();
         for (int i = 0; i < 200; i++) {
             seen.add(longer.next().symbol());
@@ -70,7 +72,7 @@ class ExpectedNumbersTest {
     }
 
     @Test
-    @DisplayName("sink 4: 40 updates/sec over 16 unique account keys")
+    @DisplayName("sink 4: 40 updates/sec over 160 unique account keys")
     void sinkFour() {
         List<BlockTrade> trades = oneSecondOfTrades();
 
@@ -79,29 +81,44 @@ class ExpectedNumbersTest {
                 .as("10 trades x 4 allocations")
                 .isEqualTo(40L);
 
-        // 4 accounts x 4 symbols, reached over a run long enough to cover every pair.
-        BlockTradeGenerator longer = new BlockTradeGenerator(SEED, START, 100L);
+        // 4 accounts x 10 sub-accounts x 4 symbols, over a run long enough to cover every triple.
+        BlockTradeGenerator longer = BlockTradeGenerator.replaying(SEED, START, 100L);
         Set<String> accountKeys = new HashSet<>();
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 20_000; i++) {
             BlockTrade trade = longer.next();
             for (Allocation allocation : trade.allocations()) {
                 accountKeys.add(AccountKey.of(allocation, trade.symbol()));
             }
         }
         assertThat(accountKeys).hasSize(ReferenceData.ACCOUNT_KEY_COUNT);
-        assertThat(ReferenceData.ACCOUNT_KEY_COUNT).isEqualTo(16);
+        assertThat(ReferenceData.ACCOUNT_KEY_COUNT).isEqualTo(160);
     }
 
     @Test
-    @DisplayName("sinks 5 and 6: one price per symbol per tick, so no symbol goes quiet")
-    void priceTicksCoverEverySymbol() {
-        PriceGenerator generator = new PriceGenerator(SEED, START, 1_000L);
+    @DisplayName("prices round-robin the symbols, so no symbol goes quiet")
+    void pricesCycleEverySymbol() {
+        PriceGenerator generator = PriceGenerator.replaying(SEED, START, 1L);
 
-        for (int tick = 0; tick < 10; tick++) {
-            List<Price> prices = generator.next();
-            assertThat(prices).hasSize(ReferenceData.SYMBOL_KEY_COUNT);
-            assertThat(prices.stream().map(Price::symbol).toList())
-                    .containsExactlyElementsOf(ReferenceData.SYMBOLS);
+        // One full cycle covers every symbol exactly once, in a stable order.
+        List<String> cycle = new ArrayList<>();
+        for (int i = 0; i < ReferenceData.SYMBOLS.size(); i++) {
+            cycle.add(generator.next().symbol());
         }
+        assertThat(cycle).containsExactlyElementsOf(ReferenceData.SYMBOLS);
+
+        // And it keeps cycling: over many prices every symbol is evenly served.
+        Map<String, Long> counts = new HashMap<>();
+        for (int i = 0; i < 4_000; i++) {
+            counts.merge(generator.next().symbol(), 1L, Long::sum);
+        }
+        assertThat(counts).hasSize(ReferenceData.SYMBOL_KEY_COUNT);
+        assertThat(counts.values()).allSatisfy(c -> assertThat(c).isEqualTo(1_000L));
+    }
+
+    @Test
+    @DisplayName("the demo price rate is 1000/sec")
+    void demoPriceRate() {
+        assertThat(GeneratorConfig.DEMO_PRICES_PER_SECOND).isEqualTo(1_000);
+        assertThat(GeneratorConfig.DEMO_TRADES_PER_SECOND).isEqualTo(10);
     }
 }

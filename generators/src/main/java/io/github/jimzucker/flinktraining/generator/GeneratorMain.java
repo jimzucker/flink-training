@@ -1,12 +1,10 @@
 package io.github.jimzucker.flinktraining.generator;
 
 import io.github.jimzucker.flinktraining.model.BlockTrade;
-import io.github.jimzucker.flinktraining.model.Price;
 import io.github.jimzucker.flinktraining.model.ReferenceData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -23,13 +21,15 @@ public final class GeneratorMain {
 
     public static void main(String[] args) throws Exception {
         GeneratorConfig config = GeneratorConfig.fromEnvironment();
-        LOG.info("starting generators: bootstrap={} trades/sec={} priceTicks/sec={} seed={} duration={}",
+        LOG.info("starting generators: bootstrap={} trades/sec={} prices/sec={} seed={} duration={} time={}",
                 config.bootstrapServers(), config.tradesPerSecond(),
-                config.priceTicksPerSecond(), config.seed(),
-                config.runsForever() ? "forever" : config.durationSeconds() + "s");
-        LOG.info("universe: {} symbols {} accounts, {} allocations per trade -> {} symbol keys, {} account keys",
+                config.pricesPerSecond(), config.seed(),
+                config.runsForever() ? "forever" : config.durationSeconds() + "s",
+                config.isLive() ? "wall clock" : "replay from " + config.startEpochMillis());
+        LOG.info("universe: {} symbols, {} accounts x {} sub-accounts, {} allocations per trade "
+                        + "-> {} symbol keys, {} account keys",
                 ReferenceData.SYMBOLS.size(), ReferenceData.ACCOUNTS.size(),
-                ReferenceData.ALLOCATIONS_PER_TRADE,
+                ReferenceData.SUB_ACCOUNTS.size(), ReferenceData.ALLOCATIONS_PER_TRADE,
                 ReferenceData.SYMBOL_KEY_COUNT, ReferenceData.ACCOUNT_KEY_COUNT);
 
         AtomicBoolean running = new AtomicBoolean(true);
@@ -52,8 +52,10 @@ public final class GeneratorMain {
     }
 
     private static void publishTrades(GeneratorConfig config, KafkaPublisher publisher, AtomicBoolean running) {
-        BlockTradeGenerator generator = new BlockTradeGenerator(
-                config.seed(), config.startEpochMillis(), config.tradeIntervalMillis());
+        BlockTradeGenerator generator = config.isLive()
+                ? BlockTradeGenerator.live(config.seed())
+                : BlockTradeGenerator.replaying(
+                        config.seed(), config.startEpochMillis(), config.tradeIntervalMillis());
         Pacer pacer = new Pacer(config.tradesPerSecond());
         long count = 0;
         while (running.get()) {
@@ -71,15 +73,16 @@ public final class GeneratorMain {
 
     private static void publishPrices(GeneratorConfig config, KafkaPublisher publisher, AtomicBoolean running) {
         // A separate seed, so changing the price rate cannot shift the trade sequence.
-        PriceGenerator generator = new PriceGenerator(
-                config.seed() + 1, config.startEpochMillis(), config.priceIntervalMillis());
-        Pacer pacer = new Pacer(config.priceTicksPerSecond());
-        long ticks = 0;
+        PriceGenerator generator = config.isLive()
+                ? PriceGenerator.live(config.seed() + 1)
+                : PriceGenerator.replaying(
+                        config.seed() + 1, config.startEpochMillis(), config.priceIntervalMillis());
+        Pacer pacer = new Pacer(config.pricesPerSecond());
+        long count = 0;
         while (running.get()) {
-            List<Price> prices = generator.next();
-            prices.forEach(publisher::publish);
-            if (++ticks % (config.priceTicksPerSecond() * 30L) == 0) {
-                LOG.info("published {} price ticks, latest {}", ticks, generator.currentPrices());
+            publisher.publish(generator.next());
+            if (++count % (config.pricesPerSecond() * 30L) == 0) {
+                LOG.info("published {} prices, latest {}", count, generator.currentPrices());
             }
             if (!pacer.awaitNext()) {
                 return;

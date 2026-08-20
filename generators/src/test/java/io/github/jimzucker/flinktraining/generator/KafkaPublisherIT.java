@@ -66,8 +66,8 @@ class KafkaPublisherIT {
 
     private static GeneratorConfig config() {
         return new GeneratorConfig(KAFKA.getBootstrapServers(), ORDERS, PRICES,
-                GeneratorConfig.DEMO_TRADES_PER_SECOND, GeneratorConfig.DEMO_PRICE_TICKS_PER_SECOND,
-                GeneratorConfig.DEFAULT_SEED, GeneratorConfig.DEFAULT_START_EPOCH_MILLIS, 0L);
+                GeneratorConfig.DEMO_TRADES_PER_SECOND, GeneratorConfig.DEMO_PRICES_PER_SECOND,
+                GeneratorConfig.DEFAULT_SEED, GeneratorConfig.REPLAY_START_EPOCH_MILLIS, 0L);
     }
 
     private static <T> List<ConsumerRecord<String, byte[]>> drain(String topic, int expected) {
@@ -93,8 +93,8 @@ class KafkaPublisherIT {
     @Test
     @DisplayName("block trades round-trip through Kafka unchanged, keyed by tradeId")
     void tradesRoundTrip() {
-        BlockTradeGenerator generator = new BlockTradeGenerator(
-                GeneratorConfig.DEFAULT_SEED, GeneratorConfig.DEFAULT_START_EPOCH_MILLIS, 100L);
+        BlockTradeGenerator generator = BlockTradeGenerator.replaying(
+                GeneratorConfig.DEFAULT_SEED, GeneratorConfig.REPLAY_START_EPOCH_MILLIS, 100L);
         List<BlockTrade> sent = new ArrayList<>();
         try (KafkaPublisher publisher = new KafkaPublisher(config())) {
             for (int i = 0; i < 40; i++) {
@@ -132,17 +132,16 @@ class KafkaPublisherIT {
         // This is the guarantee the whole watermark design rests on: because the
         // key is the symbol, a symbol's prices cannot be spread across partitions
         // and therefore cannot be consumed out of order.
-        PriceGenerator generator = new PriceGenerator(
-                GeneratorConfig.DEFAULT_SEED + 1, GeneratorConfig.DEFAULT_START_EPOCH_MILLIS, 1_000L);
-        int ticks = 25;
+        PriceGenerator generator = PriceGenerator.replaying(
+                GeneratorConfig.DEFAULT_SEED + 1, GeneratorConfig.REPLAY_START_EPOCH_MILLIS, 1_000L);
+        int expected = 25 * ReferenceData.SYMBOLS.size();
         try (KafkaPublisher publisher = new KafkaPublisher(config())) {
-            for (int i = 0; i < ticks; i++) {
-                generator.next().forEach(publisher::publish);
+            for (int i = 0; i < expected; i++) {
+                publisher.publish(generator.next());
             }
             publisher.flush();
         }
 
-        int expected = ticks * ReferenceData.SYMBOLS.size();
         List<ConsumerRecord<String, byte[]>> received = drain(PRICES, expected);
         assertThat(received).hasSize(expected);
 

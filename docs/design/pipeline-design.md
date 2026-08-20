@@ -82,18 +82,23 @@ element above.
 | Parameter | Input |
 |---|---|
 | Trades | 10 / sec |
+| Prices | 1000 / sec |
 | Symbols | 4 unique |
-| Accounts | 4 unique |
+| Accounts | 4, each with 10 sub-accounts |
 | Allocations per trade | 4 |
 
 | # | Sink | Rate | Unique keys | Why |
 |---|---|---|---|---|
 | 3 | `positions-by-symbol` | 10 / sec | **4** | one key per symbol |
-| 4 | `positions-by-account` | 40 / sec | **16** | 10 trades × 4 allocations; 4 accounts × 4 symbols |
+| 4 | `positions-by-account` | 40 / sec | **160** | 10 trades × 4 allocations; 4 accounts × 10 sub-accounts × 4 symbols |
 | 5 | `mv-by-symbol` | 4 / min | **4** | one emit per key per minute |
-| 6 | `mv-by-account` | 16 / min | **16** | one emit per key per minute |
+| 6 | `mv-by-account` | 160 / min | **160** | one emit per key per minute |
 
 Sink 4 emits 4× the rate of sink 3 because each trade fans out to 4 allocations.
+Its key count is 160 rather than the 16 the assignment prints, because each
+account carries ten sub-accounts. The rate is unaffected; only the key space
+widens. Allocations land on those keys at random, so a run takes about twenty
+seconds to cover all 160.
 Sinks 5 and 6 emit once per minute per key regardless of input rate, because the
 window collapses all updates in that minute to a single value.
 

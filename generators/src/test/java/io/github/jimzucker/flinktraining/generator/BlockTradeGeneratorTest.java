@@ -17,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BlockTradeGeneratorTest {
 
     private static List<BlockTrade> take(int n, long seed) {
-        BlockTradeGenerator generator = new BlockTradeGenerator(seed, 1_000L, 100L);
+        BlockTradeGenerator generator = BlockTradeGenerator.replaying(seed, 1_000L, 100L);
         List<BlockTrade> trades = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
             trades.add(generator.next());
@@ -44,6 +44,19 @@ class BlockTradeGeneratorTest {
             assertThat(trade.allocations().stream().map(Allocation::account).toList())
                     .containsExactlyElementsOf(ReferenceData.ACCOUNTS);
         }
+    }
+
+    @Test
+    @DisplayName("sub-accounts are drawn from the ten configured, and all ten get used")
+    void subAccountsSpanTheConfiguredSet() {
+        java.util.Set<String> seen = new java.util.HashSet<>();
+        for (BlockTrade trade : take(500, 7L)) {
+            for (Allocation allocation : trade.allocations()) {
+                assertThat(ReferenceData.SUB_ACCOUNTS).contains(allocation.subAccount());
+                seen.add(allocation.subAccount());
+            }
+        }
+        assertThat(seen).containsExactlyInAnyOrderElementsOf(ReferenceData.SUB_ACCOUNTS);
     }
 
     @Test

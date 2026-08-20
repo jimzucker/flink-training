@@ -33,20 +33,25 @@ element in the diagram.
 | Parameter | Input |
 |---|---|
 | Trades | 10 / sec |
+| Prices | 1000 / sec |
 | Symbols | 4 unique |
-| Accounts | 4 unique |
-| Allocations per trade | 4 |
+| Accounts | 4, each with 10 sub-accounts |
+| Allocations per trade | 4 (one per account) |
 
 | # | Sink | Rate | Unique keys |
 |---|---|---|---|
 | 3 | `positions-by-symbol` | 10 / sec | **4** |
-| 4 | `positions-by-account` | 40 / sec | **16** |
+| 4 | `positions-by-account` | 40 / sec | **160** |
 | 5 | `mv-by-symbol` | 4 / min | **4** |
-| 6 | `mv-by-account` | 16 / min | **16** |
+| 6 | `mv-by-account` | 160 / min | **160** |
+
+Account keys are 4 accounts x 10 sub-accounts x 4 symbols. Because allocations
+land on them at random, a run needs about 20 seconds to cover the whole space —
+at 10 seconds roughly 147 of the 160 have appeared, which is what coupon-collector
+predicts rather than a fault.
 
 Verified against the real topics by `scripts/verify-topics.sh`. Sinks 3–6 are
-produced by the jobs in later steps; what step 02 proves is the input side —
-10 trades/sec carrying 40 allocations across 4 symbol keys and 16 account keys.
+produced by the jobs in later steps; what step 02 proves is the input side.
 
 ## Running it locally
 
@@ -68,9 +73,14 @@ knob independently:
 |---|---|---|
 | `BOOTSTRAP_SERVERS` | `localhost:9092` | broker |
 | `TRADES_PER_SECOND` | `10` | order rate — scale case 1 raises this to 1000 |
-| `PRICE_TICKS_PER_SECOND` | `1` | price rate — scale case 2 raises this |
-| `SEED` | `42` | fixes the sequence; same seed, same bytes |
+| `PRICES_PER_SECOND` | `1000` | price rate — scale case 2 raises this |
+| `SEED` | `42` | fixes the content of the sequence |
+| `START_EPOCH_MILLIS` | unset | unset uses the wall clock, so latency is measurable; setting it replays from a fixed origin with byte-identical output |
 | `DURATION_SECONDS` | `0` | `0` runs until stopped |
+
+Event times are wall clock by default, which is what makes end-to-end latency —
+the age of a record when it reaches a sink — measurable at all. Replay mode
+exists for demonstrating byte-identical reproducibility.
 
 ## Verifying the numbers
 
