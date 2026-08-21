@@ -38,6 +38,31 @@ all along: one commit per step on a linear `main`, with the step branch kept for
 inspection. What changes is that the commit is now *provably* green before it
 lands rather than tested immediately afterwards.
 
+### Protection settings, and proof they bite
+
+```
+required checks:      Build and test, Verify the expected numbers, Shell scripts
+strict (up-to-date):  false
+enforce_admins:       true
+linear history:       true
+force pushes:         false
+deletions:            false
+```
+
+`enforce_admins: true` matters: without it the repository owner bypasses the
+rule, which is everyone who merges here, and the gate would be decorative.
+
+Confirmed by attempting a direct push rather than trusting the settings page:
+
+```
+remote: error: GH006: Protected branch update failed for refs/heads/main.
+remote: - 3 of 3 required status checks are expected.
+ ! [remote rejected] main -> main (protected branch hook declined)
+```
+
+`required_linear_history` is also on, which enforces at the server what the
+workflow has been doing by hand since step 00.
+
 ### Outcome
 
 Approved. Squash-merged to `main`, tagged `step-03`, and branch protection

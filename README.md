@@ -154,6 +154,21 @@ The second job is the one that matters: it is the same `verify-run.sh` used
 locally, so a change that quietly breaks the numbers fails the build rather than
 surfacing during a demo.
 
+`main` is protected and requires all three checks to pass, so work reaches it
+through a pull request:
+
+```bash
+git switch -c step-NN-name
+# ... work, commit ...
+git push -u origin step-NN-name
+gh pr create --fill
+gh pr merge --squash          # once CI is green
+```
+
+Squash-merging keeps `main` linear with one commit per step, and the step branch
+stays for inspection. Direct pushes to `main` are rejected — verified, not
+assumed.
+
 ## Repository layout
 
 ```
