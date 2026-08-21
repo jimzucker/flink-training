@@ -500,4 +500,27 @@ would not catch.
 
 ### Review
 
-_Pending._
+Round 1: at-least-once rejected, parallelism must be a runtime knob because the
+demo scales 2 → 4, and empty sinks 5 and 6 confirmed as expected.
+
+- **Exactly-once** on both sinks, with a transactional id prefix each and a
+  transaction timeout that outlasts a checkpoint while staying under the broker
+  maximum. Two consequences recorded rather than hidden: the sinks now advance
+  once per checkpoint rather than continuously, which is also a floor under
+  end-to-end latency; and every reader must use `read_committed`.
+- **It broke the record counter silently.** Each committed transaction appends a
+  marker that advances the partition offset without being a record, so summing
+  end offsets over-counts and a wait keyed on it can finish before the data is
+  there — the verification would have measured a half-written topic. Counting now
+  consumes with `read_committed`.
+- **Proved under failure.** A guarantee about failure is untested without one, so
+  a task manager is killed mid-run. The job recovered from checkpoint and the
+  sinks held exactly 100 and 400 records with update counts still running 1..n.
+  Under at-least-once both of those checks would have failed.
+- **Parallelism** is now a runtime setting passed to the submitting client, where
+  the graph is built. Verified against the running job: all three vertices at
+  parallelism 4.
+
+Full exchange: [`docs/reviews/step-04.md`](../docs/reviews/step-04.md)
+
+**Outcome:** awaiting round 2.

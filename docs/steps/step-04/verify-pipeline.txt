@@ -2,11 +2,11 @@ resetting topics: orders prices positions-by-symbol positions-by-account
 restarting the positions job
   submitted
 emitting exactly 100 trades and 400 prices (seed 42, replay)
-22:37:43.870 INFO  GeneratorMain - starting generators: bootstrap=localhost:9092 trades/sec=10 prices/sec=1000 seed=42 duration=forever time=replay from 1700000000000
-22:37:43.885 INFO  GeneratorMain - universe: 4 symbols, 4 accounts, 4 allocations per trade -> 4 symbol keys, 16 account keys
-22:37:54.065 INFO  GeneratorMain - generators stopped
-waiting for sinks 3 and 4 to catch up (want 400 on positions-by-account)
-  sink 3: 100   sink 4: 400
+05:44:05.857 INFO  GeneratorMain - starting generators: bootstrap=localhost:9092 trades/sec=10 prices/sec=1000 seed=42 duration=forever time=replay from 1700000000000
+05:44:05.873 INFO  GeneratorMain - universe: 4 symbols, 4 accounts, 4 allocations per trade -> 4 symbol keys, 16 account keys
+05:44:16.121 INFO  GeneratorMain - generators stopped
+waiting for sinks 3 and 4 to commit
+  sink 3: 100/100   sink 4: 400/400
 
 orders  (expecting exactly 100)
   record count                             100          OK

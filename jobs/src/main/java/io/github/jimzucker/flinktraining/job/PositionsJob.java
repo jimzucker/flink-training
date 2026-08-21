@@ -11,6 +11,8 @@ import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Properties;
+
 /**
  * Part 1 of the pipeline: block trades in, positions out, aggregated two ways in
  * parallel.
@@ -36,10 +38,12 @@ public final class PositionsJob {
 
     public static void main(String[] args) throws Exception {
         JobConfig config = JobConfig.fromEnvironment();
-        LOG.info("positions job: bootstrap={} orders={} -> {} , {} (parallelism {})",
+        LOG.info("positions job: bootstrap={} orders={} -> {} , {}",
                 config.bootstrapServers(), config.ordersTopic(),
-                config.positionsBySymbolTopic(), config.positionsByAccountTopic(),
-                config.parallelism());
+                config.positionsBySymbolTopic(), config.positionsByAccountTopic());
+        LOG.info("parallelism={} checkpoint={}ms delivery=exactly-once "
+                        + "(sinks advance once per checkpoint; read with read_committed)",
+                config.parallelism(), config.checkpointIntervalMillis());
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(config.parallelism());
@@ -62,13 +66,13 @@ public final class PositionsJob {
         orders.flatMap(new ToSymbolUpdate()).name("by symbol")
                 .keyBy(update -> update.key)
                 .process(new AccumulatePosition(config.logEvery())).name("aggregate by symbol")
-                .sinkTo(positionsSink(config, config.positionsBySymbolTopic()))
+                .sinkTo(positionsSink(config, config.positionsBySymbolTopic(), "positions-by-symbol-tx"))
                 .name("positions-by-symbol");
 
         orders.flatMap(new SplitByAllocation()).name("split by allocation")
                 .keyBy(update -> update.key)
                 .process(new AccumulatePosition(config.logEvery())).name("aggregate by account")
-                .sinkTo(positionsSink(config, config.positionsByAccountTopic()))
+                .sinkTo(positionsSink(config, config.positionsByAccountTopic(), "positions-by-account-tx"))
                 .name("positions-by-account");
     }
 
@@ -82,15 +86,37 @@ public final class PositionsJob {
                 .build();
     }
 
-    private static KafkaSink<PositionState> positionsSink(JobConfig config, String topic) {
+    /**
+     * Exactly-once, because a position is a running sum: a record replayed after
+     * a failure would double-count, and a wrong number is worse than a missing
+     * one when the whole point is being able to explain the figure on screen.
+     *
+     * <p>Two consequences follow, and both are visible rather than hidden:
+     *
+     * <ul>
+     *   <li>Records become visible only when a checkpoint completes, so the sinks
+     *       advance in checkpoint-sized steps rather than continuously.</li>
+     *   <li>Anything reading these topics must use {@code read_committed}, or it
+     *       sees records belonging to transactions that may still abort.</li>
+     * </ul>
+     *
+     * <p>Each sink needs its own transactional id prefix. Sharing one across two
+     * sinks in the same job makes them fight over the same transactional ids.
+     */
+    private static KafkaSink<PositionState> positionsSink(
+            JobConfig config, String topic, String transactionalIdPrefix) {
+        Properties properties = new Properties();
+        // Flink's default transaction timeout exceeds the broker's maximum, which
+        // fails at submission. It also has to outlast a checkpoint, or a
+        // transaction expires before it can be committed.
+        properties.setProperty("transaction.timeout.ms",
+                Long.toString(config.transactionTimeoutMillis()));
+
         return KafkaSink.<PositionState>builder()
                 .setBootstrapServers(config.bootstrapServers())
-                // At-least-once: a position is a running sum, so a replayed record
-                // would double-count. That only arises on a failure and restore,
-                // which the demo does not exercise; exactly-once needs Kafka
-                // transactions and a read-committed consumer, and is taken up with
-                // the AWS deployment.
-                .setDeliveryGuarantee(DeliveryGuarantee.AT_LEAST_ONCE)
+                .setDeliveryGuarantee(DeliveryGuarantee.EXACTLY_ONCE)
+                .setTransactionalIdPrefix(transactionalIdPrefix)
+                .setKafkaProducerConfig(properties)
                 .setRecordSerializer(new PositionSerialization(topic))
                 .build();
     }

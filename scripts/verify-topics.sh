@@ -26,9 +26,15 @@ fi
 
 # Drains the whole topic. A prefix read with --max-messages is not safe: it
 # slices across partitions, and the slice is uneven even when production was not.
+#
+# read_committed matters: the position sinks write transactionally, so an
+# uncommitted read would show records belonging to transactions that may still
+# abort. Reading uncommitted here would make the verification claim more than is
+# actually durable.
 drain() {
   docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
       --bootstrap-server localhost:9092 --topic "$1" \
+      --isolation-level read_committed \
       --from-beginning --timeout-ms "${DRAIN_TIMEOUT_MS:-20000}" 2>/dev/null
 }
 

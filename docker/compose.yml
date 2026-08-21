@@ -80,8 +80,9 @@ services:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 4
-    deploy:
-      replicas: 1
+    # Comes back on its own after a crash, so a failure is a recovery to watch
+    # rather than a stack to rebuild by hand.
+    restart: unless-stopped
 
   # Submits the jobs jar, then exits. Kept out of `up` by a profile so bringing
   # the stack up does not require the jar to have been built yet.
@@ -94,6 +95,12 @@ services:
         condition: service_healthy
     volumes:
       - ../jobs/target:/opt/jobs:ro
+    environment:
+      # The demo raises parallelism from 2 to 4 to show throughput scaling with
+      # it. The job graph is built in the client, so this has to be set here.
+      PARALLELISM: "${PARALLELISM:-2}"
+      CHECKPOINT_INTERVAL_MS: "${CHECKPOINT_INTERVAL_MS:-5000}"
+      BOOTSTRAP_SERVERS: "${BOOTSTRAP_SERVERS:-kafka:19092}"
     entrypoint:
       - /bin/bash
       - -c

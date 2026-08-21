@@ -9,12 +9,30 @@ public record JobConfig(
         String consumerGroup,
         int parallelism,
         long checkpointIntervalMillis,
+        long transactionTimeoutMillis,
         long logEvery) {
 
     public static final String DEFAULT_BOOTSTRAP = "kafka:19092";
     public static final String ORDERS = "orders";
     public static final String POSITIONS_BY_SYMBOL = "positions-by-symbol";
     public static final String POSITIONS_BY_ACCOUNT = "positions-by-account";
+
+    /**
+     * How often the sinks become visible. Under exactly-once a record is not
+     * readable until the checkpoint that produced it commits, so this is also the
+     * granularity at which the dashboard advances and a floor under end-to-end
+     * latency.
+     */
+    public static final long DEFAULT_CHECKPOINT_INTERVAL_MS = 5_000L;
+
+    /**
+     * Must outlast a checkpoint, or a transaction expires before it can commit,
+     * and must stay under the broker's transaction.max.timeout.ms of 15 minutes.
+     */
+    public static final long DEFAULT_TRANSACTION_TIMEOUT_MS = 300_000L;
+
+    /** The demo raises this from 2 to 4 to show throughput scaling with it. */
+    public static final int DEFAULT_PARALLELISM = 2;
 
     public static JobConfig fromEnvironment() {
         return new JobConfig(
@@ -23,8 +41,9 @@ public record JobConfig(
                 env("POSITIONS_BY_SYMBOL_TOPIC", POSITIONS_BY_SYMBOL),
                 env("POSITIONS_BY_ACCOUNT_TOPIC", POSITIONS_BY_ACCOUNT),
                 env("CONSUMER_GROUP", "positions-job"),
-                envInt("PARALLELISM", 2),
-                envLong("CHECKPOINT_INTERVAL_MS", 10_000L),
+                envInt("PARALLELISM", DEFAULT_PARALLELISM),
+                envLong("CHECKPOINT_INTERVAL_MS", DEFAULT_CHECKPOINT_INTERVAL_MS),
+                envLong("TRANSACTION_TIMEOUT_MS", DEFAULT_TRANSACTION_TIMEOUT_MS),
                 envLong("LOG_EVERY", 50L));
     }
 

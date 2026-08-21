@@ -73,6 +73,26 @@ To skip the job and check the inputs only:
 WITH_PIPELINE=0 ./scripts/verify-run.sh
 ```
 
+The position sinks are written **exactly-once**, so anything reading them must
+use `read_committed` — an uncommitted read shows records belonging to
+transactions that may still abort. A record also becomes readable only when its
+checkpoint commits, so the sinks advance once every five seconds rather than
+continuously.
+
+Parallelism is a runtime setting, because the demo raises it from 2 to 4 to show
+throughput scaling with it:
+
+```bash
+PARALLELISM=4 docker compose -f docker/compose.yml --profile submit run --rm submit
+```
+
+To prove exactly-once actually holds, kill a task manager mid-run and check the
+sinks are still exact:
+
+```bash
+./scripts/chaos-exactly-once.sh
+```
+
 `verify-run.sh` resets the input topics, emits an exact number of records in
 replay mode, and asserts the expected-output table against what landed. Every
 check is exact — there are no tolerances, because the run is bounded by record

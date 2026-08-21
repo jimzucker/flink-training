@@ -135,6 +135,24 @@ The demo has to be reproducible and the numbers have to be explainable, so:
 - **Every record carries `tradeId`.** A single trade can be followed from ① through
   to ⑤ and ⑥ in the logs, so any number on screen can be traced back to its input.
 
+## Delivery
+
+**Exactly-once.** A position is a running sum, so a record replayed after a
+failure is not a harmless duplicate — it is a wrong number that cannot be
+explained. A missing number is obvious; a wrong one is not.
+
+Two consequences follow, and both are visible rather than hidden. A record is not
+readable until the checkpoint that produced it commits, so the sinks advance once
+per checkpoint rather than continuously, and that interval is a floor under
+end-to-end latency. And every reader must use `read_committed`, or it sees
+records belonging to transactions that may still abort.
+
+The claim is only worth stating if it has been tested under a failure, so a task
+manager is killed mid-run and the sinks are checked for duplicates. Under
+at-least-once everything written between the last checkpoint and the kill would
+be re-emitted, inflating the counts and repeating values in each key's update
+sequence.
+
 ## Ordering and watermarks
 
 **Prices arrive in order, by construction.** The `prices` topic is keyed by
