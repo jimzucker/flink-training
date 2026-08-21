@@ -1,0 +1,98 @@
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+# A newer push to the same branch makes an in-flight run irrelevant.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Flink 1.20 does not run on newer JDKs; the build enforces this too.
+  JAVA_VERSION: "17"
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      # Unit tests need nothing; the *IT tests start their own Kafka through
+      # Testcontainers, which is why they work on a clean runner with no stack
+      # brought up by hand.
+      - name: Build, unit tests and integration tests
+        run: mvn -B --no-transfer-progress verify
+
+      - name: Upload generators jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: generators-jar
+          path: generators/target/generators.jar
+          retention-days: 7
+          if-no-files-found: error
+
+  verify-numbers:
+    name: Verify the expected numbers
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Download generators jar
+        uses: actions/download-artifact@v4
+        with:
+          name: generators-jar
+          path: generators/target
+
+      # --wait only on kafka: the topics service is a one-shot that creates the
+      # six topics and exits, which --wait would read as a failed service.
+      # verify-run.sh recreates the input topics itself anyway.
+      - name: Start Kafka
+        run: |
+          docker compose -f docker/compose.yml up -d --wait kafka
+          docker compose -f docker/compose.yml ps
+
+      # The gate that matters: the assignment's expected-output table, asserted
+      # against what actually lands on the topics. Exact, no tolerances.
+      - name: Run and verify
+        run: ./scripts/verify-run.sh
+
+      - name: Kafka logs on failure
+        if: failure()
+        run: docker compose -f docker/compose.yml logs --tail 200
+
+      - name: Stop the stack
+        if: always()
+        run: docker compose -f docker/compose.yml down -v
+
+  scripts:
+    name: Shell scripts
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      # The verification scripts are part of how correctness is demonstrated, so
+      # they get linted rather than trusted.
+      - name: ShellCheck
+        run: shellcheck scripts/*.sh docker/scripts/*.sh
