@@ -47,16 +47,14 @@ class BlockTradeGeneratorTest {
     }
 
     @Test
-    @DisplayName("sub-accounts are drawn from the ten configured, and all ten get used")
-    void subAccountsSpanTheConfiguredSet() {
-        java.util.Set<String> seen = new java.util.HashSet<>();
+    @DisplayName("every allocation uses the single configured sub-account")
+    void oneSubAccountPerAccount() {
+        // One sub-account per account is what keeps the account key count at
+        // 4 x 4 = 16 rather than widening it.
         for (BlockTrade trade : take(500, 7L)) {
-            for (Allocation allocation : trade.allocations()) {
-                assertThat(ReferenceData.SUB_ACCOUNTS).contains(allocation.subAccount());
-                seen.add(allocation.subAccount());
-            }
+            assertThat(trade.allocations())
+                    .allSatisfy(a -> assertThat(a.subAccount()).isEqualTo(ReferenceData.SUB_ACCOUNT));
         }
-        assertThat(seen).containsExactlyInAnyOrderElementsOf(ReferenceData.SUB_ACCOUNTS);
     }
 
     @Test

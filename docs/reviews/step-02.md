@@ -45,4 +45,44 @@
 
 ### Outcome
 
-_Pending._
+Superseded in round 2 — the sub-account change was a typo.
+
+## Round 2
+
+### Asked
+
+Confirm the deck should present 160 account keys, deviating from the 16 the
+assignment prints.
+
+### Feedback
+
+> the 160 was a typo revert it
+
+### Actions
+
+| Feedback | Action |
+|---|---|
+| Revert the 160 | Back to one sub-account per account. `ReferenceData.SUB_ACCOUNT` is `SUB1` again and `ACCOUNT_KEY_COUNT` is 4 x 4 = **16**, matching the assignment. Design doc, README and verification script all reverted |
+
+Removing the sub-account draw restored the original random sequence exactly: the
+pinned trades hash went back to `241903ac...`, the value it held before the
+change. The round-robin price generator, the 1000/sec default and wall-clock
+event times all stand — only the sub-account expansion was reverted.
+
+### What the round turned up
+
+Proving reproducibility through the broker exposed a real gap. Two replay runs
+bounded by *duration* still differed, because a six-second run emits 60 or 61
+trades depending on where the clock falls. Every record they shared was
+byte-identical, but the run boundary was not.
+
+Runs are now bounded by **record count** (`MAX_TRADES`, `MAX_PRICES`), which
+makes the boundary exact, and a record-bounded run finishes as soon as its
+limits are met instead of waiting out a duration. Two such runs now produce
+byte-identical topics, and the orders hash equals the value `DeterminismTest`
+pins in-process — so the sequence the unit test guards and the bytes that reach
+the broker are provably the same.
+
+### Outcome
+
+Approved. Squash-merged to `main`, tagged `step-02`.

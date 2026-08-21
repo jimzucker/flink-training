@@ -26,10 +26,10 @@ public final class GeneratorMain {
                 config.pricesPerSecond(), config.seed(),
                 config.runsForever() ? "forever" : config.durationSeconds() + "s",
                 config.isLive() ? "wall clock" : "replay from " + config.startEpochMillis());
-        LOG.info("universe: {} symbols, {} accounts x {} sub-accounts, {} allocations per trade "
+        LOG.info("universe: {} symbols, {} accounts, {} allocations per trade "
                         + "-> {} symbol keys, {} account keys",
                 ReferenceData.SYMBOLS.size(), ReferenceData.ACCOUNTS.size(),
-                ReferenceData.SUB_ACCOUNTS.size(), ReferenceData.ALLOCATIONS_PER_TRADE,
+                ReferenceData.ALLOCATIONS_PER_TRADE,
                 ReferenceData.SYMBOL_KEY_COUNT, ReferenceData.ACCOUNT_KEY_COUNT);
 
         AtomicBoolean running = new AtomicBoolean(true);
@@ -41,12 +41,21 @@ public final class GeneratorMain {
             trades.start();
             prices.start();
 
-            if (!config.runsForever()) {
-                Thread.sleep(config.durationSeconds() * 1_000L);
+            // When both streams are bounded by record count they finish on their
+            // own, and waiting out a duration on top of that would only add dead
+            // time to a reproducibility run.
+            if (config.isRecordBounded()) {
+                trades.join();
+                prices.join();
+            } else {
+                if (!config.runsForever()) {
+                    Thread.sleep(config.durationSeconds() * 1_000L);
+                }
                 running.set(false);
+                trades.join();
+                prices.join();
             }
-            trades.join();
-            prices.join();
+            publisher.flush();
         }
         LOG.info("generators stopped");
     }
@@ -58,7 +67,7 @@ public final class GeneratorMain {
                         config.seed(), config.startEpochMillis(), config.tradeIntervalMillis());
         Pacer pacer = new Pacer(config.tradesPerSecond());
         long count = 0;
-        while (running.get()) {
+        while (running.get() && !GeneratorConfig.reached(config.maxTrades(), count)) {
             BlockTrade trade = generator.next();
             publisher.publish(trade);
             if (++count % (config.tradesPerSecond() * 10L) == 0) {
@@ -79,7 +88,7 @@ public final class GeneratorMain {
                         config.seed() + 1, config.startEpochMillis(), config.priceIntervalMillis());
         Pacer pacer = new Pacer(config.pricesPerSecond());
         long count = 0;
-        while (running.get()) {
+        while (running.get() && !GeneratorConfig.reached(config.maxPrices(), count)) {
             publisher.publish(generator.next());
             if (++count % (config.pricesPerSecond() * 30L) == 0) {
                 LOG.info("published {} prices, latest {}", count, generator.currentPrices());

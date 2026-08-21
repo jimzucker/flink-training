@@ -14,8 +14,8 @@ import java.util.function.LongSupplier;
 /**
  * Produces block trades as a seeded sequence.
  *
- * <p>The <em>content</em> of the sequence — symbol, side, quantity, which
- * sub-accounts are allocated to — is a pure function of the seed, so the same
+ * <p>The <em>content</em> of the sequence — symbol, side, quantity, allocations
+ * — is a pure function of the seed, so the same
  * seed always produces the same trades in the same order. Only the timestamp
  * comes from outside.
  *
@@ -68,14 +68,12 @@ public final class BlockTradeGenerator implements Iterator<BlockTrade> {
         String symbol = ReferenceData.SYMBOLS.get(random.nextInt(ReferenceData.SYMBOLS.size()));
         Side side = random.nextBoolean() ? Side.BUY : Side.SELL;
 
-        // Every block is split across all four accounts, one sub-account each,
-        // which is what makes the account-side rate four times the symbol-side
-        // rate while the key space spans every account/sub-account/symbol triple.
+        // Every block is split across all four accounts, which is what makes the
+        // account-side rate four times the symbol-side rate.
         List<Allocation> allocations = new ArrayList<>(ReferenceData.ACCOUNTS.size());
         for (String account : ReferenceData.ACCOUNTS) {
-            String subAccount = ReferenceData.SUB_ACCOUNTS.get(
-                    random.nextInt(ReferenceData.SUB_ACCOUNTS.size()));
-            allocations.add(new Allocation(account, subAccount, QUANTITY_PER_ALLOCATION));
+            allocations.add(new Allocation(
+                    account, ReferenceData.SUB_ACCOUNT, QUANTITY_PER_ALLOCATION));
         }
         long quantity = QUANTITY_PER_ALLOCATION * ReferenceData.ACCOUNTS.size();
 

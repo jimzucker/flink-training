@@ -8,7 +8,7 @@ CONTAINER="${CONTAINER:-ft-kafka}"
 SECONDS_RUN="${SECONDS_RUN:-10}"
 TRADES_PER_SECOND="${TRADES_PER_SECOND:-10}"
 PRICES_PER_SECOND="${PRICES_PER_SECOND:-1000}"
-ACCOUNT_KEY_UNIVERSE="${ACCOUNT_KEY_UNIVERSE:-160}"
+ACCOUNT_KEY_UNIVERSE="${ACCOUNT_KEY_UNIVERSE:-16}"
 FAILURES=0
 
 # Drains the whole topic. A prefix read with --max-messages is not safe for
@@ -55,16 +55,10 @@ check "duplicate tradeIds"            "0"  "$(echo "$ORDERS" | jq -r '.tradeId' 
 
 ACCOUNT_KEYS=$(echo "$ORDERS" | jq -r '.symbol as $s | .allocations[] | "\(.account)/\(.subAccount)/\($s)"' | sort -u)
 OBSERVED_KEYS=$(echo "$ACCOUNT_KEYS" | grep -c .)
-# Every key must be inside the declared universe. Reaching all of it is a matter
-# of run length, not correctness: 4 allocations x N trades random draws cover
-# 160 keys only after roughly 160*ln(160) = 812 draws, about 20s at 10 trades/sec.
+# Every key must be inside the declared universe: 4 accounts x 4 symbols.
 check "account keys outside universe" "0" \
-      "$(echo "$ACCOUNT_KEYS" | grep -vcE '^ACC[1-4]/SUB(0[1-9]|10)/(AAPL|MSFT|GOOG|AMZN)$')"
-if [ "$OBSERVED_KEYS" -gt "$ACCOUNT_KEY_UNIVERSE" ]; then
-  check "account keys within universe" "<= $ACCOUNT_KEY_UNIVERSE" "$OBSERVED_KEYS"
-else
-  note "account keys seen" "$OBSERVED_KEYS of $ACCOUNT_KEY_UNIVERSE ($(( OBSERVED_KEYS * 100 / ACCOUNT_KEY_UNIVERSE ))% coverage)"
-fi
+      "$(echo "$ACCOUNT_KEYS" | grep -vcE '^ACC[1-4]/SUB1/(AAPL|MSFT|GOOG|AMZN)$')"
+check "unique account keys (sink 4)"   "$ACCOUNT_KEY_UNIVERSE" "$OBSERVED_KEYS"
 note "buy/sell mix" "$(echo "$ORDERS" | jq -r '.side' | sort | uniq -c | tr '\n' ' ')"
 
 echo
@@ -81,10 +75,14 @@ else
   check "record count" ">= $LOW" "$PRICE_COUNT"
 fi
 check "unique symbols"                "4"  "$(echo "$PRICES" | jq -r '.symbol' | sort -u | grep -c .)"
-# Round-robin means every symbol is priced the same number of times, give or
-# take the partial cycle a run ends on.
+# Round-robin means every symbol is priced the same number of times, except for
+# the partial cycle a run ends on: at most one symbol can be one ahead.
 SPREAD=$(echo "$PRICES" | jq -r '.symbol' | sort | uniq -c | awk '{print $1}' | sort -n | awk 'NR==1{min=$1} {max=$1} END {print max-min}')
-check "round-robin spread (max-min)"  "0"  "$SPREAD"
+if [ "$SPREAD" -le 1 ]; then
+  note "round-robin spread (max-min)" "$SPREAD (<= 1, a run ends mid-cycle)"
+else
+  check "round-robin spread (max-min)" "<= 1" "$SPREAD"
+fi
 check "non-positive prices"           "0"  "$(echo "$PRICES" | jq -r 'select(.price <= 0) | .symbol' | grep -c .)"
 check "prices off a quarter"          "0"  "$(echo "$PRICES" | jq -r 'select((.price * 4 | floor) != (.price * 4)) | .symbol' | grep -c .)"
 

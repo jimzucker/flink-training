@@ -298,19 +298,23 @@ wall-clock event times so latency can be measured from creation to sink.
 - **Prices restructured to round-robin**, one per call rather than a burst of
   every symbol, so the configured rate is a plain count of prices per second.
   Verified even at 2501 per symbol out of 10004, spread 0.
-- **Ten sub-accounts per account.** Account keys go from 16 to **160**. The
-  40/sec rate is unchanged since it follows from four allocations per trade.
-  This differs from the 16 the assignment prints, and was raised as such.
+- **Ten sub-accounts per account** — reverted in round 2 as a typo. Account keys
+  stay at 4 x 4 = **16**, matching the assignment. Removing the sub-account draw
+  restored the original random sequence exactly: the pinned trades hash returned
+  to `241903ac...`, the value it held before the change.
 - **Event time now comes from a `LongSupplier`.** `live()` uses the wall clock
   and is the default; `replaying()` uses a counter for byte-identical runs.
   Reproducibility splits in two as a result: the seed fixes the *content* of the
   sequence in both modes, and replay exists for when identical bytes must be
   shown. Asserted rather than assumed.
-- **Key coverage is now a function of run length** — 160 of 160 at 45s, but 147
-  at 10s, which is what coupon-collector predicts for 400 draws over 160 keys.
-  A short demo shows the count climbing rather than settled.
-- **The pinned sequence hash failed on purpose** and was re-pinned: drawing a
-  sub-account consumes extra randomness, so the sequence legitimately changed.
+- **The pinned sequence hash failed on purpose** in both directions — once when
+  the sub-account draw was added, once when it was reverted — and landed back on
+  its original value. The guard did exactly what it exists for.
+- **Runs are now bounded by record count, not duration.** Proving reproducibility
+  through the broker showed two replay runs still differing: a six-second run
+  emits 60 or 61 trades depending on where the clock falls. Every shared record
+  was byte-identical, but the boundary was not. `MAX_TRADES` and `MAX_PRICES`
+  make it exact, and a record-bounded run finishes as soon as its limits are met.
 - **Two bugs found in the verification script itself**, both false alarms rather
   than defects in the generators: a fixed-size prefix read slices unevenly
   across partitions and made an exactly-even round-robin look uneven, and a run
@@ -319,4 +323,12 @@ wall-clock event times so latency can be measured from creation to sink.
 
 Full exchange: [`docs/reviews/step-02.md`](../docs/reviews/step-02.md)
 
-**Outcome:** awaiting round 2.
+Round 2 reverted the sub-account expansion as a typo; the 1000/sec price rate,
+the round-robin generator and wall-clock event times all stand.
+
+Two record-bounded replay runs now produce byte-identical topics, and the orders
+hash equals the value `DeterminismTest` pins in-process — so the sequence the
+unit test guards and the bytes that reach the broker are provably the same
+thing.
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-02`.

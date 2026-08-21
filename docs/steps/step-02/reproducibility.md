@@ -13,8 +13,8 @@ runs are byte-identical.
 | replay (`START_EPOCH_MILLIS=...`) | counter from a fixed origin | byte-identical | proving reproducibility |
 
 The seed fixes the *content* of the sequence in both modes: the same seed always
-produces the same symbols, sides, quantities and sub-accounts, in the same order.
-Only the timestamp differs, which is asserted directly by
+produces the same symbols, sides, quantities and allocations, in the same order.
+Only the timestamp differs, asserted directly by
 `DeterminismTest.wallClockLeavesContentUnchanged`.
 
 ## Wall-clock event times are current
@@ -24,18 +24,37 @@ eventTime = 1787186446417 ms  ->  2026-08-20T00:40:46Z
 now                          ->  2026-08-20T00:43:16Z
 ```
 
-## Key coverage is a function of run length
+## Reproducibility, measured through a real broker
 
-With 4 accounts x 10 sub-accounts x 4 symbols there are 160 account keys, and
-allocations land on them at random. Covering the whole space takes roughly
-160 x ln(160) = 812 draws, which is about 203 trades, or 20 seconds at 10/sec.
+A run has to be bounded by **record count**, not elapsed time. "Run for six
+seconds" lands on 60 or 61 trades depending on where the clock falls, and two
+such runs differ by that one record even though every record they share is
+identical. `MAX_TRADES` and `MAX_PRICES` make the boundary exact.
 
-| Run | Allocations | Account keys seen |
-|---|---|---|
-| 10s | 400 | 147 of 160 (91%) |
-| 45s | 1804 | **160 of 160 (100%)** |
+Two separate runs, published to Kafka, consumed back and sorted:
 
-The 10-second figure is not a defect: 147 is what coupon-collector predicts for
-400 draws over 160 keys. It does mean a short demo shows the key count climbing
-rather than sitting at its final value, which was not true of the original
-16-key design.
+```
+orders  run 1  n=100  241903ac4ea9b746407516075275b694c42bb3a372c107df48ecd8b69d83fdae
+orders  run 2  n=100  241903ac4ea9b746407516075275b694c42bb3a372c107df48ecd8b69d83fdae
+prices  run 1  n=400  39dfc9c8097726746896a908046efa2e3030d0995579eefcfbe3d87b2efff109
+prices  run 2  n=400  39dfc9c8097726746896a908046efa2e3030d0995579eefcfbe3d87b2efff109
+```
+
+The orders hash is the same value `DeterminismTest` pins in-process, so the
+sequence the unit test guards and the bytes that reach the broker are provably
+the same thing.
+
+## Rates are approximate; invariants are not
+
+A run ends mid-cycle, so counts land within a record or two of nominal and one
+symbol can be one price ahead of the others. Those are properties of stopping a
+paced stream, not defects. The verification script checks rates with a tolerance
+and the invariants exactly:
+
+| Checked exactly | Checked with tolerance |
+|---|---|
+| `allocations = 4 x orders` | record count vs nominal rate |
+| allocations sum to block quantity | round-robin spread (<= 1) |
+| 4 symbol keys, 16 account keys | |
+| no duplicate trade ids, both sides present | |
+| prices positive and on exact quarters | |

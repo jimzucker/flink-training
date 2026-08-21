@@ -113,7 +113,7 @@ class DeterminismTest {
         // Guards against an unnoticed change to generation order or JSON shape.
         // If this fails deliberately, re-pin it and say so in the journal.
         assertThat(sha256(tradesJson(SEED, 100)))
-                .isEqualTo("59066419435bd9fb545fb0238c8b777579cf25703ca2c395397eaf0850fd02c3");
+                .isEqualTo("241903ac4ea9b746407516075275b694c42bb3a372c107df48ecd8b69d83fdae");
         assertThat(sha256(pricesJson(SEED + 1, 100)))
                 .isEqualTo("6b7ab3fd12d404cb4ca0b74ee3849aa4252a07cc5f502813e8a1f88cc0f80dab");
     }

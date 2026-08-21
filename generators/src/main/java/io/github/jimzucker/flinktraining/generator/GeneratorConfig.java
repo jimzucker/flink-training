@@ -15,7 +15,9 @@ public record GeneratorConfig(
         int pricesPerSecond,
         long seed,
         long startEpochMillis,
-        long durationSeconds) {
+        long durationSeconds,
+        long maxTrades,
+        long maxPrices) {
 
     public static final String DEFAULT_BOOTSTRAP = "localhost:9092";
     public static final String ORDERS_TOPIC = "orders";
@@ -56,7 +58,9 @@ public record GeneratorConfig(
                 envInt("PRICES_PER_SECOND", DEMO_PRICES_PER_SECOND),
                 envLong("SEED", DEFAULT_SEED),
                 envLong("START_EPOCH_MILLIS", WALL_CLOCK),
-                envLong("DURATION_SECONDS", 0L));
+                envLong("DURATION_SECONDS", 0L),
+                envLong("MAX_TRADES", 0L),
+                envLong("MAX_PRICES", 0L));
     }
 
     public long tradeIntervalMillis() {
@@ -75,6 +79,23 @@ public record GeneratorConfig(
     /** Zero means run until stopped. */
     public boolean runsForever() {
         return durationSeconds <= 0;
+    }
+
+    /**
+     * Whether a stream has emitted everything it was asked for.
+     *
+     * <p>Bounding a run by record count rather than by elapsed time is what makes
+     * a reproducibility demo exact: "emit 100 trades" always emits 100, whereas
+     * "run for ten seconds" lands on 100 or 101 depending on where the clock
+     * falls. Zero means unbounded.
+     */
+    public static boolean reached(long limit, long emitted) {
+        return limit > 0 && emitted >= limit;
+    }
+
+    /** Both streams have a record limit, so the run ends when they are met. */
+    public boolean isRecordBounded() {
+        return maxTrades > 0 && maxPrices > 0;
     }
 
     private static String env(String name, String fallback) {

@@ -72,7 +72,7 @@ class ExpectedNumbersTest {
     }
 
     @Test
-    @DisplayName("sink 4: 40 updates/sec over 160 unique account keys")
+    @DisplayName("sink 4: 40 updates/sec over 16 unique account keys")
     void sinkFour() {
         List<BlockTrade> trades = oneSecondOfTrades();
 
@@ -81,17 +81,17 @@ class ExpectedNumbersTest {
                 .as("10 trades x 4 allocations")
                 .isEqualTo(40L);
 
-        // 4 accounts x 10 sub-accounts x 4 symbols, over a run long enough to cover every triple.
+        // 4 accounts x 4 symbols, reached over a run long enough to cover every pair.
         BlockTradeGenerator longer = BlockTradeGenerator.replaying(SEED, START, 100L);
         Set<String> accountKeys = new HashSet<>();
-        for (int i = 0; i < 20_000; i++) {
+        for (int i = 0; i < 500; i++) {
             BlockTrade trade = longer.next();
             for (Allocation allocation : trade.allocations()) {
                 accountKeys.add(AccountKey.of(allocation, trade.symbol()));
             }
         }
         assertThat(accountKeys).hasSize(ReferenceData.ACCOUNT_KEY_COUNT);
-        assertThat(ReferenceData.ACCOUNT_KEY_COUNT).isEqualTo(160);
+        assertThat(ReferenceData.ACCOUNT_KEY_COUNT).isEqualTo(16);
     }
 
     @Test

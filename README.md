@@ -35,20 +35,15 @@ element in the diagram.
 | Trades | 10 / sec |
 | Prices | 1000 / sec |
 | Symbols | 4 unique |
-| Accounts | 4, each with 10 sub-accounts |
+| Accounts | 4 unique |
 | Allocations per trade | 4 (one per account) |
 
 | # | Sink | Rate | Unique keys |
 |---|---|---|---|
 | 3 | `positions-by-symbol` | 10 / sec | **4** |
-| 4 | `positions-by-account` | 40 / sec | **160** |
+| 4 | `positions-by-account` | 40 / sec | **16** |
 | 5 | `mv-by-symbol` | 4 / min | **4** |
-| 6 | `mv-by-account` | 160 / min | **160** |
-
-Account keys are 4 accounts x 10 sub-accounts x 4 symbols. Because allocations
-land on them at random, a run needs about 20 seconds to cover the whole space —
-at 10 seconds roughly 147 of the 160 have appeared, which is what coupon-collector
-predicts rather than a fault.
+| 6 | `mv-by-account` | 16 / min | **16** |
 
 Verified against the real topics by `scripts/verify-topics.sh`. Sinks 3–6 are
 produced by the jobs in later steps; what step 02 proves is the input side.
@@ -76,11 +71,22 @@ knob independently:
 | `PRICES_PER_SECOND` | `1000` | price rate — scale case 2 raises this |
 | `SEED` | `42` | fixes the content of the sequence |
 | `START_EPOCH_MILLIS` | unset | unset uses the wall clock, so latency is measurable; setting it replays from a fixed origin with byte-identical output |
+| `MAX_TRADES` | `0` | stop after N trades; `0` is unbounded |
+| `MAX_PRICES` | `0` | stop after N prices; `0` is unbounded |
 | `DURATION_SECONDS` | `0` | `0` runs until stopped |
 
 Event times are wall clock by default, which is what makes end-to-end latency —
-the age of a record when it reaches a sink — measurable at all. Replay mode
-exists for demonstrating byte-identical reproducibility.
+the age of a record when it reaches a sink — measurable at all.
+
+To demonstrate reproducibility, replay from a fixed origin and bound the run by
+**record count** rather than by time. Two such runs produce byte-identical
+topics; bounding by duration does not, because a run ends mid-cycle and lands on
+100 or 101 records depending on where the clock falls.
+
+```bash
+START_EPOCH_MILLIS=1700000000000 MAX_TRADES=100 MAX_PRICES=400 \
+  java -jar generators/target/generators.jar
+```
 
 ## Verifying the numbers
 
