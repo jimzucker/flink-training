@@ -83,7 +83,6 @@
   <rect class="op" x="410" y="298" width="160" height="54"/>
   <text class="oplbl" x="490" y="320">Split</text>
   <text class="oplbl" x="490" y="338">by allocation</text>
-  <text class="kv" x="490" y="372" fill="#666">BUY +qty  /  SELL -qty</text>
 
   <rect class="op" x="700" y="163" width="160" height="54"/>
   <text class="oplbl" x="780" y="185">Aggregate</text>
@@ -141,18 +140,19 @@
   <text class="kv" x="245" y="638" fill="#8a5f0a">K: symbol</text>
   <text class="kv" x="245" y="670" fill="#8a5f0a">V: Price</text>
 
-  <!-- orders -> split -->
-  <path class="edge" d="M 360 325 H 406"/>
+  <!-- orders -> aggregate by symbol, bypassing the split: a symbol's position
+       moves once per trade, so sink 3 emits at the trade rate -->
+  <path class="edge" d="M 358 308 H 392 V 190 H 696"/>
+  <text class="kv" x="520" y="164">K: symbol</text>
+  <text class="kv" x="520" y="178">V: BlockTrade</text>
 
-  <!-- split -> aggregate by symbol -->
-  <path class="edge" d="M 570 312 H 635 V 190 H 696"/>
-  <text class="kv" x="645" y="255">K: symbol</text>
-  <text class="kv" x="645" y="269">V: Allocation</text>
+  <!-- orders -> split -->
+  <path class="edge" d="M 360 336 H 406"/>
 
   <!-- split -> aggregate by account -->
-  <path class="edge" d="M 570 338 H 635 V 460 H 696"/>
-  <text class="kv" x="655" y="386">K: acct/sub/sym</text>
-  <text class="kv" x="655" y="400">V: Allocation</text>
+  <path class="edge" d="M 570 325 H 635 V 460 H 696"/>
+  <text class="kv" x="700" y="386">K: acct/sub/sym</text>
+  <text class="kv" x="700" y="400">V: Allocation</text>
 
   <!-- aggregates -> position topics -->
   <path class="edge" d="M 860 190 H 1038"/>
@@ -187,6 +187,6 @@
   <path class="edge" d="M 1650 460 H 1718"/>
 
   <!-- ============ legend ============ -->
-  <text class="leg"  x="30" y="742">K: partition key    V: value    acct/sub/sym = account / sub-account / symbol</text>
-  <text class="note" x="30" y="764">Sinks 3 and 4 emit on every change. Sinks 5 and 6 emit once per minute: position × last price at window close.</text>
+  <text class="leg"  x="30" y="742">K: partition key  ·  V: value  ·  acct/sub/sym = account / sub-account / symbol  ·  BUY +qty, SELL -qty</text>
+  <text class="note" x="30" y="764">Sink 3 emits once per trade; sink 4 once per allocation, four times the rate. Sinks 5 and 6 emit once per minute: position × last price at window close.</text>
 </svg>
