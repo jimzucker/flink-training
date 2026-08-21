@@ -12,7 +12,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 00 | Scaffold | — | `step-00-scaffold` | done |
 | 01 | Pipeline design | — | `step-01-pipeline-design` | done |
 | 02 | Generators | Kafka | `step-02-generators` | in review |
-| 03 | CI | Kafka | `step-03-ci` | in review |
+| 03 | CI | Kafka | `step-03-ci` | done |
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | not started |
 | 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | not started |
 | 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | not started |
@@ -400,4 +400,16 @@ when the demo runs on AWS.
 
 ### Review
 
-_Pending._
+Round 1: gate merges on CI, no nightly run.
+
+Gating only means something if a failing check can stop a merge, and a squash
+commit created locally and pushed straight to `main` has never been seen by CI —
+it is a new SHA with no checks against it. So from step 04 the merge goes
+through a pull request instead: open it from the step branch, let CI run, then
+squash-merge. The result is identical — one commit per step on a linear `main`,
+step branches kept — but the commit is now provably green before it lands rather
+than tested immediately afterwards.
+
+Full exchange: [`docs/reviews/step-03.md`](../docs/reviews/step-03.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-03`.
