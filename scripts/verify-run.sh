@@ -111,11 +111,21 @@ PRICES_PER_SECOND="$EMIT_PRICES_PER_SECOND" \
 # `want` means the read returns as soon as the target is reached rather than
 # waiting out a timeout.
 committed_count() {  # topic want
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
-      --bootstrap-server localhost:9092 --topic "$1" \
-      --isolation-level read_committed --from-beginning \
-      --max-messages "$2" --timeout-ms "${CATCHUP_TIMEOUT_MS:-90000}" 2>/dev/null \
-    | grep -c . || true
+  local want="$2"
+  for _ in $(seq 1 "${CATCHUP_ATTEMPTS:-40}"); do
+    local n
+    n=$(java -cp generators/target/generators.jar \
+          io.github.jimzucker.flinktraining.tools.TopicDump \
+          localhost:9092 target/catchup "$1" --deadline-seconds 30 2>/dev/null \
+        | awk '{print $2}')
+    n=${n:-0}
+    if [ "$n" -ge "$want" ]; then
+      echo "$n"
+      return 0
+    fi
+    sleep 3
+  done
+  echo "${n:-0}"
 }
 
 if [ "$WITH_PIPELINE" = "1" ]; then

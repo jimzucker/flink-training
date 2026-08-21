@@ -1,43 +1,37 @@
-# Maven
-target/
-pom.xml.versionsBackup
-dependency-reduced-pom.xml
 
-# Java
-*.class
-*.jar
 !.mvn/wrapper/maven-wrapper.jar
-hs_err_pid*.log
-replay_pid*.log
-
-# IDE
+.classpath
+.claude/
+.DS_Store
+.env
+.env.local
 .idea/
+.project
+.settings/
+.vscode/
+*.class
 *.iml
 *.ipr
 *.iws
-.vscode/
-.settings/
-.project
-.classpath
-
-# macOS / editors
-.DS_Store
+*.jar
+*.out
 *.swp
 *~
-
+# Flink / runtime state
+# IDE
+# Java
+# Local agent/tooling config
+# Local env overrides
+# macOS / editors
+# Maven
 # Office lock files
 ~$*
-
-# Flink / runtime state
 data/checkpoints/
 data/savepoints/
+dependency-reduced-pom.xml
+hs_err_pid*.log
 log/
 logs/
-*.out
-
-# Local env overrides
-.env
-.env.local
-
-# Local agent/tooling config
-.claude/
+pom.xml.versionsBackup
+replay_pid*.log
+target/

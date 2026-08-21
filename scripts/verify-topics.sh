@@ -25,18 +25,26 @@ if [ $((EXPECT_PRICES % SYMBOLS)) -ne 0 ]; then
   exit 2
 fi
 
-# Drains the whole topic. A prefix read with --max-messages is not safe: it
-# slices across partitions, and the slice is uneven even when production was not.
-#
-# read_committed matters: the position sinks write transactionally, so an
-# uncommitted read would show records belonging to transactions that may still
-# abort. Reading uncommitted here would make the verification claim more than is
-# actually durable.
+# Topics are dumped once, up front, by a reader that knows the end offsets and
+# reports when it could not reach them. A console consumer per topic could not
+# tell "empty" from "did not finish in time" -- both return zero records -- so a
+# slow machine produced failures that looked exactly like missing data.
+DUMP_DIR="${DUMP_DIR:-target/topic-dump}"
+
+dump_topics() {
+  local jar=generators/target/generators.jar
+  if [ ! -f "$jar" ]; then
+    echo "build first:  mvn package -DskipTests" >&2
+    exit 2
+  fi
+  rm -rf "$DUMP_DIR"
+  java -cp "$jar" io.github.jimzucker.flinktraining.tools.TopicDump \
+      "${BOOTSTRAP:-localhost:9092}" "$DUMP_DIR" "$@" \
+      --deadline-seconds "${DUMP_DEADLINE_SECONDS:-120}"
+}
+
 drain() {
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
-      --bootstrap-server localhost:9092 --topic "$1" \
-      --isolation-level read_committed \
-      --from-beginning --timeout-ms "${DRAIN_TIMEOUT_MS:-20000}" 2>/dev/null
+  cat "$DUMP_DIR/$1.jsonl" 2>/dev/null
 }
 
 check() {  # label expected actual
@@ -47,6 +55,20 @@ check() {  # label expected actual
     FAILURES=$((FAILURES + 1))
   fi
 }
+
+TOPICS="orders prices"
+[ "${CHECK_POSITIONS:-1}" = "1" ] && TOPICS="$TOPICS positions-by-symbol positions-by-account"
+[ "${CHECK_MARKET_VALUE:-0}" = "1" ] && TOPICS="$TOPICS mv-by-symbol mv-by-account"
+
+echo "reading topics"
+# shellcheck disable=SC2086
+if ! dump_topics $TOPICS; then
+  echo
+  echo "a topic could not be read to its end offsets; the checks below would be" >&2
+  echo "reporting a read failure as missing data, so stopping here instead." >&2
+  exit 4
+fi
+echo
 
 echo "orders  (expecting exactly ${EXPECT_ORDERS})"
 ORDERS=$(drain orders)
