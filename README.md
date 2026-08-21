@@ -1,5 +1,7 @@
 # flink-training
 
+[![CI](https://github.com/jimzucker/flink-training/actions/workflows/ci.yml/badge.svg)](https://github.com/jimzucker/flink-training/actions/workflows/ci.yml)
+
 Final project: calculate **positions** and **market value** from a stream of block
 trades, using Apache Flink and Kafka.
 
@@ -138,9 +140,24 @@ surfacing as a stack trace deep inside Flink.
 Flink 1.20.5 exists as a Docker image but is not yet published to Maven Central,
 so both are held at 1.20.4 to keep the cluster and the job jars identical.
 
+## Continuous integration
+
+Every push runs three jobs:
+
+| Job | What it proves |
+|---|---|
+| **Build and test** | compiles on Java 17 and runs all 23 tests, including the Testcontainers integration test that starts its own broker |
+| **Verify the expected numbers** | brings up Kafka, runs the generators bounded by record count, and asserts the expected-output table exactly |
+| **Shell scripts** | ShellCheck over the verification scripts, since they are part of how correctness is demonstrated |
+
+The second job is the one that matters: it is the same `verify-run.sh` used
+locally, so a change that quietly breaks the numbers fails the build rather than
+surfacing during a demo.
+
 ## Repository layout
 
 ```
+.github/workflows/     CI
 assignment.pptx        the requirements
 pom.xml                parent POM -- versions, dependency and plugin management
 common/                domain model and JSON encoding
