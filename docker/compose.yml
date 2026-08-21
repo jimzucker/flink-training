@@ -101,6 +101,8 @@ services:
       PARALLELISM: "${PARALLELISM:-2}"
       CHECKPOINT_INTERVAL_MS: "${CHECKPOINT_INTERVAL_MS:-5000}"
       BOOTSTRAP_SERVERS: "${BOOTSTRAP_SERVERS:-kafka:19092}"
+      WINDOW_MS: "${WINDOW_MS:-60000}"
+      IDLENESS_MS: "${IDLENESS_MS:-5000}"
     entrypoint:
       - /bin/bash
       - -c
@@ -108,6 +110,9 @@ services:
         set -e
         flink run -d -m jobmanager:8081 \
           -c io.github.jimzucker.flinktraining.job.PositionsJob \
+          /opt/jobs/jobs.jar
+        flink run -d -m jobmanager:8081 \
+          -c io.github.jimzucker.flinktraining.job.MarketValueJob \
           /opt/jobs/jobs.jar
         flink list -m jobmanager:8081
     restart: "no"

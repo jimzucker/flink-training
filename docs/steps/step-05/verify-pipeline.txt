@@ -1,0 +1,65 @@
+resetting topics: orders prices positions-by-symbol positions-by-account mv-by-symbol mv-by-account
+restarting the positions job
+  submitted
+emitting exactly 200 trades and 800 prices (seed 42, replay)
+06:38:55.351 INFO  GeneratorMain - starting generators: bootstrap=localhost:9092 trades/sec=100 prices/sec=400 seed=42 duration=forever time=replay from 1700000000000
+06:38:55.365 INFO  GeneratorMain - universe: 4 symbols, 4 accounts, 4 allocations per trade -> 4 symbol keys, 16 account keys
+06:38:57.530 INFO  GeneratorMain - generators stopped
+waiting for sinks 3 and 4 to commit
+  sink 3: 200/200   sink 4: 800/800
+waiting for sinks 5 and 6 (expecting 3 windows)
+  sink 5: 12/12   sink 6: 48/48
+
+orders  (expecting exactly 200)
+  record count                             200          OK
+  unique symbols (sink 3 keys)             4            OK
+  allocations (sink 4 rate)                800          OK
+  allocations sum to block qty             0            OK
+  unique account keys (sink 4)             16           OK
+  malformed account keys                   0            OK
+  sides present                            2            OK
+  duplicate tradeIds                       0            OK
+  missing tradeIds                         0            OK
+  buy/sell mix                               93 BUY  107 SELL 
+
+prices  (expecting exactly 800)
+  record count                             800          OK
+  unique symbols                           4            OK
+  prices per symbol                        200          OK
+  non-positive prices                      0            OK
+  prices off a quarter                     0            OK
+
+positions-by-symbol  (sink 3: one update per trade)
+  record count                             200          OK
+  unique keys                              4            OK
+  updateCount runs 1..n per key            0            OK
+
+positions-by-account (sink 4: one update per allocation)
+  record count                             800          OK
+  unique keys                              16           OK
+  malformed keys                           0            OK
+
+reconciliation  (final position per symbol, aggregated both ways)
+  AAPL        -4800
+  AMZN        -3600
+  GOOG         -800
+  MSFT         3600
+  symbol totals match account totals                    OK
+
+mv-by-symbol  (sink 5: one per key per window)
+  record count                             12           OK
+  unique keys                              4            OK
+  windows emitted                          3            OK
+  duplicate key/window pairs               0            OK
+  marketValue != quantity x price          0            OK
+  price at close differs from the price topic 0            OK
+
+mv-by-account  (sink 6: one per key per window)
+  record count                             48           OK
+  unique keys                              16           OK
+  windows emitted                          3            OK
+  duplicate key/window pairs               0            OK
+  marketValue != quantity x price          0            OK
+  price at close differs from the price topic 0            OK
+
+all checks passed, with no tolerances

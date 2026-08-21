@@ -16,6 +16,7 @@ EXPECT_ORDERS="${EXPECT_ORDERS:-100}"
 EXPECT_PRICES="${EXPECT_PRICES:-400}"
 SYMBOLS="${SYMBOLS:-4}"
 ACCOUNT_KEYS="${ACCOUNT_KEYS:-16}"
+WINDOWS="${WINDOWS:-3}"
 FAILURES=0
 
 if [ $((EXPECT_PRICES % SYMBOLS)) -ne 0 ]; then
@@ -111,6 +112,45 @@ if [ "${CHECK_POSITIONS:-1}" = "1" ]; then
                | awk '{last[$2]=$4; sym[$2]=$1} END {for (k in last) t[sym[k]]+=last[k]; for (s in t) printf "%s %d\n", s, t[s]}' | sort)
   echo "$BY_SYMBOL" | while read -r sym qty; do printf "  %-6s %10s\n" "$sym" "$qty"; done
   check "symbol totals match account totals" "" "$(diff <(echo "$BY_SYMBOL") <(echo "$BY_ACCOUNT") | grep -c . | sed 's/^0$//')"
+fi
+
+# ---------------------------------------------------------------- sinks 5 and 6
+if [ "${CHECK_MARKET_VALUE:-0}" = "1" ]; then
+  PRICES_JSON=$(drain prices)
+
+  check_market_value() {  # topic label keys
+    local topic="$1" label="$2" keys="$3"
+    echo
+    echo "${topic}  (${label}: one per key per window)"
+    local MV
+    MV=$(drain "$topic")
+
+    check "record count" "$((keys * WINDOWS))" "$(echo "$MV" | grep -c .)"
+    check "unique keys"  "$keys" "$(echo "$MV" | jq -r '.key' | sort -u | grep -c .)"
+    check "windows emitted" "$WINDOWS" "$(echo "$MV" | jq -r '.windowEnd' | sort -u | grep -c .)"
+    # Exactly one emission per key per window: a key emitting twice, or skipping a
+    # window, is invisible in a total count.
+    check "duplicate key/window pairs" "0" \
+          "$(echo "$MV" | jq -r '"\(.key) \(.windowEnd)"' | sort | uniq -d | grep -c .)"
+    check "marketValue != quantity x price" "0" \
+          "$(echo "$MV" | jq -r 'select((.quantity * (.price|tonumber)) != (.marketValue|tonumber)) | .key' | grep -c .)"
+
+    # The strongest check available: the price each window closed against,
+    # recomputed independently from the raw price topic.
+    local bad=0
+    for b in $(echo "$MV" | jq -r '.windowEnd' | sort -u); do
+      while read -r sym price; do
+        want=$(echo "$PRICES_JSON" | jq -r --arg s "$sym" --argjson b "$b" \
+               'select(.symbol==$s and .eventTime < $b) | "\(.eventTime) \(.price)"' \
+               | sort -n | tail -1 | awk '{print $2}')
+        [ "$want" = "$price" ] || bad=$((bad + 1))
+      done < <(echo "$MV" | jq -r --argjson b "$b" 'select(.windowEnd==$b) | "\(.symbol) \(.price)"' | sort -u)
+    done
+    check "price at close differs from the price topic" "0" "$bad"
+  }
+
+  check_market_value mv-by-symbol  "sink 5" "$SYMBOLS"
+  check_market_value mv-by-account "sink 6" "$ACCOUNT_KEYS"
 fi
 
 echo

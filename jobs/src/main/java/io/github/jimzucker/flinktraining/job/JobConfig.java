@@ -6,16 +6,34 @@ public record JobConfig(
         String ordersTopic,
         String positionsBySymbolTopic,
         String positionsByAccountTopic,
+        String pricesTopic,
+        String mvBySymbolTopic,
+        String mvByAccountTopic,
         String consumerGroup,
         int parallelism,
         long checkpointIntervalMillis,
         long transactionTimeoutMillis,
+        long windowMillis,
+        long idlenessMillis,
         long logEvery) {
 
     public static final String DEFAULT_BOOTSTRAP = "kafka:19092";
     public static final String ORDERS = "orders";
     public static final String POSITIONS_BY_SYMBOL = "positions-by-symbol";
     public static final String POSITIONS_BY_ACCOUNT = "positions-by-account";
+    public static final String PRICES = "prices";
+    public static final String MV_BY_SYMBOL = "mv-by-symbol";
+    public static final String MV_BY_ACCOUNT = "mv-by-account";
+
+    /** One minute, as the requirements specify. */
+    public static final long DEFAULT_WINDOW_MS = 60_000L;
+
+    /**
+     * How long an input may be silent before it stops holding the watermark
+     * back. Without this a quiet partition stalls the windows and the market
+     * value sinks go silent while every record that did arrive was in order.
+     */
+    public static final long DEFAULT_IDLENESS_MS = 5_000L;
 
     /**
      * How often the sinks become visible. Under exactly-once a record is not
@@ -40,10 +58,15 @@ public record JobConfig(
                 env("ORDERS_TOPIC", ORDERS),
                 env("POSITIONS_BY_SYMBOL_TOPIC", POSITIONS_BY_SYMBOL),
                 env("POSITIONS_BY_ACCOUNT_TOPIC", POSITIONS_BY_ACCOUNT),
+                env("PRICES_TOPIC", PRICES),
+                env("MV_BY_SYMBOL_TOPIC", MV_BY_SYMBOL),
+                env("MV_BY_ACCOUNT_TOPIC", MV_BY_ACCOUNT),
                 env("CONSUMER_GROUP", "positions-job"),
                 envInt("PARALLELISM", DEFAULT_PARALLELISM),
                 envLong("CHECKPOINT_INTERVAL_MS", DEFAULT_CHECKPOINT_INTERVAL_MS),
                 envLong("TRANSACTION_TIMEOUT_MS", DEFAULT_TRANSACTION_TIMEOUT_MS),
+                envLong("WINDOW_MS", DEFAULT_WINDOW_MS),
+                envLong("IDLENESS_MS", DEFAULT_IDLENESS_MS),
                 envLong("LOG_EVERY", 50L));
     }
 
