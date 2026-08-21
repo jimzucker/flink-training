@@ -33,9 +33,10 @@ element in the diagram.
 | Parameter | Input |
 |---|---|
 | Trades | 10 / sec |
+| Prices | 1000 / sec |
 | Symbols | 4 unique |
 | Accounts | 4 unique |
-| Allocations per trade | 4 |
+| Allocations per trade | 4 (one per account) |
 
 | # | Sink | Rate | Unique keys |
 |---|---|---|---|
@@ -44,11 +45,48 @@ element in the diagram.
 | 5 | `mv-by-symbol` | 4 / min | **4** |
 | 6 | `mv-by-account` | 16 / min | **16** |
 
-_Verified end to end in step 7._
+Verified against the real topics by `scripts/verify-topics.sh`. Sinks 3–6 are
+produced by the jobs in later steps; what step 02 proves is the input side.
 
-## Quick start
+## Running it locally
 
-_Added in step 6 — a single `docker compose up`._
+Full one-command start arrives in step 08. Today the stack is Kafka, and the
+generators run on the host.
+
+```bash
+source scripts/env.sh                          # Java 17
+docker compose -f docker/compose.yml up -d     # Kafka + the six topics
+mvn package -DskipTests
+DURATION_SECONDS=10 java -jar generators/target/generators.jar
+./scripts/verify-topics.sh                     # checks the numbers above
+```
+
+Rates and seed come from the environment, which is how the scale cases turn each
+knob independently:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `BOOTSTRAP_SERVERS` | `localhost:9092` | broker |
+| `TRADES_PER_SECOND` | `10` | order rate — scale case 1 raises this to 1000 |
+| `PRICES_PER_SECOND` | `1000` | price rate — scale case 2 raises this |
+| `SEED` | `42` | fixes the content of the sequence |
+| `START_EPOCH_MILLIS` | unset | unset uses the wall clock, so latency is measurable; setting it replays from a fixed origin with byte-identical output |
+| `MAX_TRADES` | `0` | stop after N trades; `0` is unbounded |
+| `MAX_PRICES` | `0` | stop after N prices; `0` is unbounded |
+| `DURATION_SECONDS` | `0` | `0` runs until stopped |
+
+Event times are wall clock by default, which is what makes end-to-end latency —
+the age of a record when it reaches a sink — measurable at all.
+
+To demonstrate reproducibility, replay from a fixed origin and bound the run by
+**record count** rather than by time. Two such runs produce byte-identical
+topics; bounding by duration does not, because a run ends mid-cycle and lands on
+100 or 101 records depending on where the clock falls.
+
+```bash
+START_EPOCH_MILLIS=1700000000000 MAX_TRADES=100 MAX_PRICES=400 \
+  java -jar generators/target/generators.jar
+```
 
 ## Verifying the numbers
 
@@ -94,8 +132,10 @@ so both are held at 1.20.4 to keep the cluster and the job jars identical.
 
 ```
 assignment.pptx        the requirements
+pom.xml                parent POM -- versions, dependency and plugin management
+common/                domain model and JSON encoding
+generators/            block trade and price generators
 docker/                local stack: Kafka, Flink, Prometheus, Grafana
-pom.xml                parent POM — versions, dependency and plugin management
 scripts/               helper scripts
 docs/design/           pipeline diagram and design notes
 docs/steps/            per-step evidence: logs, metrics, screenshots

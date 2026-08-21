@@ -1,0 +1,19 @@
+orders  (10/sec for 10s)
+  record count                               100 (nominal 100, within 5%)
+  unique symbols (sink 3 keys)               4          OK
+  allocations = 4 x orders                   400        OK
+  allocations sum to block qty               0          OK
+  sides present                              2          OK
+  duplicate tradeIds                         0          OK
+  account keys outside universe              0          OK
+  unique account keys (sink 4)               16         OK
+  buy/sell mix                                 43 BUY   57 SELL 
+
+prices  (1000/sec for 10s)
+  record count                               10005 (>= 9500, within 5% of nominal)
+  unique symbols                             4          OK
+  round-robin spread (max-min)               1 (<= 1, a run ends mid-cycle)
+  non-positive prices                        0          OK
+  prices off a quarter                       0          OK
+
+all checks passed

@@ -11,7 +11,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 |---|---|---|---|---|
 | 00 | Scaffold | — | `step-00-scaffold` | done |
 | 01 | Pipeline design | — | `step-01-pipeline-design` | done |
-| 02 | Generators | Kafka | `step-02-generators` | not started |
+| 02 | Generators | Kafka | `step-02-generators` | in review |
 | 03 | CI | Kafka | `step-03-ci` | not started |
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | not started |
 | 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | not started |
@@ -205,3 +205,130 @@ Also confirmed: keys with no activity still emit (which is what makes the counts
 steady rather than activity-dependent), and every key starts flat at zero.
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-01`.
+
+---
+
+## Step 02 — Generators
+
+- **Branch:** `step-02-generators`
+- **Prompt:** Deterministic block trade and price generators publishing to real
+  Kafka in Docker, at the rates the expected-output table is written against.
+
+### Approach
+
+- **The sequence is pure; the pacing is not.** `BlockTradeGenerator` and
+  `PriceGenerator` are seeded iterators with no clock and no Kafka in them. Event
+  times come from a counter, so the data a seed produces is identical whether a
+  test pulls it as fast as it can or a publisher paces it at ten a second. That
+  is what makes the demo randomised *and* exactly reproducible, and it means a
+  slow consumer can never change the results.
+- **Two threads, two rates.** Orders and prices are paced independently, because
+  the assignment's scale cases turn one knob without the other.
+- **A pacer that does not drift.** The target time for record *n* is computed
+  from the start, not from the previous record, so a run does not fall
+  progressively behind its nominal rate.
+- **BigDecimal for price, walking in quarters.** Market value has to be
+  explainable to the decimal and binary floating point cannot hold most
+  two-decimal prices exactly. Quarters keep the arithmetic checkable by eye.
+- **Every symbol priced on every tick.** No symbol can go quiet on the price
+  side, which is one half of the idleness problem identified in step 01.
+- **Explicit topic creation, auto-create off.** Partition count is a design
+  decision, not a side effect of whoever produces first.
+- **gzip rather than lz4.** The native compression codecs make Java 17 print a
+  restricted-method warning on every start. The demo is given live from a
+  console, so a clean start is worth more than the compression difference at
+  these volumes.
+
+### Commands
+
+```bash
+docker compose -f docker/compose.yml up -d
+mvn verify                                     # 17 unit + 2 integration
+DURATION_SECONDS=10 java -jar generators/target/generators.jar
+./scripts/verify-topics.sh
+```
+
+### Results
+
+19 tests pass. `mvn verify` is green.
+
+| Suite | Tests | What it protects |
+|---|---|---|
+| `BlockTradeGeneratorTest` | 7 | allocations sum to the block, split covers every account, both sides produced, sign follows side, event time monotonic, ids unique and sorted |
+| `ExpectedNumbersTest` | 4 | the assignment's table as assertions — 10/sec, 40 allocations, 4 symbol keys, 16 account keys |
+| `DeterminismTest` | 6 | byte-identical across runs, different seed differs, sequence pinned by hash, prices exact quarters |
+| `KafkaPublisherIT` | 2 | round-trip through a real broker; **every symbol occupies exactly one partition** |
+
+Against the running stack, 10 seconds at the demo rate:
+
+```
+orders   record count 100 · symbols 4 · allocations 400 · account keys 16
+         allocations-sum-mismatches 0 · sides 2 · duplicate ids 0
+         mix 42 BUY / 58 SELL
+prices   record count 40 · symbols 4 · non-positive 0 · off-quarter 0
+all checks passed
+```
+
+Reproducibility measured on the wire rather than asserted in-process — two
+separate 10-second runs, consumed back from Kafka and hashed:
+
+```
+run 1  213d847f804ed9d0a057471c87da453d0ae6cea0e06ca7824e13002b43205d5c
+run 2  213d847f804ed9d0a057471c87da453d0ae6cea0e06ca7824e13002b43205d5c
+```
+
+Evidence: [`docs/steps/step-02/`](../docs/steps/step-02/)
+
+### Verification
+
+The integration test earns its place by proving the claim step 01's review
+turned on: because prices are keyed by symbol, **each symbol lands on exactly one
+partition**, so its prices cannot be consumed out of order. That is asserted
+against a real broker, not argued from the documentation.
+
+`ExpectedNumbersTest` encodes the assignment's own table, so if a later change
+breaks the 4 / 16 key counts the build fails rather than the dashboard quietly
+showing the wrong number during a demo.
+
+### Review
+
+Round 1 asked for prices at 1000/sec, ten sub-accounts per account, and
+wall-clock event times so latency can be measured from creation to sink.
+
+- **Prices restructured to round-robin**, one per call rather than a burst of
+  every symbol, so the configured rate is a plain count of prices per second.
+  Verified even at 2501 per symbol out of 10004, spread 0.
+- **Ten sub-accounts per account** — reverted in round 2 as a typo. Account keys
+  stay at 4 x 4 = **16**, matching the assignment. Removing the sub-account draw
+  restored the original random sequence exactly: the pinned trades hash returned
+  to `241903ac...`, the value it held before the change.
+- **Event time now comes from a `LongSupplier`.** `live()` uses the wall clock
+  and is the default; `replaying()` uses a counter for byte-identical runs.
+  Reproducibility splits in two as a result: the seed fixes the *content* of the
+  sequence in both modes, and replay exists for when identical bytes must be
+  shown. Asserted rather than assumed.
+- **The pinned sequence hash failed on purpose** in both directions — once when
+  the sub-account draw was added, once when it was reverted — and landed back on
+  its original value. The guard did exactly what it exists for.
+- **Runs are now bounded by record count, not duration.** Proving reproducibility
+  through the broker showed two replay runs still differing: a six-second run
+  emits 60 or 61 trades depending on where the clock falls. Every shared record
+  was byte-identical, but the boundary was not. `MAX_TRADES` and `MAX_PRICES`
+  make it exact, and a record-bounded run finishes as soon as its limits are met.
+- **Two bugs found in the verification script itself**, both false alarms rather
+  than defects in the generators: a fixed-size prefix read slices unevenly
+  across partitions and made an exactly-even round-robin look uneven, and a run
+  ends mid-cycle so the record count is nominal ±1. Rates are now checked with a
+  tolerance while the invariants stay exact.
+
+Full exchange: [`docs/reviews/step-02.md`](../docs/reviews/step-02.md)
+
+Round 2 reverted the sub-account expansion as a typo; the 1000/sec price rate,
+the round-robin generator and wall-clock event times all stand.
+
+Two record-bounded replay runs now produce byte-identical topics, and the orders
+hash equals the value `DeterminismTest` pins in-process — so the sequence the
+unit test guards and the bytes that reach the broker are provably the same
+thing.
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-02`.

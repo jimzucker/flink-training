@@ -1,0 +1,48 @@
+# Local stack. Grown one service per step: Kafka here, Flink at step 04,
+# Prometheus and Grafana at step 06.
+name: flink-training
+
+services:
+  kafka:
+    image: apache/kafka:3.9.2
+    container_name: ft-kafka
+    ports:
+      - "9092:9092"          # host clients
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: INTERNAL://:19092,CONTROLLER://:9093,HOST://:9092
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:19092,HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,INTERNAL:PLAINTEXT,HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      # Topics are created explicitly so partition counts are a design decision,
+      # not a side effect of whoever produces first.
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      CLUSTER_ID: ZmxpbmstdHJhaW5pbmctMDE
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:9092 >/dev/null 2>&1"]
+      interval: 5s
+      timeout: 10s
+      retries: 20
+      start_period: 10s
+
+  # Runs once, creates the six topics from the design, then exits.
+  topics:
+    image: apache/kafka:3.9.2
+    container_name: ft-topics
+    depends_on:
+      kafka:
+        condition: service_healthy
+    entrypoint: ["/bin/bash", "/scripts/create-topics.sh"]
+    environment:
+      BOOTSTRAP: kafka:19092
+      PARTITIONS: "4"
+    volumes:
+      - ./scripts:/scripts:ro
+    restart: "no"

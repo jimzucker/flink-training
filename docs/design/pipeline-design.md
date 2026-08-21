@@ -82,6 +82,7 @@ element above.
 | Parameter | Input |
 |---|---|
 | Trades | 10 / sec |
+| Prices | 1000 / sec |
 | Symbols | 4 unique |
 | Accounts | 4 unique |
 | Allocations per trade | 4 |
