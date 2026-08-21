@@ -410,6 +410,13 @@ squash-merge. The result is identical — one commit per step on a linear `main`
 step branches kept — but the commit is now provably green before it lands rather
 than tested immediately afterwards.
 
+Branch protection is on with `enforce_admins: true`, which matters — without it
+the repository owner bypasses the rule, and the owner is everyone who merges
+here. Confirmed by attempting a direct push rather than trusting the settings
+page: GitHub rejected it with *3 of 3 required status checks are expected*.
+`required_linear_history` is on too, enforcing at the server what the workflow
+has been doing by hand since step 00.
+
 Full exchange: [`docs/reviews/step-03.md`](../docs/reviews/step-03.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-03`.
