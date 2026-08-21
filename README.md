@@ -57,8 +57,18 @@ generators run on the host.
 source scripts/env.sh                          # Java 17
 docker compose -f docker/compose.yml up -d     # Kafka + the six topics
 mvn package -DskipTests
-DURATION_SECONDS=10 java -jar generators/target/generators.jar
-./scripts/verify-topics.sh                     # checks the numbers above
+./scripts/verify-run.sh                        # exact run, then check the numbers
+```
+
+`verify-run.sh` resets the input topics, emits an exact number of records in
+replay mode, and asserts the expected-output table against what landed. Every
+check is exact — there are no tolerances, because the run is bounded by record
+count rather than by elapsed time. Two invocations produce byte-identical topics.
+
+To watch it run continuously instead:
+
+```bash
+java -jar generators/target/generators.jar     # wall clock, until stopped
 ```
 
 Rates and seed come from the environment, which is how the scale cases turn each

@@ -1,19 +1,31 @@
 #!/usr/bin/env bash
-# Reads what is actually on the topics and checks it against the expected-output
-# table. Reports observed vs expected rather than just pass/fail, so a mismatch
-# says what it saw.
+# Checks what is actually on the topics against the expected-output table.
+#
+# Every check here is exact. That is only possible because the run being verified
+# is bounded by record count rather than by elapsed time: "emit 100 trades"
+# always emits 100, whereas "run for ten seconds" lands on 100 or 101 depending
+# on where the stop falls between pacer ticks. Verifying a duration-bounded run
+# would force a tolerance on every count, and a tolerance is a place a real
+# fault can hide.
+#
+# Use scripts/verify-run.sh to produce a run this can verify.
 set -uo pipefail
 
 CONTAINER="${CONTAINER:-ft-kafka}"
-SECONDS_RUN="${SECONDS_RUN:-10}"
-TRADES_PER_SECOND="${TRADES_PER_SECOND:-10}"
-PRICES_PER_SECOND="${PRICES_PER_SECOND:-1000}"
-ACCOUNT_KEY_UNIVERSE="${ACCOUNT_KEY_UNIVERSE:-16}"
+EXPECT_ORDERS="${EXPECT_ORDERS:-100}"
+EXPECT_PRICES="${EXPECT_PRICES:-400}"
+SYMBOLS="${SYMBOLS:-4}"
+ACCOUNT_KEYS="${ACCOUNT_KEYS:-16}"
 FAILURES=0
 
-# Drains the whole topic. A prefix read with --max-messages is not safe for
-# per-key balance checks: it slices across partitions and the slice is uneven
-# even when the production was not.
+if [ $((EXPECT_PRICES % SYMBOLS)) -ne 0 ]; then
+  echo "EXPECT_PRICES ($EXPECT_PRICES) must be a multiple of SYMBOLS ($SYMBOLS)," >&2
+  echo "or the round-robin ends mid-cycle and per-symbol counts cannot be exact." >&2
+  exit 2
+fi
+
+# Drains the whole topic. A prefix read with --max-messages is not safe: it
+# slices across partitions, and the slice is uneven even when production was not.
 drain() {
   docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
       --bootstrap-server localhost:9092 --topic "$1" \
@@ -22,73 +34,49 @@ drain() {
 
 check() {  # label expected actual
   if [ "$2" = "$3" ]; then
-    printf "  %-42s %-10s OK\n" "$1" "$3"
+    printf "  %-40s %-12s OK\n" "$1" "$3"
   else
-    printf "  %-42s %-10s EXPECTED %s\n" "$1" "$3" "$2"
+    printf "  %-40s %-12s EXPECTED %s\n" "$1" "$3" "$2"
     FAILURES=$((FAILURES + 1))
   fi
 }
 
-note() { printf "  %-42s %s\n" "$1" "$2"; }
-
-ORDERS_EXPECTED=$((TRADES_PER_SECOND * SECONDS_RUN))
-echo "orders  (${TRADES_PER_SECOND}/sec for ${SECONDS_RUN}s)"
+echo "orders  (expecting exactly ${EXPECT_ORDERS})"
 ORDERS=$(drain orders)
 
-ORDER_COUNT=$(echo "$ORDERS" | grep -c .)
-# A run ends mid-cycle, so the count lands within a record or two of nominal.
-# The rate is approximate; the invariants below are not.
-ORDERS_LOW=$(( ORDERS_EXPECTED * 95 / 100 ))
-if [ "$ORDER_COUNT" -ge "$ORDERS_LOW" ]; then
-  note "record count" "$ORDER_COUNT (nominal ${ORDERS_EXPECTED}, within 5%)"
-else
-  check "record count" ">= $ORDERS_LOW" "$ORDER_COUNT"
-fi
-check "unique symbols (sink 3 keys)"  "4"  "$(echo "$ORDERS" | jq -r '.symbol' | sort -u | grep -c .)"
-# Exact: sink 4 carries four allocations for every order, whatever the count was.
-check "allocations = 4 x orders"      "$((ORDER_COUNT * 4))" \
+check "record count"                 "$EXPECT_ORDERS" "$(echo "$ORDERS" | grep -c .)"
+check "unique symbols (sink 3 keys)" "$SYMBOLS" "$(echo "$ORDERS" | jq -r '.symbol' | sort -u | grep -c .)"
+check "allocations (sink 4 rate)"    "$((EXPECT_ORDERS * 4))" \
       "$(echo "$ORDERS" | jq -r '.allocations | length' | paste -sd+ - | bc)"
-check "allocations sum to block qty"  "0" \
+check "allocations sum to block qty" "0" \
       "$(echo "$ORDERS" | jq -r 'select(([.allocations[].quantity] | add) != .quantity) | .tradeId' | grep -c .)"
-check "sides present"                 "2"  "$(echo "$ORDERS" | jq -r '.side' | sort -u | grep -c .)"
-check "duplicate tradeIds"            "0"  "$(echo "$ORDERS" | jq -r '.tradeId' | sort | uniq -d | grep -c .)"
-
-ACCOUNT_KEYS=$(echo "$ORDERS" | jq -r '.symbol as $s | .allocations[] | "\(.account)/\(.subAccount)/\($s)"' | sort -u)
-OBSERVED_KEYS=$(echo "$ACCOUNT_KEYS" | grep -c .)
-# Every key must be inside the declared universe: 4 accounts x 4 symbols.
-check "account keys outside universe" "0" \
-      "$(echo "$ACCOUNT_KEYS" | grep -vcE '^ACC[1-4]/SUB1/(AAPL|MSFT|GOOG|AMZN)$')"
-check "unique account keys (sink 4)"   "$ACCOUNT_KEY_UNIVERSE" "$OBSERVED_KEYS"
-note "buy/sell mix" "$(echo "$ORDERS" | jq -r '.side' | sort | uniq -c | tr '\n' ' ')"
+check "unique account keys (sink 4)" "$ACCOUNT_KEYS" \
+      "$(echo "$ORDERS" | jq -r '.symbol as $s | .allocations[] | "\(.account)/\(.subAccount)/\($s)"' | sort -u | grep -c .)"
+check "malformed account keys"       "0" \
+      "$(echo "$ORDERS" | jq -r '.symbol as $s | .allocations[] | "\(.account)/\(.subAccount)/\($s)"' \
+         | grep -vcE '^ACC[1-4]/SUB1/(AAPL|MSFT|GOOG|AMZN)$')"
+check "sides present"                "2"  "$(echo "$ORDERS" | jq -r '.side' | sort -u | grep -c .)"
+check "duplicate tradeIds"           "0"  "$(echo "$ORDERS" | jq -r '.tradeId' | sort | uniq -d | grep -c .)"
+check "missing tradeIds"             "0" \
+      "$(comm -23 <(seq 0 $((EXPECT_ORDERS - 1)) | xargs -I{} printf 'T%09d\n' {} | sort) \
+                  <(echo "$ORDERS" | jq -r '.tradeId' | sort) | grep -c .)"
+printf "  %-40s %s\n" "buy/sell mix" "$(echo "$ORDERS" | jq -r '.side' | sort | uniq -c | tr '\n' ' ')"
 
 echo
-echo "prices  (${PRICES_PER_SECOND}/sec for ${SECONDS_RUN}s)"
+echo "prices  (expecting exactly ${EXPECT_PRICES})"
 PRICES=$(drain prices)
-PRICE_COUNT=$(echo "$PRICES" | grep -c .)
 
-# The pacer emits on a schedule, so a run yields the nominal count give or take
-# a cycle. Anything further off means the rate was not met.
-LOW=$(( PRICES_PER_SECOND * SECONDS_RUN * 95 / 100 ))
-if [ "$PRICE_COUNT" -ge "$LOW" ]; then
-  note "record count" "$PRICE_COUNT (>= ${LOW}, within 5% of nominal)"
-else
-  check "record count" ">= $LOW" "$PRICE_COUNT"
-fi
-check "unique symbols"                "4"  "$(echo "$PRICES" | jq -r '.symbol' | sort -u | grep -c .)"
-# Round-robin means every symbol is priced the same number of times, except for
-# the partial cycle a run ends on: at most one symbol can be one ahead.
-SPREAD=$(echo "$PRICES" | jq -r '.symbol' | sort | uniq -c | awk '{print $1}' | sort -n | awk 'NR==1{min=$1} {max=$1} END {print max-min}')
-if [ "$SPREAD" -le 1 ]; then
-  note "round-robin spread (max-min)" "$SPREAD (<= 1, a run ends mid-cycle)"
-else
-  check "round-robin spread (max-min)" "<= 1" "$SPREAD"
-fi
-check "non-positive prices"           "0"  "$(echo "$PRICES" | jq -r 'select(.price <= 0) | .symbol' | grep -c .)"
-check "prices off a quarter"          "0"  "$(echo "$PRICES" | jq -r 'select((.price * 4 | floor) != (.price * 4)) | .symbol' | grep -c .)"
+check "record count"                 "$EXPECT_PRICES" "$(echo "$PRICES" | grep -c .)"
+check "unique symbols"               "$SYMBOLS" "$(echo "$PRICES" | jq -r '.symbol' | sort -u | grep -c .)"
+# Exact: a whole number of round-robin cycles gives every symbol the same count.
+check "prices per symbol"            "$((EXPECT_PRICES / SYMBOLS))" \
+      "$(echo "$PRICES" | jq -r '.symbol' | sort | uniq -c | awk '{print $1}' | sort -u | paste -sd, -)"
+check "non-positive prices"          "0"  "$(echo "$PRICES" | jq -r 'select(.price <= 0) | .symbol' | grep -c .)"
+check "prices off a quarter"         "0"  "$(echo "$PRICES" | jq -r 'select((.price * 4 | floor) != (.price * 4)) | .symbol' | grep -c .)"
 
 echo
 if [ "$FAILURES" -eq 0 ]; then
-  echo "all checks passed"
+  echo "all checks passed, with no tolerances"
 else
   echo "$FAILURES check(s) failed"
 fi
