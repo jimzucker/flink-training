@@ -1,19 +1,27 @@
-orders  (10/sec for 10s)
-  record count                               100 (nominal 100, within 5%)
-  unique symbols (sink 3 keys)               4          OK
-  allocations = 4 x orders                   400        OK
-  allocations sum to block qty               0          OK
-  sides present                              2          OK
-  duplicate tradeIds                         0          OK
-  account keys outside universe              0          OK
-  unique account keys (sink 4)               16         OK
-  buy/sell mix                                 43 BUY   57 SELL 
+resetting input topics
+emitting exactly 100 trades and 400 prices (seed 42, replay)
+21:18:26.035 INFO  GeneratorMain - starting generators: bootstrap=localhost:9092 trades/sec=10 prices/sec=1000 seed=42 duration=forever time=replay from 1700000000000
+21:18:26.052 INFO  GeneratorMain - universe: 4 symbols, 4 accounts, 4 allocations per trade -> 4 symbol keys, 16 account keys
+21:18:36.197 INFO  GeneratorMain - generators stopped
 
-prices  (1000/sec for 10s)
-  record count                               10005 (>= 9500, within 5% of nominal)
-  unique symbols                             4          OK
-  round-robin spread (max-min)               1 (<= 1, a run ends mid-cycle)
-  non-positive prices                        0          OK
-  prices off a quarter                       0          OK
+orders  (expecting exactly 100)
+  record count                             100          OK
+  unique symbols (sink 3 keys)             4            OK
+  allocations (sink 4 rate)                400          OK
+  allocations sum to block qty             0            OK
+  unique account keys (sink 4)             16           OK
+  malformed account keys                   0            OK
+  sides present                            2            OK
+  duplicate tradeIds                       0            OK
+  missing tradeIds                         0            OK
+  buy/sell mix                               43 BUY   57 SELL 
 
-all checks passed
+prices  (expecting exactly 400)
+  record count                             400          OK
+  unique symbols                           4            OK
+  prices per symbol                        100          OK
+  non-positive prices                      0            OK
+  prices off a quarter                     0            OK
+
+all checks passed, with no tolerances
+

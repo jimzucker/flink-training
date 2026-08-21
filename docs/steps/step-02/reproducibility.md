@@ -44,17 +44,38 @@ The orders hash is the same value `DeterminismTest` pins in-process, so the
 sequence the unit test guards and the bytes that reach the broker are provably
 the same thing.
 
-## Rates are approximate; invariants are not
+## Removing the tolerance entirely
 
-A run ends mid-cycle, so counts land within a record or two of nominal and one
-symbol can be one price ahead of the others. Those are properties of stopping a
-paced stream, not defects. The verification script checks rates with a tolerance
-and the invariants exactly:
+An earlier version of the verification checked counts with a 5% tolerance. The
+tolerance was a symptom, not a requirement: it existed only because the run was
+bounded by elapsed time while emission is paced, so a stop landing between pacer
+ticks yielded 100 or 101 records, and a run ending mid-cycle left one symbol a
+price ahead.
 
-| Checked exactly | Checked with tolerance |
-|---|---|
-| `allocations = 4 x orders` | record count vs nominal rate |
-| allocations sum to block quantity | round-robin spread (<= 1) |
-| 4 symbol keys, 16 account keys | |
-| no duplicate trade ids, both sides present | |
-| prices positive and on exact quarters | |
+Three causes, all removed rather than tolerated:
+
+| Slop | Cause | Fix |
+|---|---|---|
+| count 100 or 101 | stop falls between pacer ticks | bound the run by record count |
+| one symbol one price ahead | run ends mid round-robin cycle | make the price count a multiple of the symbol count |
+| per-symbol counts look uneven | `--max-messages` slices across partitions | drain the whole topic |
+
+A fourth surfaced while testing the fix: **topic deletion in Kafka is
+asynchronous**, so recreating too quickly leaves the previous run's records in
+place. That turned an exact count check into a race, which is worse than a
+tolerance because it fails for the wrong reason. `verify-run.sh` now waits for
+deletion to complete and aborts rather than verifying stale data.
+
+Every check is now exact, with no tolerances anywhere:
+
+```
+orders   record count 100 · symbols 4 · allocations 400 · account keys 16
+         malformed keys 0 · sides 2 · duplicate ids 0 · missing ids 0
+prices   record count 400 · symbols 4 · prices per symbol 100
+         non-positive 0 · off-quarter 0
+all checks passed, with no tolerances
+```
+
+`missing tradeIds` is worth noting: it checks the full expected id set
+`T000000000`–`T000000099` is present, which a count alone would not catch if a
+record were both dropped and duplicated.
