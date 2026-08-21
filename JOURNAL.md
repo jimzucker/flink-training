@@ -12,7 +12,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 00 | Scaffold | — | `step-00-scaffold` | done |
 | 01 | Pipeline design | — | `step-01-pipeline-design` | done |
 | 02 | Generators | Kafka | `step-02-generators` | in review |
-| 03 | CI | Kafka | `step-03-ci` | not started |
+| 03 | CI | Kafka | `step-03-ci` | in review |
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | not started |
 | 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | not started |
 | 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | not started |
@@ -332,3 +332,72 @@ unit test guards and the bytes that reach the broker are provably the same
 thing.
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-02`.
+
+---
+
+## Step 03 — CI
+
+- **Branch:** `step-03-ci`
+- **Prompt:** Add CI, now that there is a module with tests and an exact
+  verification that can gate a build.
+
+### Approach
+
+- **Three jobs, each proving something different.** Build and test compiles on
+  Java 17 and runs all 23 tests. Verify-the-numbers brings up Kafka and asserts
+  the assignment's expected-output table against what actually lands on the
+  topics. ShellCheck lints the verification scripts.
+- **The numbers job is the point.** It runs the same `verify-run.sh` used
+  locally, so a change that quietly breaks the numbers fails the build rather
+  than surfacing during a demo. CI that only compiles would not have caught any
+  of the faults found in step 02.
+- **Scripts are linted, not trusted.** They are part of how correctness is
+  demonstrated, so they get the same treatment as the Java.
+- **`--wait` only on kafka.** The topics service is a one-shot that creates the
+  six topics and exits, which `--wait` reads as a failed service.
+
+### Commands
+
+```bash
+docker run --rm -v "$PWD:/mnt" -w /mnt koalaman/shellcheck:stable scripts/*.sh
+docker compose -f docker/compose.yml up -d --wait kafka   # the exact CI sequence
+./scripts/verify-run.sh
+git push -u origin step-03-ci                             # triggers the workflow
+gh run watch <id> --exit-status
+```
+
+### Results
+
+Verified locally first — ShellCheck through a container, and the exact cold-start
+sequence CI uses — then verified for real by pushing the branch and watching the
+run. A workflow that has never executed is not evidence of anything.
+
+[Run 32436156688](https://github.com/jimzucker/flink-training/actions/runs/32436156688): **success**
+
+| Job | Result |
+|---|---|
+| Build and test | SUCCESS — 23 tests, including the Testcontainers integration test |
+| Verify the expected numbers | SUCCESS — every check exact |
+| Shell scripts | SUCCESS |
+
+One ShellCheck finding, fixed with a justified disable: the sourced-or-executed
+idiom in `env.sh` reads as unreachable to a static checker that cannot know
+which it is.
+
+Evidence: [`docs/steps/step-03/ci-run.md`](../docs/steps/step-03/ci-run.md)
+
+### Verification
+
+The runner reproduced the local numbers exactly — 100 orders, 400 allocations,
+16 account keys, 400 prices at 100 per symbol, and the same **43 BUY / 57 SELL**
+mix seen on the development machine.
+
+That last figure is worth more than it looks. The runner is Linux on x86 and the
+development machine is macOS on ARM, so an identical buy/sell mix demonstrates
+the seeded sequence is reproducible across platforms and not merely across runs
+on one box. Reproducibility that only held locally would be worth very little
+when the demo runs on AWS.
+
+### Review
+
+_Pending._
