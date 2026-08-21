@@ -76,16 +76,25 @@ MAX_TRADES="$TRADES" \
 MAX_PRICES="$PRICES" \
   java -jar "$JAR" 2>&1 | grep -E "starting|universe|stopped" || true
 
+# Counts records on a topic without consuming them: end offsets summed across
+# partitions. Draining the topic to count it costs a consumer timeout per poll,
+# which turns a wait loop into minutes of dead time.
+record_count() {
+  docker exec "$CONTAINER" /opt/kafka/bin/kafka-get-offsets.sh \
+      --bootstrap-server localhost:9092 --topic "$1" 2>/dev/null \
+    | awk -F: '{s += $3} END {print s + 0}'
+}
+
 if [ "$WITH_PIPELINE" = "1" ]; then
   # Wait for the job to drain the input rather than sleeping a guessed interval.
-  echo "waiting for sinks 3 and 4 to catch up"
-  for _ in $(seq 1 60); do
-    n=$(docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
-          --bootstrap-server localhost:9092 --topic positions-by-account \
-          --from-beginning --timeout-ms 5000 2>/dev/null | grep -c . || true)
-    [ "$n" -ge "$((TRADES * 4))" ] && break
+  want=$((TRADES * 4))
+  echo "waiting for sinks 3 and 4 to catch up (want ${want} on positions-by-account)"
+  for _ in $(seq 1 90); do
+    n=$(record_count positions-by-account)
+    [ "$n" -ge "$want" ] && break
     sleep 2
   done
+  echo "  sink 3: $(record_count positions-by-symbol)   sink 4: $(record_count positions-by-account)"
 fi
 
 echo
