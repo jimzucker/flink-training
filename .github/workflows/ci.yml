@@ -1,8 +1,11 @@
 name: CI
 
+# push only on main, pull_request for everything else. Triggering on both for
+# every branch runs the whole suite twice on any branch that has a PR open,
+# which doubles the runner time and gives no extra signal.
 on:
   push:
-    branches: ["**"]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 
