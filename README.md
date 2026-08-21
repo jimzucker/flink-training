@@ -42,8 +42,8 @@ element in the diagram.
 
 | # | Sink | Rate | Unique keys |
 |---|---|---|---|
-| 3 | `positions-by-symbol` | 10 / sec | **4** |
-| 4 | `positions-by-account` | 40 / sec | **16** |
+| 3 | `positions-by-symbol` | 10 / sec — one per trade | **4** |
+| 4 | `positions-by-account` | 40 / sec — one per allocation | **16** |
 | 5 | `mv-by-symbol` | 4 / min | **4** |
 | 6 | `mv-by-account` | 16 / min | **16** |
 
@@ -56,10 +56,21 @@ Full one-command start arrives in step 08. Today the stack is Kafka, and the
 generators run on the host.
 
 ```bash
-source scripts/env.sh                          # Java 17
-docker compose -f docker/compose.yml up -d     # Kafka + the six topics
+source scripts/env.sh                                     # Java 17
 mvn package -DskipTests
-./scripts/verify-run.sh                        # exact run, then check the numbers
+docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager
+./scripts/verify-run.sh                                   # submit, run, verify
+```
+
+`verify-run.sh` resets the topics, submits the positions job, emits an exact
+number of records, waits for the sinks to catch up, and asserts the expected
+numbers — inputs and both position sinks, including that the two aggregations
+reconcile. The Flink UI is at <http://localhost:8081>.
+
+To skip the job and check the inputs only:
+
+```bash
+WITH_PIPELINE=0 ./scripts/verify-run.sh
 ```
 
 `verify-run.sh` resets the input topics, emits an exact number of records in
@@ -177,6 +188,7 @@ assignment.pptx        the requirements
 pom.xml                parent POM -- versions, dependency and plugin management
 common/                domain model and JSON encoding
 generators/            block trade and price generators
+jobs/                  Flink jobs
 docker/                local stack: Kafka, Flink, Prometheus, Grafana
 scripts/               helper scripts
 docs/design/           pipeline diagram and design notes

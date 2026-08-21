@@ -39,18 +39,20 @@ jobs:
       - name: Build, unit tests and integration tests
         run: mvn -B --no-transfer-progress verify
 
-      - name: Upload generators jar
+      - name: Upload jars
         uses: actions/upload-artifact@v4
         with:
-          name: generators-jar
-          path: generators/target/generators.jar
+          name: jars
+          path: |
+            generators/target/generators.jar
+            jobs/target/jobs.jar
           retention-days: 7
           if-no-files-found: error
 
   verify-numbers:
     name: Verify the expected numbers
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 25
     needs: build
     steps:
       - uses: actions/checkout@v4
@@ -61,28 +63,38 @@ jobs:
           distribution: temurin
           java-version: ${{ env.JAVA_VERSION }}
 
-      - name: Download generators jar
+      - name: Download jars
         uses: actions/download-artifact@v4
         with:
-          name: generators-jar
-          path: generators/target
+          name: jars
+          path: .
 
-      # --wait only on kafka: the topics service is a one-shot that creates the
-      # six topics and exits, which --wait would read as a failed service.
-      # verify-run.sh recreates the input topics itself anyway.
-      - name: Start Kafka
+      # --wait excludes the topics service: it is a one-shot that creates the six
+      # topics and exits, which --wait would read as a failed service.
+      # verify-run.sh recreates the topics it needs anyway.
+      - name: Start Kafka and Flink
         run: |
-          docker compose -f docker/compose.yml up -d --wait kafka
+          docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager
           docker compose -f docker/compose.yml ps
+          # A task manager registers a moment after its container is up; without
+          # a slot the job submission fails with no resources.
+          for _ in $(seq 1 40); do
+            slots=$(curl -sf http://localhost:8081/overview | jq -r '."slots-total"' || echo 0)
+            [ "$slots" -ge 1 ] && break
+            sleep 3
+          done
+          curl -sf http://localhost:8081/overview | jq -c '{taskmanagers, slots: ."slots-total"}'
 
       # The gate that matters: the assignment's expected-output table, asserted
-      # against what actually lands on the topics. Exact, no tolerances.
+      # against what actually lands on the topics -- inputs and both position
+      # sinks, including that the two aggregations reconcile. Exact, no
+      # tolerances.
       - name: Run and verify
         run: ./scripts/verify-run.sh
 
-      - name: Kafka logs on failure
+      - name: Logs on failure
         if: failure()
-        run: docker compose -f docker/compose.yml logs --tail 200
+        run: docker compose -f docker/compose.yml logs --tail 300
 
       - name: Stop the stack
         if: always()

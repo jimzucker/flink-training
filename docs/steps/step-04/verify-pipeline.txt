@@ -1,0 +1,46 @@
+resetting topics: orders prices positions-by-symbol positions-by-account
+restarting the positions job
+  submitted
+emitting exactly 100 trades and 400 prices (seed 42, replay)
+22:27:27.406 INFO  GeneratorMain - starting generators: bootstrap=localhost:9092 trades/sec=10 prices/sec=1000 seed=42 duration=forever time=replay from 1700000000000
+22:27:27.420 INFO  GeneratorMain - universe: 4 symbols, 4 accounts, 4 allocations per trade -> 4 symbol keys, 16 account keys
+22:27:37.580 INFO  GeneratorMain - generators stopped
+waiting for sinks 3 and 4 to catch up
+
+orders  (expecting exactly 100)
+  record count                             100          OK
+  unique symbols (sink 3 keys)             4            OK
+  allocations (sink 4 rate)                400          OK
+  allocations sum to block qty             0            OK
+  unique account keys (sink 4)             16           OK
+  malformed account keys                   0            OK
+  sides present                            2            OK
+  duplicate tradeIds                       0            OK
+  missing tradeIds                         0            OK
+  buy/sell mix                               43 BUY   57 SELL 
+
+prices  (expecting exactly 400)
+  record count                             400          OK
+  unique symbols                           4            OK
+  prices per symbol                        100          OK
+  non-positive prices                      0            OK
+  prices off a quarter                     0            OK
+
+positions-by-symbol  (sink 3: one update per trade)
+  record count                             100          OK
+  unique keys                              4            OK
+  updateCount runs 1..n per key            0            OK
+
+positions-by-account (sink 4: one update per allocation)
+  record count                             400          OK
+  unique keys                              16           OK
+  malformed keys                           0            OK
+
+reconciliation  (final position per symbol, aggregated both ways)
+  AAPL        -2800
+  AMZN        -4000
+  GOOG        -2000
+  MSFT         3200
+  symbol totals match account totals                    OK
+
+all checks passed, with no tolerances

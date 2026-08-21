@@ -74,6 +74,39 @@ check "prices per symbol"            "$((EXPECT_PRICES / SYMBOLS))" \
 check "non-positive prices"          "0"  "$(echo "$PRICES" | jq -r 'select(.price <= 0) | .symbol' | grep -c .)"
 check "prices off a quarter"         "0"  "$(echo "$PRICES" | jq -r 'select((.price * 4 | floor) != (.price * 4)) | .symbol' | grep -c .)"
 
+# ---------------------------------------------------------------- sinks 3 and 4
+# Only checked when the positions job has been running; the input-side checks
+# above stand on their own.
+if [ "${CHECK_POSITIONS:-1}" = "1" ]; then
+  echo
+  echo "positions-by-symbol  (sink 3: one update per trade)"
+  S3=$(drain positions-by-symbol)
+  check "record count"               "$EXPECT_ORDERS" "$(echo "$S3" | grep -c .)"
+  check "unique keys"                "$SYMBOLS" "$(echo "$S3" | jq -r '.key' | sort -u | grep -c .)"
+  check "updateCount runs 1..n per key" "0" \
+        "$(echo "$S3" | jq -r '"\(.key) \(.updateCount)"' | sort -k1,1 -k2,2n \
+           | awk '{ if ($1 != k) { k = $1; want = 1 } ; if ($2 != want) bad++; want++ } END { print bad + 0 }')"
+
+  echo
+  echo "positions-by-account (sink 4: one update per allocation)"
+  S4=$(drain positions-by-account)
+  check "record count"               "$((EXPECT_ORDERS * 4))" "$(echo "$S4" | grep -c .)"
+  check "unique keys"                "$ACCOUNT_KEYS" "$(echo "$S4" | jq -r '.key' | sort -u | grep -c .)"
+  check "malformed keys"             "0" \
+        "$(echo "$S4" | jq -r '.key' | grep -vcE '^ACC[1-4]/SUB1/(AAPL|MSFT|GOOG|AMZN)$')"
+
+  # The reconciliation that matters: the same question answered two ways must
+  # give the same answer, or the dashboard shows two different truths.
+  echo
+  echo "reconciliation  (final position per symbol, aggregated both ways)"
+  BY_SYMBOL=$(echo "$S3" | jq -r '"\(.key) \(.updateCount) \(.quantity)"' | sort -k1,1 -k2,2n \
+              | awk '{a[$1]=$3} END {for (k in a) printf "%s %d\n", k, a[k]}' | sort)
+  BY_ACCOUNT=$(echo "$S4" | jq -r '"\(.symbol) \(.key) \(.updateCount) \(.quantity)"' | sort -k2,2 -k3,3n \
+               | awk '{last[$2]=$4; sym[$2]=$1} END {for (k in last) t[sym[k]]+=last[k]; for (s in t) printf "%s %d\n", s, t[s]}' | sort)
+  echo "$BY_SYMBOL" | while read -r sym qty; do printf "  %-6s %10s\n" "$sym" "$qty"; done
+  check "symbol totals match account totals" "" "$(diff <(echo "$BY_SYMBOL") <(echo "$BY_ACCOUNT") | grep -c . | sed 's/^0$//')"
+fi
+
 echo
 if [ "$FAILURES" -eq 0 ]; then
   echo "all checks passed, with no tolerances"

@@ -1,4 +1,4 @@
-# Local stack. Grown one service per step: Kafka here, Flink at step 04,
+# Local stack. Grown one service per step: Kafka at step 02, Flink at step 04,
 # Prometheus and Grafana at step 06.
 name: flink-training
 
@@ -45,4 +45,62 @@ services:
       PARTITIONS: "4"
     volumes:
       - ./scripts:/scripts:ro
+    restart: "no"
+
+  jobmanager:
+    image: flink:1.20.4-java17
+    container_name: ft-jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"          # web UI and REST
+    depends_on:
+      kafka:
+        condition: service_healthy
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: 2
+        state.backend.type: hashmap
+        execution.checkpointing.interval: 10s
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8081/overview > /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  taskmanager:
+    image: flink:1.20.4-java17
+    container_name: ft-taskmanager
+    command: taskmanager
+    depends_on:
+      jobmanager:
+        condition: service_healthy
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: 4
+    deploy:
+      replicas: 1
+
+  # Submits the jobs jar, then exits. Kept out of `up` by a profile so bringing
+  # the stack up does not require the jar to have been built yet.
+  submit:
+    image: flink:1.20.4-java17
+    container_name: ft-submit
+    profiles: ["submit"]
+    depends_on:
+      jobmanager:
+        condition: service_healthy
+    volumes:
+      - ../jobs/target:/opt/jobs:ro
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        flink run -d -m jobmanager:8081 \
+          -c io.github.jimzucker.flinktraining.job.PositionsJob \
+          /opt/jobs/jobs.jar
+        flink list -m jobmanager:8081
     restart: "no"

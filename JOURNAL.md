@@ -13,7 +13,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 01 | Pipeline design | — | `step-01-pipeline-design` | done |
 | 02 | Generators | Kafka | `step-02-generators` | in review |
 | 03 | CI | Kafka | `step-03-ci` | done |
-| 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | not started |
+| 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | in review |
 | 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | not started |
 | 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | not started |
 | 07 | Correctness demo | full | `step-07-correctness-demo` | not started |
@@ -420,3 +420,84 @@ has been doing by hand since step 00.
 Full exchange: [`docs/reviews/step-03.md`](../docs/reviews/step-03.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-03`.
+
+---
+
+## Step 04 — Part 1: positions
+
+- **Branch:** `step-04-part1-positions`
+- **Prompt:** Build Part 1 — split block trades by allocation, aggregate
+  positions by symbol and by account, write sinks 3 and 4. Flink joins the stack.
+
+### What building it found
+
+The implementation contradicted the design, and the design was wrong.
+
+The diagram had *Split by allocation* feeding both aggregations. But the expected
+output says sink 3 emits **10/sec** and sink 4 **40/sec**, and if both sides are
+fed from the split then both emit once per allocation — 40/sec each. The
+quantities would still be correct, because allocations sum to the block; only the
+*rate* would be wrong.
+
+That is a bad failure mode: nothing crashes, every number reconciles, and the
+error only shows up when someone reads a rate off a dashboard and it is four
+times what the handout says. Corrected in code and in the diagram: the symbol
+side takes the block trade whole and bypasses the split.
+
+### Approach
+
+- **Flink POJOs, not records, inside the pipeline.** Flink 1.20 does not
+  recognise Java records as POJOs and falls back to Kryo, which cannot reliably
+  instantiate them. `PositionUpdate` and `PositionState` are plain classes with
+  public fields and a no-argument constructor, which gets Flink's own POJO
+  serialiser. The records in `common` remain the wire format.
+- **The pipeline is separated from the environment.** `PositionsJob.build()`
+  takes a `DataStream`, so it can be driven by a test source instead of Kafka.
+- **Emit on every change, not on a timer.** That is what makes sinks 3 and 4
+  match the input rate exactly, and what lets the demo point at a number and name
+  the trade that produced it — `lastTradeId` and `updateCount` travel on the
+  record rather than being reconstructed from logs.
+- **At-least-once delivery.** A position is a running sum, so a replayed record
+  would double-count. That only arises on failure and restore, which the demo
+  does not exercise; exactly-once needs Kafka transactions and a read-committed
+  consumer, and belongs with the AWS deployment.
+
+### Results
+
+23 unit and integration tests pass. `mvn verify` is green.
+
+| Suite | Tests | What it protects |
+|---|---|---|
+| `OperatorTest` | 4 | symbol side emits once per trade, account side once per allocation, sells decrement both, and the two sides reconcile |
+| `AccumulatePositionTest` | 7 | running signed sum under Flink's own harness — goes short, nets to zero and still emits, keys independent, and **survives a snapshot and restore** |
+
+End to end against the real cluster, feeding exactly 100 trades:
+
+```
+positions-by-symbol   100 records over 4 keys      (one per trade)
+positions-by-account  400 records over 16 keys     (one per allocation)
+updateCount runs 1..n per key with no gaps
+reconciliation  AAPL -2800  AMZN -4000  GOOG -2000  MSFT 3200
+                symbol totals match account totals
+all checks passed, with no tolerances
+```
+
+Negative positions are present and expected: they are shorts, and their presence
+is what shows the sign handling is live rather than untested.
+
+Evidence: [`docs/steps/step-04/`](../docs/steps/step-04/)
+
+### Verification
+
+The reconciliation check is the strongest available statement about Part 1: the
+same question — what is the position in each symbol — answered two different
+ways, through 100 block-level updates and through 400 allocation-level updates,
+and required to agree. A fault in the split, the sign, or the keying breaks it.
+
+`updateCount runs 1..n per key` is the other one worth naming: it proves each
+key's update sequence has no gaps and no duplicates, which a record count alone
+would not catch.
+
+### Review
+
+_Pending._

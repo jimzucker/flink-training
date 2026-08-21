@@ -50,11 +50,22 @@ Numbered left to right, in the order the demo talks through them.
 | 5 | `mv-by-symbol` topic | `symbol` | `MarketValue` |
 | 6 | `mv-by-account` topic | `acct/sub/sym` | `MarketValue` |
 
-**Part 1 — positions.** Reads ①. *Split by allocation* turns one `BlockTrade`
-into N `Allocation` records. The stream is then keyed two different ways off that
-same split, and *Aggregate* maintains a running position per key. The two
-aggregations run in parallel from one source, which is the point of the exercise:
-the same input aggregated different ways at the same time. Writes ③ and ④.
+**Part 1 — positions.** Reads ①, and aggregates it two ways in parallel — which
+is the point of the exercise. The two sides differ in more than their key:
+
+- **By symbol**, keyed on `symbol`, taking the block trade whole. A symbol's
+  position moves once per trade, so sink ③ emits at the trade rate.
+- **By account**, keyed on `acct/sub/sym`, fed by *Split by allocation*. One
+  update per allocation, so sink ④ emits at four times the trade rate.
+
+The symbol side deliberately bypasses the split. Driving it from the split as
+well would produce the same quantities — allocations sum to the block — but four
+times as many updates, making sink ③ emit 40/sec where the expected output says
+10/sec. The quantity would be right and the rate wrong, which is the kind of
+error a demo does not surface until someone reads the number off a dashboard.
+
+That the two sides must agree in total is the strongest available check on Part 1:
+the same question answered two different ways. It is asserted on every run.
 
 **Part 2 — market value.** Reads ③, ④ and ②. *Join price × position* attaches the
 latest price for the symbol to each position. *Window 1 min* is a tumbling
