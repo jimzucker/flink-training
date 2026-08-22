@@ -214,6 +214,37 @@ class MarketValueAtCloseTest {
     }
 
     @Test
+    @DisplayName("a window closes against its own position, not one from its future")
+    void windowUsesItsOwnClosingPosition() throws Exception {
+        // Watermarks are emitted periodically rather than per record, so positions
+        // from after a boundary are routinely processed before the timer for that
+        // boundary fires. Keeping only the latest position would close the window
+        // against a quantity from its own future -- still a plausible number, and
+        // reconciling against nothing in the position topic.
+        price("AAPL", "10.00", 1_000L);
+        position("AAPL", "AAPL", 100, 30_000L);
+        position("AAPL", "AAPL", 250, MINUTE + 5_000L);   // belongs to window 2
+        position("AAPL", "AAPL", 400, MINUTE + 40_000L);  // belongs to window 2
+
+        watermark(2 * MINUTE);
+
+        assertThat(emitted()).extracting(m -> m.windowEnd + "=" + m.quantity)
+                .containsExactly(MINUTE + "=100", (2 * MINUTE) + "=400");
+    }
+
+    @Test
+    @DisplayName("a window with no trade inherits the position from before it")
+    void quietWindowInheritsPosition() throws Exception {
+        price("AAPL", "10.00", 1_000L);
+        position("AAPL", "AAPL", 700, 30_000L);
+        // Nothing at all in the second and third minutes.
+        watermark(3 * MINUTE);
+
+        assertThat(emitted()).extracting(m -> m.windowEnd + "=" + m.quantity)
+                .containsExactly(MINUTE + "=700", (2 * MINUTE) + "=700", (3 * MINUTE) + "=700");
+    }
+
+    @Test
     @DisplayName("an account key uses its own symbol's price")
     void accountKeyUsesItsSymbolPrice() throws Exception {
         price("AAPL", "100.00", 1_000L);

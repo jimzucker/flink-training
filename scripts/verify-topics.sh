@@ -200,8 +200,39 @@ if [ "${CHECK_MARKET_VALUE:-0}" = "1" ]; then
     check "price at close differs from the price topic" "0" "$bad"
   }
 
+  # The quantity a window closed against, recomputed from the position topic that
+  # fed it. Prices were already checked this way; without this the quantity half
+  # of every market value rested on nothing but the job agreeing with itself.
+  check_quantity_at_close() {  # mv-topic positions-topic label
+    local mv_topic="$1" pos_topic="$2" label="$3"
+    local pos_file="$DUMP_DIR/.pos.tsv" mv_file="$DUMP_DIR/.mv.tsv"
+
+    drain "$pos_topic" | jq -r '[.key, .eventTime, .quantity] | @tsv' \
+      | sort -k1,1 -k2,2n > "$pos_file"
+    drain "$mv_topic" | jq -r '[.key, .windowEnd, .quantity] | @tsv' > "$mv_file"
+
+    # For each market value, the last position for that key strictly before the
+    # window close is the one it must report.
+    check "$label quantity differs from the position topic" "0" \
+          "$(awk -F'\t' '
+               NR == FNR { n[$1]++; t[$1 SUBSEP n[$1]] = $2; q[$1 SUBSEP n[$1]] = $3; next }
+               {
+                 found = 0; want = ""
+                 for (i = 1; i <= n[$1]; i++) {
+                   if (t[$1 SUBSEP i] < $2) { want = q[$1 SUBSEP i]; found = 1 }
+                 }
+                 if (!found || want != $3) bad++
+               }
+               END { print bad + 0 }' "$pos_file" "$mv_file")"
+  }
+
   check_market_value mv-by-symbol  "sink 5" "$SYMBOLS"
   check_market_value mv-by-account "sink 6" "$ACCOUNT_KEYS"
+
+  echo
+  echo "market value reconciles against the position topics"
+  check_quantity_at_close mv-by-symbol  positions-by-symbol  "sink 5"
+  check_quantity_at_close mv-by-account positions-by-account "sink 6"
 fi
 
 echo

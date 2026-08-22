@@ -99,3 +99,48 @@ window late makes the true answer 63 rather than 64, and the check would have
 called correct output a failure. It now asserts the properties that must hold
 regardless: no key skips a window once it starts, no key stops early, and there
 is exactly one record per key per window it took part in.
+
+
+## The gap that was hiding a bug
+
+Prices were checked against the price topic, but quantities were not checked
+against anything. The quantity half of every market value rested on the job
+agreeing with itself.
+
+Adding the check — for each market value, the last position for that key strictly
+before the window close, recomputed from the position topic — failed immediately:
+**14 of 16** on sink 5 and **56 of 64** on sink 6.
+
+By hand, for AAPL at the first window close:
+
+```
+positions before the boundary   ... 1787406209755  -2400
+                                    1787406209853  -2800   <- last before close
+market value reported                              -3600
+```
+
+The reported quantity came from a position recorded *after* the window closed.
+
+The cause is the one already fixed for prices, missed for positions.
+`processElement` overwrote the quantity on arrival, and **watermarks are emitted
+periodically rather than per record** — by default every 200ms — so several
+positions from after a boundary are routinely processed before the timer for that
+boundary fires. The state then held a position from the window's own future.
+
+Positions are now recorded against the window they fall in, exactly as prices
+are, and a window closes against its own. A window with no trade inherits the
+previous one, which is what lets a quiet key keep reporting the position it still
+holds.
+
+Both directions now reconcile against the topics that fed them:
+
+```
+sink 5 quantity differs from the position topic   0
+sink 6 quantity differs from the position topic   0
+price at close differs from the price topic       0
+```
+
+The lesson is the one the assignment keeps making: a number that reconciles
+against nothing is not a verified number, however plausible it looks. Market
+values had been arithmetically consistent — `quantity x price` always matched —
+while the quantity itself was wrong.
