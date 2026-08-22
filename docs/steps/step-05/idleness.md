@@ -61,3 +61,41 @@ reporting a read failure as missing data, so stopping here instead.
 One process reads all six topics, which also removed a JVM start per topic.
 Under `read_committed` the end offset is the last stable offset, so transaction
 markers are handled without having to reason about them.
+
+
+## Verifying windows without faking the clock
+
+An earlier version of this step verified the windows by compressing event time:
+records were emitted in two seconds while being stamped a second apart, so three
+minutes of event time passed almost instantly. That tests the window arithmetic
+but never exercises the mode the demo runs in, and the timestamps correspond to
+nothing that happened.
+
+The verification now runs the generator exactly as the demo does — wall-clock
+event times, paced in real time, at the demo rates — and shortens the **window**
+instead, from sixty seconds to ten. The window length is already a runtime
+parameter, so this is the same code on the same clock, and the demo keeps its
+minute.
+
+The cost is that the number of windows is no longer predictable: it depends on
+where the run happens to start relative to a boundary. That is a property of a
+real clock rather than a defect, so the count is read from the data and only
+floored. What stays exact is everything inside the windows.
+
+### Partial windows
+
+Three boundary cases arise once the clock is real, and each is handled rather
+than avoided.
+
+| Case | Behaviour |
+|---|---|
+| The first window is partial | Still emits. Market value is a snapshot at the close, not a rate, so partial coverage does not distort it |
+| The last window never closes | Correct: no watermark reaches its boundary. It is why the window count is read from the data |
+| Keys first appear in different windows | A key emits from the first boundary after it is seen, so early keys have more windows than late ones |
+
+That last case broke the original check, which asserted `records == keys x
+windows`. With 16 account keys appearing at different moments, one key starting a
+window late makes the true answer 63 rather than 64, and the check would have
+called correct output a failure. It now asserts the properties that must hold
+regardless: no key skips a window once it starts, no key stops early, and there
+is exactly one record per key per window it took part in.

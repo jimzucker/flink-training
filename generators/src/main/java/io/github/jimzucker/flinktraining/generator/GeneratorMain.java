@@ -64,7 +64,7 @@ public final class GeneratorMain {
         BlockTradeGenerator generator = config.isLive()
                 ? BlockTradeGenerator.live(config.seed())
                 : BlockTradeGenerator.replaying(
-                        config.seed(), config.startEpochMillis(), config.tradeEventTimeStep());
+                        config.seed(), config.startEpochMillis(), config.tradeIntervalMillis());
         Pacer pacer = new Pacer(config.tradesPerSecond());
         long count = 0;
         while (running.get() && !GeneratorConfig.reached(config.maxTrades(), count)) {
@@ -85,7 +85,7 @@ public final class GeneratorMain {
         PriceGenerator generator = config.isLive()
                 ? PriceGenerator.live(config.seed() + 1)
                 : PriceGenerator.replaying(
-                        config.seed() + 1, config.startEpochMillis(), config.priceEventTimeStep());
+                        config.seed() + 1, config.startEpochMillis(), config.priceIntervalMillis());
         Pacer pacer = new Pacer(config.pricesPerSecond());
         long count = 0;
         while (running.get() && !GeneratorConfig.reached(config.maxPrices(), count)) {

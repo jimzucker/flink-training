@@ -10,20 +10,20 @@ cd "$(dirname "$0")/.."
 
 COMPOSE="docker/compose.yml"
 CONTAINER="${CONTAINER:-ft-kafka}"
-# Defaults are chosen so the one-minute windows actually close. Event time
-# advances a second per trade while records are emitted as fast as the pacer
-# allows, so 200 trades span 200 seconds of event time in a couple of real
-# seconds and cross three minute boundaries. Prices step 250ms each so their
-# event time covers the same span -- a join advances at its slower input, and a
-# price stream that only reached second 2 would hold every window shut.
-TRADES="${TRADES:-200}"
-PRICES="${PRICES:-800}"
-TRADE_EVENT_TIME_STEP_MS="${TRADE_EVENT_TIME_STEP_MS:-1000}"
-PRICE_EVENT_TIME_STEP_MS="${PRICE_EVENT_TIME_STEP_MS:-250}"
-EMIT_TRADES_PER_SECOND="${EMIT_TRADES_PER_SECOND:-100}"
-EMIT_PRICES_PER_SECOND="${EMIT_PRICES_PER_SECOND:-400}"
+# The generator runs exactly as it does for the demo: wall-clock event times,
+# paced in real time, at the demo rates. Nothing about the clock is simulated.
+#
+# Only the window is shortened. Closing three one-minute windows would need three
+# and a half minutes of running, and a check that slow stops being run. The
+# window length is a runtime parameter, so the test shortens it to ten seconds
+# and exercises the same code on the same clock. The demo keeps its minute.
+TRADES="${TRADES:-400}"
+PRICES="${PRICES:-40000}"
+TRADES_PER_SECOND="${TRADES_PER_SECOND:-10}"
+PRICES_PER_SECOND="${PRICES_PER_SECOND:-1000}"
+VERIFY_WINDOW_MS="${VERIFY_WINDOW_MS:-10000}"
+MIN_WINDOWS="${MIN_WINDOWS:-3}"
 SEED="${SEED:-42}"
-START_EPOCH_MILLIS="${START_EPOCH_MILLIS:-1700000000000}"
 JAR="generators/target/generators.jar"
 # 1 when the positions job should be submitted and sinks 3 and 4 checked.
 WITH_PIPELINE="${WITH_PIPELINE:-1}"
@@ -50,16 +50,7 @@ if [ "$WITH_PIPELINE" = "1" ]; then
   RESET_TOPICS="$RESET_TOPICS positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
 fi
 
-# Minute boundaries strictly inside the event-time span the run covers. The
-# watermark reaches the last event time minus a millisecond, so a boundary
-# exactly at the end does not close.
-LAST_EVENT_TIME=$((START_EPOCH_MILLIS + (TRADES - 1) * TRADE_EVENT_TIME_STEP_MS))
-WINDOWS=0
-b=$(( (START_EPOCH_MILLIS / 60000) * 60000 + 60000 ))
-while [ "$b" -le "$((LAST_EVENT_TIME - 1))" ]; do
-  WINDOWS=$((WINDOWS + 1))
-  b=$((b + 60000))
-done
+
 
 echo "resetting topics: $RESET_TOPICS"
 for t in $RESET_TOPICS; do
@@ -86,19 +77,18 @@ if [ "$WITH_PIPELINE" = "1" ]; then
                 flink list -r 2>/dev/null | grep -oE '[0-9a-f]{32}' || true); do
     docker compose -f "$COMPOSE" exec -T jobmanager flink cancel "$id" >/dev/null 2>&1 || true
   done
-  docker compose -f "$COMPOSE" --profile submit run --rm submit >/dev/null 2>&1
-  echo "  submitted"
+  WINDOW_MS="$VERIFY_WINDOW_MS" \
+    docker compose -f "$COMPOSE" --profile submit run --rm submit >/dev/null 2>&1
+  echo "  submitted (window ${VERIFY_WINDOW_MS}ms; the demo uses 60000ms)"
 fi
 
-echo "emitting exactly ${TRADES} trades and ${PRICES} prices (seed ${SEED}, replay)"
+echo "emitting exactly ${TRADES} trades and ${PRICES} prices at the demo rates"
+echo "  wall-clock event times, ${TRADES_PER_SECOND}/sec -> about $((TRADES / TRADES_PER_SECOND))s"
 SEED="$SEED" \
-START_EPOCH_MILLIS="$START_EPOCH_MILLIS" \
 MAX_TRADES="$TRADES" \
 MAX_PRICES="$PRICES" \
-TRADE_EVENT_TIME_STEP_MS="$TRADE_EVENT_TIME_STEP_MS" \
-PRICE_EVENT_TIME_STEP_MS="$PRICE_EVENT_TIME_STEP_MS" \
-TRADES_PER_SECOND="$EMIT_TRADES_PER_SECOND" \
-PRICES_PER_SECOND="$EMIT_PRICES_PER_SECOND" \
+TRADES_PER_SECOND="$TRADES_PER_SECOND" \
+PRICES_PER_SECOND="$PRICES_PER_SECOND" \
   java -jar "$JAR" 2>&1 | grep -E "starting|universe|stopped" || true
 
 # Waits until a topic holds at least `want` committed records, and reports how
@@ -136,13 +126,18 @@ if [ "$WITH_PIPELINE" = "1" ]; then
   s4=$(committed_count positions-by-account "$((TRADES * 4))")
   echo "  sink 3: ${s3}/${TRADES}   sink 4: ${s4}/$((TRADES * 4))"
 
-  echo "waiting for sinks 5 and 6 (expecting ${WINDOWS} windows)"
-  s5=$(committed_count mv-by-symbol "$((4 * WINDOWS))")
-  s6=$(committed_count mv-by-account "$((16 * WINDOWS))")
-  echo "  sink 5: ${s5}/$((4 * WINDOWS))   sink 6: ${s6}/$((16 * WINDOWS))"
+  # How many windows close depends on where the run starts relative to a window
+  # boundary, which is a property of running on a real clock rather than a
+  # simulated one. The count is read from the data; everything inside a window
+  # stays exact.
+  echo "waiting for sinks 5 and 6 (at least ${MIN_WINDOWS} windows)"
+  s5=$(committed_count mv-by-symbol "$((4 * MIN_WINDOWS))")
+  s6=$(committed_count mv-by-account "$((16 * MIN_WINDOWS))")
+  echo "  sink 5: ${s5}   sink 6: ${s6}"
 fi
 
 echo
 EXPECT_ORDERS="$TRADES" EXPECT_PRICES="$PRICES" \
-CHECK_POSITIONS="$WITH_PIPELINE" CHECK_MARKET_VALUE="$WITH_PIPELINE" WINDOWS="$WINDOWS" \
+CHECK_POSITIONS="$WITH_PIPELINE" CHECK_MARKET_VALUE="$WITH_PIPELINE" \
+MIN_WINDOWS="$MIN_WINDOWS" WINDOW_MS="$VERIFY_WINDOW_MS" \
   ./scripts/verify-topics.sh

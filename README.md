@@ -68,11 +68,24 @@ topics — including that the two position aggregations reconcile, and that the
 price each market-value window closed against matches the last price on the
 price topic before that boundary. The Flink UI is at <http://localhost:8081>.
 
-It runs in replay, where event time advances a second per trade while records are
-emitted as fast as the pacer allows: 200 trades span 200 seconds of event time in
-about two real seconds and close three one-minute windows. The live demo is
-unaffected — there event time is the wall clock, which is what makes latency
-measurable.
+The generator runs exactly as it does for the demo: wall-clock event times, paced
+in real time, at the demo rates. Nothing about the clock is simulated.
+
+Only the **window** is shortened for the check. Closing three one-minute windows
+would need three and a half minutes of running, and a check that slow stops being
+run — so the verification submits the jobs with a ten-second window and exercises
+the same code on the same clock. The demo keeps its minute.
+
+| | Window | Event time | Pacing |
+|---|---|---|---|
+| Demo | 60s | wall clock | real time |
+| Verification | 10s | wall clock | real time |
+
+How many windows close depends on where the run starts relative to a boundary,
+which is a property of a real clock, so the count is read from the data rather
+than predicted. Everything inside a window stays exact: a key never skips a
+window once it starts, never stops early, and there is exactly one record per key
+per window.
 
 To skip the job and check the inputs only:
 

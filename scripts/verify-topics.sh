@@ -16,7 +16,8 @@ EXPECT_ORDERS="${EXPECT_ORDERS:-100}"
 EXPECT_PRICES="${EXPECT_PRICES:-400}"
 SYMBOLS="${SYMBOLS:-4}"
 ACCOUNT_KEYS="${ACCOUNT_KEYS:-16}"
-WINDOWS="${WINDOWS:-3}"
+MIN_WINDOWS="${MIN_WINDOWS:-3}"
+WINDOW_MS="${WINDOW_MS:-10000}"
 FAILURES=0
 
 if [ $((EXPECT_PRICES % SYMBOLS)) -ne 0 ]; then
@@ -147,9 +148,37 @@ if [ "${CHECK_MARKET_VALUE:-0}" = "1" ]; then
     local MV
     MV=$(drain "$topic")
 
-    check "record count" "$((keys * WINDOWS))" "$(echo "$MV" | grep -c .)"
+    # How many windows close depends on where the run started relative to a
+    # boundary -- a property of running on a real clock. The count is taken from
+    # the data and only floored; everything inside a window stays exact.
+    local windows
+    windows=$(echo "$MV" | jq -r '.windowEnd' | sort -u | grep -c .)
+    if [ "$windows" -ge "$MIN_WINDOWS" ]; then
+      printf "  %-40s %-12s OK\n" "windows closed" "$windows"
+    else
+      check "windows closed" ">= $MIN_WINDOWS" "$windows"
+    fi
     check "unique keys"  "$keys" "$(echo "$MV" | jq -r '.key' | sort -u | grep -c .)"
-    check "windows emitted" "$WINDOWS" "$(echo "$MV" | jq -r '.windowEnd' | sort -u | grep -c .)"
+
+    # A key starts emitting at the first boundary after it is first seen, so keys
+    # that appear late have fewer windows than keys that appear early. Counting
+    # keys x windows would call that a failure. What must hold is that once a key
+    # starts, it never skips a window and never stops early -- a quiet key still
+    # holds a position and must keep reporting it.
+    check "keys with a gap in their windows" "0" \
+          "$(echo "$MV" | jq -r '"\(.key) \(.windowEnd)"' | sort -u | sort -k1,1 -k2,2n \
+             | awk -v w="$WINDOW_MS" '{ if ($1 != k) { k = $1; prev = $2 }
+                                        else { if ($2 != prev + w) bad++; prev = $2 } }
+                                      END { print bad + 0 }')"
+    local last_window keys_in_last
+    last_window=$(echo "$MV" | jq -r '.windowEnd' | sort -n | tail -1)
+    keys_in_last=$(echo "$MV" | jq -r --argjson b "$last_window" \
+                   'select(.windowEnd == $b) | .key' | sort -u | grep -c .)
+    check "keys missing from the last window" "0" "$((keys - keys_in_last))"
+    # Records are then exactly one per key per window it participated in.
+    check "record count" \
+          "$(echo "$MV" | jq -r '"\(.key) \(.windowEnd)"' | sort -u | grep -c .)" \
+          "$(echo "$MV" | grep -c .)"
     # Exactly one emission per key per window: a key emitting twice, or skipping a
     # window, is invisible in a total count.
     check "duplicate key/window pairs" "0" \

@@ -17,9 +17,7 @@ public record GeneratorConfig(
         long startEpochMillis,
         long durationSeconds,
         long maxTrades,
-        long maxPrices,
-        long tradeEventTimeStepMillis,
-        long priceEventTimeStepMillis) {
+        long maxPrices) {
 
     public static final String DEFAULT_BOOTSTRAP = "localhost:9092";
     public static final String ORDERS_TOPIC = "orders";
@@ -62,32 +60,13 @@ public record GeneratorConfig(
                 envLong("START_EPOCH_MILLIS", WALL_CLOCK),
                 envLong("DURATION_SECONDS", 0L),
                 envLong("MAX_TRADES", 0L),
-                envLong("MAX_PRICES", 0L),
-                envLong("TRADE_EVENT_TIME_STEP_MS", 0L),
-                envLong("PRICE_EVENT_TIME_STEP_MS", 0L));
+                envLong("MAX_PRICES", 0L));
     }
 
     public long tradeIntervalMillis() {
         return Math.max(1L, 1_000L / tradesPerSecond);
     }
 
-    /**
-     * How much event time each record advances in replay mode, independent of
-     * how fast records are actually emitted.
-     *
-     * <p>Without this the two are the same number, so covering several minutes of
-     * event time takes several minutes of real time. Windowed behaviour can then
-     * only be tested by waiting, which makes the test slow enough that it stops
-     * being run. Setting a step lets a run cover minutes of event time in
-     * seconds. Zero keeps the default, where a step equals the emission interval.
-     */
-    public long tradeEventTimeStep() {
-        return tradeEventTimeStepMillis > 0 ? tradeEventTimeStepMillis : tradeIntervalMillis();
-    }
-
-    public long priceEventTimeStep() {
-        return priceEventTimeStepMillis > 0 ? priceEventTimeStepMillis : priceIntervalMillis();
-    }
 
     /** True when event times come from the wall clock rather than a replay counter. */
     public boolean isLive() {
