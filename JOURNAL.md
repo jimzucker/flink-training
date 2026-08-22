@@ -610,7 +610,30 @@ that state, and the symptom looks like a data bug rather than an environment one
 
 ### Review
 
-_Pending._
+Round 1: keep anonymous access, and close the CI gap.
+
+CI now runs `scripts/verify-dashboard.sh`, which checks the dashboard is
+provisioned and well formed, that **every panel query returns data**, that the
+key counts read 4 and 16, and that it renders to a non-trivial image.
+
+The query check is the one that matters. Every panel names a Flink operator, and
+those names come from `.name()` calls in the jobs — renaming one silently blanks
+a panel with nothing failing and nothing logged. That is only noticed by looking
+at it, and during a demo that is too late.
+
+The checks were proved by reintroducing the defects rather than trusting them:
+
+| Defect reintroduced | Caught |
+|---|---|
+| `lastNonNull` reducer id | 10 unknown stat reducers |
+| a row panel | 1 row panel |
+| an operator renamed out of existence | 1 panel query returning nothing |
+
+All three failed the check, and the run exited non-zero.
+
+Full exchange: [`docs/reviews/step-06.md`](../docs/reviews/step-06.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-06`.
 
 ---
 
@@ -684,4 +707,27 @@ window looks like on a rate graph.
 
 ### Review
 
-_Pending._
+Round 1: keep anonymous access, and close the CI gap.
+
+CI now runs `scripts/verify-dashboard.sh`, which checks the dashboard is
+provisioned and well formed, that **every panel query returns data**, that the
+key counts read 4 and 16, and that it renders to a non-trivial image.
+
+The query check is the one that matters. Every panel names a Flink operator, and
+those names come from `.name()` calls in the jobs — renaming one silently blanks
+a panel with nothing failing and nothing logged. That is only noticed by looking
+at it, and during a demo that is too late.
+
+The checks were proved by reintroducing the defects rather than trusting them:
+
+| Defect reintroduced | Caught |
+|---|---|
+| `lastNonNull` reducer id | 10 unknown stat reducers |
+| a row panel | 1 row panel |
+| an operator renamed out of existence | 1 panel query returning nothing |
+
+All three failed the check, and the run exited non-zero.
+
+Full exchange: [`docs/reviews/step-06.md`](../docs/reviews/step-06.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-06`.
