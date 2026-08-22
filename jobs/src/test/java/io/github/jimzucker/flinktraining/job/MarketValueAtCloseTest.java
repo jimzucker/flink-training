@@ -233,6 +233,24 @@ class MarketValueAtCloseTest {
     }
 
     @Test
+    @DisplayName("out-of-order positions still close on the latest one in the window")
+    void outOfOrderPositionsCloseOnTheLatest() throws Exception {
+        // Orders are keyed by trade id across partitions, so Part 1 emits a
+        // symbol's positions from several partitions at once and they do not
+        // arrive in event-time order. Taking the last to arrive would close the
+        // window on an earlier position than the one that actually ended it.
+        price("AAPL", "10.00", 1_000L);
+        position("AAPL", "AAPL", 100, 50_000L);
+        position("AAPL", "AAPL", 250, 55_000L);
+        position("AAPL", "AAPL", 175, 52_000L);   // arrives last, belongs earlier
+
+        watermark(MINUTE);
+
+        assertThat(emitted()).hasSize(1);
+        assertThat(emitted().get(0).quantity).isEqualTo(250L);
+    }
+
+    @Test
     @DisplayName("a window with no trade inherits the position from before it")
     void quietWindowInheritsPosition() throws Exception {
         price("AAPL", "10.00", 1_000L);

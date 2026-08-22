@@ -144,3 +144,29 @@ The lesson is the one the assignment keeps making: a number that reconciles
 against nothing is not a verified number, however plausible it looks. Market
 values had been arithmetically consistent — `quantity x price` always matched —
 while the quantity itself was wrong.
+
+
+## A wrong assumption, caught by CI
+
+Step 01's review concluded that nothing can arrive late, because a key's records
+occupy one partition and Kafka preserves order within it. That is true of prices
+and **false of positions**, and the difference is easy to miss: `orders` is keyed
+by `tradeId`, not by symbol, so trades for one symbol are spread across
+partitions and Part 1 merges them. Each partition it reads is ordered; what it
+emits is not.
+
+Part 2 was reading those streams with a monotonic-timestamp watermark, which
+fires window timers as soon as any later timestamp appears. A position arriving
+after its window had closed was then missed, and the window reported the position
+as of slightly the wrong instant.
+
+It passed on a development machine and failed on a slower CI runner — the
+signature of a race rather than an arithmetic fault. Two changes:
+
+- the position streams allow a bounded amount of out-of-orderness
+- a window closes on the position with the greatest event time within it, rather
+  than the last one to arrive
+
+The check that caught it is the quantity reconciliation added one step earlier,
+which had itself been added to close a gap. Without it, the only symptom would
+have been a market value that was slightly wrong and entirely plausible.

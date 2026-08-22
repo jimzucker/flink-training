@@ -158,10 +158,21 @@ sequence.
 **Prices arrive in order, by construction.** The `prices` topic is keyed by
 `symbol`, so every price for a symbol lands on one partition, and Kafka preserves
 order within a partition. A single seeded generator emits them in event-time
-order. There is no path by which a price for a symbol overtakes an earlier one,
-so the windows use a **monotonically-increasing timestamp** watermark rather than
-bounded out-of-orderness, and allowed lateness is zero. Nothing arrives late
-because nothing can.
+order. There is no path by which a price for a symbol overtakes an earlier one.
+
+**Positions do not.** This was originally claimed for them too, and it is wrong.
+`orders` is keyed by `tradeId` and spread across partitions, so trades for one
+symbol arrive on several partitions at once, and Part 1 merges them. The
+timestamps it emits are therefore not monotonic, even though each partition it
+reads is.
+
+Assuming otherwise fired window timers early: a position arriving after its
+window had closed was missed, and the window reported the position as of slightly
+the wrong instant. It passed on a fast machine and failed on a slow one, which is
+the signature of a race rather than an error in the arithmetic. Part 2 allows a
+bounded amount of out-of-orderness on the position streams instead, and a window
+closes on the position with the greatest event time within it rather than the
+last one to arrive.
 
 **Idleness is the real risk, not lateness.** Each join has two inputs and its
 watermark advances at the slower of them. If an input goes quiet — a symbol with
