@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Emits one market value per key per window, taken at the window close.
@@ -62,6 +64,12 @@ public class MarketValueAtClose
     /** The boundary a timer is already registered for, so it is set once per window. */
     private transient ValueState<Long> pendingBoundary;
 
+    /**
+     * Distinct keys this subtask has emitted a market value for. Summed across
+     * subtasks it is the key count the expected-output table states.
+     */
+    private transient Set<String> keysEmitted;
+
     public MarketValueAtClose(long windowMillis) {
         this.windowMillis = windowMillis;
     }
@@ -78,6 +86,9 @@ public class MarketValueAtClose
                 new MapStateDescriptor<>("closing-trade-by-window", Types.LONG, Types.STRING));
         symbol = getRuntimeContext().getState(new ValueStateDescriptor<>("symbol", Types.STRING));
         pendingBoundary = getRuntimeContext().getState(new ValueStateDescriptor<>("pendingBoundary", Types.LONG));
+
+        keysEmitted = new HashSet<>();
+        getRuntimeContext().getMetricGroup().gauge("activeKeys", () -> keysEmitted.size());
     }
 
     @Override
@@ -133,6 +144,7 @@ public class MarketValueAtClose
             // next window carries the key once a price exists.
             LOG.debug("no price at or before {} for {}", windowEnd, sym);
         } else {
+            keysEmitted.add(ctx.getCurrentKey());
             out.collect(new MarketValueState(
                     ctx.getCurrentKey(), sym, qty, price,
                     price.multiply(BigDecimal.valueOf(qty)),

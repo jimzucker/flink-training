@@ -8,6 +8,9 @@ import org.apache.flink.util.Collector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * Maintains a signed running position per key and emits it on every change.
  *
@@ -26,6 +29,17 @@ public class AccumulatePosition extends KeyedProcessFunction<String, PositionUpd
     private transient ValueState<Long> quantity;
     private transient ValueState<Long> updates;
 
+    /**
+     * Distinct keys this subtask has handled, published as a gauge.
+     *
+     * <p>The expected-output table is stated in unique keys -- four by symbol,
+     * sixteen by account -- and Flink has no metric for that. Keys are
+     * partitioned across subtasks, so summing the gauge gives the total without
+     * double counting. It counts from when the subtask started, so a restart
+     * resets it until every key has been seen again.
+     */
+    private transient Set<String> keysSeen;
+
     public AccumulatePosition(long logEvery) {
         this.logEvery = logEvery;
     }
@@ -34,6 +48,9 @@ public class AccumulatePosition extends KeyedProcessFunction<String, PositionUpd
     public void open(Configuration parameters) {
         quantity = getRuntimeContext().getState(new ValueStateDescriptor<>("quantity", Long.class));
         updates = getRuntimeContext().getState(new ValueStateDescriptor<>("updates", Long.class));
+
+        keysSeen = new HashSet<>();
+        getRuntimeContext().getMetricGroup().gauge("activeKeys", () -> keysSeen.size());
     }
 
     @Override
@@ -41,6 +58,8 @@ public class AccumulatePosition extends KeyedProcessFunction<String, PositionUpd
             throws Exception {
         // Every key starts flat. A key whose sells exceed its buys goes negative,
         // which is a short position and not an error.
+        keysSeen.add(update.key);
+
         long previous = quantity.value() == null ? 0L : quantity.value();
         long count = (updates.value() == null ? 0L : updates.value()) + 1;
         long current = previous + update.signedQuantity;
