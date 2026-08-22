@@ -34,8 +34,9 @@ public final class MarketValueJob {
                 config.bootstrapServers(),
                 config.positionsBySymbolTopic(), config.positionsByAccountTopic(),
                 config.mvBySymbolTopic(), config.mvByAccountTopic());
-        LOG.info("window={}ms idleness={}ms parallelism={} delivery=exactly-once",
-                config.windowMillis(), config.idlenessMillis(), config.parallelism());
+        LOG.info("window={}ms outOfOrderness={}ms idleness={}ms parallelism={} delivery=exactly-once",
+                config.windowMillis(), config.outOfOrdernessMillis(),
+                config.idlenessMillis(), config.parallelism());
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setParallelism(config.parallelism());

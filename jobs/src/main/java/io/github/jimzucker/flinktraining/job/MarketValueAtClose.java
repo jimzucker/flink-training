@@ -16,8 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Emits one market value per key per window, taken at the window close.
@@ -58,9 +60,17 @@ public class MarketValueAtClose
     private transient MapState<Long, Long> closingQuantity;
     /** The trade that last moved the position in each window, for traceability. */
     private transient MapState<Long, String> closingTradeId;
+    /** Event time of the position recorded for each window, so a later one wins. */
+    private transient MapState<Long, Long> closingAt;
     private transient ValueState<String> symbol;
     /** The boundary a timer is already registered for, so it is set once per window. */
     private transient ValueState<Long> pendingBoundary;
+
+    /**
+     * Distinct keys this subtask has emitted a market value for. Summed across
+     * subtasks it is the key count the expected-output table states.
+     */
+    private transient Set<String> keysEmitted;
 
     public MarketValueAtClose(long windowMillis) {
         this.windowMillis = windowMillis;
@@ -76,8 +86,13 @@ public class MarketValueAtClose
                 new MapStateDescriptor<>("closing-quantity-by-window", Types.LONG, Types.LONG));
         closingTradeId = getRuntimeContext().getMapState(
                 new MapStateDescriptor<>("closing-trade-by-window", Types.LONG, Types.STRING));
+        closingAt = getRuntimeContext().getMapState(
+                new MapStateDescriptor<>("closing-at-by-window", Types.LONG, Types.LONG));
         symbol = getRuntimeContext().getState(new ValueStateDescriptor<>("symbol", Types.STRING));
         pendingBoundary = getRuntimeContext().getState(new ValueStateDescriptor<>("pendingBoundary", Types.LONG));
+
+        keysEmitted = new HashSet<>();
+        getRuntimeContext().getMetricGroup().gauge("activeKeys", () -> keysEmitted.size());
     }
 
     @Override
@@ -92,9 +107,17 @@ public class MarketValueAtClose
         // latest would then close the window against a position from its own
         // future -- the same mistake as keeping only the latest price, and just
         // as invisible, since the number still looks like a position.
+        // The closing value is the one with the greatest event time in the window,
+        // not simply the last to arrive. Orders are keyed by trade id and spread
+        // across partitions, so Part 1 emits a symbol's positions from several
+        // partitions at once and they do not arrive in event-time order.
         long window = Windows.nextBoundary(position.eventTime, windowMillis);
-        closingQuantity.put(window, position.quantity);
-        closingTradeId.put(window, position.lastTradeId);
+        Long recordedAt = closingAt.get(window);
+        if (recordedAt == null || position.eventTime >= recordedAt) {
+            closingQuantity.put(window, position.quantity);
+            closingTradeId.put(window, position.lastTradeId);
+            closingAt.put(window, position.eventTime);
+        }
 
         // Register from the record's own event time, not from the current
         // watermark. When processing runs ahead -- a replay, or catching up after
@@ -133,6 +156,7 @@ public class MarketValueAtClose
             // next window carries the key once a price exists.
             LOG.debug("no price at or before {} for {}", windowEnd, sym);
         } else {
+            keysEmitted.add(ctx.getCurrentKey());
             out.collect(new MarketValueState(
                     ctx.getCurrentKey(), sym, qty, price,
                     price.multiply(BigDecimal.valueOf(qty)),
@@ -178,10 +202,12 @@ public class MarketValueAtClose
         for (Long window : expired) {
             closingQuantity.remove(window);
             closingTradeId.remove(window);
+            closingAt.remove(window);
         }
         if (carried != null) {
             closingQuantity.put(windowEnd, carried);
             closingTradeId.put(windowEnd, carriedTrade);
+            closingAt.put(windowEnd, windowEnd);
         }
     }
 

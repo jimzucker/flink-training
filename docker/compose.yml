@@ -62,6 +62,8 @@ services:
         parallelism.default: 2
         state.backend.type: hashmap
         execution.checkpointing.interval: 10s
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.port: 9249
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://localhost:8081/overview > /dev/null"]
       interval: 5s
@@ -80,6 +82,8 @@ services:
       FLINK_PROPERTIES: |
         jobmanager.rpc.address: jobmanager
         taskmanager.numberOfTaskSlots: 4
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.port: 9249
     # Comes back on its own after a crash, so a failure is a recovery to watch
     # rather than a stack to rebuild by hand.
     restart: unless-stopped
@@ -116,3 +120,62 @@ services:
           /opt/jobs/jobs.jar
         flink list -m jobmanager:8081
     restart: "no"
+
+  prometheus:
+    image: prom/prometheus:v3.1.0
+    container_name: ft-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=2h
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:9090/-/healthy > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  grafana:
+    image: grafana/grafana:10.4.19
+    container_name: ft-grafana
+    ports:
+      - "3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      # The dashboard is opened and pointed at during a live demo; a login screen
+      # in the middle of that is friction with nothing to protect.
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_USERS_DEFAULT_THEME: light
+      # Server-side rendering, so a dashboard image can be captured without
+      # depending on whatever browser happens to be to hand. Also how the
+      # dashboard screenshots for the final deck are produced.
+      GF_RENDERING_SERVER_URL: http://renderer:8081/render
+      GF_RENDERING_CALLBACK_URL: http://grafana:3000/
+      GF_LOG_FILTERS: rendering:debug
+      # Pinned to the 10.4 LTS line. In 11.5 the Scenes dashboard renderer is
+      # enabled and cannot be switched off -- the toggles are GA -- and it renders
+      # no panels here: the dashboard model is stored correctly and the queries
+      # return data, but the panel area stays empty. A dashboard that does not
+      # draw is worth nothing during a live demo, so the version is pinned to one
+      # that does rather than left on a moving default.
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3000/api/health > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+
+  renderer:
+    image: grafana/grafana-image-renderer:3.11.6
+    container_name: ft-renderer
+    environment:
+      ENABLE_METRICS: "false"

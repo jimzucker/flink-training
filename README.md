@@ -158,6 +158,38 @@ START_EPOCH_MILLIS=1700000000000 MAX_TRADES=100 MAX_PRICES=400 \
   java -jar generators/target/generators.jar
 ```
 
+## Watching it run
+
+```bash
+docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager prometheus grafana
+```
+
+| | |
+|---|---|
+| Dashboard | <http://localhost:3000/d/flink-training/block-trade-pipeline> |
+| Flink UI | <http://localhost:8081> |
+| Prometheus | <http://localhost:9090> |
+
+Sources on the left, sinks on the right, numbered as on the pipeline diagram. The
+key counts are the expected-output table made visible: sinks 3 and 5 hold 4 keys,
+sinks 4 and 6 hold 16.
+
+Flink has no metric for distinct keys, so the jobs publish one. Keys are
+partitioned across subtasks, which is what makes summing the gauge give the total
+without double counting. It counts from when a subtask started, so a restart
+resets it until every key has been seen again.
+
+To capture the dashboard as an image — this is how the pictures for the deck are
+made:
+
+```bash
+./scripts/capture-dashboard.sh
+```
+
+Grafana renders it itself rather than relying on a browser. That is not
+fastidiousness: a browser extension on the presenting machine was enough to stop
+panels drawing entirely, while the dashboard was perfectly correct.
+
 ## Verifying the numbers
 
 _Added in step 5._
@@ -237,6 +269,7 @@ common/                domain model and JSON encoding
 generators/            block trade and price generators
 jobs/                  Flink jobs
 docker/                local stack: Kafka, Flink, Prometheus, Grafana
+docker/grafana/        dashboard and provisioning
 scripts/               helper scripts
 docs/design/           pipeline diagram and design notes
 docs/steps/            per-step evidence: logs, metrics, screenshots

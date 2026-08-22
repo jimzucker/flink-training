@@ -15,6 +15,7 @@ public record JobConfig(
         long transactionTimeoutMillis,
         long windowMillis,
         long idlenessMillis,
+        long outOfOrdernessMillis,
         long logEvery) {
 
     public static final String DEFAULT_BOOTSTRAP = "kafka:19092";
@@ -49,6 +50,16 @@ public record JobConfig(
      */
     public static final long DEFAULT_TRANSACTION_TIMEOUT_MS = 300_000L;
 
+    /**
+     * How far out of order the position streams may be.
+     *
+     * <p>Orders are keyed by trade id and spread across partitions, so Part 1
+     * merges trades for one symbol from several partitions and the position
+     * timestamps it emits are not monotonic. This is the allowance for that; it
+     * delays a window closing by the same amount.
+     */
+    public static final long DEFAULT_OUT_OF_ORDERNESS_MS = 2_000L;
+
     /** The demo raises this from 2 to 4 to show throughput scaling with it. */
     public static final int DEFAULT_PARALLELISM = 2;
 
@@ -67,6 +78,7 @@ public record JobConfig(
                 envLong("TRANSACTION_TIMEOUT_MS", DEFAULT_TRANSACTION_TIMEOUT_MS),
                 envLong("WINDOW_MS", DEFAULT_WINDOW_MS),
                 envLong("IDLENESS_MS", DEFAULT_IDLENESS_MS),
+                envLong("OUT_OF_ORDERNESS_MS", DEFAULT_OUT_OF_ORDERNESS_MS),
                 envLong("LOG_EVERY", 50L));
     }
 

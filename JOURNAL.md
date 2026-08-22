@@ -15,7 +15,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 03 | CI | Kafka | `step-03-ci` | done |
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | in review |
 | 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | in review |
-| 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | not started |
+| 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | in review |
 | 07 | Correctness demo | full | `step-07-correctness-demo` | not started |
 | 08 | Local Docker demo | full | `step-08-docker-local` | not started |
 | 09 | Latency | full | `step-09-latency` | not started |
@@ -610,4 +610,124 @@ that state, and the symptom looks like a data bug rather than an environment one
 
 ### Review
 
-_Pending._
+Round 1: keep anonymous access, and close the CI gap.
+
+CI now runs `scripts/verify-dashboard.sh`, which checks the dashboard is
+provisioned and well formed, that **every panel query returns data**, that the
+key counts read 4 and 16, and that it renders to a non-trivial image.
+
+The query check is the one that matters. Every panel names a Flink operator, and
+those names come from `.name()` calls in the jobs — renaming one silently blanks
+a panel with nothing failing and nothing logged. That is only noticed by looking
+at it, and during a demo that is too late.
+
+The checks were proved by reintroducing the defects rather than trusting them:
+
+| Defect reintroduced | Caught |
+|---|---|
+| `lastNonNull` reducer id | 10 unknown stat reducers |
+| a row panel | 1 row panel |
+| an operator renamed out of existence | 1 panel query returning nothing |
+
+All three failed the check, and the run exited non-zero.
+
+Full exchange: [`docs/reviews/step-06.md`](../docs/reviews/step-06.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-06`.
+
+---
+
+## Step 06 — Observability
+
+- **Branch:** `step-06-observability`
+- **Prompt:** Prometheus and Grafana join the stack. Dashboard laid out as the
+  requirements ask — sources left, sinks right, latency — with panels numbered as
+  on the pipeline diagram.
+
+### Approach
+
+- **The jobs publish a key-count gauge.** The expected-output table is stated in
+  unique keys, four by symbol and sixteen by account, and Flink has no metric for
+  that. Keys are partitioned across subtasks, so summing the gauge gives the
+  total without double counting. It counts from when a subtask started, so a
+  restart resets it until every key has been seen again — recorded rather than
+  hidden.
+- **Panels carry the diagram's numbers.** A figure on the dashboard can be
+  pointed at on the diagram without translation, which is the whole reason the
+  numbering was fixed in step 01.
+- **Grafana renders its own screenshots.** Images for the deck have to be
+  reproducible, and depending on a browser turned out to be a mistake — see below.
+
+### What went wrong, and what it cost
+
+The dashboard rendered nothing in the browser: correct model stored, queries
+returning data, chrome and navigation drawing fine, and an empty panel area with
+no JavaScript errors. Three things were tried and two were wrong.
+
+1. **Suspected the dashboard JSON.** A minimal single-panel dashboard, built the
+   canonical way, was also blank. Not the JSON.
+2. **Suspected the Grafana version.** 11.5 enables the Scenes renderer and the
+   toggles are GA, so it cannot be turned off; pinned back to the 10.4 LTS line.
+   Still blank. Not the version — though the pin is kept, since a demo tool
+   should not sit on a renderer that changes under it.
+3. **Rendered server-side instead.** The dashboard drew perfectly. The browser
+   was the problem all along: an extension in it manipulates the page root, and
+   that was enough to stop Grafana drawing panels while leaving no error behind.
+
+That is worth keeping in mind for the demo itself. A dashboard that works
+everywhere except the machine it is being presented on is indistinguishable from
+a broken pipeline, and there is nothing in the logs to say otherwise.
+
+Two real defects were found once it could be seen at all, both invisible without
+rendering it:
+
+- Stat panels were blank because the reducer was named `lastNonNull`. The correct
+  id is `lastNotNull`; an unknown reducer displays nothing rather than
+  complaining.
+- Row panels stopped everything below them from drawing. Removed — they were
+  decoration.
+
+### Results
+
+Dashboard: [`docs/steps/step-06/dashboard.png`](../docs/steps/step-06/dashboard.png)
+
+The rates on it are the design, visible:
+
+| Panel | Reads |
+|---|---|
+| ① orders | 10/sec |
+| ② prices | 1000/sec |
+| ③ positions-by-symbol | 10/sec — one per trade |
+| ④ positions-by-account | 40/sec — one per allocation |
+| ③ / ⑤ unique keys | **4** |
+| ④ / ⑥ unique keys | **16** |
+
+Sinks 5 and 6 step rather than flow, which is what emitting once per key per
+window looks like on a rate graph.
+
+### Review
+
+Round 1: keep anonymous access, and close the CI gap.
+
+CI now runs `scripts/verify-dashboard.sh`, which checks the dashboard is
+provisioned and well formed, that **every panel query returns data**, that the
+key counts read 4 and 16, and that it renders to a non-trivial image.
+
+The query check is the one that matters. Every panel names a Flink operator, and
+those names come from `.name()` calls in the jobs — renaming one silently blanks
+a panel with nothing failing and nothing logged. That is only noticed by looking
+at it, and during a demo that is too late.
+
+The checks were proved by reintroducing the defects rather than trusting them:
+
+| Defect reintroduced | Caught |
+|---|---|
+| `lastNonNull` reducer id | 10 unknown stat reducers |
+| a row panel | 1 row panel |
+| an operator renamed out of existence | 1 panel query returning nothing |
+
+All three failed the check, and the run exited non-zero.
+
+Full exchange: [`docs/reviews/step-06.md`](../docs/reviews/step-06.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-06`.

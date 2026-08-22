@@ -72,9 +72,10 @@ jobs:
       # --wait excludes the topics service: it is a one-shot that creates the six
       # topics and exits, which --wait would read as a failed service.
       # verify-run.sh recreates the topics it needs anyway.
-      - name: Start Kafka and Flink
+      - name: Start Kafka, Flink and the dashboard
         run: |
-          docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager
+          docker compose -f docker/compose.yml up -d --wait \
+            kafka jobmanager taskmanager prometheus grafana renderer
           docker compose -f docker/compose.yml ps
           # A task manager registers a moment after its container is up; without
           # a slot the job submission fails with no resources.
@@ -91,6 +92,25 @@ jobs:
       # tolerances.
       - name: Run and verify
         run: ./scripts/verify-run.sh
+
+      # The dashboard is how the numbers are shown to anyone. Every panel query
+      # names a Flink operator, so renaming one silently blanks a panel with
+      # nothing failing and nothing logged -- which is only noticed by looking,
+      # and during a demo that is too late.
+      - name: Verify the dashboard
+        run: ./scripts/verify-dashboard.sh
+
+      - name: Upload the dashboard image
+        if: always()
+        run: ./scripts/capture-dashboard.sh || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dashboard
+          path: docs/steps/step-06/dashboard.png
+          if-no-files-found: warn
+          retention-days: 7
 
       - name: Logs on failure
         if: failure()
