@@ -16,6 +16,8 @@ EXPECT_ORDERS="${EXPECT_ORDERS:-100}"
 EXPECT_PRICES="${EXPECT_PRICES:-400}"
 SYMBOLS="${SYMBOLS:-4}"
 ACCOUNT_KEYS="${ACCOUNT_KEYS:-16}"
+MIN_WINDOWS="${MIN_WINDOWS:-3}"
+WINDOW_MS="${WINDOW_MS:-10000}"
 FAILURES=0
 
 if [ $((EXPECT_PRICES % SYMBOLS)) -ne 0 ]; then
@@ -24,18 +26,26 @@ if [ $((EXPECT_PRICES % SYMBOLS)) -ne 0 ]; then
   exit 2
 fi
 
-# Drains the whole topic. A prefix read with --max-messages is not safe: it
-# slices across partitions, and the slice is uneven even when production was not.
-#
-# read_committed matters: the position sinks write transactionally, so an
-# uncommitted read would show records belonging to transactions that may still
-# abort. Reading uncommitted here would make the verification claim more than is
-# actually durable.
+# Topics are dumped once, up front, by a reader that knows the end offsets and
+# reports when it could not reach them. A console consumer per topic could not
+# tell "empty" from "did not finish in time" -- both return zero records -- so a
+# slow machine produced failures that looked exactly like missing data.
+DUMP_DIR="${DUMP_DIR:-target/topic-dump}"
+
+dump_topics() {
+  local jar=generators/target/generators.jar
+  if [ ! -f "$jar" ]; then
+    echo "build first:  mvn package -DskipTests" >&2
+    exit 2
+  fi
+  rm -rf "$DUMP_DIR"
+  java -cp "$jar" io.github.jimzucker.flinktraining.tools.TopicDump \
+      "${BOOTSTRAP:-localhost:9092}" "$DUMP_DIR" "$@" \
+      --deadline-seconds "${DUMP_DEADLINE_SECONDS:-120}"
+}
+
 drain() {
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
-      --bootstrap-server localhost:9092 --topic "$1" \
-      --isolation-level read_committed \
-      --from-beginning --timeout-ms "${DRAIN_TIMEOUT_MS:-20000}" 2>/dev/null
+  cat "$DUMP_DIR/$1.jsonl" 2>/dev/null
 }
 
 check() {  # label expected actual
@@ -46,6 +56,20 @@ check() {  # label expected actual
     FAILURES=$((FAILURES + 1))
   fi
 }
+
+TOPICS="orders prices"
+[ "${CHECK_POSITIONS:-1}" = "1" ] && TOPICS="$TOPICS positions-by-symbol positions-by-account"
+[ "${CHECK_MARKET_VALUE:-0}" = "1" ] && TOPICS="$TOPICS mv-by-symbol mv-by-account"
+
+echo "reading topics"
+# shellcheck disable=SC2086
+if ! dump_topics $TOPICS; then
+  echo
+  echo "a topic could not be read to its end offsets; the checks below would be" >&2
+  echo "reporting a read failure as missing data, so stopping here instead." >&2
+  exit 4
+fi
+echo
 
 echo "orders  (expecting exactly ${EXPECT_ORDERS})"
 ORDERS=$(drain orders)
@@ -111,6 +135,104 @@ if [ "${CHECK_POSITIONS:-1}" = "1" ]; then
                | awk '{last[$2]=$4; sym[$2]=$1} END {for (k in last) t[sym[k]]+=last[k]; for (s in t) printf "%s %d\n", s, t[s]}' | sort)
   echo "$BY_SYMBOL" | while read -r sym qty; do printf "  %-6s %10s\n" "$sym" "$qty"; done
   check "symbol totals match account totals" "" "$(diff <(echo "$BY_SYMBOL") <(echo "$BY_ACCOUNT") | grep -c . | sed 's/^0$//')"
+fi
+
+# ---------------------------------------------------------------- sinks 5 and 6
+if [ "${CHECK_MARKET_VALUE:-0}" = "1" ]; then
+  PRICES_JSON=$(drain prices)
+
+  check_market_value() {  # topic label keys
+    local topic="$1" label="$2" keys="$3"
+    echo
+    echo "${topic}  (${label}: one per key per window)"
+    local MV
+    MV=$(drain "$topic")
+
+    # How many windows close depends on where the run started relative to a
+    # boundary -- a property of running on a real clock. The count is taken from
+    # the data and only floored; everything inside a window stays exact.
+    local windows
+    windows=$(echo "$MV" | jq -r '.windowEnd' | sort -u | grep -c .)
+    if [ "$windows" -ge "$MIN_WINDOWS" ]; then
+      printf "  %-40s %-12s OK\n" "windows closed" "$windows"
+    else
+      check "windows closed" ">= $MIN_WINDOWS" "$windows"
+    fi
+    check "unique keys"  "$keys" "$(echo "$MV" | jq -r '.key' | sort -u | grep -c .)"
+
+    # A key starts emitting at the first boundary after it is first seen, so keys
+    # that appear late have fewer windows than keys that appear early. Counting
+    # keys x windows would call that a failure. What must hold is that once a key
+    # starts, it never skips a window and never stops early -- a quiet key still
+    # holds a position and must keep reporting it.
+    check "keys with a gap in their windows" "0" \
+          "$(echo "$MV" | jq -r '"\(.key) \(.windowEnd)"' | sort -u | sort -k1,1 -k2,2n \
+             | awk -v w="$WINDOW_MS" '{ if ($1 != k) { k = $1; prev = $2 }
+                                        else { if ($2 != prev + w) bad++; prev = $2 } }
+                                      END { print bad + 0 }')"
+    local last_window keys_in_last
+    last_window=$(echo "$MV" | jq -r '.windowEnd' | sort -n | tail -1)
+    keys_in_last=$(echo "$MV" | jq -r --argjson b "$last_window" \
+                   'select(.windowEnd == $b) | .key' | sort -u | grep -c .)
+    check "keys missing from the last window" "0" "$((keys - keys_in_last))"
+    # Records are then exactly one per key per window it participated in.
+    check "record count" \
+          "$(echo "$MV" | jq -r '"\(.key) \(.windowEnd)"' | sort -u | grep -c .)" \
+          "$(echo "$MV" | grep -c .)"
+    # Exactly one emission per key per window: a key emitting twice, or skipping a
+    # window, is invisible in a total count.
+    check "duplicate key/window pairs" "0" \
+          "$(echo "$MV" | jq -r '"\(.key) \(.windowEnd)"' | sort | uniq -d | grep -c .)"
+    check "marketValue != quantity x price" "0" \
+          "$(echo "$MV" | jq -r 'select((.quantity * (.price|tonumber)) != (.marketValue|tonumber)) | .key' | grep -c .)"
+
+    # The strongest check available: the price each window closed against,
+    # recomputed independently from the raw price topic.
+    local bad=0
+    for b in $(echo "$MV" | jq -r '.windowEnd' | sort -u); do
+      while read -r sym price; do
+        want=$(echo "$PRICES_JSON" | jq -r --arg s "$sym" --argjson b "$b" \
+               'select(.symbol==$s and .eventTime < $b) | "\(.eventTime) \(.price)"' \
+               | sort -n | tail -1 | awk '{print $2}')
+        [ "$want" = "$price" ] || bad=$((bad + 1))
+      done < <(echo "$MV" | jq -r --argjson b "$b" 'select(.windowEnd==$b) | "\(.symbol) \(.price)"' | sort -u)
+    done
+    check "price at close differs from the price topic" "0" "$bad"
+  }
+
+  # The quantity a window closed against, recomputed from the position topic that
+  # fed it. Prices were already checked this way; without this the quantity half
+  # of every market value rested on nothing but the job agreeing with itself.
+  check_quantity_at_close() {  # mv-topic positions-topic label
+    local mv_topic="$1" pos_topic="$2" label="$3"
+    local pos_file="$DUMP_DIR/.pos.tsv" mv_file="$DUMP_DIR/.mv.tsv"
+
+    drain "$pos_topic" | jq -r '[.key, .eventTime, .quantity] | @tsv' \
+      | sort -k1,1 -k2,2n > "$pos_file"
+    drain "$mv_topic" | jq -r '[.key, .windowEnd, .quantity] | @tsv' > "$mv_file"
+
+    # For each market value, the last position for that key strictly before the
+    # window close is the one it must report.
+    check "$label quantity differs from the position topic" "0" \
+          "$(awk -F'\t' '
+               NR == FNR { n[$1]++; t[$1 SUBSEP n[$1]] = $2; q[$1 SUBSEP n[$1]] = $3; next }
+               {
+                 found = 0; want = ""
+                 for (i = 1; i <= n[$1]; i++) {
+                   if (t[$1 SUBSEP i] < $2) { want = q[$1 SUBSEP i]; found = 1 }
+                 }
+                 if (!found || want != $3) bad++
+               }
+               END { print bad + 0 }' "$pos_file" "$mv_file")"
+  }
+
+  check_market_value mv-by-symbol  "sink 5" "$SYMBOLS"
+  check_market_value mv-by-account "sink 6" "$ACCOUNT_KEYS"
+
+  echo
+  echo "market value reconciles against the position topics"
+  check_quantity_at_close mv-by-symbol  positions-by-symbol  "sink 5"
+  check_quantity_at_close mv-by-account positions-by-account "sink 6"
 fi
 
 echo

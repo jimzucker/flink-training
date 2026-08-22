@@ -44,8 +44,8 @@ element in the diagram.
 |---|---|---|---|
 | 3 | `positions-by-symbol` | 10 / sec — one per trade | **4** |
 | 4 | `positions-by-account` | 40 / sec — one per allocation | **16** |
-| 5 | `mv-by-symbol` | 4 / min | **4** |
-| 6 | `mv-by-account` | 16 / min | **16** |
+| 5 | `mv-by-symbol` | 4 / min — one per key per window | **4** |
+| 6 | `mv-by-account` | 16 / min — one per key per window | **16** |
 
 Verified against the real topics by `scripts/verify-topics.sh`. Sinks 3–6 are
 produced by the jobs in later steps; what step 02 proves is the input side.
@@ -62,10 +62,30 @@ docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager
 ./scripts/verify-run.sh                                   # submit, run, verify
 ```
 
-`verify-run.sh` resets the topics, submits the positions job, emits an exact
-number of records, waits for the sinks to catch up, and asserts the expected
-numbers — inputs and both position sinks, including that the two aggregations
-reconcile. The Flink UI is at <http://localhost:8081>.
+`verify-run.sh` resets the topics, submits both jobs, emits an exact number of
+records, waits for the sinks, and asserts the expected numbers across all six
+topics — including that the two position aggregations reconcile, and that the
+price each market-value window closed against matches the last price on the
+price topic before that boundary. The Flink UI is at <http://localhost:8081>.
+
+The generator runs exactly as it does for the demo: wall-clock event times, paced
+in real time, at the demo rates. Nothing about the clock is simulated.
+
+Only the **window** is shortened for the check. Closing three one-minute windows
+would need three and a half minutes of running, and a check that slow stops being
+run — so the verification submits the jobs with a ten-second window and exercises
+the same code on the same clock. The demo keeps its minute.
+
+| | Window | Event time | Pacing |
+|---|---|---|---|
+| Demo | 60s | wall clock | real time |
+| Verification | 10s | wall clock | real time |
+
+How many windows close depends on where the run starts relative to a boundary,
+which is a property of a real clock, so the count is read from the data rather
+than predicted. Everything inside a window stays exact: a key never skips a
+window once it starts, never stops early, and there is exactly one record per key
+per window.
 
 To skip the job and check the inputs only:
 
@@ -92,6 +112,13 @@ sinks are still exact:
 ```bash
 ./scripts/chaos-exactly-once.sh
 ```
+
+Market value is emitted once per key per minute, at the **price at close**. A
+join advances at its slower input, so an input with no traffic would stall the
+watermark and the windows would stop firing while every record that did arrive
+was in order. `IDLENESS_MS` prevents that, and setting it to `0` disables it —
+which is how the setting is shown to matter: with it off and any partition empty,
+sinks 5 and 6 emit nothing at all while Part 1 is unaffected.
 
 `verify-run.sh` resets the input topics, emits an exact number of records in
 replay mode, and asserts the expected-output table against what landed. Every

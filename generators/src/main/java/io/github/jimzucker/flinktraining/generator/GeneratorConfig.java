@@ -67,6 +67,7 @@ public record GeneratorConfig(
         return Math.max(1L, 1_000L / tradesPerSecond);
     }
 
+
     /** True when event times come from the wall clock rather than a replay counter. */
     public boolean isLive() {
         return startEpochMillis == WALL_CLOCK;

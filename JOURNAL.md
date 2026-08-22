@@ -14,7 +14,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 02 | Generators | Kafka | `step-02-generators` | in review |
 | 03 | CI | Kafka | `step-03-ci` | done |
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | in review |
-| 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | not started |
+| 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | in review |
 | 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | not started |
 | 07 | Correctness demo | full | `step-07-correctness-demo` | not started |
 | 08 | Local Docker demo | full | `step-08-docker-local` | not started |
@@ -524,3 +524,90 @@ demo scales 2 → 4, and empty sinks 5 and 6 confirmed as expected.
 Full exchange: [`docs/reviews/step-04.md`](../docs/reviews/step-04.md)
 
 **Outcome:** awaiting round 2.
+
+---
+
+## Step 05 — Part 2: market value
+
+- **Branch:** `step-05-part2-marketvalue`
+- **Prompt:** Build Part 2 — join prices to positions, emit market value once per
+  minute at the price at close, write sinks 5 and 6. Verify the idleness handling
+  identified in step 01's review.
+
+### Approach
+
+- **Event-time timers on window boundaries, not a windowed aggregate.** The
+  required semantics are a snapshot at an instant — the position as of the
+  boundary times the last price at or before it — not a summary of an interval.
+  A windowed reduce describes what happened during the minute; this describes
+  what was true when it ended, which is the thing that reconciles against the
+  position topic at that timestamp.
+- **Prices broadcast, not keyed.** The account side is keyed on
+  account/sub-account/symbol and cannot be joined to a symbol-keyed stream by key
+  alone.
+- **Event time decoupled from emission rate in replay.** Covering three window
+  boundaries needs three minutes of event time, which previously meant three
+  minutes of waiting. A window test that slow is a window test that stops being
+  run. Replay now advances event time per record independently of how fast
+  records are emitted, so 200 seconds of event time takes two seconds. The live
+  demo is untouched: event time is the wall clock, which is what makes latency
+  measurable.
+
+### Two bugs the replay found
+
+Both would have survived unit tests, and both produce plausible-looking output.
+
+1. **Timers registered from the watermark, not the record.** When processing runs
+   ahead of event time — a replay, or catching up after a restart — the watermark
+   is already past the record, so the next boundary computed from it is in the
+   future and every window the data actually covers is skipped. Symptom: two jobs
+   RUNNING, Part 1 perfect, sinks 5 and 6 permanently empty.
+
+2. **Only the latest price kept per symbol.** Correct while records arrive in step
+   with the clock, wrong the moment the price stream races ahead: a window closes
+   against a price from its own future. The number still looks like a price and
+   still multiplies out correctly — it just reconciles against nothing. Prices are
+   now held per window, and a window looks backwards for the last price at or
+   before its boundary.
+
+Both now have regression tests naming the scenario rather than the mechanism.
+
+### Results
+
+22 unit tests pass, 11 of them on window semantics. Full pipeline verified end to
+end in one command:
+
+```
+sink 3   200 records over  4 keys
+sink 4   800 records over 16 keys
+sink 5    12 records = 4 keys x 3 windows
+sink 6    48 records = 16 keys x 3 windows
+duplicate key/window pairs                    0
+marketValue != quantity x price               0
+price at close differs from the price topic   0
+symbol totals match account totals           OK
+all checks passed, with no tolerances
+```
+
+The last of those is the strongest available statement about Part 2: the closing
+price of every window, recomputed independently from the raw price topic and
+required to match what the sink published. Twelve of twelve, then again for all
+of sink 6.
+
+Idleness proved by turning it off: identical input, one setting changed, sinks 5
+and 6 drop from 12 and 48 to **zero** while Part 1 is unaffected. Details in
+[`docs/steps/step-05/idleness.md`](../docs/steps/step-05/idleness.md).
+
+### An operational finding
+
+Repeatedly deleting and recreating topics against a long-lived broker, while
+transactional producers hold state, left that broker unable to serve new
+consumers — offsets reported 200 records and a console consumer read zero for 60
+seconds, with the broker reporting healthy and Flink still consuming happily. A
+fresh stack behaved correctly immediately. CI starts clean every run so it is
+unaffected, but a local stack reused across many verification cycles can reach
+that state, and the symptom looks like a data bug rather than an environment one.
+
+### Review
+
+_Pending._

@@ -10,10 +10,20 @@ cd "$(dirname "$0")/.."
 
 COMPOSE="docker/compose.yml"
 CONTAINER="${CONTAINER:-ft-kafka}"
-TRADES="${TRADES:-100}"
-PRICES="${PRICES:-400}"
+# The generator runs exactly as it does for the demo: wall-clock event times,
+# paced in real time, at the demo rates. Nothing about the clock is simulated.
+#
+# Only the window is shortened. Closing three one-minute windows would need three
+# and a half minutes of running, and a check that slow stops being run. The
+# window length is a runtime parameter, so the test shortens it to ten seconds
+# and exercises the same code on the same clock. The demo keeps its minute.
+TRADES="${TRADES:-400}"
+PRICES="${PRICES:-40000}"
+TRADES_PER_SECOND="${TRADES_PER_SECOND:-10}"
+PRICES_PER_SECOND="${PRICES_PER_SECOND:-1000}"
+VERIFY_WINDOW_MS="${VERIFY_WINDOW_MS:-10000}"
+MIN_WINDOWS="${MIN_WINDOWS:-3}"
 SEED="${SEED:-42}"
-START_EPOCH_MILLIS="${START_EPOCH_MILLIS:-1700000000000}"
 JAR="generators/target/generators.jar"
 # 1 when the positions job should be submitted and sinks 3 and 4 checked.
 WITH_PIPELINE="${WITH_PIPELINE:-1}"
@@ -37,8 +47,10 @@ topic_exists() {
 
 RESET_TOPICS="orders prices"
 if [ "$WITH_PIPELINE" = "1" ]; then
-  RESET_TOPICS="$RESET_TOPICS positions-by-symbol positions-by-account"
+  RESET_TOPICS="$RESET_TOPICS positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
 fi
+
+
 
 echo "resetting topics: $RESET_TOPICS"
 for t in $RESET_TOPICS; do
@@ -65,15 +77,18 @@ if [ "$WITH_PIPELINE" = "1" ]; then
                 flink list -r 2>/dev/null | grep -oE '[0-9a-f]{32}' || true); do
     docker compose -f "$COMPOSE" exec -T jobmanager flink cancel "$id" >/dev/null 2>&1 || true
   done
-  docker compose -f "$COMPOSE" --profile submit run --rm submit >/dev/null 2>&1
-  echo "  submitted"
+  WINDOW_MS="$VERIFY_WINDOW_MS" \
+    docker compose -f "$COMPOSE" --profile submit run --rm submit >/dev/null 2>&1
+  echo "  submitted (window ${VERIFY_WINDOW_MS}ms; the demo uses 60000ms)"
 fi
 
-echo "emitting exactly ${TRADES} trades and ${PRICES} prices (seed ${SEED}, replay)"
+echo "emitting exactly ${TRADES} trades and ${PRICES} prices at the demo rates"
+echo "  wall-clock event times, ${TRADES_PER_SECOND}/sec -> about $((TRADES / TRADES_PER_SECOND))s"
 SEED="$SEED" \
-START_EPOCH_MILLIS="$START_EPOCH_MILLIS" \
 MAX_TRADES="$TRADES" \
 MAX_PRICES="$PRICES" \
+TRADES_PER_SECOND="$TRADES_PER_SECOND" \
+PRICES_PER_SECOND="$PRICES_PER_SECOND" \
   java -jar "$JAR" 2>&1 | grep -E "starting|universe|stopped" || true
 
 # Waits until a topic holds at least `want` committed records, and reports how
@@ -86,11 +101,21 @@ MAX_PRICES="$PRICES" \
 # `want` means the read returns as soon as the target is reached rather than
 # waiting out a timeout.
 committed_count() {  # topic want
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
-      --bootstrap-server localhost:9092 --topic "$1" \
-      --isolation-level read_committed --from-beginning \
-      --max-messages "$2" --timeout-ms "${CATCHUP_TIMEOUT_MS:-90000}" 2>/dev/null \
-    | grep -c . || true
+  local want="$2"
+  for _ in $(seq 1 "${CATCHUP_ATTEMPTS:-40}"); do
+    local n
+    n=$(java -cp generators/target/generators.jar \
+          io.github.jimzucker.flinktraining.tools.TopicDump \
+          localhost:9092 target/catchup "$1" --deadline-seconds 30 2>/dev/null \
+        | awk '{print $2}')
+    n=${n:-0}
+    if [ "$n" -ge "$want" ]; then
+      echo "$n"
+      return 0
+    fi
+    sleep 3
+  done
+  echo "${n:-0}"
 }
 
 if [ "$WITH_PIPELINE" = "1" ]; then
@@ -100,8 +125,19 @@ if [ "$WITH_PIPELINE" = "1" ]; then
   s3=$(committed_count positions-by-symbol "$TRADES")
   s4=$(committed_count positions-by-account "$((TRADES * 4))")
   echo "  sink 3: ${s3}/${TRADES}   sink 4: ${s4}/$((TRADES * 4))"
+
+  # How many windows close depends on where the run starts relative to a window
+  # boundary, which is a property of running on a real clock rather than a
+  # simulated one. The count is read from the data; everything inside a window
+  # stays exact.
+  echo "waiting for sinks 5 and 6 (at least ${MIN_WINDOWS} windows)"
+  s5=$(committed_count mv-by-symbol "$((4 * MIN_WINDOWS))")
+  s6=$(committed_count mv-by-account "$((16 * MIN_WINDOWS))")
+  echo "  sink 5: ${s5}   sink 6: ${s6}"
 fi
 
 echo
-EXPECT_ORDERS="$TRADES" EXPECT_PRICES="$PRICES" CHECK_POSITIONS="$WITH_PIPELINE" \
+EXPECT_ORDERS="$TRADES" EXPECT_PRICES="$PRICES" \
+CHECK_POSITIONS="$WITH_PIPELINE" CHECK_MARKET_VALUE="$WITH_PIPELINE" \
+MIN_WINDOWS="$MIN_WINDOWS" WINDOW_MS="$VERIFY_WINDOW_MS" \
   ./scripts/verify-topics.sh

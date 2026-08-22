@@ -1,0 +1,82 @@
+resetting topics: orders prices positions-by-symbol positions-by-account mv-by-symbol mv-by-account
+restarting the positions job
+  submitted (window 10000ms; the demo uses 60000ms)
+emitting exactly 400 trades and 40000 prices at the demo rates
+  wall-clock event times, 10/sec -> about 40s
+09:47:49.865 INFO  GeneratorMain - starting generators: bootstrap=localhost:9092 trades/sec=10 prices/sec=1000 seed=42 duration=forever time=wall clock
+09:47:49.875 INFO  GeneratorMain - universe: 4 symbols, 4 accounts, 4 allocations per trade -> 4 symbol keys, 16 account keys
+09:48:30.029 INFO  GeneratorMain - generators stopped
+waiting for sinks 3 and 4 to commit
+  sink 3: 400/400   sink 4: 1600/1600
+waiting for sinks 5 and 6 (at least 3 windows)
+  sink 5: 12   sink 6: 48
+
+reading topics
+orders                    400 records
+prices                  40000 records
+positions-by-symbol       400 records
+positions-by-account     1600 records
+mv-by-symbol               12 records
+mv-by-account              48 records
+
+orders  (expecting exactly 400)
+  record count                             400          OK
+  unique symbols (sink 3 keys)             4            OK
+  allocations (sink 4 rate)                1600         OK
+  allocations sum to block qty             0            OK
+  unique account keys (sink 4)             16           OK
+  malformed account keys                   0            OK
+  sides present                            2            OK
+  duplicate tradeIds                       0            OK
+  missing tradeIds                         0            OK
+  buy/sell mix                              188 BUY  212 SELL 
+
+prices  (expecting exactly 40000)
+  record count                             40000        OK
+  unique symbols                           4            OK
+  prices per symbol                        10000        OK
+  non-positive prices                      0            OK
+  prices off a quarter                     0            OK
+
+positions-by-symbol  (sink 3: one update per trade)
+  record count                             400          OK
+  unique keys                              4            OK
+  updateCount runs 1..n per key            0            OK
+
+positions-by-account (sink 4: one update per allocation)
+  record count                             1600         OK
+  unique keys                              16           OK
+  malformed keys                           0            OK
+
+reconciliation  (final position per symbol, aggregated both ways)
+  AAPL        -5600
+  AMZN        -4800
+  GOOG        -5200
+  MSFT         6000
+  symbol totals match account totals                    OK
+
+mv-by-symbol  (sink 5: one per key per window)
+  windows closed                           3            OK
+  unique keys                              4            OK
+  keys with a gap in their windows         0            OK
+  keys missing from the last window        0            OK
+  record count                             12           OK
+  duplicate key/window pairs               0            OK
+  marketValue != quantity x price          0            OK
+  price at close differs from the price topic 0            OK
+
+mv-by-account  (sink 6: one per key per window)
+  windows closed                           3            OK
+  unique keys                              16           OK
+  keys with a gap in their windows         0            OK
+  keys missing from the last window        0            OK
+  record count                             48           OK
+  duplicate key/window pairs               0            OK
+  marketValue != quantity x price          0            OK
+  price at close differs from the price topic 0            OK
+
+market value reconciles against the position topics
+  sink 5 quantity differs from the position topic 0            OK
+  sink 6 quantity differs from the position topic 0            OK
+
+all checks passed, with no tolerances
