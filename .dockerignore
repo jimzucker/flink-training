@@ -1,0 +1,9 @@
+target/
+*/target/
+.git/
+.github/
+docs/
+docker/*
+!docker/generators/
+*.md
+assignment.pptx

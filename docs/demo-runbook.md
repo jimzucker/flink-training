@@ -66,9 +66,17 @@ that before it appears on screen.
 
 ### 3. Start it, then switch to Grafana
 
+The stack comes up with the generators idle by default, so the dashboard is
+visibly empty while the design is being explained. Then, on cue:
+
 ```bash
-java -jar generators/target/generators.jar
+./scripts/start-generators.sh
 ```
+
+Graphs going from flat to flowing while people watch is more persuasive than a
+dashboard that was already busy when it appeared. If you would rather not touch a
+terminal mid-demo, `GENERATOR_START=2` starts the data two minutes after the
+stack comes up.
 
 Switch to the dashboard and let it fill. Then read it left to right, which is how
 it is laid out:

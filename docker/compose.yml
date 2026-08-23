@@ -88,30 +88,48 @@ services:
     # rather than a stack to rebuild by hand.
     restart: unless-stopped
 
-  # Submits the jobs jar, then exits. Kept out of `up` by a profile so bringing
-  # the stack up does not require the jar to have been built yet.
+  # Submits both jobs, then exits. Built from the repository rather than mounting
+  # a jar from the host, so `docker compose up` needs nothing built first.
   submit:
-    image: flink:1.20.4-java17
+    build:
+      context: ..
+      target: jobs
+    image: flink-training/jobs
     container_name: ft-submit
-    profiles: ["submit"]
     depends_on:
       jobmanager:
         condition: service_healthy
-    volumes:
-      - ../jobs/target:/opt/jobs:ro
+      taskmanager:
+        condition: service_started
+      # Submitting before the topics exist fails the job with
+      # UnknownTopicOrPartition, and it then restarts in a loop.
+      topics:
+        condition: service_completed_successfully
     environment:
       # The demo raises parallelism from 2 to 4 to show throughput scaling with
       # it. The job graph is built in the client, so this has to be set here.
       PARALLELISM: "${PARALLELISM:-2}"
       CHECKPOINT_INTERVAL_MS: "${CHECKPOINT_INTERVAL_MS:-5000}"
       BOOTSTRAP_SERVERS: "${BOOTSTRAP_SERVERS:-kafka:19092}"
-      WINDOW_MS: "${WINDOW_MS:-60000}"
+      # Ten seconds, not the specified minute. This stack is the local demo, and
+      # a minute of dead air before the market value sinks say anything is a long
+      # time in front of an audience. The job itself still defaults to the
+      # specified minute; only this stack overrides it.
+      WINDOW_MS: "${WINDOW_MS:-10000}"
       IDLENESS_MS: "${IDLENESS_MS:-5000}"
     entrypoint:
       - /bin/bash
       - -c
       - |
         set -e
+        # A task manager registers a moment after its container starts. Without a
+        # free slot the submission is rejected for lack of resources, so wait for
+        # one rather than race it.
+        for _ in $$(seq 1 60); do
+          slots=$$(curl -sf http://jobmanager:8081/overview | grep -o '"slots-available":[0-9]*' | cut -d: -f2)
+          [ "$${slots:-0}" -ge 1 ] && break
+          sleep 2
+        done
         flink run -d -m jobmanager:8081 \
           -c io.github.jimzucker.flinktraining.job.PositionsJob \
           /opt/jobs/jobs.jar
@@ -179,3 +197,29 @@ services:
     container_name: ft-renderer
     environment:
       ENABLE_METRICS: "false"
+
+  # Produces the demo load. Waits for the jobs to be submitted, so the topics are
+  # being consumed before anything is written to them.
+  generators:
+    build:
+      context: ..
+      target: generators
+    image: flink-training/generators
+    container_name: ft-generators
+    depends_on:
+      submit:
+        condition: service_completed_successfully
+    environment:
+      BOOTSTRAP_SERVERS: kafka:19092
+      TRADES_PER_SECOND: "${TRADES_PER_SECOND:-10}"
+      PRICES_PER_SECOND: "${PRICES_PER_SECOND:-1000}"
+      SEED: "${SEED:-42}"
+      # manual  stay idle until scripts/start-generators.sh is run (default)
+      # auto    start with the stack
+      # <n>     start n minutes after the stack comes up
+      #
+      # Manual by default: the graphs going from flat to flowing while people
+      # watch is the most persuasive moment in the demo, and a stack that is
+      # already busy when it appears gives it away.
+      GENERATOR_START: "${GENERATOR_START:-manual}"
+    restart: unless-stopped

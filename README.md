@@ -56,10 +56,52 @@ Full one-command start arrives in step 08. Today the stack is Kafka, and the
 generators run on the host.
 
 ```bash
+docker compose -f docker/compose.yml up -d --build   # everything, idle
+./scripts/start-generators.sh                        # start the data on cue
+```
+
+The first command is the whole stack: jars built inside Docker, Kafka and Flink
+started, topics created, both jobs submitted. Nothing needs building or launching
+by hand and no Java is required on the host — about half a minute from nothing to
+a running pipeline.
+
+The generators come up **idle**, so the dashboard is visibly empty until you start
+them. Graphs going from flat to flowing while people watch is the most persuasive
+moment in the demo, and a stack that is already busy when it appears gives it
+away.
+
+```bash
+./scripts/demo.sh              # the same, and tells you what to open
+./scripts/verify-cold-start.sh # tears it all down and checks it comes back green
+```
+
+### When the data starts
+
+`GENERATOR_START` decides when the generators begin producing. Auto is
+convenient, but it gives away the most persuasive moment in the demo — graphs
+going from flat to flowing while people watch.
+
+| Value | Behaviour |
+|---|---|
+| `manual` (default) | the container stays up and idle until you start it |
+| `auto` | starts with the stack, so the dashboard is alive when you open it |
+| a number | starts that many minutes after the stack comes up |
+
+```bash
+./scripts/start-generators.sh                                  # on cue
+
+GENERATOR_START=2 docker compose -f docker/compose.yml up -d   # data arrives in 2 minutes
+GENERATOR_START=auto docker compose -f docker/compose.yml up -d
+```
+
+Anything else fails at start rather than being guessed at.
+
+To work on the code rather than run it, build on the host and verify:
+
+```bash
 source scripts/env.sh                                     # Java 17
 mvn package -DskipTests
-docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager
-./scripts/verify-run.sh                                   # submit, run, verify
+./scripts/verify-run.sh                                   # run and verify
 ```
 
 `verify-run.sh` resets the topics, submits both jobs, emits an exact number of
@@ -77,7 +119,7 @@ change to the calculation.
 | | Window | Set by | Why |
 |---|---|---|---|
 | Specification, and the job default | **60s** | `WINDOW_MS` default | what the requirements state; this is what the design diagram shows |
-| Live demo | **10s** | `scripts/demo.sh` | a minute of dead air before the market value sinks say anything is a long time in front of an audience |
+| Live demo | **10s** | `docker/compose.yml` | a minute of dead air before the market value sinks say anything is a long time in front of an audience |
 | Verification | **10s** | `scripts/verify-run.sh` | closing three one-minute windows would need three and a half minutes per run, and a check that slow stops being run |
 
 Event time is the wall clock and pacing is real time in all three — only the
