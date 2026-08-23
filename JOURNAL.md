@@ -17,7 +17,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | in review |
 | 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | in review |
 | 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
-| 08 | Local Docker demo | full | `step-08-docker-local` | not started |
+| 08 | Local Docker demo | full | `step-08-docker-local` | in review |
 | 09 | Latency | full | `step-09-latency` | not started |
 | 10 | Scale | full | `step-10-scale` | not started |
 | 11 | AWS | full | `step-11-aws` | not started |
@@ -812,3 +812,66 @@ requirements are specific about keeping it uncluttered. The runbook carries the
 spoken caveat instead.
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-07`.
+
+---
+
+## Step 08 — Local Docker demo
+
+- **Branch:** `step-08-docker-local`
+- **Prompt:** The assignment's fifth deliverable — the whole thing running
+  locally on Docker with Kafka and Flink, green from a cold start in one command.
+
+### Approach
+
+**The jars build inside Docker.** A multi-stage build compiles them with Maven
+and produces one image carrying the generators and another carrying the jobs and
+the Flink client. `docker compose up` then needs nothing but Docker — no JDK on
+the host, and no "did you build first?", which is not a step anyone should have
+to remember in front of an audience. Dependencies resolve in their own layer, so
+editing a source file does not re-download the world.
+
+**Ordering is declared, not hoped for.** Submitting before the topics exist fails
+the job with `UnknownTopicOrPartition` and it then restarts in a loop, so the
+submitter waits for the topic creation to complete. A task manager also registers
+a moment after its container starts, so the submitter waits for a free slot
+rather than racing it.
+
+**The local stack uses the ten-second window.** This stack *is* the demo, so it
+matches what the demo runs. The job still defaults to the specified minute; only
+this stack overrides it.
+
+### The bug the cold start found
+
+The generators container came up and immediately began restarting. Running
+unbounded — which is exactly how the runbook says to start the data — the
+generator exited on start.
+
+A refactor in step 02 had moved `running.set(false)` outside the branch that
+owned it, so the run-forever path stopped its own threads immediately. Every run
+until now had been bounded by record count or duration, so nothing had exercised
+it: the demo's own command was broken and no test covered it.
+
+`scripts/verify-cold-start.sh` now checks the generator's **restart count**, not
+just that the container is up. A container that exits and is restarted by Docker
+looks alive in `docker compose ps` while doing nothing at all.
+
+### Results
+
+```
+one command, from nothing
+  came up in 36s
+
+services            kafka, jobmanager, taskmanager, prometheus, grafana, generators  running
+generator restarts  0
+flink jobs running  2
+data reaching every topic                       orders, prices, positions x2  OK
+key counts                                      4, 16, 4, 16  OK
+dashboard renders                               92510 bytes
+cold start came up green
+```
+
+Evidence: [`docs/steps/step-08/`](../docs/steps/step-08/)
+
+### Review
+
+_Pending._

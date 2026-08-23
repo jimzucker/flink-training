@@ -41,20 +41,18 @@ public final class GeneratorMain {
             trades.start();
             prices.start();
 
-            // When both streams are bounded by record count they finish on their
-            // own, and waiting out a duration on top of that would only add dead
-            // time to a reproducibility run.
-            if (config.isRecordBounded()) {
-                trades.join();
-                prices.join();
-            } else {
-                if (!config.runsForever()) {
-                    Thread.sleep(config.durationSeconds() * 1_000L);
-                }
+            // Three ways to finish, and only one of them stops the threads here.
+            // Bounded by record count, they stop themselves. Bounded by duration,
+            // they are stopped once it elapses. Unbounded -- which is how the demo
+            // runs -- they must be left alone until the shutdown hook stops them;
+            // stopping them here regardless made the generator exit immediately on
+            // start, which is precisely the command the runbook gives.
+            if (!config.isRecordBounded() && !config.runsForever()) {
+                Thread.sleep(config.durationSeconds() * 1_000L);
                 running.set(false);
-                trades.join();
-                prices.join();
             }
+            trades.join();
+            prices.join();
             publisher.flush();
         }
         LOG.info("generators stopped");

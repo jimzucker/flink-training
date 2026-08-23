@@ -1,0 +1,45 @@
+tearing everything down
+one command, from nothing
+  came up in 27s; settling for 45s
+
+services
+  ft-kafka                                     running        OK
+  ft-jobmanager                                running        OK
+  ft-taskmanager                               running        OK
+  ft-prometheus                                running        OK
+  ft-grafana                                   running        OK
+  ft-generators                                running        OK
+  generator restarts                           0              OK
+
+jobs
+  flink jobs running                           2              OK
+
+data reaching every topic
+  orders has records                           1              OK
+  prices has records                           1              OK
+  positions-by-symbol has records              1              OK
+  positions-by-account has records             1              OK
+
+the dashboard
+  dashboard
+    title                                        Block Trade Pipeline
+    panels present                               true       OK
+    row panels                                   0          OK
+    unknown stat reducers                        0          OK
+    targets with no query                        0          OK
+  
+  every panel query returns data
+    panel queries returning nothing              0          OK
+  
+  the key counts the expected-output table states
+    aggregate_by_symbol unique keys              4          OK
+    aggregate_by_account unique keys             16         OK
+    market_value_by_symbol unique keys           4          OK
+    market_value_by_account unique keys          16         OK
+  
+  renders
+    rendered png                                 92510 bytes
+  
+  dashboard checks passed
+
+cold start came up green

@@ -56,10 +56,25 @@ Full one-command start arrives in step 08. Today the stack is Kafka, and the
 generators run on the host.
 
 ```bash
+docker compose -f docker/compose.yml up -d --build
+```
+
+That is the whole thing: the jars are built inside Docker, Kafka and Flink start,
+the topics are created, both jobs are submitted and the generators begin
+producing. Nothing needs to be built or launched by hand, and no Java is required
+on the host. About half a minute from nothing to a running pipeline.
+
+```bash
+./scripts/demo.sh              # the same, and tells you what to open
+./scripts/verify-cold-start.sh # tears it all down and checks it comes back green
+```
+
+To work on the code rather than run it, build on the host and verify:
+
+```bash
 source scripts/env.sh                                     # Java 17
 mvn package -DskipTests
-docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager
-./scripts/verify-run.sh                                   # submit, run, verify
+./scripts/verify-run.sh                                   # run and verify
 ```
 
 `verify-run.sh` resets the topics, submits both jobs, emits an exact number of
@@ -77,7 +92,7 @@ change to the calculation.
 | | Window | Set by | Why |
 |---|---|---|---|
 | Specification, and the job default | **60s** | `WINDOW_MS` default | what the requirements state; this is what the design diagram shows |
-| Live demo | **10s** | `scripts/demo.sh` | a minute of dead air before the market value sinks say anything is a long time in front of an audience |
+| Live demo | **10s** | `docker/compose.yml` | a minute of dead air before the market value sinks say anything is a long time in front of an audience |
 | Verification | **10s** | `scripts/verify-run.sh` | closing three one-minute windows would need three and a half minutes per run, and a check that slow stops being run |
 
 Event time is the wall clock and pacing is real time in all three — only the
