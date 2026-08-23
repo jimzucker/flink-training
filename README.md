@@ -71,15 +71,19 @@ price topic before that boundary. The Flink UI is at <http://localhost:8081>.
 The generator runs exactly as it does for the demo: wall-clock event times, paced
 in real time, at the demo rates. Nothing about the clock is simulated.
 
-Only the **window** is shortened for the check. Closing three one-minute windows
-would need three and a half minutes of running, and a check that slow stops being
-run — so the verification submits the jobs with a ten-second window and exercises
-the same code on the same clock. The demo keeps its minute.
+Only the **window** is shortened, and it is a runtime parameter rather than a
+change to the calculation.
 
-| | Window | Event time | Pacing |
+| | Window | Set by | Why |
 |---|---|---|---|
-| Demo | 60s | wall clock | real time |
-| Verification | 10s | wall clock | real time |
+| Specification, and the job default | **60s** | `WINDOW_MS` default | what the requirements state; this is what the design diagram shows |
+| Live demo | **10s** | `scripts/demo.sh` | a minute of dead air before the market value sinks say anything is a long time in front of an audience |
+| Verification | **10s** | `scripts/verify-run.sh` | closing three one-minute windows would need three and a half minutes per run, and a check that slow stops being run |
+
+Event time is the wall clock and pacing is real time in all three — only the
+window length differs. The demo runbook says to volunteer that when reaching
+sinks 5 and 6, since it is the one deviation from the specification visible on
+screen.
 
 How many windows close depends on where the run starts relative to a boundary,
 which is a property of a real clock, so the count is read from the data rather
@@ -113,7 +117,8 @@ sinks are still exact:
 ./scripts/chaos-exactly-once.sh
 ```
 
-Market value is emitted once per key per minute, at the **price at close**. A
+Market value is emitted once per key per window — a minute as specified, ten
+seconds in the demo and the verification — at the **price at close**. A
 join advances at its slower input, so an input with no traffic would stall the
 watermark and the windows would stop firing while every record that did arrive
 was in order. `IDLENESS_MS` prevents that, and setting it to `0` disables it —
