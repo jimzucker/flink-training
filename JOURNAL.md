@@ -782,4 +782,22 @@ Evidence: [`docs/steps/step-07/`](../docs/steps/step-07/)
 
 ### Review
 
-_Pending._
+Round 1: a ten-second window is acceptable for the live demo.
+
+`scripts/demo.sh` now brings the whole stack up and submits both jobs with a
+ten-second window, printing what to open and in what order — so nothing is typed
+from memory in front of an audience. The job still defaults to the specified
+minute; only the demo overrides it.
+
+That is the one deviation from the specification visible on screen, so the
+runbook says to volunteer it when reaching sinks 5 and 6 rather than let someone
+notice it. It is a presentation choice, not a difference in the calculation, and
+the verification runs against both settings. Confirmed by running it: market
+value appears within the first ten seconds rather than after a minute of nothing.
+
+Questions 1 and 2 went unanswered, so the runbook stays as written and the demo
+rate stays at the stated 10 trades/sec.
+
+Full exchange: [`docs/reviews/step-07.md`](../docs/reviews/step-07.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-07`.

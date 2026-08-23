@@ -9,11 +9,16 @@ beforehand. This is that walkthrough.
 ```bash
 source scripts/env.sh
 mvn package -DskipTests
-docker compose -f docker/compose.yml up -d --wait \
-  kafka jobmanager taskmanager prometheus grafana renderer
-docker compose -f docker/compose.yml run --rm topics
-docker compose -f docker/compose.yml --profile submit run --rm submit
+./scripts/demo.sh
 ```
+
+`demo.sh` starts the stack, creates the topics and submits both jobs **with a
+ten-second window**. The requirements specify one minute and the job defaults to
+it; ten seconds is used for the demo purely so the market value sinks say
+something within the first few seconds rather than after a minute of dead air.
+
+**Say that out loud when you get to sinks ⑤ and ⑥.** It is a presentation choice,
+not a difference in the calculation, and it is better volunteered than noticed.
 
 Have these open, in this order, and leave them open:
 
@@ -74,7 +79,9 @@ it is laid out:
 - ③ and ⑤ show **4** unique keys; ④ and ⑥ show **16**
 
 Sinks ⑤ and ⑥ step rather than flow. That is what once-per-key-per-window looks
-like, and it is worth pointing at before someone asks.
+like, and it is worth pointing at before someone asks — as is the fact that the
+window is ten seconds here rather than the specified minute, so that they say
+something while people are watching.
 
 ### 4. Explain any number on the screen
 
@@ -110,6 +117,11 @@ four accounts sum to the block — but the update counts differ by design.
 
 **Why do the market value sinks look like steps?**
 They emit once per key per window, not continuously.
+
+**Why is the window ten seconds and not a minute?**
+Only for the demo, so the sinks say something without a minute of waiting. The
+job defaults to the specified minute; `demo.sh` overrides it. The calculation is
+identical either way, and the verification runs against both.
 
 **Why did a number appear a moment late?**
 Delivery is exactly-once, so a record is not readable until the checkpoint that
