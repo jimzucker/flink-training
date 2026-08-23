@@ -41,6 +41,47 @@ Five times shorter, five times lower, and max lands within one interval each
 time. That is what a uniform wait for the next commit looks like, and it is
 the strongest evidence that the delay is the guarantee rather than the work.
 
+## After moving to a one-second checkpoint
+
+The interval is now one second by default, on review. Same code, same rates:
+
+```
+orders                 p50=8      p95=14     p99=20     max=27      (ms)
+positions-by-symbol    p50=518    p95=927    p99=1020   max=1025    (ms)
+positions-by-account   p50=515    p95=927    p99=1014   max=1036    (ms)
+```
+
+The maximum lands inside one interval, as it did at five seconds. A checkpoint
+itself takes about **13ms**, so what costs is the interval between them and not
+the checkpoint.
+
+## Market value
+
+Measured from the window close rather than from the trade, because the window is
+the specification and not a delay to account for:
+
+```
+mv-by-symbol           n=12     p50=684    p95=1709   p99=1709   max=1709    (ms)
+mv-by-account          n=48     p50=689    p95=1684   p99=1684   max=1684    (ms)
+```
+
+These step rather than spread, and the figures say so: p95, p99 and the maximum
+are the same number. Every key in a window is emitted at the same boundary, so
+they share an age — there is no tail to speak of, only a handful of distinct
+values.
+
+## An aborted checkpoint at startup
+
+The dashboard shows one aborted checkpoint per job. It happens at startup: with a
+one-second interval the first checkpoint triggers before every task is running
+and is aborted, after which the count stays put while completed checkpoints climb
+into the hundreds.
+
+Harmless, but worth naming. The panel originally said any non-zero count meant
+the guarantee was being retried, which would have raised a false alarm in the
+middle of a demo — the panel now says what the number actually means, and the
+runbook has an answer ready.
+
 ## The trade being made
 
 A position is a running sum, so a record replayed after a failure is a wrong

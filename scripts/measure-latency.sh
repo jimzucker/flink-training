@@ -33,6 +33,13 @@ for topic in positions-by-symbol positions-by-account; do
     "$BOOTSTRAP" "$topic" "$SECONDS_TO_WATCH" eventTime | sed 's/^/  /' || true
 done
 
+echo
+echo "market value -- window close to value readable"
+for topic in mv-by-symbol mv-by-account; do
+  java -cp "$JAR" io.github.jimzucker.flinktraining.tools.MeasureLatency \
+    "$BOOTSTRAP" "$topic" "$SECONDS_TO_WATCH" windowEnd | sed 's/^/  /' || true
+done
+
 cat <<'EOF'
 
   Two costs are inside the position figures and both are deliberate.
@@ -41,6 +48,8 @@ cat <<'EOF'
   checkpoint interval is a floor: a position is a running sum, and a record
   replayed after a failure would be a wrong number rather than a duplicate.
 
-  Market value is not measured here. Its delay is the window itself, which is the
-  specification rather than a cost.
+  Market value is measured from the window close rather than from the trade,
+  because the window is the specification and not a delay to account for. Its
+  figures step rather than spread: every key in a window is emitted at the same
+  boundary, so they share an age.
 EOF

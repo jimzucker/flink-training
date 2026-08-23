@@ -148,6 +148,12 @@ question before it becomes an argument.
 ./scripts/measure-latency.sh
 ```
 
+**Why does the dashboard show an aborted checkpoint?**
+One per job, at startup. With a one-second interval the first checkpoint triggers
+before every task is running and is aborted; the count then stays put while
+completed checkpoints climb. A count that keeps rising during a run would be the
+thing to worry about.
+
 **Are the positions ever negative?**
 Yes. Buys add and sells subtract, so a key whose sells exceed its buys holds a
 short. Seeing negatives is evidence the sign handling is live.

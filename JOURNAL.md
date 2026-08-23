@@ -960,4 +960,25 @@ explainable rather than merely stated.
 
 ### Review
 
-_Pending._
+Round 1: show market value latency, move the checkpoint interval to one second,
+and chart checkpoints.
+
+- **Market value is now measured**, from the window close rather than the trade,
+  since the window is the specification and not a delay. It steps rather than
+  spreads, and the figures say so — p95, p99 and the maximum are the same number,
+  because every key in a window is emitted at the same boundary and shares an age.
+- **One second is now the default.** Order latency falls from p50 2488ms to
+  **518ms**, with the maximum inside one interval as before.
+- **Checkpoints are charted** next to the latency they explain, which settled what
+  the cost actually is: a checkpoint takes about 13ms against a one-second
+  interval, so the interval between them is what costs.
+
+Charting them also surfaced one aborted checkpoint per job at startup — the first
+checkpoint triggers before every task is running. Harmless, but the panel had
+been written to say any non-zero count meant the guarantee was being retried,
+which would have raised a false alarm mid-demo. The panel now says what the
+number means and the runbook has an answer ready.
+
+Full exchange: [`docs/reviews/step-09.md`](../docs/reviews/step-09.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-09`.
