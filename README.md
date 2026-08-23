@@ -274,9 +274,50 @@ is what makes the walk back possible.
 
 Full walkthrough for presenting it: [`docs/demo-runbook.md`](docs/demo-runbook.md).
 
+## Latency
+
+Two numbers, and they are not the same.
+
+**What the pipeline takes** — published by the operators, visible on the
+dashboard: **p50 59ms, p99 110ms** from a trade being created to its position
+being computed.
+
+**What a consumer waits for** — measured from outside:
+
+```bash
+./scripts/measure-latency.sh
+```
+
+```
+orders                 p50=9      p99=17     max=22      (ms)
+positions-by-symbol    p50=2488   p99=4981   max=4988    (ms)
+positions-by-account   p50=2524   p99=4985   max=5024    (ms)
+```
+
+The input path is single-digit milliseconds. The positions are not, and the
+reason is not the pipeline: under exactly-once a record is not readable until the
+checkpoint that produced it commits, so a consumer waits a roughly uniform
+interval on top of the processing time.
+
+The checkpoint interval is that floor, and it behaves exactly like one:
+
+| Checkpoint interval | p50 | max |
+|---|---|---|
+| 5s | 2488 ms | 4988 ms |
+| 1s | **497 ms** | **1041 ms** |
+
+```bash
+CHECKPOINT_INTERVAL_MS=1000 docker compose -f docker/compose.yml up -d
+```
+
+This is a trade, not a defect. A position is a running sum, so a record replayed
+after a failure is a wrong number rather than a duplicate — exactly-once prevents
+that, and the wait is its price. Market value latency is not reported: its delay
+is the window, which is the specification rather than a cost.
+
 ## Scale results
 
-_Added in step 8._
+_Added in step 10._
 
 ---
 

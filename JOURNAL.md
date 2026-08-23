@@ -18,7 +18,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | in review |
 | 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
 | 08 | Local Docker demo | full | `step-08-docker-local` | in review |
-| 09 | Latency | full | `step-09-latency` | not started |
+| 09 | Latency | full | `step-09-latency` | in review |
 | 10 | Scale | full | `step-10-scale` | not started |
 | 11 | AWS | full | `step-11-aws` | not started |
 | 12 | Final demo | full | `step-12-final-deck` | not started |
@@ -898,3 +898,66 @@ thing that would have.
 Full exchange: [`docs/reviews/step-08.md`](../docs/reviews/step-08.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-08`.
+
+---
+
+## Step 09 — Latency
+
+- **Branch:** `step-09-latency`
+- **Prompt:** The assignment's sixth deliverable — demonstrate that latency for
+  orders is low, using logging.
+
+### Approach
+
+Two numbers are needed, and reporting only the first would flatter the result.
+
+- **What the pipeline takes.** The operators publish a
+  `processingLatencyMillis` histogram: how old a trade is when its position is
+  computed. It reaches Prometheus as quantiles and is on the dashboard. The same
+  figure goes into the position log line, since the requirements ask for latency
+  to be demonstrated using logging and it belongs next to the number it explains.
+- **What a consumer waits for.** An operator cannot see this. Under exactly-once
+  a record is not readable until the checkpoint that produced it commits, so
+  `scripts/measure-latency.sh` reads the topics from outside and records how old
+  each record was when it became readable.
+
+This is only measurable at all because the generator stamps records with the wall
+clock — the decision made in step 02.
+
+### Results
+
+```
+processing   p50   59 ms    p99  110 ms
+
+orders                 p50=9      p99=17     max=22      (ms)
+positions-by-symbol    p50=2488   p99=4981   max=4988    (ms)
+positions-by-account   p50=2524   p99=4985   max=5024    (ms)
+```
+
+The input path is single-digit milliseconds. The positions are not, and the
+difference is the checkpoint commit rather than the work.
+
+That was confirmed by changing one setting:
+
+| Checkpoint interval | p50 | max |
+|---|---|---|
+| 5s | 2488 ms | 4988 ms |
+| 1s | **497 ms** | **1041 ms** |
+
+Five times shorter, five times lower, with the maximum landing inside one
+interval each time — which is what a uniform wait for the next commit looks like.
+It is the strongest available evidence that the delay is the guarantee and not
+the pipeline.
+
+Evidence: [`docs/steps/step-09/`](../docs/steps/step-09/)
+
+### Verification
+
+Reporting the operator metric alone would have shown 59ms and looked excellent
+while a consumer waited two and a half seconds. Measuring from outside is what
+makes the figure honest, and the checkpoint comparison is what makes it
+explainable rather than merely stated.
+
+### Review
+
+_Pending._

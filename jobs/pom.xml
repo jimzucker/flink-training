@@ -32,6 +32,13 @@
       <artifactId>flink-clients</artifactId>
       <scope>provided</scope>
     </dependency>
+    <!-- DescriptiveStatisticsHistogram lives here; supplied by the cluster. -->
+    <dependency>
+      <groupId>org.apache.flink</groupId>
+      <artifactId>flink-runtime</artifactId>
+      <version>${flink.version}</version>
+      <scope>provided</scope>
+    </dependency>
 
     <!-- connectors are not on the cluster classpath, so they are bundled -->
     <dependency>

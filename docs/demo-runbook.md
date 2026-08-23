@@ -137,6 +137,17 @@ produced it commits. That is a floor under latency, and it is deliberate: a
 position is a running sum, and a replayed record would be a wrong number rather
 than a duplicate.
 
+Have the numbers ready. The pipeline itself takes about 60ms at the median and
+110ms at p99, which is on the dashboard. What a consumer waits for is about 2.5s
+at the median with a five-second checkpoint interval, and about 0.5s with a
+one-second interval — five times shorter, five times lower, with the maximum
+landing within one interval each time. Offering that comparison answers the
+question before it becomes an argument.
+
+```bash
+./scripts/measure-latency.sh
+```
+
 **Are the positions ever negative?**
 Yes. Buys add and sells subtract, so a key whose sells exceed its buys holds a
 short. Seeing negatives is evidence the sign handling is live.
