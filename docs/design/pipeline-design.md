@@ -76,6 +76,11 @@ marketValue = position quantity at window close
             × last price for that symbol at or before window close
 ```
 
+The window length is a runtime parameter. The diagram and the figures here show
+the specified minute; the live demo and the verification both run it at ten
+seconds, so that a window closes while someone is watching. Only the interval
+changes — the calculation, and every check against it, are the same.
+
 **Price at close**, not an average or a VWAP across the window. Both inputs are
 taken as of the same instant — the window boundary — so the number is a snapshot
 that can be reconciled against the position topic at that timestamp rather than

@@ -800,4 +800,15 @@ rate stays at the stated 10 trades/sec.
 
 Full exchange: [`docs/reviews/step-07.md`](../docs/reviews/step-07.md)
 
+A follow-up audit of every window reference found one stale claim: the README
+said the demo kept the specified minute, which step 07 had just made untrue. The
+window now has one authoritative statement of its three settings — the specified
+minute as the job default and on the diagram, ten seconds in the demo and in the
+verification — and the design doc says explicitly that the interval is a runtime
+parameter while the calculation is not.
+
+The diagram still shows the minute, deliberately: it is the design, and the
+requirements are specific about keeping it uncluttered. The runbook carries the
+spoken caveat instead.
+
 **Outcome:** approved, squash-merged to `main`, tagged `step-07`.
