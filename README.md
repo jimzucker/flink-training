@@ -69,6 +69,27 @@ on the host. About half a minute from nothing to a running pipeline.
 ./scripts/verify-cold-start.sh # tears it all down and checks it comes back green
 ```
 
+### When the data starts
+
+`GENERATOR_START` decides when the generators begin producing. Auto is
+convenient, but it gives away the most persuasive moment in the demo — graphs
+going from flat to flowing while people watch.
+
+| Value | Behaviour |
+|---|---|
+| `auto` (default) | starts with the stack, so the dashboard is alive when you open it |
+| `manual` | the container stays up and idle until you start it |
+| a number | starts that many minutes after the stack comes up |
+
+```bash
+GENERATOR_START=manual docker compose -f docker/compose.yml up -d
+./scripts/start-generators.sh          # on cue
+
+GENERATOR_START=2 docker compose -f docker/compose.yml up -d   # data arrives in 2 minutes
+```
+
+Anything else fails at start rather than being guessed at.
+
 To work on the code rather than run it, build on the host and verify:
 
 ```bash

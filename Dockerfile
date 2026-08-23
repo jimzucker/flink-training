@@ -24,7 +24,9 @@ RUN mvn -B -q package -DskipTests -DskipITs
 # ---------------------------------------------------------------- generators
 FROM eclipse-temurin:17-jre AS generators
 COPY --from=build /src/generators/target/generators.jar /app/generators.jar
-ENTRYPOINT ["java", "-jar", "/app/generators.jar"]
+COPY docker/generators/entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+ENTRYPOINT ["/app/entrypoint.sh"]
 
 # ---------------------------------------------------------------- jobs
 # Carries the jar and the Flink client, so it can submit and then exit.

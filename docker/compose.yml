@@ -214,4 +214,8 @@ services:
       TRADES_PER_SECOND: "${TRADES_PER_SECOND:-10}"
       PRICES_PER_SECOND: "${PRICES_PER_SECOND:-1000}"
       SEED: "${SEED:-42}"
+      # auto    start with the stack
+      # manual  stay idle until scripts/start-generators.sh is run
+      # <n>     start n minutes after the stack comes up
+      GENERATOR_START: "${GENERATOR_START:-auto}"
     restart: unless-stopped

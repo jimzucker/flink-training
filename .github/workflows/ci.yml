@@ -120,6 +120,28 @@ jobs:
         if: always()
         run: docker compose -f docker/compose.yml down -v
 
+  # The deliverable is that one command brings the whole thing up green. That is
+  # only true if it is actually done that way from nothing -- the build job starts
+  # services individually and would not have caught the generator exiting on
+  # start, which is how the demo runs it.
+  cold-start:
+    name: Cold start
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bring everything up from nothing and check it came up green
+        run: ./scripts/verify-cold-start.sh
+
+      - name: Logs on failure
+        if: failure()
+        run: docker compose -f docker/compose.yml logs --tail 300
+
+      - name: Stop the stack
+        if: always()
+        run: docker compose -f docker/compose.yml down -v
+
   scripts:
     name: Shell scripts
     runs-on: ubuntu-latest

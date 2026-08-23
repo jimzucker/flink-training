@@ -874,4 +874,22 @@ Evidence: [`docs/steps/step-08/`](../docs/steps/step-08/)
 
 ### Review
 
-_Pending._
+Round 1 asked for the generators to be triggerable, with auto, manual and delayed
+options, and for the cold start to run in CI.
+
+`GENERATOR_START` now takes `auto`, `manual`, or a number of minutes. Manual
+keeps the most persuasive moment in the demo — graphs going from flat to flowing
+while people watch — at the cost of one command; the delay gives both, letting
+the data arrive on cue without touching a terminal. All three were tested rather
+than assumed, and a bad value is rejected at start rather than silently
+defaulting, since that would be discovered mid-demo.
+
+A `Cold start` job runs in CI and is now a required check. It is deliberately
+separate from the numbers job, which builds on the host and starts services
+individually — which is exactly why that job did not catch the generator exiting
+on start. Running the deliverable the way it is actually delivered is the only
+thing that would have.
+
+Full exchange: [`docs/reviews/step-08.md`](../docs/reviews/step-08.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-08`.
