@@ -46,6 +46,29 @@ done
 RESTARTS=$(docker inspect ft-generators --format '{{.RestartCount}}' 2>/dev/null || echo "?")
 check "generator restarts" "0" "$RESTARTS"
 
+# Generators default to manual, so nothing should have been produced yet. This is
+# the state the demo opens in: everything up, dashboard visibly empty.
+records() {
+  docker exec ft-kafka /opt/kafka/bin/kafka-get-offsets.sh \
+      --bootstrap-server localhost:9092 --topic "$1" 2>/dev/null \
+    | awk -F: '{s += $3} END {print s + 0}'
+}
+check "orders before the trigger" "0" "$(records orders)"
+
+echo
+echo "the trigger"
+if ./scripts/start-generators.sh >/dev/null 2>&1; then
+  echo "  started"
+else
+  check "start-generators.sh" "started" "failed"
+fi
+for _ in $(seq 1 30); do
+  [ "$(records orders)" -gt 0 ] && break
+  sleep 2
+done
+check "orders after the trigger" "yes" "$([ "$(records orders)" -gt 0 ] && echo yes || echo no)"
+sleep "${SETTLE_SECONDS}"
+
 echo
 echo "jobs"
 RUNNING=$(curl -sf http://localhost:8081/jobs 2>/dev/null \

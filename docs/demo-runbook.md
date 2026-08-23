@@ -66,14 +66,8 @@ that before it appears on screen.
 
 ### 3. Start it, then switch to Grafana
 
-Bring the stack up with the generators held back, so the dashboard is visibly
-empty while the design is being explained:
-
-```bash
-GENERATOR_START=manual docker compose -f docker/compose.yml up -d --build
-```
-
-Then, on cue:
+The stack comes up with the generators idle by default, so the dashboard is
+visibly empty while the design is being explained. Then, on cue:
 
 ```bash
 ./scripts/start-generators.sh

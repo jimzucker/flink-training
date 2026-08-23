@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Decides when the generators start.
 #
-# Auto is convenient but takes away the most persuasive moment in the demo:
-# graphs going from flat to flowing while people watch. Manual keeps that and
-# costs one command. A delay gives both -- start the stack, talk through the
-# design, and have data arrive on cue.
+# Manual by default. Auto is convenient but takes away the most persuasive moment
+# in the demo -- graphs going from flat to flowing while people watch -- and a
+# stack that is already busy when it appears gives it away. A delay gives both:
+# start the stack, talk through the design, and have data arrive on cue.
 set -euo pipefail
 
-MODE="${GENERATOR_START:-auto}"
+MODE="${GENERATOR_START:-manual}"
 JAR=/app/generators.jar
 
 case "$MODE" in

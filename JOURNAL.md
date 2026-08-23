@@ -877,12 +877,17 @@ Evidence: [`docs/steps/step-08/`](../docs/steps/step-08/)
 Round 1 asked for the generators to be triggerable, with auto, manual and delayed
 options, and for the cold start to run in CI.
 
-`GENERATOR_START` now takes `auto`, `manual`, or a number of minutes. Manual
-keeps the most persuasive moment in the demo — graphs going from flat to flowing
-while people watch — at the cost of one command; the delay gives both, letting
-the data arrive on cue without touching a terminal. All three were tested rather
-than assumed, and a bad value is rejected at start rather than silently
-defaulting, since that would be discovered mid-demo.
+`GENERATOR_START` now takes `manual`, `auto`, or a number of minutes, and manual
+is the default. Graphs going from flat to flowing while people watch is the most
+persuasive moment in the demo, and a stack that is already busy when it appears
+gives it away. The delay gives both, letting data arrive on cue without touching
+a terminal. All three were tested rather than assumed, and a bad value is
+rejected at start rather than silently defaulting, since that would be discovered
+mid-demo.
+
+The cold-start check follows the same default, so it exercises the demo path
+rather than a convenience path: everything up with zero records produced, then
+the trigger, then data flowing.
 
 A `Cold start` job runs in CI and is now a required check. It is deliberately
 separate from the numbers job, which builds on the host and starts services

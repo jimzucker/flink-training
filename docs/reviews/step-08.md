@@ -24,9 +24,13 @@
 
 | Value | Behaviour |
 |---|---|
-| `auto` (default) | starts with the stack |
-| `manual` | container stays up and idle; `scripts/start-generators.sh` starts it on cue |
+| `manual` (default) | container stays up and idle; `scripts/start-generators.sh` starts it on cue |
+| `auto` | starts with the stack |
 | a number | starts that many minutes after the stack comes up |
+
+Manual is the default, on review. The cold-start check follows suit and now
+exercises the demo path rather than a convenience path: everything up with the
+dashboard empty, zero records produced, then the trigger, then data flowing.
 
 Manual keeps the most persuasive moment in the demo — graphs going from flat to
 flowing while people watch — at the cost of one command. The delay gives both:

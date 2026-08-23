@@ -56,13 +56,19 @@ Full one-command start arrives in step 08. Today the stack is Kafka, and the
 generators run on the host.
 
 ```bash
-docker compose -f docker/compose.yml up -d --build
+docker compose -f docker/compose.yml up -d --build   # everything, idle
+./scripts/start-generators.sh                        # start the data on cue
 ```
 
-That is the whole thing: the jars are built inside Docker, Kafka and Flink start,
-the topics are created, both jobs are submitted and the generators begin
-producing. Nothing needs to be built or launched by hand, and no Java is required
-on the host. About half a minute from nothing to a running pipeline.
+The first command is the whole stack: jars built inside Docker, Kafka and Flink
+started, topics created, both jobs submitted. Nothing needs building or launching
+by hand and no Java is required on the host — about half a minute from nothing to
+a running pipeline.
+
+The generators come up **idle**, so the dashboard is visibly empty until you start
+them. Graphs going from flat to flowing while people watch is the most persuasive
+moment in the demo, and a stack that is already busy when it appears gives it
+away.
 
 ```bash
 ./scripts/demo.sh              # the same, and tells you what to open
@@ -77,15 +83,15 @@ going from flat to flowing while people watch.
 
 | Value | Behaviour |
 |---|---|
-| `auto` (default) | starts with the stack, so the dashboard is alive when you open it |
-| `manual` | the container stays up and idle until you start it |
+| `manual` (default) | the container stays up and idle until you start it |
+| `auto` | starts with the stack, so the dashboard is alive when you open it |
 | a number | starts that many minutes after the stack comes up |
 
 ```bash
-GENERATOR_START=manual docker compose -f docker/compose.yml up -d
-./scripts/start-generators.sh          # on cue
+./scripts/start-generators.sh                                  # on cue
 
 GENERATOR_START=2 docker compose -f docker/compose.yml up -d   # data arrives in 2 minutes
+GENERATOR_START=auto docker compose -f docker/compose.yml up -d
 ```
 
 Anything else fails at start rather than being guessed at.

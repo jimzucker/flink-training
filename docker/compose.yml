@@ -214,8 +214,12 @@ services:
       TRADES_PER_SECOND: "${TRADES_PER_SECOND:-10}"
       PRICES_PER_SECOND: "${PRICES_PER_SECOND:-1000}"
       SEED: "${SEED:-42}"
+      # manual  stay idle until scripts/start-generators.sh is run (default)
       # auto    start with the stack
-      # manual  stay idle until scripts/start-generators.sh is run
       # <n>     start n minutes after the stack comes up
-      GENERATOR_START: "${GENERATOR_START:-auto}"
+      #
+      # Manual by default: the graphs going from flat to flowing while people
+      # watch is the most persuasive moment in the demo, and a stack that is
+      # already busy when it appears gives it away.
+      GENERATOR_START: "${GENERATOR_START:-manual}"
     restart: unless-stopped

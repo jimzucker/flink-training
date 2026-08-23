@@ -10,6 +10,11 @@ services
   ft-grafana                                   running        OK
   ft-generators                                running        OK
   generator restarts                           0              OK
+  orders before the trigger                    0              OK
+
+the trigger
+  started
+  orders after the trigger                     yes            OK
 
 jobs
   flink jobs running                           2              OK
@@ -38,7 +43,7 @@ the dashboard
     market_value_by_account unique keys          16         OK
   
   renders
-    rendered png                                 92510 bytes
+    rendered png                                 89720 bytes
   
   dashboard checks passed
 

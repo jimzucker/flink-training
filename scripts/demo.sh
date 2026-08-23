@@ -32,9 +32,13 @@ cat <<EOF
 
   check the dashboard actually draws before anyone is watching.
 
-  the generators are already producing at 10 trades/sec and 1000 prices/sec.
-  the window is 10s here rather than the specified minute, so the market value
-  sinks say something while people are watching -- say so when you reach them.
+  the generators are up but idle, so the dashboard is empty. start them on cue:
+
+    ./scripts/start-generators.sh
+
+  they produce 10 trades/sec and 1000 prices/sec. the window is 10s here rather
+  than the specified minute, so the market value sinks say something while people
+  are watching -- say so when you reach them.
 
   to explain any number on the dashboard:
 
