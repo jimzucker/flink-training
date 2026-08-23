@@ -192,7 +192,40 @@ panels drawing entirely, while the dashboard was perfectly correct.
 
 ## Verifying the numbers
 
-_Added in step 5._
+Every figure in the expected-output table is asserted on each run, with no
+tolerances anywhere:
+
+```bash
+./scripts/verify-run.sh
+```
+
+It recomputes both halves of every market value independently from the topics
+that fed them — the closing price from the price topic and the closing quantity
+from the position topic — so neither rests on the job agreeing with itself.
+
+### Explaining any number
+
+Any figure on the dashboard can be walked back to the block trade that caused it:
+
+```bash
+./scripts/trace-trade.sh T000000098
+```
+
+```
+① orders                T000000098  BUY 400 AAPL, 4 allocations of 100
+③ positions-by-symbol   AAPL            -2800
+④ positions-by-account  ACC1..4/SUB1/AAPL  -700 each
+                        the four accounts sum to -2800, which is what sink 3 reports  OK
+⑤ mv-by-symbol          -2800 x 74.25 = -207900.00
+⑥ mv-by-account         -700 x 74.25 =  -51975.00 each
+                        the account market values sum to -207900.00, which is what sink 5 reports  OK
+```
+
+The requirements ask for the numbers to be explainable and for logging to be
+changed until they are. Every record carries the trade that last moved it, which
+is what makes the walk back possible.
+
+Full walkthrough for presenting it: [`docs/demo-runbook.md`](docs/demo-runbook.md).
 
 ## Scale results
 

@@ -1,0 +1,38 @@
+------------------------------------------------------------
+① orders — the block trade
+------------------------------------------------------------
+  T000000098  BUY 400 AAPL   eventTime=1787412329607
+  allocations:
+    ACC1/SUB1  100
+    ACC2/SUB1  100
+    ACC3/SUB1  100
+    ACC4/SUB1  100
+
+------------------------------------------------------------
+③ positions-by-symbol — one update, the whole block
+------------------------------------------------------------
+  AAPL  quantity=-2800  (update #17)
+  the block moved this key by +400
+
+------------------------------------------------------------
+④ positions-by-account — one update per allocation
+------------------------------------------------------------
+  ACC1/SUB1/AAPL  quantity=-700  (update #17)
+  ACC2/SUB1/AAPL  quantity=-700  (update #17)
+  ACC3/SUB1/AAPL  quantity=-700  (update #17)
+  ACC4/SUB1/AAPL  quantity=-700  (update #17)
+  the four accounts sum to -2800, which is what sink 3 reports  OK
+
+------------------------------------------------------------
+⑤ / ⑥ market value — the windows this trade closed
+------------------------------------------------------------
+  mv-by-symbol  AAPL  -2800 x 74.25 = -207900.00   windowEnd=1787412330000
+  mv-by-account  ACC1/SUB1/AAPL  -700 x 74.25 = -51975.00   windowEnd=1787412330000
+  mv-by-account  ACC2/SUB1/AAPL  -700 x 74.25 = -51975.00   windowEnd=1787412330000
+  mv-by-account  ACC3/SUB1/AAPL  -700 x 74.25 = -51975.00   windowEnd=1787412330000
+  mv-by-account  ACC4/SUB1/AAPL  -700 x 74.25 = -51975.00   windowEnd=1787412330000
+
+  the account market values sum to -207900.00, which is what sink 5 reports  OK
+
+  a window names the trade that last moved its position, so any market
+  value on the dashboard can be walked back to the block trade above.

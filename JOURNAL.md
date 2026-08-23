@@ -16,7 +16,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | in review |
 | 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | in review |
 | 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | in review |
-| 07 | Correctness demo | full | `step-07-correctness-demo` | not started |
+| 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
 | 08 | Local Docker demo | full | `step-08-docker-local` | not started |
 | 09 | Latency | full | `step-09-latency` | not started |
 | 10 | Scale | full | `step-10-scale` | not started |
@@ -731,3 +731,73 @@ All three failed the check, and the run exited non-zero.
 Full exchange: [`docs/reviews/step-06.md`](../docs/reviews/step-06.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-06`.
+
+---
+
+## Step 07 — Correctness demo
+
+- **Branch:** `step-07-correctness-demo`
+- **Prompt:** The assignment's fourth deliverable — demonstrate the numbers and
+  calculations are correct at small volume using Grafana.
+
+### Approach
+
+The verification already asserted the numbers. What was missing was the ability
+to *explain* one, which is what the requirements actually ask for: be able to
+explain the figures, and if you cannot answer a question, change the logging
+until you can.
+
+`scripts/trace-trade.sh` takes a trade id and prints its whole provenance —
+the block trade, the single position-by-symbol update it caused, the four
+position-by-account updates, and the market values of the windows it closed. It
+then states the arithmetic tying them together rather than leaving the audience
+to do it:
+
+```
+the four accounts sum to -2800, which is what sink 3 reports  OK
+the account market values sum to -207900.00, which is what sink 5 reports  OK
+```
+
+That works because every record carries `lastTradeId`, added in step 04 for
+exactly this reason.
+
+`docs/demo-runbook.md` is the walkthrough: what to open, what to say, in what
+order, and answers ready for the questions most likely to be asked — why sink 4
+updates four times as often as sink 3, why the market value sinks look like
+steps, why a number appeared a moment late, and whether positions go negative.
+
+### Results
+
+A trade traced end to end, and reconciling both ways:
+
+| | |
+|---|---|
+| ① `T000000098` | BUY 400 AAPL, four allocations of 100 |
+| ③ AAPL | −2800 |
+| ④ each of four accounts | −700 → **sum −2800, matching ③** |
+| ⑤ AAPL | −2800 × 74.25 = −207900.00 |
+| ⑥ each of four accounts | −700 × 74.25 = −51975.00 → **sum −207900.00, matching ⑤** |
+
+Evidence: [`docs/steps/step-07/`](../docs/steps/step-07/)
+
+### Review
+
+Round 1: a ten-second window is acceptable for the live demo.
+
+`scripts/demo.sh` now brings the whole stack up and submits both jobs with a
+ten-second window, printing what to open and in what order — so nothing is typed
+from memory in front of an audience. The job still defaults to the specified
+minute; only the demo overrides it.
+
+That is the one deviation from the specification visible on screen, so the
+runbook says to volunteer it when reaching sinks 5 and 6 rather than let someone
+notice it. It is a presentation choice, not a difference in the calculation, and
+the verification runs against both settings. Confirmed by running it: market
+value appears within the first ten seconds rather than after a minute of nothing.
+
+Questions 1 and 2 went unanswered, so the runbook stays as written and the demo
+rate stays at the stated 10 trades/sec.
+
+Full exchange: [`docs/reviews/step-07.md`](../docs/reviews/step-07.md)
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-07`.
