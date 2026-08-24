@@ -15,6 +15,19 @@
   },
   "panels": [
     {
+      "id": 100,
+      "type": "row",
+      "title": "The pipeline \u2014 six topics, in the order the talk covers them",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "panels": []
+    },
+    {
       "id": 1,
       "type": "timeseries",
       "title": "\u2460 orders \u2014 block trades in",
@@ -25,7 +38,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 0,
+        "y": 1,
         "w": 12,
         "h": 7
       },
@@ -78,7 +91,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 0,
+        "y": 1,
         "w": 12,
         "h": 7
       },
@@ -131,7 +144,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 7,
+        "y": 8,
         "w": 12,
         "h": 7
       },
@@ -184,7 +197,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 7,
+        "y": 8,
         "w": 12,
         "h": 7
       },
@@ -237,7 +250,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 14,
+        "y": 15,
         "w": 6,
         "h": 4
       },
@@ -291,7 +304,7 @@
       },
       "gridPos": {
         "x": 6,
-        "y": 14,
+        "y": 15,
         "w": 6,
         "h": 4
       },
@@ -345,7 +358,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 14,
+        "y": 15,
         "w": 3,
         "h": 4
       },
@@ -399,7 +412,7 @@
       },
       "gridPos": {
         "x": 15,
-        "y": 14,
+        "y": 15,
         "w": 3,
         "h": 4
       },
@@ -453,7 +466,7 @@
       },
       "gridPos": {
         "x": 18,
-        "y": 14,
+        "y": 15,
         "w": 3,
         "h": 4
       },
@@ -507,7 +520,7 @@
       },
       "gridPos": {
         "x": 21,
-        "y": 14,
+        "y": 15,
         "w": 3,
         "h": 4
       },
@@ -561,7 +574,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 18,
+        "y": 19,
         "w": 12,
         "h": 7
       },
@@ -614,7 +627,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 18,
+        "y": 19,
         "w": 12,
         "h": 7
       },
@@ -667,7 +680,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 25,
+        "y": 26,
         "w": 6,
         "h": 4
       },
@@ -721,7 +734,7 @@
       },
       "gridPos": {
         "x": 6,
-        "y": 25,
+        "y": 26,
         "w": 6,
         "h": 4
       },
@@ -775,7 +788,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 25,
+        "y": 26,
         "w": 6,
         "h": 4
       },
@@ -829,7 +842,7 @@
       },
       "gridPos": {
         "x": 18,
-        "y": 25,
+        "y": 26,
         "w": 6,
         "h": 4
       },
@@ -873,6 +886,19 @@
       ]
     },
     {
+      "id": 101,
+      "type": "row",
+      "title": "Latency \u2014 what a consumer actually waits for",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 30
+      },
+      "panels": []
+    },
+    {
       "id": 17,
       "type": "timeseries",
       "title": "Order latency \u2014 trade created to position computed",
@@ -883,7 +909,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 29,
+        "y": 31,
         "w": 16,
         "h": 8
       },
@@ -963,7 +989,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 29,
+        "y": 31,
         "w": 4,
         "h": 4
       },
@@ -1017,7 +1043,7 @@
       },
       "gridPos": {
         "x": 20,
-        "y": 29,
+        "y": 31,
         "w": 4,
         "h": 4
       },
@@ -1066,7 +1092,7 @@
       "title": "What a consumer waits for",
       "gridPos": {
         "x": 16,
-        "y": 33,
+        "y": 35,
         "w": 8,
         "h": 4
       },
@@ -1079,14 +1105,14 @@
       "id": 21,
       "type": "timeseries",
       "title": "Checkpoints \u2014 the floor under visible latency",
-      "description": "A record is not readable until the checkpoint that produced it commits, so the interval between these is what a consumer waits on top of the processing time. Duration is how long one takes; it should stay far below the interval.",
+      "description": "A record is not readable until the checkpoint that produced it commits, so the interval between these is what a consumer waits on top of the processing time. Duration is how long one takes and should stay far below the interval; it is on the left axis in milliseconds. The completed count is on the right, on its own scale -- sharing the millisecond axis made a count of 3000 render as '3 s' and read as duration climbing into seconds.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 0,
-        "y": 37,
+        "y": 39,
         "w": 16,
         "h": 7
       },
@@ -1103,7 +1129,32 @@
             "gradientMode": "opacity"
           }
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "completed (count)"
+            },
+            "properties": [
+              {
+                "id": "unit",
+                "value": "short"
+              },
+              {
+                "id": "custom.axisPlacement",
+                "value": "right"
+              },
+              {
+                "id": "custom.axisLabel",
+                "value": "checkpoints completed"
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              }
+            ]
+          }
+        ]
       },
       "options": {
         "legend": {
@@ -1148,7 +1199,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 37,
+        "y": 39,
         "w": 4,
         "h": 4
       },
@@ -1202,7 +1253,7 @@
       },
       "gridPos": {
         "x": 20,
-        "y": 37,
+        "y": 39,
         "w": 4,
         "h": 4
       },
@@ -1251,13 +1302,158 @@
       "title": "Reading these together",
       "gridPos": {
         "x": 16,
-        "y": 41,
+        "y": 43,
         "w": 8,
         "h": 3
       },
       "options": {
         "mode": "markdown",
         "content": "Visible latency is roughly processing plus a uniform wait of up to one checkpoint interval. Shorten the interval and the wait falls with it \u2014 at 1s the median order latency is about 0.5s.\n\nA checkpoint takes about 13ms here, so it is the *interval* that costs, not the checkpoint."
+      }
+    },
+    {
+      "id": 102,
+      "type": "row",
+      "title": "Saturation \u2014 is it keeping up, and if not, what is the ceiling",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 46
+      },
+      "panels": []
+    },
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Consumer lag \u2014 records each source is behind",
+      "description": "How many records are sitting in Kafka that the job has not read yet. This is the signal that defines saturation: a bounded, sawtooth lag is a pipeline keeping up, and a line that climbs and never comes back down is one that is not, no matter how healthy throughput looks.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 47,
+        "w": 16,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (operator_name) (flink_taskmanager_job_task_operator_pendingRecords)",
+          "legendFormat": "{{operator_name}}"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "type": "stat",
+      "title": "\u2460 orders lag",
+      "description": "Records waiting in the orders topic. Growing steadily means the offered load is above what this parallelism and core count can absorb.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 47,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50000
+              },
+              {
+                "color": "red",
+                "value": 500000
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_taskmanager_job_task_operator_pendingRecords{operator_name=\"Source:_orders\"})",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "type": "text",
+      "title": "Diagnosing a slow pipeline",
+      "gridPos": {
+        "x": 16,
+        "y": 51,
+        "w": 8,
+        "h": 3
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Lag climbing? Find the task at 100% busy \u2014 that operator is the ceiling. The back-pressured tasks are everything queued behind it. If no single task stands out, the cluster is out of cores, not out of parallelism."
       }
     },
     {
@@ -1271,7 +1467,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 44,
+        "y": 54,
         "w": 16,
         "h": 7
       },
@@ -1334,7 +1530,7 @@
       },
       "gridPos": {
         "x": 16,
-        "y": 44,
+        "y": 54,
         "w": 4,
         "h": 4
       },
@@ -1399,7 +1595,7 @@
       },
       "gridPos": {
         "x": 20,
-        "y": 44,
+        "y": 54,
         "w": 4,
         "h": 4
       },
@@ -1459,7 +1655,7 @@
       "title": "Proving it scales",
       "gridPos": {
         "x": 16,
-        "y": 48,
+        "y": 58,
         "w": 8,
         "h": 3
       },
@@ -1479,7 +1675,7 @@
       },
       "gridPos": {
         "x": 0,
-        "y": 51,
+        "y": 61,
         "w": 12,
         "h": 8
       },
@@ -1549,7 +1745,7 @@
       },
       "gridPos": {
         "x": 12,
-        "y": 51,
+        "y": 61,
         "w": 12,
         "h": 8
       },
@@ -1609,23 +1805,217 @@
       ]
     },
     {
-      "id": 31,
+      "id": 103,
+      "type": "row",
+      "title": "Resources \u2014 the ceilings underneath all of it",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 69
+      },
+      "panels": []
+    },
+    {
+      "id": 34,
       "type": "timeseries",
-      "title": "Consumer lag \u2014 records each source is behind",
-      "description": "How many records are sitting in Kafka that the job has not read yet. This is the signal that defines saturation: a bounded, sawtooth lag is a pipeline keeping up, and a line that climbs and never comes back down is one that is not, no matter how healthy throughput looks.",
+      "title": "CPU \u2014 cores in use",
+      "description": "Derived from JVM CPU time, so it reads in cores rather than a percentage of an unstated whole and means the same thing on any machine. Compare it with the cores the host actually has: step 10 found the TaskManager using 3.85 of 8 at parallelism 1 and only 4.75 at parallelism 4, which is why raising parallelism did not raise throughput.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
         "x": 0,
-        "y": 59,
-        "w": 16,
+        "y": 70,
+        "w": 8,
         "h": 7
       },
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "min": 0,
+          "decimals": 2,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "rate(flink_taskmanager_Status_JVM_CPU_Time[2m]) / 1e9",
+          "legendFormat": "taskmanager"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "rate(flink_jobmanager_Status_JVM_CPU_Time[2m]) / 1e9",
+          "legendFormat": "jobmanager"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "type": "timeseries",
+      "title": "Heap \u2014 share of the limit",
+      "description": "Steady sawtooth is healthy. A floor that keeps rising means state is growing faster than it is being collected, and the job is heading for a GC spiral rather than an out-of-memory error \u2014 which is why this is worth watching next to the panel on the right.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 8,
+        "y": 70,
+        "w": 8,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 1,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "flink_taskmanager_Status_JVM_Memory_Heap_Used / flink_taskmanager_Status_JVM_Memory_Heap_Max * 100",
+          "legendFormat": "taskmanager"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "type": "timeseries",
+      "title": "Garbage collection \u2014 pause per second",
+      "description": "Milliseconds of every second lost to GC. Tens of milliseconds is normal. Hundreds means the JVM is spending its time collecting instead of working, and it shows up as latency and back-pressure with no operator looking busy.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 70,
+        "w": 8,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "decimals": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "flink_taskmanager_Status_JVM_GarbageCollector_G1_Young_Generation_TimeMsPerSecond",
+          "legendFormat": "young"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "flink_taskmanager_Status_JVM_GarbageCollector_G1_Old_Generation_TimeMsPerSecond",
+          "legendFormat": "old"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "type": "timeseries",
+      "title": "Network \u2014 bytes moved per second",
+      "description": "Read from Kafka, written back to Kafka, and shuffled between subtasks. The account branch dominates: split_by_allocation fans each order into four allocations, so it carries four times the record rate and a matching share of the bytes. Compare against the link the deployment actually has.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 77,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
           "min": 0,
           "custom": {
             "drawStyle": "line",
@@ -1656,24 +2046,115 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (operator_name) (flink_taskmanager_job_task_operator_pendingRecords)",
-          "legendFormat": "{{operator_name}}"
+          "expr": "sum(flink_taskmanager_job_task_operator_numBytesInPerSecond{operator_name=~\"Source:.*\"})",
+          "legendFormat": "read from Kafka"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_taskmanager_job_task_operator_numBytesOutPerSecond{operator_name=~\".*Writer\"})",
+          "legendFormat": "written to Kafka"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_taskmanager_job_task_numBytesInPerSecond)",
+          "legendFormat": "shuffled between subtasks"
         }
       ]
     },
     {
-      "id": 32,
-      "type": "stat",
-      "title": "\u2460 orders lag",
-      "description": "Records waiting in the orders topic. Growing steadily means the offered load is above what this parallelism and core count can absorb.",
+      "id": 38,
+      "type": "timeseries",
+      "title": "Network buffers \u2014 Flink's own back-pressure valve",
+      "description": "Back-pressure is not a policy, it is these buffers filling: a subtask that cannot hand its output on stops getting buffers and stops reading. Output pool usage climbing toward 100% is back-pressure forming, and it moves before latency does.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 16,
-        "y": 59,
-        "w": 8,
+        "x": 12,
+        "y": 77,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_buffers_outPoolUsage) * 100",
+          "legendFormat": "output pool, busiest task"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_buffers_inPoolUsage) * 100",
+          "legendFormat": "input pool, busiest task"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "(1 - flink_taskmanager_Status_Shuffle_Netty_AvailableMemorySegments / flink_taskmanager_Status_Shuffle_Netty_TotalMemorySegments) * 100",
+          "legendFormat": "network memory"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "type": "stat",
+      "title": "free task slots",
+      "description": "Slots not currently held by a job. A submission with none free does not queue, it fails -- which is how a run once reported zero throughput while two dozen cancelled jobs sat holding the cluster.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 84,
+        "w": 4,
         "h": 4
       },
       "fieldConfig": {
@@ -1684,16 +2165,16 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               },
               {
                 "color": "yellow",
-                "value": 50000
+                "value": 1
               },
               {
-                "color": "red",
-                "value": 500000
+                "color": "green",
+                "value": 2
               }
             ]
           }
@@ -1720,24 +2201,88 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(flink_taskmanager_job_task_operator_pendingRecords{operator_name=\"Source:_orders\"})",
+          "expr": "flink_jobmanager_taskSlotsAvailable",
           "legendFormat": ""
         }
       ]
     },
     {
-      "id": 33,
-      "type": "text",
-      "title": "Diagnosing a slow pipeline",
+      "id": 40,
+      "type": "stat",
+      "title": "TaskManager threads",
+      "description": "Thread count rises with parallelism. On a fixed core count, more threads past the point of saturation buys context switching rather than throughput.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
-        "x": 16,
-        "y": 63,
-        "w": 8,
-        "h": 3
+        "x": 4,
+        "y": 84,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 400
+              },
+              {
+                "color": "red",
+                "value": 800
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "flink_taskmanager_Status_JVM_Threads_Count",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "type": "text",
+      "title": "What runs out first",
+      "gridPos": {
+        "x": 8,
+        "y": 84,
+        "w": 16,
+        "h": 4
       },
       "options": {
         "mode": "markdown",
-        "content": "Lag climbing? Find the task at 100% busy \u2014 that operator is the ceiling. The back-pressured tasks are everything queued behind it. If no single task stands out, the cluster is out of cores, not out of parallelism."
+        "content": "Work down this row in order. **Cores** is the usual answer, and the one that parallelism cannot fix \u2014 if the TaskManager is near the host's core count, adding parallelism adds threads, not capacity. **Heap and GC** is the quietest failure: latency and back-pressure rise with no operator looking busy. **Network** matters once bytes, not records, are the constraint \u2014 the account branch moves four times what the orders topic does. **Buffers** move first of all; they are the mechanism back-pressure is made of.\n\nThe broker is the blind spot: Prometheus scrapes Flink only, so Kafka's own CPU and disk are not here. Step 10 measured it at 1\u20132 cores with `docker stats` while the TaskManager used 4.75."
       }
     }
   ]

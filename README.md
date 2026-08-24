@@ -221,7 +221,12 @@ Sources on the left, sinks on the right, numbered as on the pipeline diagram. Th
 key counts are the expected-output table made visible: sinks 3 and 5 hold 4 keys,
 sinks 4 and 6 hold 16.
 
-The lower half of the dashboard is for diagnosis rather than demonstration:
+The dashboard is in four sections, in the order they get used. **The pipeline**
+first, because it is the demo: the six numbered topics, sources on the left and
+sinks on the right. **Latency**, then **Saturation**, then **Resources** — each
+one the answer to "why" for the section above it.
+
+Sections two through four are for diagnosis rather than demonstration:
 
 | Panel | The question it answers |
 |---|---|
@@ -234,6 +239,21 @@ pinned means that operator needs parallelism, while every task busy and none
 standing out means the cluster needs cores. Step 10 found the account chain at
 99% busy against 57% for the next task this way — `split_by_allocation` fans each
 order into four allocations, so that branch carries four times the record rate.
+
+The **Resources** section is what "the cluster needs cores" is measured against:
+
+| Panel | The question it answers |
+|---|---|
+| **CPU — cores in use** | derived from JVM CPU time, so it reads in cores rather than a share of an unstated whole. Compare with the cores the host has: at parallelism 1 the TaskManager already used 3.85 of 8 |
+| **Heap** and **Garbage collection** | the quietest failure. A rising heap floor and GC in the hundreds of ms/sec produce latency and back-pressure with no operator looking busy |
+| **Network — bytes moved** | read from Kafka, written back, and shuffled between subtasks — for when bytes rather than records are the constraint |
+| **Network buffers** | back-pressure is not a policy, it is these filling. Output pool usage moves before latency does |
+| **free task slots** | a submission with none free does not queue, it fails |
+
+One blind spot, deliberately: Prometheus scrapes Flink only, so the broker's own
+CPU and disk are not charted. Step 10 measured Kafka at 1–2 cores with `docker
+stats` against the TaskManager's 4.75, which was enough to rule it out as the
+bottleneck — but a broker-side limit would not show up here.
 
 Flink has no metric for distinct keys, so the jobs publish one. Keys are
 partitioned across subtasks, which is what makes summing the gauge give the total
