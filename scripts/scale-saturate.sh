@@ -22,15 +22,15 @@ promq() {
   curl -sfG 'http://localhost:9090/api/v1/query' --data-urlencode "query=$1" \
     | jq -r '.data.result[0].value[1] // "0"' | cut -d. -f1
 }
-produced() { kafka kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic orders 2>/dev/null | awk -F: '{s+=$3} END {print s+0}'; }
+produced() { kafka kafka-get-offsets.sh --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --topic orders 2>/dev/null | awk -F: '{s+=$3} END {print s+0}'; }
 processed() { promq 'sum(flink_taskmanager_job_task_operator_numRecordsOut{operator_name="by_symbol"})'; }
 
 echo "=== parallelism=$PARALLELISM  offered=${TRADES_PER_SECOND}/s x${GENERATORS}  run=${RUN_SECONDS}s ==="
 
 echo "-- resetting topics"
-for t in "${TOPICS[@]}"; do kafka kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic "$t" >/dev/null 2>&1 || true; done
+for t in "${TOPICS[@]}"; do kafka kafka-topics.sh --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --delete --topic "$t" >/dev/null 2>&1 || true; done
 for t in "${TOPICS[@]}"; do
-  until ! kafka kafka-topics.sh --bootstrap-server localhost:9092 --list 2>/dev/null | grep -qx "$t"; do sleep 1; done
+  until ! kafka kafka-topics.sh --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --list 2>/dev/null | grep -qx "$t"; do sleep 1; done
 done
 docker compose -f "$COMPOSE" run --rm topics >/dev/null 2>&1
 

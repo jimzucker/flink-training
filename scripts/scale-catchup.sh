@@ -32,7 +32,7 @@ say() { echo "$@" | tee -a "$OUT"; }
 kafka() { local bin="$1"; shift; docker exec ft-kafka "/opt/kafka/bin/$bin" "$@"; }
 
 records() {
-  kafka kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic "$1" 2>/dev/null \
+  kafka kafka-get-offsets.sh --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --topic "$1" 2>/dev/null \
     | awk -F: '{s += $3} END {print s + 0}'
 }
 
@@ -52,12 +52,12 @@ cancel_all() {
 # stale data -- a measurement that looked like an answer.
 delete_topics() {
   for t in $1; do
-    kafka kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic "$t" >/dev/null 2>&1 || true
+    kafka kafka-topics.sh --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --delete --topic "$t" >/dev/null 2>&1 || true
   done
   for t in $1; do
     local gone=0
     for _ in $(seq 1 60); do
-      if ! kafka kafka-topics.sh --bootstrap-server localhost:9092 --list 2>/dev/null | grep -qx "$t"; then
+      if ! kafka kafka-topics.sh --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --list 2>/dev/null | grep -qx "$t"; then
         gone=1; break
       fi
       sleep 0.5

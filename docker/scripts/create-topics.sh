@@ -2,8 +2,12 @@
 # Creates the six topics from the pipeline design. Idempotent.
 set -euo pipefail
 
-BOOTSTRAP="${BOOTSTRAP:-kafka:19092}"
-PARTITIONS="${PARTITIONS:-4}"
+BOOTSTRAP="${BOOTSTRAP:-kafka:19092,kafka2:19092,kafka3:19092}"
+PARTITIONS="${PARTITIONS:-12}"
+# Replication factor 1, as it was with a single broker: this cluster exists to
+# raise write throughput on one machine, not to survive losing a broker, and
+# replicating every write would spend the capacity the extra brokers bought.
+REPLICATION="${REPLICATION_FACTOR:-1}"
 KT=/opt/kafka/bin/kafka-topics.sh
 
 # Numbered as on the design diagram.
@@ -20,9 +24,11 @@ for t in "${TOPICS[@]}"; do
   if "$KT" --bootstrap-server "$BOOTSTRAP" --describe --topic "$t" >/dev/null 2>&1; then
     echo "exists   $t"
   else
-    "$KT" --bootstrap-server "$BOOTSTRAP" --create \
-          --topic "$t" --partitions "$PARTITIONS" --replication-factor 1 >/dev/null
-    echo "created  $t (partitions=$PARTITIONS)"
+    # --if-not-exists because describing and then creating is not atomic: two
+    # runs racing each other both see it missing and the loser fails.
+    "$KT" --bootstrap-server "$BOOTSTRAP" --create --if-not-exists \
+          --topic "$t" --partitions "$PARTITIONS" --replication-factor "$REPLICATION" >/dev/null
+    echo "created  $t (partitions=$PARTITIONS, replication=$REPLICATION)"
   fi
 done
 

@@ -32,12 +32,12 @@ prom() {  # query -> single value
 reset_and_submit() {  # parallelism
   for t in orders prices positions-by-symbol positions-by-account mv-by-symbol mv-by-account; do
     docker exec ft-kafka /opt/kafka/bin/kafka-topics.sh \
-        --bootstrap-server localhost:9092 --delete --topic "$t" >/dev/null 2>&1 || true
+        --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --delete --topic "$t" >/dev/null 2>&1 || true
   done
   for t in orders prices positions-by-symbol positions-by-account mv-by-symbol mv-by-account; do
     for _ in $(seq 1 60); do
       docker exec ft-kafka /opt/kafka/bin/kafka-topics.sh \
-          --bootstrap-server localhost:9092 --list 2>/dev/null | grep -qx "$t" || break
+          --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --list 2>/dev/null | grep -qx "$t" || break
       sleep 0.5
     done
   done
@@ -79,7 +79,7 @@ run_case() {  # name parallelism trades/sec prices/sec
 
   local lat
   lat=$(java -cp "$JAR" io.github.jimzucker.flinktraining.tools.MeasureLatency \
-        localhost:9092 positions-by-symbol "$MEASURE_SECONDS" eventTime 2>/dev/null \
+        "${BOOTSTRAP:-localhost:9092}" positions-by-symbol "$MEASURE_SECONDS" eventTime 2>/dev/null \
         | sed 's/positions-by-symbol *//')
 
   ckpt=$(prom 'max(flink_jobmanager_job_lastCheckpointDuration)')

@@ -219,3 +219,73 @@ tolerances.
 That the codec change surfaced this is worth keeping in mind about the whole
 suite: these checks are exact, but exactness only pins down behaviour the inputs
 actually exercise, and a timing change can move which cases those are.
+
+## Round 4
+
+### Feedback
+
+> Can we solve the broker cap with more brokers? / Scale the Kafka so we achieve
+> our flink scaling test goal
+
+> Are we tracking disk usage and broker resource usage on grafana? / what do you
+> suggest to tune, maybe 2 vs 3 brokers?
+
+> Can we find a way to show scaling it could be 1-2 or 1-4 if 2-4 not
+> demonstrable, we can change partitions in addition to parallelism if that make
+> sense for a demo
+
+### Actions
+
+| Feedback | Action |
+|---|---|
+| Scale Kafka to lift the cap | Built a three-broker KRaft cluster. **It halved throughput.** Kept as an override, not a default |
+| Track disk and broker resources | Attempted with cAdvisor; it reports only the root cgroup on Docker Desktop for Mac, so it would have shipped a page of empty panels. Removed. Still outstanding — see below |
+| What to tune | Sink compression and batching, worth ~13% and a correctly-signed curve. Not 2 vs 3 brokers: the direction is measured and it is down |
+| Show scaling, pairing partitions if needed | Paired cores, partitions and parallelism. 1 → 2 is real at ~25%; 2 → 4 is inside the noise |
+
+### Three brokers were worse, and the reason generalises
+
+| | 1 broker | 3 brokers |
+|---|---|---|
+| drain, parallelism 1 / 2 / 4 | 137,931 / 142,857 / 131,147 | 72,072 / 74,074 / 76,190 |
+| write ceiling, 4 producers | 750,000 records/sec | 545,000 records/sec |
+
+Three broker JVMs held 2.5GB of a 7.65GB VM where one held 1GB, and Kafka writes
+are fast only while the page cache that leaves behind is large enough; three logs
+then share one disk. **More brokers add capacity when they add machines; on one
+machine they divide it.** Two brokers would sit between these, which is to say
+still worse than one — the direction is what the measurement settles, so it was
+not worth a run.
+
+Correctness was re-verified on the three-broker cluster before it was rolled
+back: all checks passed with no tolerances, so the cluster is sound and simply
+slower here.
+
+### Why no arrangement shows scaling
+
+Every dial on one machine, and the answer barely moves:
+
+| Configuration | orders/sec |
+|---|---|
+| 1 broker, 4 partitions, parallelism 1 / 2 / 4 | 137,931 / 142,857 / 131,147 |
+| 1 broker, 12 partitions, parallelism 1 / 2 / 4 | 142,857 / 166,666 / 153,846 |
+| 3 brokers, 12 partitions, parallelism 1 / 2 / 4 | 72,072 / 74,074 / 76,190 |
+| tuned sinks, parallelism 1 / 2 / 4 | 153,846 / 166,666 / 173,913 |
+| cores + partitions + parallelism paired, 1 / 2 / 4 | 148,148 / 190,476 / 173,913 |
+| the same, repeated | 148,148 / 173,913 / 190,476 |
+
+The clinching number: **one partition, parallelism 1, one core sustains 148,148
+orders/sec** — 765,000 records/sec written against a broker measured to accept
+750,000. There is no configuration in which Flink is the constraint, so there is
+nothing for parallelism to relieve.
+
+Repeating the paired run swapped 2 and 4, which is the honest reading of that
+row: 1 → 2 is a real ~25% gain, 2 → 4 is noise.
+
+### Still outstanding
+
+Broker and disk metrics are not on the dashboard. cAdvisor was the wrong tool for
+this host; the right one is a JMX exporter alongside the broker, which would give
+bytes in and out, request handler idle time, log flush latency and log size on
+disk — the last being the disk-usage question directly. Worth doing before the
+AWS step, where the broker is the thing being sized.

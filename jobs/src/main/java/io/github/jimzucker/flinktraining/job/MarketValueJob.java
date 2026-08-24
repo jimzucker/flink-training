@@ -111,7 +111,7 @@ public final class MarketValueJob {
 
     private static KafkaSink<MarketValueState> marketValueSink(
             JobConfig config, String topic, String transactionalIdPrefix) {
-        Properties properties = new Properties();
+        Properties properties = JobConfig.sinkProducerProperties();
         properties.setProperty("transaction.timeout.ms",
                 Long.toString(config.transactionTimeoutMillis()));
 

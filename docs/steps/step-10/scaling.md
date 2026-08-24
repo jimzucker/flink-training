@@ -124,28 +124,73 @@ issues four of the five writes.
 Parallelism was never going to move it. **Flink parallelism scales the work
 inside the job; it cannot scale a broker outside it.**
 
+## Trying to demonstrate scaling anyway
+
+Every dial available on one machine, measured. An 8,000,000-order backlog drained
+with the producer stopped, except the paired cases, which use 4,000,000:
+
+| Configuration | orders/sec |
+|---|---|
+| 1 broker, 4 partitions, parallelism 1 / 2 / 4 | 137,931 / 142,857 / 131,147 |
+| 1 broker, 12 partitions, parallelism 1 / 2 / 4 | 142,857 / 166,666 / 153,846 |
+| **3 brokers**, 12 partitions, parallelism 1 / 2 / 4 | **72,072 / 74,074 / 76,190** |
+| 1 broker, tuned sinks, parallelism 1 / 2 / 4 | 153,846 / 166,666 / 173,913 |
+| cores + partitions + parallelism paired, 1 / 2 / 4 | 148,148 / 190,476 / 173,913 |
+| the same, repeated | 148,148 / 173,913 / 190,476 |
+
+Read down the last two rows first: repeating the paired run swaps 2 and 4, so
+**the difference between parallelism 2 and 4 is inside the noise.** Only 1 → 2 is
+a real gain, and it is about 25%, not 100%.
+
+Read across and the reason is plain: every configuration lands between 130,000
+and 190,000 orders/sec. Partitions from 1 to 12, parallelism from 1 to 4, a core
+budget from 1 to 8, one broker or three — the answer barely moves. **A single
+partition at parallelism 1 on one core sustains 148,000 orders/sec**, which is
+765,000 records/sec written, against the 750,000 the broker was measured to
+accept. Everything saturates the same thing.
+
+### More brokers made it worse
+
+Three brokers were the obvious response to a broker-bound pipeline, and they cut
+throughput roughly in half: 137,931 orders/sec became 72,072, and the four-
+producer write ceiling fell from 750,000 records/sec to 545,000.
+
+The cause is the machine, not Kafka. Three broker JVMs held **2.5GB of a 7.65GB
+VM** where one held 1GB, and Kafka writes are only fast while the page cache that
+leaves behind is large enough. Sharing one disk between three logs does the rest.
+**More brokers add capacity when they add machines; on one machine they divide
+it.** Kept as `docker/compose.cluster.yml` so the measurement can be repeated,
+not as a default.
+
+### What tuning did buy
+
+Sink producers were on Kafka's defaults: no compression, and `linger.ms=0`, which
+sends a batch as soon as one record is ready. Since the TaskManager had cores to
+spare and the broker did not have writes to spare, spending the former on the
+latter is the trade the system was asking for. With lz4, `linger.ms=10` and 128KB
+batches, parallelism 4 went from 153,846 to 173,913 orders/sec, and
+back-pressure at parallelism 4 fell from 85% to 66%. It also turned the curve the
+right way up: before tuning, parallelism 4 was *slower* than 2.
+
+That is worth having, and it is not scaling.
+
 ## What would demonstrate scaling
 
-Raise the ceiling that is actually binding, then vary parallelism against it.
-Since the ceiling is one broker's write throughput, that means more brokers: a
-three-broker KRaft cluster in the same compose file roughly triples the write
-capacity, and the drain can then be run at parallelism 1, 2 and 4 against a limit
-that is no longer the first thing hit. If throughput tracks parallelism the
-pipeline scales; if it flattens again, the next constraint is worth finding and
-the same exclusion process applies.
+Stop sharing one machine. Everything above is a variation on dividing eight cores
+and one disk between a load generator, a broker and a Flink cluster, and the
+result is the same wall each time because it is the same machine each time.
 
-Two cheaper observations point the same way and cost nothing to state. Four of
-every five records written come from the account branch, so the write ceiling is
-overwhelmingly an account-side cost — anything that reduces it (writing
-allocations in batches, or not materialising every allocation to Kafka) moves the
-ceiling further than any parallelism change. And the deployment model matters:
-in Amazon Managed Service for Apache Flink parallelism is bought in KPUs of one
-vCPU each, but MSK brokers are provisioned separately, so the same trap exists
-there — scaling KPUs against an undersized cluster buys nothing.
+The AWS step is where this belongs, and now for a specific reason rather than a
+vague preference for "dedicated resources": MSK brokers and Flink KPUs are
+separate machines there, so raising KPUs raises Flink's capacity without taking
+anything from Kafka's. The measurement to run is the same drain, and the
+prediction is now falsifiable: throughput should track KPUs until the MSK cluster
+becomes the ceiling, at which point adding KPUs will stop helping exactly as it
+does here.
 
-The general lesson is the one worth taking to the deck. **Flink parallelism
-scales the work inside the job. It cannot scale anything outside it**, and when
-the constraint is outside, more parallelism costs threads and returns nothing.
+The cheaper lever, wherever it runs, is the write amplification. Four of every
+five records written come from the account branch, so anything that reduces that
+volume moves the ceiling further than any parallelism setting will.
 
 ## Watching for it
 
