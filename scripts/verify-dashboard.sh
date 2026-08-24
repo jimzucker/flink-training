@@ -36,8 +36,14 @@ fi
 note "title" "$(echo "$DASH" | jq -r '.title')"
 check "panels present" "true" "$([ "$(echo "$DASH" | jq '.panels | length')" -gt 0 ] && echo true || echo false)"
 
-# Row panels stop everything below them drawing, which is invisible in the JSON.
-check "row panels" "0" "$(echo "$DASH" | jq '[.panels[] | select(.type=="row")] | length')"
+# A collapsed row holds its children inside its own .panels array, where the
+# query scan below cannot see them and the renderer will not draw them -- which
+# is invisible in the JSON unless you look for it. Open rows are fine and are
+# what groups the dashboard into sections; collapsed ones are the hazard.
+check "collapsed rows" "0" \
+  "$(echo "$DASH" | jq '[.panels[] | select(.type=="row" and .collapsed==true)] | length')"
+check "panels hidden inside rows" "0" \
+  "$(echo "$DASH" | jq '[.panels[] | select(.type=="row") | .panels // [] | length] | add // 0')"
 
 # An unrecognised reducer id renders an empty panel rather than complaining.
 check "unknown stat reducers" "0" \
@@ -74,7 +80,7 @@ done
 
 echo
 echo "renders"
-TMP=$(mktemp -t dashboard).png
+TMP=$(mktemp -t dashboard.XXXXXX).png
 if curl -sf -o "$TMP" "$GRAFANA/render/d/$DASHBOARD/x?orgId=1&from=now-5m&to=now&width=1200&height=1000&kiosk"; then
   SIZE=$(wc -c < "$TMP" | tr -d ' ')
   # A blank dashboard still renders, but compresses to almost nothing.
