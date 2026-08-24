@@ -996,11 +996,11 @@ Full exchange: [`docs/reviews/step-09.md`](../docs/reviews/step-09.md)
 
 Both specified cases pass.
 
-| | orders/s asked | prices/s | orders through | allocations | latency p50 |
-|---|---|---|---|---|---|
-| baseline | 10 | 1000 | 8/s | 33/s | 519 ms |
-| case 1 | 1000 | 1000 | **816/s** | **3269/s** | **522 ms** |
-| case 2 | 10 | **20000** | 8/s | 33/s | **513 ms** |
+| | orders/s asked | prices/s | orders through | latency p50 |
+|---|---|---|---|---|
+| baseline | 10 | 1000 | 8/s | 519 ms |
+| case 1 | 1000 | 1000 | **1000/s** | **522 ms** |
+| case 2 | 10 | **20000** | 8/s | **513 ms** |
 
 Case 1 raised throughput a hundredfold with latency unmoved. Case 2 raised the
 price rate twentyfold with order latency unchanged, which settles the question
@@ -1009,30 +1009,72 @@ at twenty times the rate it does not bite. Measuring rather than pre-reducing wa
 the right call — pre-reducing would have traded away the exact price-at-close for
 a problem that is not there.
 
-### What could not be measured, and why
+### Forcing it to fail
 
-Parallelism 2 to 4 changed nothing: 816 orders/sec against 812. That is not
-evidence the pipeline does not scale, it is evidence it was never the constraint.
-The generator is: asked for 1000 it delivers 816, asked for 5000 it delivers
-3000, because its pacer sleeps between records. With no queue, extra parallelism
-has nothing to do.
+Passing runs say less than a broken one, so the rate went up until it broke:
+315,000 orders/sec offered at parallelism 4.
 
-Measuring the pipeline directly means removing the producer — filling the topic
-first, then starting the job and timing the drain. That script exists, and on
-this machine it produced three different failure modes across three attempts:
-identical parallelism-1 runs returning 5212 and then 2223 orders/sec, and a
-parallelism-2 run reporting zero because the submission had not produced a
-running job at all, with twenty-four cancelled jobs accumulated from repeated
-cancel-and-resubmit cycles.
+| | sustained | lag drift | latency p50 | checkpoint |
+|---|---|---|---|---|
+| parallelism 4 | 37,419/s | **+242,861/s** | **110,088 ms** | 270–720 ms |
+| parallelism 2 | 43,300/s | +248,766/s | 107,080 ms | 200–714 ms |
 
-Each attempt taught something and none produced a number worth reporting. A
-laptop running Docker, a browser, Kafka, Flink, Prometheus and Grafana is not an
-instrument. Recorded as unproven rather than supported by a figure that changed
-by a factor of two between identical runs, and moved to the AWS step where the
-resources are dedicated.
+Nothing crashed. No failed checkpoint, no restart, no exception — Flink
+back-pressures the source and keeps producing correct output, just further behind
+every second. Latency rose two hundredfold because each record now waits behind a
+backlog of thirty million, so under saturation latency measures the queue rather
+than the work. The failure is invisible in correctness, invisible in throughput,
+and obvious only in lag.
+
+### Why parallelism does not move it here
+
+Parallelism 2 beat parallelism 4 in that run, because three generator JVMs were
+competing with the cluster for eight cores. Removing the producer entirely —
+filling the topics first and timing a drain of an identical 8,000,000-order
+backlog — gives a clean and flat answer:
+
+| parallelism | time to drain | orders/sec |
+|---|---|---|
+| 1 | 58 s | 137,931/s |
+| 2 | 56 s | 142,857/s |
+| 4 | 61 s | 131,147/s |
+
+The reason is measured, not guessed. The job graph is eight chained task groups,
+so parallelism 1 is *already* eight task threads at 385% CPU of the 800%
+available; parallelism 4 asks for thirty-two threads on the same cores and gets
+475%. **On a fixed core count, raising parallelism alone does not raise
+throughput.** The bottleneck within the job is equally specific: the account
+chain sits at 99% busy against 57% for the next task, because
+`split_by_allocation` fans each order into four allocations and that branch
+carries 432,000 records/sec against the orders' 108,000.
+
+The earlier claim that the generator was the ceiling is superseded — the pacer
+was the ceiling and it is fixed. Asked for 20,000/sec it now delivers 20,000;
+asked for 50,000 it delivers 50,000.
+
+### What would prove scaling
+
+Scale cores with parallelism. That is not a workaround for a laptop, it is how
+the managed service works: KPUs are one vCPU each, and parallelism and KPUs move
+together, so a demonstration holding cores fixed is not testing the deployment
+model. Pin the TaskManager to a quota of 1, 2 and 4 cores and drain the same
+backlog in each.
 
 Details: [`docs/steps/step-10/scaling.md`](../docs/steps/step-10/scaling.md)
 
 ### Review
 
-_Pending._
+Two rounds. The first redirected the whole approach — force a failure and
+evaluate it rather than re-running passing cases. The second asked what the
+dashboard actually monitors, and the answer was: not enough. Back-pressure was
+not charted, per-operator usage was not charted, and consumer lag — the signal
+that defines saturation — had no panel at all. The account-chain diagnosis had
+come from an ad-hoc PromQL query, which meant the dashboard could not have found
+it. All three are now charted, with busy and back-pressure broken out per task.
+
+It also asked why CI failures were not being caught before the push. They are
+now: `scripts/precheck.sh` runs the two jobs that need no Docker stack in about
+fifteen seconds, and `.githooks/pre-push` runs it on every push. Every CI failure
+on this branch would have been caught by it.
+
+Full exchange: [`docs/reviews/step-10.md`](../docs/reviews/step-10.md)
