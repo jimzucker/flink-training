@@ -19,7 +19,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
 | 08 | Local Docker demo | full | `step-08-docker-local` | in review |
 | 09 | Latency | full | `step-09-latency` | in review |
-| 10 | Scale | full | `step-10-scale` | not started |
+| 10 | Scale | full | `step-10-scale` | in review |
 | 11 | AWS | full | `step-11-aws` | not started |
 | 12 | Final demo | full | `step-12-final-deck` | not started |
 
@@ -982,3 +982,57 @@ number means and the runbook has an answer ready.
 Full exchange: [`docs/reviews/step-09.md`](../docs/reviews/step-09.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-09`.
+
+---
+
+## Step 10 — Scale
+
+- **Branch:** `step-10-scale`
+- **Prompt:** The assignment's two scale cases — orders to 1000/sec without
+  losing throughput, and a very high price rate without hurting order latency —
+  plus the parallelism 2 to 4 comparison.
+
+### Results
+
+Both specified cases pass.
+
+| | orders/s asked | prices/s | orders through | allocations | latency p50 |
+|---|---|---|---|---|---|
+| baseline | 10 | 1000 | 8/s | 33/s | 519 ms |
+| case 1 | 1000 | 1000 | **816/s** | **3269/s** | **522 ms** |
+| case 2 | 10 | **20000** | 8/s | 33/s | **513 ms** |
+
+Case 1 raised throughput a hundredfold with latency unmoved. Case 2 raised the
+price rate twentyfold with order latency unchanged, which settles the question
+left open in step 05: broadcasting prices to every subtask was the concern, and
+at twenty times the rate it does not bite. Measuring rather than pre-reducing was
+the right call — pre-reducing would have traded away the exact price-at-close for
+a problem that is not there.
+
+### What could not be measured, and why
+
+Parallelism 2 to 4 changed nothing: 816 orders/sec against 812. That is not
+evidence the pipeline does not scale, it is evidence it was never the constraint.
+The generator is: asked for 1000 it delivers 816, asked for 5000 it delivers
+3000, because its pacer sleeps between records. With no queue, extra parallelism
+has nothing to do.
+
+Measuring the pipeline directly means removing the producer — filling the topic
+first, then starting the job and timing the drain. That script exists, and on
+this machine it produced three different failure modes across three attempts:
+identical parallelism-1 runs returning 5212 and then 2223 orders/sec, and a
+parallelism-2 run reporting zero because the submission had not produced a
+running job at all, with twenty-four cancelled jobs accumulated from repeated
+cancel-and-resubmit cycles.
+
+Each attempt taught something and none produced a number worth reporting. A
+laptop running Docker, a browser, Kafka, Flink, Prometheus and Grafana is not an
+instrument. Recorded as unproven rather than supported by a figure that changed
+by a factor of two between identical runs, and moved to the AWS step where the
+resources are dedicated.
+
+Details: [`docs/steps/step-10/scaling.md`](../docs/steps/step-10/scaling.md)
+
+### Review
+
+_Pending._

@@ -323,7 +323,35 @@ the same boundary and so shares an age.
 
 ## Scale results
 
-_Added in step 10._
+Both cases the requirements specify pass.
+
+| | orders/s asked | prices/s | orders through | allocations | order latency p50 |
+|---|---|---|---|---|---|
+| baseline | 10 | 1000 | 8/s | 33/s | 519 ms |
+| **case 1** | 1000 | 1000 | **816/s** | **3269/s** | **522 ms** |
+| **case 2** | 10 | **20000** | 8/s | 33/s | **513 ms** |
+
+**Case 1** raised throughput a hundredfold and order latency did not move. The
+requirement allows latency to rise; it did not need to.
+
+**Case 2** raised the price rate twentyfold and order latency was unchanged. That
+settles the question left open when prices were made a broadcast: the concern was
+that every price would pass through the threads doing order work, and at twenty
+times the rate it does not.
+
+```bash
+./scripts/scale-test.sh
+```
+
+**Parallelism scaling is not demonstrated**, and the reason is worth stating
+plainly: raising parallelism from 2 to 4 changed nothing because the pipeline was
+never the constraint. The generator caps out around 3000 orders/sec, so there was
+no queue for the extra parallelism to work through. Measuring the pipeline
+directly means draining a backlog with the producer stopped, and on a development
+machine that measurement varied by a factor of two between identical runs. It is
+recorded as unproven rather than supported by an unreliable number — see
+[`docs/steps/step-10/scaling.md`](docs/steps/step-10/scaling.md), and the AWS step
+for where to measure it properly.
 
 ---
 

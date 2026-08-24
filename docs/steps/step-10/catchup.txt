@@ -1,0 +1,8 @@
+catch-up throughput  (2026-08-24T02:47:06Z)
+backlog of 120000 orders, drained with the producer stopped
+
+  parallelism 1: backlog 120000 orders, peak 2223 orders/sec through the pipeline
+  parallelism 2: backlog 120000 orders, peak 0 orders/sec through the pipeline
+  parallelism 4: backlog 120000 orders, peak 6114 orders/sec through the pipeline
+
+written to docs/steps/step-10/catchup.txt
