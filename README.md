@@ -221,6 +221,20 @@ Sources on the left, sinks on the right, numbered as on the pipeline diagram. Th
 key counts are the expected-output table made visible: sinks 3 and 5 hold 4 keys,
 sinks 4 and 6 hold 16.
 
+The lower half of the dashboard is for diagnosis rather than demonstration:
+
+| Panel | The question it answers |
+|---|---|
+| **Consumer lag** | is the job keeping up? A bounded, sawtooth lag is healthy; a line that climbs and never returns is saturation, and it is the only panel that shows it — throughput looks fine right up to the point it is not |
+| **Busy by task** | which operator is the ceiling? One task near 100% while the rest sit low names the thing to fix |
+| **Back-pressure by task** | what is queued behind it? The back-pressured tasks are the victims; the busy task they feed is the cause |
+
+Read together they separate the two ways a pipeline runs out of room: one task
+pinned means that operator needs parallelism, while every task busy and none
+standing out means the cluster needs cores. Step 10 found the account chain at
+99% busy against 57% for the next task this way — `split_by_allocation` fans each
+order into four allocations, so that branch carries four times the record rate.
+
 Flink has no metric for distinct keys, so the jobs publish one. Keys are
 partitioned across subtasks, which is what makes summing the gauge give the total
 without double counting. It counts from when a subtask started, so a restart
@@ -387,17 +401,38 @@ so both are held at 1.20.4 to keep the cluster and the job jars identical.
 
 ## Continuous integration
 
-Every push runs three jobs:
+Every push runs four jobs:
 
 | Job | What it proves |
 |---|---|
 | **Build and test** | compiles on Java 17 and runs all 23 tests, including the Testcontainers integration test that starts its own broker |
 | **Verify the expected numbers** | brings up Kafka, runs the generators bounded by record count, and asserts the expected-output table exactly |
+| **Cold start** | brings the whole stack up from nothing and checks it came up green, so `docker compose up` on a clean machine is a tested path |
 | **Shell scripts** | ShellCheck over the verification scripts, since they are part of how correctness is demonstrated |
 
 The second job is the one that matters: it is the same `verify-run.sh` used
 locally, so a change that quietly breaks the numbers fails the build rather than
 surfacing during a demo.
+
+### Catching it before the push
+
+Waiting for CI to find a three-second ShellCheck error wastes a round trip, so
+the two jobs that need no Docker stack run locally first:
+
+```bash
+scripts/precheck.sh           # shellcheck + mvn verify, about 15 seconds
+scripts/precheck.sh --quick   # shellcheck + compile, no tests
+```
+
+Wire it to the push so it is not something to remember:
+
+```bash
+git config core.hooksPath .githooks   # once per clone
+```
+
+`.githooks/pre-push` then runs it on every `git push`, and `--no-verify`
+bypasses it when that is deliberate. The two stack jobs still run on CI only;
+they need several minutes and a quiet machine.
 
 `main` is protected and requires all three checks to pass, so work reaches it
 through a pull request:

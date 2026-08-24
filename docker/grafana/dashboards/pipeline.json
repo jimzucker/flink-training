@@ -1467,6 +1467,278 @@
         "mode": "markdown",
         "content": "Offer more load than the job can take and back-pressure goes red while throughput flattens \u2014 that flat number is the ceiling for this parallelism. Double the parallelism and the ceiling should move, not the back-pressure."
       }
+    },
+    {
+      "id": 29,
+      "type": "bargauge",
+      "title": "Where the work is \u2014 busy by task",
+      "description": "Share of each second every task spends doing work. One task near 100% while the rest sit low is a bottleneck, and it names the operator to fix: adding parallelism helps only the pinned one. Even bars mean the work is spread and the whole job is the constraint.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 51,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "namePlacement": "left",
+        "sizing": "auto",
+        "minVizWidth": 8,
+        "minVizHeight": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sort_desc(label_replace(label_replace(max by (task_name) (flink_taskmanager_job_task_busyTimeMsPerSecond) / 10, \"task\", \"$1\", \"task_name\", \"(.*)\"), \"task\", \"$1\", \"task_name\", \"(.*?)____.*\"))",
+          "instant": true,
+          "legendFormat": "{{task}}"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "type": "bargauge",
+      "title": "Where it is stuck \u2014 back-pressure by task",
+      "description": "Share of each second every task spends blocked because the task downstream cannot keep up. Read it with the panel to the left: the back-pressured task is the victim, and the busy task it feeds is the cause.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 51,
+        "w": 12,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "namePlacement": "left",
+        "sizing": "auto",
+        "minVizWidth": 8,
+        "minVizHeight": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sort_desc(label_replace(label_replace(max by (task_name) (flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10, \"task\", \"$1\", \"task_name\", \"(.*)\"), \"task\", \"$1\", \"task_name\", \"(.*?)____.*\"))",
+          "instant": true,
+          "legendFormat": "{{task}}"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Consumer lag \u2014 records each source is behind",
+      "description": "How many records are sitting in Kafka that the job has not read yet. This is the signal that defines saturation: a bounded, sawtooth lag is a pipeline keeping up, and a line that climbs and never comes back down is one that is not, no matter how healthy throughput looks.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 59,
+        "w": 16,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (operator_name) (flink_taskmanager_job_task_operator_pendingRecords)",
+          "legendFormat": "{{operator_name}}"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "type": "stat",
+      "title": "\u2460 orders lag",
+      "description": "Records waiting in the orders topic. Growing steadily means the offered load is above what this parallelism and core count can absorb.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 59,
+        "w": 8,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50000
+              },
+              {
+                "color": "red",
+                "value": 500000
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_taskmanager_job_task_operator_pendingRecords{operator_name=\"Source:_orders\"})",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "type": "text",
+      "title": "Diagnosing a slow pipeline",
+      "gridPos": {
+        "x": 16,
+        "y": 63,
+        "w": 8,
+        "h": 3
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Lag climbing? Find the task at 100% busy \u2014 that operator is the ceiling. The back-pressured tasks are everything queued behind it. If no single task stands out, the cluster is out of cores, not out of parallelism."
+      }
     }
   ]
 }
