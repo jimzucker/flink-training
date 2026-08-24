@@ -874,18 +874,390 @@
     },
     {
       "id": 17,
-      "type": "text",
-      "title": "Latency",
-      "datasource": null,
+      "type": "timeseries",
+      "title": "Order latency \u2014 trade created to position computed",
+      "description": "How old a trade is when its position is computed. This is the pipeline's own work. What a consumer waits for is longer, because a record is not readable until the checkpoint that produced it commits.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
         "x": 0,
         "y": 29,
-        "w": 24,
+        "w": 16,
+        "h": 8
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_operator_processingLatencyMillis{operator_name=\"aggregate_by_symbol\",quantile=\"0.5\"})",
+          "legendFormat": "\u2462 by symbol p50"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_operator_processingLatencyMillis{operator_name=\"aggregate_by_symbol\",quantile=\"0.99\"})",
+          "legendFormat": "\u2462 by symbol p99"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_operator_processingLatencyMillis{operator_name=\"aggregate_by_account\",quantile=\"0.5\"})",
+          "legendFormat": "\u2463 by account p50"
+        },
+        {
+          "refId": "D",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_operator_processingLatencyMillis{operator_name=\"aggregate_by_account\",quantile=\"0.99\"})",
+          "legendFormat": "\u2463 by account p99"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "type": "stat",
+      "title": "\u2462 p99",
+      "description": "Processing latency.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 29,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "graphMode": "none",
+        "colorMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_operator_processingLatencyMillis{operator_name=\"aggregate_by_symbol\",quantile=\"0.99\"})",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "type": "stat",
+      "title": "\u2463 p99",
+      "description": "Processing latency.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 29,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "graphMode": "none",
+        "colorMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_operator_processingLatencyMillis{operator_name=\"aggregate_by_account\",quantile=\"0.99\"})",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "type": "text",
+      "title": "What a consumer waits for",
+      "gridPos": {
+        "x": 16,
+        "y": 33,
+        "w": 8,
         "h": 4
       },
       "options": {
         "mode": "markdown",
-        "content": "Instrumented in the latency step. Measured from the instant a trade is created to the instant it reaches a sink, which is why the generator stamps records with the wall clock.\n\nExactly-once delivery puts a floor under it: a record is not readable until the checkpoint that produced it commits."
+        "content": "Add the checkpoint interval. A record is not readable until the checkpoint that produced it commits, so visible latency is roughly processing plus a uniform wait of up to one interval.\n\nMeasured: **p50 2.5s / max 5.0s** at a 5s interval, **p50 0.5s / max 1.0s** at 1s."
+      }
+    },
+    {
+      "id": 21,
+      "type": "timeseries",
+      "title": "Checkpoints \u2014 the floor under visible latency",
+      "description": "A record is not readable until the checkpoint that produced it commits, so the interval between these is what a consumer waits on top of the processing time. Duration is how long one takes; it should stay far below the interval.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 37,
+        "w": 16,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_jobmanager_job_lastCheckpointDuration)",
+          "legendFormat": "duration"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_jobmanager_job_numberOfCompletedCheckpoints)",
+          "legendFormat": "completed (count)"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "type": "stat",
+      "title": "last checkpoint",
+      "description": "How long the most recent checkpoint took.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 37,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "graphMode": "none",
+        "colorMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_jobmanager_job_lastCheckpointDuration)",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "type": "stat",
+      "title": "aborted checkpoints",
+      "description": "One per job is normal and happens at startup: with a short interval the first checkpoint triggers before every task is running and is aborted. A count that keeps climbing while the job runs is the thing to worry about; watch completed checkpoints rising alongside it.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 37,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "decimals": 0,
+          "color": {
+            "mode": "fixed",
+            "fixedColor": "text"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "value",
+        "graphMode": "none",
+        "colorMode": "none",
+        "justifyMode": "center",
+        "orientation": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_jobmanager_job_numberOfFailedCheckpoints)",
+          "instant": true,
+          "range": false,
+          "format": "time_series"
+        }
+      ]
+    },
+    {
+      "id": 24,
+      "type": "text",
+      "title": "Reading these together",
+      "gridPos": {
+        "x": 16,
+        "y": 41,
+        "w": 8,
+        "h": 3
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Visible latency is roughly processing plus a uniform wait of up to one checkpoint interval. Shorten the interval and the wait falls with it \u2014 at 1s the median order latency is about 0.5s.\n\nA checkpoint takes about 13ms here, so it is the *interval* that costs, not the checkpoint."
       }
     }
   ]

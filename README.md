@@ -274,9 +274,56 @@ is what makes the walk back possible.
 
 Full walkthrough for presenting it: [`docs/demo-runbook.md`](docs/demo-runbook.md).
 
+## Latency
+
+Two numbers, and they are not the same.
+
+**What the pipeline takes** — published by the operators, visible on the
+dashboard: **p50 59ms, p99 110ms** from a trade being created to its position
+being computed.
+
+**What a consumer waits for** — measured from outside:
+
+```bash
+./scripts/measure-latency.sh
+```
+
+```
+orders                 p50=8      p99=20     max=27      (ms)
+positions-by-symbol    p50=518    p99=1020   max=1025    (ms)
+positions-by-account   p50=515    p99=1014   max=1036    (ms)
+
+mv-by-symbol           p50=684    p99=1709   max=1709    (ms)   from window close
+mv-by-account          p50=689    p99=1684   max=1684    (ms)
+```
+
+The input path is single-digit milliseconds. The positions are not, and the
+reason is not the pipeline: under exactly-once a record is not readable until the
+checkpoint that produced it commits, so a consumer waits a roughly uniform
+interval on top of the processing time.
+
+The checkpoint interval is that floor, and it behaves exactly like one:
+
+| Checkpoint interval | p50 | max |
+|---|---|---|
+| 5s | 2488 ms | 4988 ms |
+| 1s (default) | **518 ms** | **1025 ms** |
+
+A checkpoint itself takes about 13ms, so what costs is the interval between them,
+not the checkpoint. Both are charted, next to the latency they explain.
+
+This is a trade, not a defect. A position is a running sum, so a record replayed
+after a failure is a wrong number rather than a duplicate — exactly-once prevents
+that, and the wait is its price.
+
+Market value is measured from the **window close**, since the window is the
+specification rather than a delay. Its figures step rather than spread — p95, p99
+and the maximum are the same number, because every key in a window is emitted at
+the same boundary and so shares an age.
+
 ## Scale results
 
-_Added in step 8._
+_Added in step 10._
 
 ---
 
