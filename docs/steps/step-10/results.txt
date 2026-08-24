@@ -1,4 +1,4 @@
-scale test  (2026-08-24T02:29:43Z)
+scale test  (2026-08-24T04:37:08Z)
 each case runs for 50s with latency measured over 25s
 
 ==============================================================
@@ -7,35 +7,9 @@ baseline   parallelism=2  orders=10/s  prices=1000/s
 
   orders through the pipeline   8/sec
   allocations                   33/sec
-  order latency                 n=250    p50=519    p95=927    p99=1023   max=1024    (ms)
-  checkpoint duration           8 ms
+  order latency                 n=240    p50=470    p95=960    p99=968    max=973     (ms)
+  checkpoint duration           12 ms
 
 ==============================================================
 case 1: orders to 1000/sec   parallelism=2  orders=1000/s  prices=1000/s
 ==============================================================
-
-  orders through the pipeline   816/sec
-  allocations                   3269/sec
-  order latency                 n=24257  p50=522    p95=971    p99=1011   max=1057    (ms)
-  checkpoint duration           14 ms
-
-==============================================================
-case 1 at parallelism 4   parallelism=4  orders=1000/s  prices=1000/s
-==============================================================
-
-  orders through the pipeline   812/sec
-  allocations                   3250/sec
-  order latency                 n=24997  p50=527    p95=975    p99=1015   max=1049    (ms)
-  checkpoint duration           17 ms
-
-==============================================================
-case 2: price rate very high   parallelism=2  orders=10/s  prices=20000/s
-==============================================================
-
-  orders through the pipeline   8/sec
-  allocations                   33/sec
-  order latency                 n=250    p50=513    p95=960    p99=966    max=1013    (ms)
-  checkpoint duration           6 ms
-
-==============================================================
-written to docs/steps/step-10/results.txt

@@ -1259,6 +1259,214 @@
         "mode": "markdown",
         "content": "Visible latency is roughly processing plus a uniform wait of up to one checkpoint interval. Shorten the interval and the wait falls with it \u2014 at 1s the median order latency is about 0.5s.\n\nA checkpoint takes about 13ms here, so it is the *interval* that costs, not the checkpoint."
       }
+    },
+    {
+      "id": 25,
+      "type": "timeseries",
+      "title": "Saturation \u2014 where the work is, and where it is stuck",
+      "description": "Busy is the share of each second a task spends doing work; back-pressured is the share it spends blocked because the task downstream of it cannot keep up. Busy near 100% with no back-pressure means the pipeline is working at its limit and keeping up. Sustained back-pressure means it is not: the offered load is above what this parallelism can absorb, and adding parallelism is what fixes it.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 44,
+        "w": 16,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 10",
+          "legendFormat": "busiest task"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10",
+          "legendFormat": "most back-pressured task"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "type": "stat",
+      "title": "busiest task",
+      "description": "Share of the second the hottest task spends working.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 16,
+        "y": 44,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 10",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "type": "stat",
+      "title": "back-pressure",
+      "description": "Sustained non-zero means the offered load exceeds this parallelism.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 20,
+        "y": 44,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "type": "text",
+      "title": "Proving it scales",
+      "gridPos": {
+        "x": 16,
+        "y": 48,
+        "w": 8,
+        "h": 3
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Offer more load than the job can take and back-pressure goes red while throughput flattens \u2014 that flat number is the ceiling for this parallelism. Double the parallelism and the ceiling should move, not the back-pressure."
+      }
     }
   ]
 }

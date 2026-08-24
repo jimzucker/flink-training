@@ -1,36 +1,48 @@
 #!/usr/bin/env bash
-# Measures the pipeline's own throughput, by draining a backlog.
+# Measures the pipeline's own throughput at each parallelism, by draining a backlog.
 #
-# Feeding it live does not measure it. The generator tops out around 3000
-# orders/sec and its pacer under-delivers below that, so at the rates a live run
-# reaches the pipeline is never saturated -- which is why raising parallelism
-# changed nothing: there was no queue to work through.
+# Feeding it live cannot answer the question on one machine. The generator and the
+# job share eight cores, so pushing hard enough to saturate the job starves it:
+# offering 315k orders/sec left the busiest task at 100% and drained only 37k/sec,
+# and parallelism 2 beat parallelism 4 because more Flink threads on a full box
+# only added contention. That measures the laptop, not the pipeline.
 #
-# Filling the topic first and then starting the job removes the producer from the
-# measurement entirely. What is left is how fast Flink drains a known backlog,
-# which is the number parallelism should move.
+# Filling the topics first and then starting the job removes the producer from the
+# measurement entirely. What is left is how fast Flink drains a known backlog with
+# the cores to itself, which is the number parallelism should move.
+#
+#   BACKLOG=5000000 scripts/scale-catchup.sh
 set -uo pipefail
 
 cd "$(dirname "$0")/.." || exit 1
 
 COMPOSE="docker/compose.yml"
 JAR=generators/target/generators.jar
-BACKLOG="${BACKLOG:-120000}"
-SAMPLES="${SAMPLES:-25}"   # x2s of sampling per case
+BACKLOG="${BACKLOG:-5000000}"
+TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-600}"   # abort rather than hang if a case cannot drain
+CASES="${CASES:-1 2 4}"
 OUT="${OUT:-docs/steps/step-10/catchup.txt}"
+
+INPUTS="orders prices"
+OUTPUTS="positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
 
 mkdir -p "$(dirname "$OUT")"
 say() { echo "$@" | tee -a "$OUT"; }
 
+kafka() { docker exec ft-kafka "/opt/kafka/bin/$@"; }
+
 records() {
-  docker exec ft-kafka /opt/kafka/bin/kafka-get-offsets.sh \
-      --bootstrap-server localhost:9092 --topic "$1" 2>/dev/null \
+  kafka kafka-get-offsets.sh --bootstrap-server localhost:9092 --topic "$1" 2>/dev/null \
     | awk -F: '{s += $3} END {print s + 0}'
 }
 
+promq() {
+  curl -sfG 'http://localhost:9090/api/v1/query' --data-urlencode "query=$1" \
+    | jq -r '.data.result[0].value[1] // "0"' | cut -d. -f1
+}
+
 cancel_all() {
-  for id in $(docker compose -f "$COMPOSE" exec -T jobmanager flink list -r 2>/dev/null \
-              | grep -oE '[0-9a-f]{32}' || true); do
+  for id in $(curl -sf http://localhost:8081/jobs | jq -r '.jobs[]|select(.status=="RUNNING")|.id'); do
     docker compose -f "$COMPOSE" exec -T jobmanager flink cancel "$id" >/dev/null 2>&1 || true
   done
 }
@@ -38,19 +50,15 @@ cancel_all() {
 # Aborts if a topic will not go away. Proceeding regardless left the previous
 # run's records in place, and the completion check then passed instantly against
 # stale data -- a measurement that looked like an answer.
-reset_topics() {
-  local topics="orders prices positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
-  for t in $topics; do
-    docker exec ft-kafka /opt/kafka/bin/kafka-topics.sh \
-        --bootstrap-server localhost:9092 --delete --topic "$t" >/dev/null 2>&1 || true
+delete_topics() {
+  for t in $1; do
+    kafka kafka-topics.sh --bootstrap-server localhost:9092 --delete --topic "$t" >/dev/null 2>&1 || true
   done
-  for t in $topics; do
+  for t in $1; do
     local gone=0
     for _ in $(seq 1 60); do
-      if ! docker exec ft-kafka /opt/kafka/bin/kafka-topics.sh \
-             --bootstrap-server localhost:9092 --list 2>/dev/null | grep -qx "$t"; then
-        gone=1
-        break
+      if ! kafka kafka-topics.sh --bootstrap-server localhost:9092 --list 2>/dev/null | grep -qx "$t"; then
+        gone=1; break
       fi
       sleep 0.5
     done
@@ -66,47 +74,67 @@ drain_at() {  # parallelism
   local par="$1"
 
   cancel_all
-  reset_topics
+  delete_topics "$OUTPUTS"          # inputs are kept: every case drains the same backlog
 
-  # Fill the topic with the job stopped, so the producer is not in the measurement.
-  TRADES_PER_SECOND=5000 PRICES_PER_SECOND=2000 \
-    MAX_TRADES="$BACKLOG" MAX_PRICES=$(( BACKLOG / 4 )) \
-    java -jar "$JAR" >/dev/null 2>&1
   local queued
   queued=$(records orders)
 
   PARALLELISM="$par" docker compose -f "$COMPOSE" run --rm submit >/dev/null 2>&1
+  local running
+  running=$(curl -sf http://localhost:8081/jobs | jq -r '[.jobs[]|select(.status=="RUNNING")]|length')
+  if [ "$running" != "2" ]; then
+    echo "expected 2 running jobs at parallelism $par, got $running; refusing to report a rate" >&2
+    exit 4
+  fi
 
-  # Sample the rate Flink actually achieves while it works through the backlog,
-  # rather than timing to completion. Detecting completion needs the topic counts
-  # to be trustworthy; a rate does not, and a peak sustained rate is the number
-  # parallelism is supposed to move.
-  # Sample for a fixed window and take the maximum. An early exit on a falling
-  # rate looked sensible and was not: the rate dips while the job ramps up, so it
-  # stopped before the peak and reported parallelism 2 as slower than 1.
-  local peak=0 now
-  for _ in $(seq 1 "$SAMPLES"); do
+  # Time the drain to completion rather than sampling a window. A window has to be
+  # sized against a rate that is not known yet -- at 8M orders every parallelism
+  # emptied the backlog before the window closed, and all three reported nothing.
+  # Draining a fixed backlog needs no such guess, and the ramp is the same in
+  # every case.
+  local t0 done_at busy_peak bp_peak out
+  t0=$(date +%s); busy_peak=0; bp_peak=0; done_at=""
+  while [ $(( $(date +%s) - t0 )) -lt "$TIMEOUT_SECONDS" ]; do
+    out=$(promq 'sum(flink_taskmanager_job_task_operator_numRecordsOut{operator_name="by_symbol"})')
+    local b p
+    b=$(promq 'max(flink_taskmanager_job_task_busyTimeMsPerSecond)')
+    p=$(promq 'max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond)')
+    [ "${b:-0}" -gt "$busy_peak" ] && busy_peak=$b
+    [ "${p:-0}" -gt "$bp_peak" ] && bp_peak=$p
+    if [ "${out:-0}" -ge "$queued" ]; then done_at=$(( $(date +%s) - t0 )); break; fi
     sleep 2
-    now=$(curl -sfG 'http://localhost:9090/api/v1/query' \
-          --data-urlencode 'query=sum(rate(flink_taskmanager_job_task_operator_numRecordsOut{operator_name="by_symbol"}[10s]))' \
-          | jq -r '.data.result[0].value[1] // "0"')
-    now=${now%%.*}
-    [ "${now:-0}" -gt "$peak" ] && peak=$now
   done
 
-  say "  parallelism $par: backlog ${queued} orders, peak ${peak} orders/sec through the pipeline"
+  if [ -z "$done_at" ]; then
+    say "  parallelism $par: did not drain ${queued} orders within ${TIMEOUT_SECONDS}s"
+    return
+  fi
+
+  local ckpt
+  ckpt=$(promq 'max(flink_jobmanager_job_lastCheckpointDuration)')
+  printf "  parallelism %s: %4ss to drain %s orders = %8s orders/sec   peak busy %s%%   peak back-pressure %s%%   checkpoint %sms\n" \
+    "$par" "$done_at" "$queued" "$(( queued / done_at ))" \
+    "$(( busy_peak / 10 ))" "$(( bp_peak / 10 ))" "$ckpt" | tee -a "$OUT"
 }
 
-if [ ! -f "$JAR" ]; then
-  echo "build first:  mvn package -DskipTests" >&2
-  exit 2
-fi
+[ -f "$JAR" ] || { echo "build first:  mvn package -DskipTests" >&2; exit 2; }
 
 : > "$OUT"
 say "catch-up throughput  ($(date -u +%Y-%m-%dT%H:%M:%SZ))"
-say "backlog of ${BACKLOG} orders, drained with the producer stopped"
+
+cancel_all
+delete_topics "$INPUTS $OUTPUTS"
+
+say "filling topics with the job stopped ..."
+TRADES_PER_SECOND=1000000 PRICES_PER_SECOND=2000 \
+  MAX_TRADES="$BACKLOG" MAX_PRICES=$(( BACKLOG / 100 )) \
+  java -jar "$JAR" >/dev/null 2>&1
+queued=$(records orders)
+say "backlog of ${queued} orders, drained with the producer stopped"
+say "each case is timed from job start to the last backlog record processed"
 say ""
-for par in 1 2 4; do
+
+for par in $CASES; do
   drain_at "$par"
 done
 say ""
