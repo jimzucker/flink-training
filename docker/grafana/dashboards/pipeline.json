@@ -1821,7 +1821,7 @@
       "id": 34,
       "type": "timeseries",
       "title": "CPU \u2014 cores in use",
-      "description": "Derived from JVM CPU time, so it reads in cores rather than a percentage of an unstated whole and means the same thing on any machine. Compare it with the cores the host actually has: step 10 found the TaskManager using 3.85 of 8 at parallelism 1 and only 4.75 at parallelism 4, which is why raising parallelism did not raise throughput.",
+      "description": "Derived from JVM CPU time, so it reads in cores rather than a percentage of an unstated whole and means the same thing on any machine. Compare it with the cores the host actually has -- and read it together with back-pressure before concluding anything: step 10 found the TaskManager at 3.85 of 8 cores while throughput was pinned, which looks like a CPU ceiling and was not one. Threads blocked waiting on Kafka acknowledgements are not busy, and they are not idle for want of work either.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -2282,7 +2282,7 @@
       },
       "options": {
         "mode": "markdown",
-        "content": "Work down this row in order. **Cores** is the usual answer, and the one that parallelism cannot fix \u2014 if the TaskManager is near the host's core count, adding parallelism adds threads, not capacity. **Heap and GC** is the quietest failure: latency and back-pressure rise with no operator looking busy. **Network** matters once bytes, not records, are the constraint \u2014 the account branch moves four times what the orders topic does. **Buffers** move first of all; they are the mechanism back-pressure is made of.\n\nThe broker is the blind spot: Prometheus scrapes Flink only, so Kafka's own CPU and disk are not here. Step 10 measured it at 1\u20132 cores with `docker stats` while the TaskManager used 4.75."
+        "content": "Work down this row, but do not stop at the first plausible answer. **Cores** is the usual suspect and was the wrong one here: the TaskManager sat at 3.85 of 8 with throughput pinned, because its threads were blocked on Kafka rather than computing. Low CPU with high back-pressure means the constraint is downstream, not local.\n\n**Heap and GC** is the quietest failure: latency and back-pressure rise with no operator looking busy. **Network** matters once bytes rather than records are the constraint. **Buffers** move first of all; they are the mechanism back-pressure is made of.\n\nThe broker is the blind spot -- Prometheus scrapes Flink only. It is also what actually capped this pipeline: one broker absorbs about 750k records/sec, and each order becomes five records, so ~137k orders/sec is the ceiling no parallelism can move."
       }
     }
   ]

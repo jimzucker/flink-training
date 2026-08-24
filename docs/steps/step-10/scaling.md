@@ -43,8 +43,11 @@ This is what saturation looks like, and it is worth reading in detail:
 
 But the run also shows why it is not a scaling test: **parallelism 2 beat
 parallelism 4** (43,300 against 37,419). Three generator JVMs and a Flink cluster
-were competing for the same eight cores, so the extra parallelism bought
-contention rather than capacity. That measures the laptop, not the pipeline.
+were competing for the same eight cores *and* the same broker, so the extra
+parallelism bought contention rather than capacity. Both sustained rates are far
+below the 137,000/sec the pipeline reaches when the producers are not running,
+which is the clearest sign that this run measures the machine rather than the
+pipeline.
 
 ## Measuring the pipeline instead: drain a fixed backlog
 
@@ -64,7 +67,8 @@ reason has to be found somewhere else.
 
 ## Why parallelism cannot move it here
 
-Two measurements explain it.
+The first answer I reached for was cores, and it was wrong. It is worth setting
+out how it was excluded, because the wrong answer was the plausible one.
 
 **Where the work is.** At parallelism 4, one task chain is pinned while the rest
 idle:
@@ -79,44 +83,69 @@ busy  9%   Source: prices -> parse_prices
 bp   51%   Source: orders -> by_symbol, split_by_allocation      <- the only one blocked
 ```
 
-The account chain is the bottleneck, and it is the obvious candidate:
+The account chain is the bottleneck, and the shape of the job says why:
 `split_by_allocation` fans every order into four allocations, so that chain
-carries 432,000 records/sec against the orders' 108,000. The single
-back-pressured task is the orders source, queued behind it. The pipeline is
-correctly shaped; one branch simply does four times the work.
+carries 432,000 records/sec against the orders' 108,000. The pipeline is
+correctly shaped; one branch simply does five times the work in total.
 
-**Why more subtasks do not help.** The job graph is eight chained task groups, so
-*parallelism 1 is already eight task threads* plus the Kafka producers' own
-sender threads. Container CPU while draining, against 800% for eight cores:
+**What it is not.** Four candidates, each excluded by measurement:
 
-| | TaskManager | Kafka broker | total |
-|---|---|---|---|
-| parallelism 1 | 385% | 98–123% | ~500% |
-| parallelism 4 | 475% | 120–200% | ~650% |
+| Candidate | Test | Result |
+|---|---|---|
+| TaskManager CPU | container CPU during a drain | 385% at parallelism 1, 475% at 4, of 800% available — **~40% of the box idle while throughput was pinned** |
+| A container CPU cap | `cpu.max` in the cgroup | `max`, quota `-1`, 8 processors visible — no cap |
+| Kafka reads | `kafka-consumer-perf-test` on the same topic | **1,908,570 records/sec** — fourteen times the pipeline's rate |
+| Partition count | rerun the drain with 16 partitions instead of 4 | 137,931/sec against 131,147 — unchanged |
+| Checkpointing | rerun the drain at a 10s interval instead of 1s | 115,942 and 126,984/sec — no better |
 
-Parallelism 1 already consumes nearly four cores of eight. Parallelism 4 asks for
-thirty-two task threads on the same eight cores and gets 475% — it cannot get
-four times the CPU, because there is not four times the CPU to get. The box is
-the constraint at every setting, which is exactly why the drain rate is flat.
+Low CPU alongside high back-pressure is the tell. A thread blocked waiting on a
+Kafka acknowledgement is not busy, and it is not idle for want of work either, so
+"the box has spare cores" and "the pipeline cannot go faster" are both true at
+once and neither explains the other.
 
-This is a real result, not a failed measurement: **on a fixed core count, raising
-parallelism alone does not raise throughput.** Parallelism buys nothing without
-cores to spend it on.
+**What it is.** The single broker's write throughput. Four concurrent producers
+against it, uncompressed with `acks=all`:
+
+```
+aggregate: 750,000 records/sec
+```
+
+And the pipeline's write volume is five records per order — one on the symbol
+side, four on the account side. At the measured 137,000 orders/sec that is
+**685,000 records/sec, or 91% of the broker's aggregate write capacity.**
+
+That is the ceiling, and it explains every observation at once: it is flat across
+parallelism because the broker is shared and fixed; more partitions do not help
+because the limit is the broker process rather than the partition count; the
+TaskManager's cores stay half idle because its threads are blocked on
+acknowledgements; and the pinned chain is the account writer because that branch
+issues four of the five writes.
+
+Parallelism was never going to move it. **Flink parallelism scales the work
+inside the job; it cannot scale a broker outside it.**
 
 ## What would demonstrate scaling
 
-Scale the cores with the parallelism. That is not a workaround for the laptop; it
-is how the managed service actually works — in Amazon Managed Service for Apache
-Flink you buy KPUs, each one vCPU, and parallelism and KPUs move together. A
-demonstration that raises parallelism while holding cores fixed is not testing
-what the deployment model does.
+Raise the ceiling that is actually binding, then vary parallelism against it.
+Since the ceiling is one broker's write throughput, that means more brokers: a
+three-broker KRaft cluster in the same compose file roughly triples the write
+capacity, and the drain can then be run at parallelism 1, 2 and 4 against a limit
+that is no longer the first thing hit. If throughput tracks parallelism the
+pipeline scales; if it flattens again, the next constraint is worth finding and
+the same exclusion process applies.
 
-Concretely, pin the TaskManager to a CPU quota proportional to parallelism —
-1 core at parallelism 1, 2 at 2, 4 at 4 — and drain the same backlog in each. If
-throughput tracks the quota the pipeline scales; if it flattens, the account
-chain has a serial constraint worth finding. Either outcome is informative, and
-both are measurable on this machine, because each case leaves the rest of the box
-free instead of fighting for it.
+Two cheaper observations point the same way and cost nothing to state. Four of
+every five records written come from the account branch, so the write ceiling is
+overwhelmingly an account-side cost — anything that reduces it (writing
+allocations in batches, or not materialising every allocation to Kafka) moves the
+ceiling further than any parallelism change. And the deployment model matters:
+in Amazon Managed Service for Apache Flink parallelism is bought in KPUs of one
+vCPU each, but MSK brokers are provisioned separately, so the same trap exists
+there — scaling KPUs against an undersized cluster buys nothing.
+
+The general lesson is the one worth taking to the deck. **Flink parallelism
+scales the work inside the job. It cannot scale anything outside it**, and when
+the constraint is outside, more parallelism costs threads and returns nothing.
 
 ## Watching for it
 

@@ -1,10 +1,8 @@
-catch-up throughput  (2026-08-24T05:38:46Z)
+catch-up throughput  (2026-08-24T13:11:45Z)
 filling topics with the job stopped ...
 backlog of 8000000 orders, drained with the producer stopped
 each case is timed from job start to the last backlog record processed
 
-  parallelism 1:   58s to drain 8000000 orders =   137931 orders/sec   peak busy 100%   peak back-pressure 84%   checkpoint 11ms
-  parallelism 2:   56s to drain 8000000 orders =   142857 orders/sec   peak busy 100%   peak back-pressure 75%   checkpoint 14ms
-  parallelism 4:   61s to drain 8000000 orders =   131147 orders/sec   peak busy 100%   peak back-pressure 90%   checkpoint 9ms
+  parallelism 4:   58s to drain 8000000 orders =   137931 orders/sec   peak busy 100%   peak back-pressure 100%   checkpoint 11ms
 
 written to docs/steps/step-10/catchup.txt

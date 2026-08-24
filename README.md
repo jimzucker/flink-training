@@ -234,26 +234,31 @@ Sections two through four are for diagnosis rather than demonstration:
 | **Busy by task** | which operator is the ceiling? One task near 100% while the rest sit low names the thing to fix |
 | **Back-pressure by task** | what is queued behind it? The back-pressured tasks are the victims; the busy task they feed is the cause |
 
-Read together they separate the two ways a pipeline runs out of room: one task
-pinned means that operator needs parallelism, while every task busy and none
-standing out means the cluster needs cores. Step 10 found the account chain at
+Read together they separate the ways a pipeline runs out of room. One task pinned
+means that operator is the ceiling; every task busy and none standing out means
+the cluster itself is. But a pinned task with *idle* cores means the constraint
+is outside the job entirely — waiting on something downstream — and that is the
+case parallelism cannot fix. Step 10 found the account chain at
 99% busy against 57% for the next task this way — `split_by_allocation` fans each
 order into four allocations, so that branch carries four times the record rate.
 
-The **Resources** section is what "the cluster needs cores" is measured against:
+The **Resources** section is where that distinction gets settled:
 
 | Panel | The question it answers |
 |---|---|
-| **CPU — cores in use** | derived from JVM CPU time, so it reads in cores rather than a share of an unstated whole. Compare with the cores the host has: at parallelism 1 the TaskManager already used 3.85 of 8 |
+| **CPU — cores in use** | derived from JVM CPU time, so it reads in cores rather than a share of an unstated whole. Read it *with* back-pressure: 3.85 of 8 cores alongside a pinned throughput looks like a CPU ceiling and is not one — threads blocked on Kafka acknowledgements are neither busy nor idle |
 | **Heap** and **Garbage collection** | the quietest failure. A rising heap floor and GC in the hundreds of ms/sec produce latency and back-pressure with no operator looking busy |
 | **Network — bytes moved** | read from Kafka, written back, and shuffled between subtasks — for when bytes rather than records are the constraint |
 | **Network buffers** | back-pressure is not a policy, it is these filling. Output pool usage moves before latency does |
 | **free task slots** | a submission with none free does not queue, it fails |
 
 One blind spot, deliberately: Prometheus scrapes Flink only, so the broker's own
-CPU and disk are not charted. Step 10 measured Kafka at 1–2 cores with `docker
-stats` against the TaskManager's 4.75, which was enough to rule it out as the
-bottleneck — but a broker-side limit would not show up here.
+throughput is not charted — and in step 10 the broker turned out to be the
+ceiling. One broker absorbs about 750,000 records/sec, and each order becomes
+five records (one symbol-side, four account-side), so the pipeline tops out near
+137,000 orders/sec no matter what parallelism is set to. Low CPU with high
+back-pressure is the signature: **Flink parallelism scales the work inside the
+job and cannot scale a broker outside it.**
 
 Flink has no metric for distinct keys, so the jobs publish one. Keys are
 partitioned across subtasks, which is what makes summing the gauge give the total

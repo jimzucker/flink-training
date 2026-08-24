@@ -43,6 +43,11 @@ public final class KafkaPublisher implements AutoCloseable {
         return value == null || value.isBlank() ? fallback : Integer.parseInt(value.trim());
     }
 
+    private static String envString(String name, String fallback) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? fallback : value.trim();
+    }
+
     static Properties producerProperties(String bootstrapServers) {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
@@ -63,11 +68,18 @@ public final class KafkaPublisher implements AutoCloseable {
         props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION,
                 envInt("MAX_IN_FLIGHT", 5));
         props.put(ProducerConfig.LINGER_MS_CONFIG, 5);
-        // gzip rather than lz4/snappy/zstd: those load a native library, which on
-        // Java 17+ prints a restricted-method warning on every start. The demo is
-        // given live from a console, so a clean start matters more than the
-        // difference in compression cost at these volumes.
-        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, "gzip");
+        // lz4 rather than gzip. gzip was chosen to avoid the native-library warning
+        // that lz4 and snappy trigger, so that a demo given live from a console
+        // starts clean -- but that warning arrives on Java 24+, and this project
+        // targets 17, which is what the images and CI run. Verified: zero warning
+        // lines under Java 17.
+        //
+        // The cost was real. Measured on this broker with acks=all and
+        // idempotence, gzip caps one producer at about 150,000 records/sec
+        // against lz4's 514,000, and that ceiling is what the generator ran into
+        // during the scale tests -- offered load never passed ~120,000/sec no
+        // matter what rate was asked for.
+        props.put(ProducerConfig.COMPRESSION_TYPE_CONFIG, envString("COMPRESSION_TYPE", "lz4"));
         return props;
     }
 

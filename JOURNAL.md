@@ -1029,9 +1029,9 @@ and obvious only in lag.
 ### Why parallelism does not move it here
 
 Parallelism 2 beat parallelism 4 in that run, because three generator JVMs were
-competing with the cluster for eight cores. Removing the producer entirely —
-filling the topics first and timing a drain of an identical 8,000,000-order
-backlog — gives a clean and flat answer:
+competing with the cluster for eight cores and for the same broker. Removing the
+producer entirely — filling the topics first and timing a drain of an identical
+8,000,000-order backlog — gives a clean and flat answer:
 
 | parallelism | time to drain | orders/sec |
 |---|---|---|
@@ -1039,26 +1039,49 @@ backlog — gives a clean and flat answer:
 | 2 | 56 s | 142,857/s |
 | 4 | 61 s | 131,147/s |
 
-The reason is measured, not guessed. The job graph is eight chained task groups,
-so parallelism 1 is *already* eight task threads at 385% CPU of the 800%
-available; parallelism 4 asks for thirty-two threads on the same cores and gets
-475%. **On a fixed core count, raising parallelism alone does not raise
-throughput.** The bottleneck within the job is equally specific: the account
-chain sits at 99% busy against 57% for the next task, because
-`split_by_allocation` fans each order into four allocations and that branch
-carries 432,000 records/sec against the orders' 108,000.
+The first explanation I reached for was cores, and it was wrong — recorded here
+because the wrong answer was the plausible one. Each candidate was excluded by
+measurement:
 
-The earlier claim that the generator was the ceiling is superseded — the pacer
-was the ceiling and it is fixed. Asked for 20,000/sec it now delivers 20,000;
-asked for 50,000 it delivers 50,000.
+| Candidate | Result |
+|---|---|
+| TaskManager CPU | 385% at parallelism 1, 475% at 4, of 800% — **~40% of the box idle while throughput was pinned** |
+| A container CPU cap | `cpu.max` is `max`, quota `-1` — none |
+| Kafka reads | 1,908,570 records/sec — fourteen times the pipeline's rate |
+| Partition count | 16 partitions instead of 4: 137,931/sec against 131,147 — unchanged |
+| Checkpointing | a 10s interval instead of 1s: no better |
+
+Low CPU with high back-pressure is the tell: a thread blocked on a Kafka
+acknowledgement is neither busy nor idle for want of work.
+
+The constraint is the **single broker's write throughput**. Four concurrent
+producers measure its aggregate ceiling at **750,000 records/sec**, and the
+pipeline writes five records per order — one symbol-side, four account-side — so
+at 137,000 orders/sec it is issuing 685,000 writes/sec, **91% of the broker's
+capacity**. That explains every observation at once: flat across parallelism
+because the broker is shared, indifferent to partition count because the limit is
+the broker process, TaskManager cores half idle because its threads are blocked
+on acknowledgements, and the account writer pinned because it issues four of the
+five writes.
+
+**Flink parallelism scales the work inside the job; it cannot scale a broker
+outside it.**
+
+The earlier claim that the generator was the ceiling is also superseded twice
+over. The pacer was fixed, and then gzip compression turned out to cap the
+producer at 387,000 orders/sec against lz4's 879,000 — gzip having been chosen to
+avoid a native-library warning that only appears on Java 24+, while this project
+targets 17.
 
 ### What would prove scaling
 
-Scale cores with parallelism. That is not a workaround for a laptop, it is how
-the managed service works: KPUs are one vCPU each, and parallelism and KPUs move
-together, so a demonstration holding cores fixed is not testing the deployment
-model. Pin the TaskManager to a quota of 1, 2 and 4 cores and drain the same
-backlog in each.
+Raise the ceiling that actually binds, then vary parallelism against it: a
+three-broker cluster roughly triples write capacity, and the drain can then be
+run at 1, 2 and 4 against a limit that is not the first thing hit. Worth noting
+that four of every five records written come from the account branch, so reducing
+that write volume moves the ceiling further than any parallelism change — and
+that the same trap exists in the managed service, where KPUs and MSK brokers are
+provisioned separately.
 
 Details: [`docs/steps/step-10/scaling.md`](../docs/steps/step-10/scaling.md)
 
