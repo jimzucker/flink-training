@@ -38,16 +38,30 @@ public final class KafkaPublisher implements AutoCloseable {
         this.pricesTopic = pricesTopic;
     }
 
+    private static int envInt(String name, int fallback) {
+        String value = System.getenv(name);
+        return value == null || value.isBlank() ? fallback : Integer.parseInt(value.trim());
+    }
+
     static Properties producerProperties(String bootstrapServers) {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapServers);
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class.getName());
-        // Ordering per partition has to hold for the design's watermark assumption,
-        // so no silent reordering on retry.
+        // Ordering per partition has to hold for the design's watermark
+        // assumption. An idempotent producer gives that on its own: every batch
+        // carries a sequence number and the broker rejects one that arrives out
+        // of order, for up to five requests in flight.
+        //
+        // This previously pinned in-flight requests to one, which ordering did
+        // not require. Measured, it made no difference to throughput -- the
+        // producer sustains over a hundred thousand records a second either way,
+        // and what capped the generator was its own pacer. The constraint is
+        // dropped because it was unnecessary, not because it was expensive.
         props.put(ProducerConfig.ACKS_CONFIG, "all");
         props.put(ProducerConfig.ENABLE_IDEMPOTENCE_CONFIG, true);
-        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION, 1);
+        props.put(ProducerConfig.MAX_IN_FLIGHT_REQUESTS_PER_CONNECTION,
+                envInt("MAX_IN_FLIGHT", 5));
         props.put(ProducerConfig.LINGER_MS_CONFIG, 5);
         // gzip rather than lz4/snappy/zstd: those load a native library, which on
         // Java 17+ prints a restricted-method warning on every start. The demo is

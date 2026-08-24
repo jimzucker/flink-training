@@ -115,6 +115,13 @@ public final class GeneratorMain {
             this.startNanos = System.nanoTime();
         }
 
+        /**
+         * Sleeping below this is not worth the syscall: the scheduler will not
+         * return control that precisely, and asking it to costs more than the
+         * wait itself.
+         */
+        private static final long MIN_SLEEP_NANOS = 2_000_000L;   // 2ms
+
         /** @return false if interrupted, so the caller can stop cleanly */
         boolean awaitNext() {
             emitted++;
@@ -122,6 +129,16 @@ public final class GeneratorMain {
             long sleepNanos = targetNanos - System.nanoTime();
             if (sleepNanos <= 0) {
                 return true;   // already behind; do not sleep, just keep going
+            }
+            // Sleeping once per record caps the rate long before Kafka does. A
+            // sub-millisecond sleep becomes a scheduler yield of a few hundred
+            // microseconds, so at a target of 5000/sec the generator managed
+            // about 3000 while the producer itself sustains over a hundred
+            // thousand. Below the threshold, return and let the next record
+            // absorb the difference -- the target time is computed from the run
+            // start, so pacing stays accurate on average rather than drifting.
+            if (sleepNanos < MIN_SLEEP_NANOS) {
+                return true;
             }
             try {
                 Thread.sleep(sleepNanos / 1_000_000L, (int) (sleepNanos % 1_000_000L));
