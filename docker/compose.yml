@@ -94,14 +94,16 @@ services:
     image: flink:1.20.4-java17
     container_name: ft-taskmanager
     command: taskmanager
-    # A core budget, so parallelism has something to convert. Left at the whole
-    # machine by default; the scaling demo sets it to 1, 2 and 4 alongside the
-    # parallelism, which is what a KPU is in Managed Service for Apache Flink --
-    # one vCPU, bought together with the parallelism that uses it.
+    # A core budget, so parallelism has something to convert. "0" means no limit,
+    # which is the default: naming a number here breaks on any machine with fewer
+    # cores than the number, and a CI runner with four rejected a default of
+    # eight outright. The scaling demo sets 1, 2 and 4 alongside the parallelism,
+    # which is what a KPU is in Managed Service for Apache Flink -- one vCPU,
+    # bought together with the parallelism that uses it.
     deploy:
       resources:
         limits:
-          cpus: "${TASKMANAGER_CPUS:-8}"
+          cpus: "${TASKMANAGER_CPUS:-0}"
     depends_on:
       jobmanager:
         condition: service_healthy
