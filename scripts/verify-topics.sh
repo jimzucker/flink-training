@@ -188,12 +188,20 @@ if [ "${CHECK_MARKET_VALUE:-0}" = "1" ]; then
 
     # The strongest check available: the price each window closed against,
     # recomputed independently from the raw price topic.
+    #
+    # In topic order, not sorted by event time. A symbol can have several ticks in
+    # the same millisecond -- 448 such pairs in a 40,000-price run -- and then
+    # sorting by event time picks an arbitrary one of them, because sort has no
+    # second key to order the tie by. The pipeline takes the last to arrive, which
+    # is well defined: prices are keyed by symbol, so a symbol's ticks all live in
+    # one partition and reach the job in the order they were published. Reading
+    # the dump in the order it was written reproduces exactly that, and event time
+    # is non-decreasing per symbol, so the last matching record is also the latest.
     local bad=0
     for b in $(echo "$MV" | jq -r '.windowEnd' | sort -u); do
       while read -r sym price; do
         want=$(echo "$PRICES_JSON" | jq -r --arg s "$sym" --argjson b "$b" \
-               'select(.symbol==$s and .eventTime < $b) | "\(.eventTime) \(.price)"' \
-               | sort -n | tail -1 | awk '{print $2}')
+               'select(.symbol==$s and .eventTime < $b) | .price' | tail -1)
         [ "$want" = "$price" ] || bad=$((bad + 1))
       done < <(echo "$MV" | jq -r --argjson b "$b" 'select(.windowEnd==$b) | "\(.symbol) \(.price)"' | sort -u)
     done
@@ -207,15 +215,20 @@ if [ "${CHECK_MARKET_VALUE:-0}" = "1" ]; then
     local mv_topic="$1" pos_topic="$2" label="$3"
     local pos_file="$DUMP_DIR/.pos.tsv" mv_file="$DUMP_DIR/.mv.tsv"
 
-    drain "$pos_topic" | jq -r '[.key, .eventTime, .quantity] | @tsv' \
-      | sort -k1,1 -k2,2n > "$pos_file"
+    # Sorted by update count as well as event time. Two trades on a key can share
+    # a millisecond, and event time alone then leaves the closing position
+    # ambiguous -- the job breaks that tie on updateCount, which is the
+    # accumulation sequence for the key, so this has to break it the same way or
+    # it is checking a different rule.
+    drain "$pos_topic" | jq -r '[.key, .eventTime, .updateCount, .quantity] | @tsv' \
+      | sort -k1,1 -k2,2n -k3,3n > "$pos_file"
     drain "$mv_topic" | jq -r '[.key, .windowEnd, .quantity] | @tsv' > "$mv_file"
 
     # For each market value, the last position for that key strictly before the
     # window close is the one it must report.
     check "$label quantity differs from the position topic" "0" \
           "$(awk -F'\t' '
-               NR == FNR { n[$1]++; t[$1 SUBSEP n[$1]] = $2; q[$1 SUBSEP n[$1]] = $3; next }
+               NR == FNR { n[$1]++; t[$1 SUBSEP n[$1]] = $2; q[$1 SUBSEP n[$1]] = $4; next }
                {
                  found = 0; want = ""
                  for (i = 1; i <= n[$1]; i++) {

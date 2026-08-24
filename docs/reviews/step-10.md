@@ -179,3 +179,43 @@ zero warning lines — verified. The generator now defaults to lz4.
 CI green. The dashboard carries the diagnostic path that would have found this
 without the ad-hoc queries, and the CPU panel now warns against the exact
 misreading made here.
+
+### A latent tie-break bug, surfaced by the compression change
+
+Switching the generator to lz4 broke CI on a check that had passed for ten steps:
+`price at close differs from the price topic`. The change of codec altered
+producer batching enough to move a tie onto a window boundary.
+
+The tie is real. In a 40,000-price run the topic holds **448 `(symbol,
+eventTime)` pairs sharing a millisecond**, and for one of them:
+
+| | value |
+|---|---|
+| what the job emitted | 317.75 |
+| what the check expected | 318.50 |
+| last for that symbol in topic order | 317.75 |
+
+The job was right and the check was wrong. It recomputed the closing price with
+`sort -n | tail -1`, and sort has no second key to order a tie by, so it picked
+an arbitrary member. The job takes the last to arrive, which is well defined:
+prices are keyed by symbol, so a symbol's ticks live in one partition and reach
+the job in publication order. The check now reads the dump in topic order.
+
+The same tie exists on the position side — 1 pair in `positions-by-symbol`, 4 in
+`positions-by-account` — and there it was a genuine bug in the job, not just the
+check. Positions are keyed by trade id and spread across partitions, so arrival
+order varies between runs; taking whichever arrived last could close a window on
+the running total from *before* the other trade and understate the position. It
+had simply never landed on a boundary.
+
+`MarketValueAtClose` now breaks ties on `updateCount`, the accumulation sequence
+for the key, so the greater one is genuinely later — a tie-break on the data
+rather than on timing, identical on every replay. The check breaks it the same
+way, because a check that breaks it differently is checking a different rule.
+
+Verified by running the full verification twice: all checks pass, with no
+tolerances.
+
+That the codec change surfaced this is worth keeping in mind about the whole
+suite: these checks are exact, but exactness only pins down behaviour the inputs
+actually exercise, and a timing change can move which cases those are.
