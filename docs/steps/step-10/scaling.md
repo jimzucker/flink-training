@@ -149,24 +149,36 @@ partition at parallelism 1 on one core sustains 148,000 orders/sec**, which is
 765,000 records/sec written, against the 750,000 the broker was measured to
 accept. Everything saturates the same thing.
 
-### 2 and 2 against 4 and 4, replicated
+### Resolved: 1, 2 and 4, replicated
 
 The paired rows above rest on single runs, and a 4,000,000-order drain takes
 about 20 seconds while the sampler ticks every 2 -- roughly 10% resolution, which
-is not enough to separate them. Repeated, and then repeated again against a
-12,000,000-order backlog so a drain lasts a minute:
+cannot separate them. Repeated against a 12,000,000-order backlog so a drain
+lasts a minute and the resolution is nearer 3%:
 
-| | 2 cores, 2 partitions, parallelism 2 | 4 cores, 4 partitions, parallelism 4 |
-|---|---|---|
-| 4M backlog, three runs | 200,000 / 200,000 / 173,913 | 173,913 / 173,913 / 173,913 |
-| 12M backlog, resolved | **200,000 / 206,896** | **181,818** |
-| peak back-pressure | 49–56% | **80–92%** |
+| cores / partitions / parallelism | orders/sec | mean | peak back-pressure |
+|---|---|---|---|
+| 1 / 1 / 1 | 157,894 · 166,666 | 162,280 | 47–48% |
+| **2 / 2 / 2** | 193,548 · 200,000 · 206,896 | **200,148** | 54–59% |
+| 4 / 4 / 4 | 181,818 | 181,818 | 80–92% |
 
-**Four is not faster than two. It is consistently slightly slower**, and the
-back-pressure column says why: at parallelism 4 the pipeline spends 80–92% of its
-time blocked, against 53% at parallelism 2. The extra subtasks do not find extra
-capacity, they queue harder against the same broker. Doubling again would double
-the queueing and nothing else.
+Two results, and they point in opposite directions:
+
+- **1 → 2 is a real gain of about 23%.** Well outside the resolution, repeatable,
+  and the back-pressure barely moves (47% to 56%). This is parallelism working.
+- **2 → 4 is a real loss of about 9%**, and back-pressure jumps to 80–92%. The
+  extra subtasks find no extra capacity; they queue harder against the same
+  broker. Doubling again would double the queueing and nothing else.
+
+So the ceiling is not a wall the pipeline runs into at some parallelism, it is a
+wall it is already leaning on at parallelism 2. Past that, more parallelism costs
+throughput.
+
+That is a better demonstration than a clean doubling would have been. It shows
+scaling working, the point where it stops, and the price of asking for more after
+it stops -- all three from the same measurement, and all three explained by one
+number: the broker accepts about 750,000 records/sec, and each order is five of
+them.
 
 ### More brokers made it worse
 

@@ -390,6 +390,22 @@ the same boundary and so shares an age.
 
 ## Scale results
 
+Parallelism, partitions and cores raised together against a 12,000,000-order
+backlog:
+
+| cores / partitions / parallelism | orders/sec | peak back-pressure |
+|---|---|---|
+| 1 / 1 / 1 | 162,280 | 47% |
+| **2 / 2 / 2** | **200,148** | 56% |
+| 4 / 4 / 4 | 181,818 | 86% |
+
+**1 → 2 is a real gain of about 23%; 2 → 4 is a real loss of about 9%.** The
+ceiling is one broker's write path at ~750,000 records/sec, and each order
+becomes five records -- one position on the symbol side, four allocations on the
+account side. Past parallelism 2 the extra subtasks find no capacity and only
+queue harder, which the back-pressure column shows going from 56% to 86%.
+
+
 Both cases the requirements specify pass.
 
 | | orders/s asked | prices/s | orders through | allocations | order latency p50 |
