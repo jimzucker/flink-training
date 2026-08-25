@@ -14,7 +14,7 @@ if ! docker inspect "$CONTAINER" >/dev/null 2>&1; then
   exit 1
 fi
 
-if docker exec "$CONTAINER" pgrep -f "java -jar" >/dev/null 2>&1; then
+if docker exec -e KAFKA_OPTS= "$CONTAINER" pgrep -f "java -jar" >/dev/null 2>&1; then
   echo "generators are already producing"
   exit 0
 fi
@@ -22,7 +22,7 @@ fi
 echo "starting the generators"
 docker exec -d "$CONTAINER" java -jar /app/generators.jar
 sleep 2
-if docker exec "$CONTAINER" pgrep -f "java -jar" >/dev/null 2>&1; then
+if docker exec -e KAFKA_OPTS= "$CONTAINER" pgrep -f "java -jar" >/dev/null 2>&1; then
   echo "  producing"
 else
   echo "  failed to start; check: docker logs $CONTAINER" >&2

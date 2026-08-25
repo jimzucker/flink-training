@@ -2284,6 +2284,414 @@
         "mode": "markdown",
         "content": "Work down this row, but do not stop at the first plausible answer. **Cores** is the usual suspect and was the wrong one here: the TaskManager sat at 3.85 of 8 with throughput pinned, because its threads were blocked on Kafka rather than computing. Low CPU with high back-pressure means the constraint is downstream, not local.\n\n**Heap and GC** is the quietest failure: latency and back-pressure rise with no operator looking busy. **Network** matters once bytes rather than records are the constraint. **Buffers** move first of all; they are the mechanism back-pressure is made of.\n\nThe broker is the blind spot -- Prometheus scrapes Flink only. It is also what actually capped this pipeline: one broker absorbs about 750k records/sec, and each order becomes five records, so ~137k orders/sec is the ceiling no parallelism can move."
       }
+    },
+    {
+      "id": 104,
+      "type": "row",
+      "title": "The broker \u2014 the ceiling step 10 ran into",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 88
+      },
+      "panels": []
+    },
+    {
+      "id": 42,
+      "type": "timeseries",
+      "title": "Disk \u2014 log size per topic",
+      "description": "How much disk each topic holds. The account topic dominates, because every order becomes four allocations there against one position on the symbol side -- the same four-to-one that makes the write path the ceiling shows up here as four-to-one on disk.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 89,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (topic) (kafka_log_size_bytes{topic!~\"__.*\"})",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "type": "timeseries",
+      "title": "Broker \u2014 bytes in and out",
+      "description": "What the broker is actually absorbing and serving, measured at the broker rather than inferred from the job. Compare with the Flink network panel above: they should agree, and when they do not, something else is talking to this cluster.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 89,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "rate(kafka_broker_bytesinpersec_total[1m])",
+          "legendFormat": "in"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "rate(kafka_broker_bytesoutpersec_total[1m])",
+          "legendFormat": "out"
+        }
+      ]
+    },
+    {
+      "id": 44,
+      "type": "timeseries",
+      "title": "Broker \u2014 capacity left",
+      "description": "The share of the time the broker's request handlers are idle, in its own words rather than inferred from back-pressure upstream. Falling toward zero is the broker saying it is the bottleneck. Step 10 spent a long time establishing that by elimination; this panel answers it directly.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 96,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_request_handler_avg_idle_percent * 100",
+          "legendFormat": "request handlers idle"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_network_processor_avg_idle_percent * 100",
+          "legendFormat": "network processors idle"
+        }
+      ]
+    },
+    {
+      "id": 45,
+      "type": "timeseries",
+      "title": "Broker \u2014 produce request time",
+      "description": "How long a produce request takes and where it goes. Queue time rising while local time stays flat means the broker is saturated rather than slow.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 96,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_request_totaltimems{request=\"Produce\",quantile=\"0.99\"}",
+          "legendFormat": "total p99"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_request_localtimems{request=\"Produce\",quantile=\"0.99\"}",
+          "legendFormat": "local p99"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_request_requestqueuetimems{request=\"Produce\",quantile=\"0.99\"}",
+          "legendFormat": "queued p99"
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "type": "stat",
+      "title": "broker CPU cores",
+      "description": "Read against the host's core count and the TaskManager's usage: on one machine they are spending the same eight.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 103,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 4
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "rate(kafka_jvm_process_cpu_time_ns_total[2m]) / 1e9",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 47,
+      "type": "stat",
+      "title": "broker heap",
+      "description": "The broker's own heap. Its page cache matters more than its heap for write speed, and neither is visible from Flink's metrics.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 4,
+        "y": 103,
+        "w": 4,
+        "h": 4
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_jvm_heap_used_bytes / kafka_jvm_heap_max_bytes * 100",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 48,
+      "type": "text",
+      "title": "Why the broker is on this dashboard",
+      "gridPos": {
+        "x": 8,
+        "y": 103,
+        "w": 16,
+        "h": 4
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "It was left off deliberately at first: the dashboard is about what the pipeline produced, not the plumbing. Step 10 changed that. One broker absorbs about **750,000 records/sec**, each order becomes five records, and the pipeline pins at ~150,000 orders/sec under every parallelism, partition count and core budget tried.\n\nThat took a week of `docker stats` and elimination to establish. **Capacity left** answers it in one panel."
+      }
     }
   ]
 }

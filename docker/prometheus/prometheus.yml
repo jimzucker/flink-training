@@ -18,3 +18,10 @@ scrape_configs:
       - targets: ["taskmanager:9249"]
         labels:
           component: taskmanager
+
+  # The broker, via a JMX exporter running as an agent inside it.
+  - job_name: kafka
+    static_configs:
+      - targets: ["kafka:9404"]
+        labels:
+          component: broker

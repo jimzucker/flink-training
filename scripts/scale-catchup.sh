@@ -29,7 +29,7 @@ OUTPUTS="positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
 mkdir -p "$(dirname "$OUT")"
 say() { echo "$@" | tee -a "$OUT"; }
 
-kafka() { local bin="$1"; shift; docker exec ft-kafka "/opt/kafka/bin/$bin" "$@"; }
+kafka() { local bin="$1"; shift; docker exec -e KAFKA_OPTS= ft-kafka "/opt/kafka/bin/$bin" "$@"; }
 
 records() {
   kafka kafka-get-offsets.sh --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --topic "$1" 2>/dev/null \

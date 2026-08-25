@@ -30,7 +30,7 @@ TOPICS="orders prices positions-by-symbol positions-by-account mv-by-symbol mv-b
 
 mkdir -p "$(dirname "$OUT")"
 say() { echo "$@" | tee -a "$OUT"; }
-kafka() { local bin="$1"; shift; docker exec ft-kafka "/opt/kafka/bin/$bin" "$@"; }
+kafka() { local bin="$1"; shift; docker exec -e KAFKA_OPTS= ft-kafka "/opt/kafka/bin/$bin" "$@"; }
 BOOT="${KAFKA_INTERNAL:-kafka:19092}"
 
 records() {

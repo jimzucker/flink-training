@@ -1,0 +1,83 @@
+# Only the metrics that answer a question this project actually asks. The agent
+# will happily export several thousand series; that is a scrape cost paid every
+# five seconds for numbers nobody reads.
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+
+# Restricts what is read from JMX at all. Without this the agent exports every
+# mBean it can reach under a default name -- several hundred series, scraped
+# every five seconds, that nobody reads. There is no "drop" action to filter
+# them with afterwards, so the filtering has to happen here.
+includeObjectNames:
+  - "kafka.log:type=Log,name=Size,*"
+  - "kafka.server:type=BrokerTopicMetrics,name=BytesInPerSec,*"
+  - "kafka.server:type=BrokerTopicMetrics,name=BytesOutPerSec,*"
+  - "kafka.server:type=BrokerTopicMetrics,name=MessagesInPerSec,*"
+  - "kafka.server:type=KafkaRequestHandlerPool,name=RequestHandlerAvgIdlePercent"
+  - "kafka.network:type=SocketServer,name=NetworkProcessorAvgIdlePercent"
+  - "kafka.network:type=RequestMetrics,name=TotalTimeMs,request=Produce"
+  - "kafka.network:type=RequestMetrics,name=LocalTimeMs,request=Produce"
+  - "kafka.network:type=RequestMetrics,name=RequestQueueTimeMs,request=Produce"
+  - "kafka.server:type=ReplicaManager,name=PartitionCount"
+  - "kafka.server:type=ReplicaManager,name=UnderReplicatedPartitions"
+  - "kafka.server:type=ReplicaManager,name=LeaderCount"
+  - "java.lang:type=Memory"
+  - "java.lang:type=GarbageCollector,*"
+  - "java.lang:type=OperatingSystem"
+
+rules:
+  # Disk. Log size per partition, summed per topic on the dashboard -- the direct
+  # answer to how much disk the pipeline is using and which topic is using it.
+  - pattern: 'kafka.log<type=Log, name=Size, topic=(.+), partition=(.+)><>Value'
+    name: kafka_log_size_bytes
+    labels:
+      topic: "$1"
+      partition: "$2"
+    type: GAUGE
+
+  # Throughput the broker sees, which is the ceiling step 10 ran into.
+  - pattern: 'kafka.server<type=BrokerTopicMetrics, name=(BytesInPerSec|BytesOutPerSec|MessagesInPerSec), topic=(.+)><>Count'
+    name: kafka_broker_topic_$1_total
+    labels:
+      topic: "$2"
+    type: COUNTER
+  - pattern: 'kafka.server<type=BrokerTopicMetrics, name=(BytesInPerSec|BytesOutPerSec|MessagesInPerSec)><>Count'
+    name: kafka_broker_$1_total
+    type: COUNTER
+
+  # Whether the broker has capacity left. Idle percent falling toward zero is the
+  # broker saying it is the bottleneck, in its own words rather than inferred
+  # from back-pressure upstream.
+  - pattern: 'kafka.server<type=KafkaRequestHandlerPool, name=RequestHandlerAvgIdlePercent><>OneMinuteRate'
+    name: kafka_request_handler_avg_idle_percent
+    type: GAUGE
+  - pattern: 'kafka.network<type=SocketServer, name=NetworkProcessorAvgIdlePercent><>Value'
+    name: kafka_network_processor_avg_idle_percent
+    type: GAUGE
+
+  # How long a produce request spends, and where.
+  - pattern: 'kafka.network<type=RequestMetrics, name=(TotalTimeMs|LocalTimeMs|RequestQueueTimeMs|ResponseSendTimeMs), request=(Produce|Fetch|FetchConsumer)><>(\d+)thPercentile'
+    name: kafka_request_$1
+    labels:
+      request: "$2"
+      quantile: "0.$3"
+    type: GAUGE
+
+  # Partition and replication health.
+  - pattern: 'kafka.server<type=ReplicaManager, name=(PartitionCount|UnderReplicatedPartitions|LeaderCount)><>Value'
+    name: kafka_replica_manager_$1
+    type: GAUGE
+
+  # The broker's own JVM: heap and garbage collection, the same failure mode the
+  # TaskManager panels watch for.
+  - pattern: 'java.lang<type=Memory><HeapMemoryUsage>(used|max)'
+    name: kafka_jvm_heap_$1_bytes
+    type: GAUGE
+  - pattern: 'java.lang<type=GarbageCollector, name=(.+)><>CollectionTime'
+    name: kafka_jvm_gc_collection_time_ms
+    labels:
+      gc: "$1"
+    type: COUNTER
+  - pattern: 'java.lang<type=OperatingSystem><>ProcessCpuTime'
+    name: kafka_jvm_process_cpu_time_ns
+    type: COUNTER

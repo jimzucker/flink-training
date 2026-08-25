@@ -17,7 +17,7 @@ SETTLE_SECONDS="${SETTLE_SECONDS:-15}"   # ignore the ramp before measuring
 COMPOSE="docker/compose.yml"
 TOPICS=(orders prices positions-by-symbol positions-by-account mv-by-symbol mv-by-account)
 
-kafka() { local bin="$1"; shift; docker exec ft-kafka "/opt/kafka/bin/$bin" "$@"; }
+kafka() { local bin="$1"; shift; docker exec -e KAFKA_OPTS= ft-kafka "/opt/kafka/bin/$bin" "$@"; }
 promq() {
   curl -sfG 'http://localhost:9090/api/v1/query' --data-urlencode "query=$1" \
     | jq -r '.data.result[0].value[1] // "0"' | cut -d. -f1

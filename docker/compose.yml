@@ -1,10 +1,13 @@
 # Shared by the three brokers. Each one overrides only its node id and listeners.
 x-broker: &broker
-  image: apache/kafka:3.9.2
+  build:
+    context: ..
+    target: kafka
+  image: flink-training/kafka
   healthcheck:
     # Against its own internal listener: this asks whether this broker is
     # serving, which is what depends_on needs to know.
-    test: ["CMD-SHELL", "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:19092 >/dev/null 2>&1"]
+    test: ["CMD-SHELL", "KAFKA_OPTS= /opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server localhost:19092 >/dev/null 2>&1"]
     interval: 5s
     timeout: 10s
     retries: 30
@@ -24,6 +27,8 @@ x-broker-env: &broker-env
   # not a side effect of whoever produces first.
   KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
   CLUSTER_ID: ZmxpbmstdHJhaW5pbmctMDE
+  # Publishes JMX as a Prometheus endpoint on 9404.
+  KAFKA_OPTS: "-javaagent:/opt/jmx/jmx_prometheus_javaagent.jar=9404:/opt/jmx/jmx-exporter.yml"
 
 # Local stack. Grown one service per step: Kafka at step 02, Flink at step 04,
 # Prometheus and Grafana at step 06.

@@ -41,7 +41,7 @@ fi
 # records in place, which turns an exact count check into a race -- and a check
 # that races is worse than no check, because it fails for the wrong reason.
 topic_exists() {
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
+  docker exec -e KAFKA_OPTS= "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
       --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --list 2>/dev/null | grep -qx "$1"
 }
 
@@ -54,7 +54,7 @@ fi
 
 echo "resetting topics: $RESET_TOPICS"
 for t in $RESET_TOPICS; do
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
+  docker exec -e KAFKA_OPTS= "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
       --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --delete --topic "$t" >/dev/null 2>&1 || true
 done
 for t in $RESET_TOPICS; do
