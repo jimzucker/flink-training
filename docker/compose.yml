@@ -27,6 +27,28 @@ x-broker-env: &broker-env
   # not a side effect of whoever produces first.
   KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
   CLUSTER_ID: ZmxpbmstdHJhaW5pbmctMDE
+  # Kept for latency, not for throughput -- which is the opposite of why they
+  # were set. Measured against the defaults, same 256KB batch, 4 partitions,
+  # uncompressed, four million records:
+  #
+  #   defaults   727,802 rec/s   avg 13.9ms   p95 136ms   p99 177ms
+  #   tuned      748,783 rec/s   avg  5.3ms   p95  14ms   p99 104ms
+  #
+  # Throughput moved 2.9%, which is inside the run-to-run spread. p95 latency
+  # improved roughly tenfold. The broker was never short of capacity, it was
+  # short of handlers to keep requests from queueing -- and this project reports
+  # end-to-end latency as a headline number, so that is worth having.
+  #
+  # The throughput lever was the producer's batch.size, not anything here.
+  KAFKA_NUM_IO_THREADS: "${KAFKA_IO_THREADS:-16}"
+  KAFKA_NUM_NETWORK_THREADS: "${KAFKA_NETWORK_THREADS:-8}"
+  # 100KB by default, which is smaller than a single 256KB producer batch.
+  KAFKA_SOCKET_SEND_BUFFER_BYTES: "${KAFKA_SOCKET_BUFFER:-1048576}"
+  KAFKA_SOCKET_RECEIVE_BUFFER_BYTES: "${KAFKA_SOCKET_BUFFER:-1048576}"
+  # Depth of the queue between the network threads and the handlers.
+  KAFKA_QUEUED_MAX_REQUESTS: "${KAFKA_QUEUED_MAX_REQUESTS:-1000}"
+  # Leaves batches compressed as the producer sent them rather than recompressing.
+  KAFKA_COMPRESSION_TYPE: "producer"
   # Publishes JMX as a Prometheus endpoint on 9404.
   KAFKA_OPTS: "-javaagent:/opt/jmx/jmx_prometheus_javaagent.jar=9404:/opt/jmx/jmx-exporter.yml"
 
@@ -66,7 +88,7 @@ services:
       BOOTSTRAP: "${KAFKA_INTERNAL:-kafka:19092}"
       # Divisible by three so partitions spread evenly over the brokers, and by
       # four so every parallelism the scale test uses gets whole partitions.
-      PARTITIONS: "${PARTITIONS:-12}"
+      PARTITIONS: "${PARTITIONS:-4}"
     volumes:
       - ./scripts:/scripts:ro
     restart: "no"

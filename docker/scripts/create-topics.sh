@@ -3,7 +3,7 @@
 set -euo pipefail
 
 BOOTSTRAP="${BOOTSTRAP:-kafka:19092,kafka2:19092,kafka3:19092}"
-PARTITIONS="${PARTITIONS:-12}"
+PARTITIONS="${PARTITIONS:-4}"
 # Replication factor 1, as it was with a single broker: this cluster exists to
 # raise write throughput on one machine, not to survive losing a broker, and
 # replicating every write would spend the capacity the extra brokers bought.

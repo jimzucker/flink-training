@@ -354,3 +354,61 @@ throughput and tripling the bytes through the broker, which is the bottleneck.
 
 So: `lz4` for the live demo, and `COMPRESSION_TYPE=none` with a 256KB batch only
 if a backlog fill needs Flink kept entirely clean of decompression.
+
+## Round 6
+
+### Feedback
+
+> We need to tune producer, no compression with 4 partitions on Kafka and tune
+> Kafka to maximize producer throughput
+
+### Actions
+
+Partitions back to 4, broker tuning added, and the producer measured
+uncompressed against it. The result is that **Kafka was never the constraint on
+producer throughput**, and the tuning is worth keeping for a different reason
+than it was added for.
+
+| 4 partitions, uncompressed, 256KB batch, 4M records | throughput | avg | p95 | p99 |
+|---|---|---|---|---|
+| default broker | 727,802 rec/s | 13.9 ms | 136 ms | 177 ms |
+| **tuned broker** | 748,783 rec/s | **5.3 ms** | **14 ms** | **104 ms** |
+
+Throughput moved 2.9%, inside the run-to-run spread. **p95 latency improved
+roughly tenfold.** The broker had capacity to spare; what it lacked was handlers
+to stop requests queueing. Since this project reports end-to-end latency as a
+headline number, that is worth having -- but it is a latency fix, and the comment
+in `compose.yml` says so rather than claiming a throughput win it did not deliver.
+
+The throughput lever was the producer's `batch.size`. An earlier 569,000 rec/s
+figure was measured at Kafka's 16KB default; at 256KB the same broker does
+727,802. That +28% belongs to the producer, not the broker.
+
+### Where the producer limit actually is
+
+| | orders or records/sec |
+|---|---|
+| generator, uncompressed, 256KB batch | ~300,000 orders/sec |
+| bare producer, no JSON, same settings | **748,783 records/sec** |
+
+The broker accepts about two and a half times what the generator delivers. The
+generator is the bottleneck, and since it is not byte-bound at 92MB/s against the
+broker's 214MB/s, what is left is one thread doing JSON serialisation.
+
+So there is nothing further to win on the Kafka side for this workload. The
+remaining lever is parallelising the generator, which is a real trade: generation
+is seeded and the project guarantees byte-identical replay, which CI checks.
+Parallel generation gives that up unless it is an opt-in flag.
+
+### Settings this leaves
+
+| | |
+|---|---|
+| partitions | 4 |
+| producer compression | `lz4` for the demo; `none` when Flink must be kept clear of decompression |
+| `BATCH_SIZE` | 262144 |
+| `BUFFER_MEMORY` | 268435456 |
+| `LINGER_MS` | 5 |
+| broker io / network threads | 16 / 8 |
+| broker socket buffers | 1MB |
+| `queued.max.requests` | 1000 |
