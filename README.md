@@ -191,6 +191,34 @@ knob independently:
 | `MAX_TRADES` | `0` | stop after N trades; `0` is unbounded |
 | `MAX_PRICES` | `0` | stop after N prices; `0` is unbounded |
 | `DURATION_SECONDS` | `0` | `0` runs until stopped |
+| `COMPRESSION_TYPE` | `lz4` | producer codec. gzip caps one producer near 387,000 orders/sec against lz4's 879,000 |
+
+## What the demo is set to
+
+Every default the stack runs with, in one place. All of them are environment
+overrides on `docker compose`, so a demo can change one without touching a file.
+
+| Setting | Default | Why this value |
+|---|---|---|
+| brokers | **1** | three were tried and halved throughput on one machine; `docker/compose.cluster.yml` repeats that measurement |
+| `PARTITIONS` | **12** | divisible by three and four, so any parallelism the scale test uses gets whole partitions. Measured no worse than 4 at every parallelism |
+| `PARALLELISM` | `2` | the assignment's baseline; the scale case raises it to 4 |
+| `TASK_SLOTS` | `8` | two jobs at parallelism 4 |
+| `TASKMANAGER_CPUS` | `0` | no limit. The scaling demo sets 1, 2 and 4 — naming a number as the default breaks on any machine with fewer cores |
+| `WINDOW_MS` | `10000` locally, `60000` in the job | 10s so a demo shows several windows closing; 60s is what the requirements state |
+| `CHECKPOINT_INTERVAL_MS` | `1000` | the floor under visible latency: a record is not readable until its checkpoint commits |
+| `IDLENESS_MS` | `5000` | how long a quiet partition may hold the watermark back |
+| `TRADES_PER_SECOND` | `10` | demo rate; scale case 1 raises it to 1000 |
+| `PRICES_PER_SECOND` | `1000` | demo rate; scale case 2 raises it to 20000 |
+| `SINK_COMPRESSION` | `lz4` | the broker's write path is the pipeline's ceiling and the TaskManager has cores to spare, so this spends the one on the other |
+| `SINK_LINGER_MS` | `10` | Kafka's default of 0 sends a batch as soon as one record is ready, giving the broker many small requests |
+| `SINK_BATCH_SIZE` | `131072` | 128KB, against Kafka's 16KB default |
+| `GENERATOR_START` | `manual` | so a demo starts the data itself rather than finding it already running |
+
+The last three moved in step 10 and are worth a sentence at the front of a talk:
+they took parallelism 4 from 153,846 to 173,913 orders/sec and its back-pressure
+from 85% to 66%, and they turned the curve the right way up — before them,
+parallelism 4 was *slower* than parallelism 2.
 
 Event times are wall clock by default, which is what makes end-to-end latency —
 the age of a record when it reaches a sink — measurable at all.
