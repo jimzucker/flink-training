@@ -135,7 +135,7 @@ with the producer stopped, except the paired cases, which use 4,000,000:
 | 1 broker, 12 partitions, parallelism 1 / 2 / 4 | 142,857 / 166,666 / 153,846 |
 | **3 brokers**, 12 partitions, parallelism 1 / 2 / 4 | **72,072 / 74,074 / 76,190** |
 | 1 broker, tuned sinks, parallelism 1 / 2 / 4 | 153,846 / 166,666 / 173,913 |
-| cores + partitions + parallelism paired, 1 / 2 / 4 | 148,148 / 190,476 / 173,913 |
+| partitions + parallelism paired, 1 / 2 / 4 | 148,148 / 190,476 / 173,913 |
 | the same, repeated | 148,148 / 173,913 / 190,476 |
 
 Read down the last two rows first: repeating the paired run swaps 2 and 4, so
@@ -145,18 +145,34 @@ a real gain, and it is about 25%, not 100%.
 Read across and the reason is plain: every configuration lands between 130,000
 and 190,000 orders/sec. Partitions from 1 to 12, parallelism from 1 to 4, a core
 budget from 1 to 8, one broker or three — the answer barely moves. **A single
-partition at parallelism 1 on one core sustains 148,000 orders/sec**, which is
+partition at parallelism 1 sustains 148,000 orders/sec**, which is
 765,000 records/sec written, against the 750,000 the broker was measured to
 accept. Everything saturates the same thing.
 
 ### Resolved: 1, 2 and 4, replicated
+
+> **A core budget was attempted here and did not hold.** The harness set
+> `TASKMANAGER_CPUS` as a prefix on one `docker compose` command, and the
+> `run --rm submit` that followed could not see it, so compose computed a
+> different desired config for the TaskManager and recreated it with no limit --
+> before every drain. Every figure below was therefore measured with the
+> TaskManager free to use the whole machine. Partitions and parallelism were
+> applied correctly; only the cores column was fiction, and it has been removed.
+>
+> The idea is a dead end regardless, and cheaply so: with the limit genuinely
+> enforced, a quarter of a core drains **19 orders/sec**, not the 138,000 the
+> broken harness reported. There is no usable band between a JVM that cannot run
+> its own garbage collector and network stack, and a core count already above the
+> broker's ceiling. `scripts/scale-paired.sh` now exports the variable and
+> refuses to report a number unless the container's `NanoCpus` matches what was
+> asked for.
 
 The paired rows above rest on single runs, and a 4,000,000-order drain takes
 about 20 seconds while the sampler ticks every 2 -- roughly 10% resolution, which
 cannot separate them. Repeated against a 12,000,000-order backlog so a drain
 lasts a minute and the resolution is nearer 3%:
 
-| cores / partitions / parallelism | orders/sec | mean | peak back-pressure |
+| partitions / parallelism | orders/sec | mean | peak back-pressure |
 |---|---|---|---|
 | 1 / 1 / 1 | 157,894 · 166,666 | 162,280 | 47–48% |
 | **2 / 2 / 2** | 193,548 · 200,000 · 206,896 | **200,148** | 54–59% |

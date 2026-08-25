@@ -393,7 +393,7 @@ the same boundary and so shares an age.
 Parallelism, partitions and cores raised together against a 12,000,000-order
 backlog:
 
-| cores / partitions / parallelism | orders/sec | peak back-pressure |
+| partitions / parallelism | orders/sec | peak back-pressure |
 |---|---|---|
 | 1 / 1 / 1 | 162,280 | 47% |
 | **2 / 2 / 2** | **200,148** | 56% |

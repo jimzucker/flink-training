@@ -25,6 +25,12 @@ JAR=generators/target/generators.jar
 BACKLOG="${BACKLOG:-4000000}"
 CASES="${CASES:-1 2 4}"
 TIMEOUT_SECONDS="${TIMEOUT_SECONDS:-900}"
+# Cores per unit of parallelism. One core each straddles the broker's ceiling:
+# Flink at one core drains ~162,000 orders/sec and the broker accepts ~200,000,
+# so there is only 1.23x of room and doubling parallelism cannot show 2x through
+# a gap that narrow. A smaller budget puts every case below the broker's ceiling,
+# where what is being measured is Flink and not Kafka.
+CPU_PER_UNIT="${CPU_PER_UNIT:-1}"
 OUT="${OUT:-docs/steps/step-10/paired.txt}"
 TOPICS="orders prices positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
 
@@ -76,7 +82,16 @@ for n in $CASES; do
 
   # Recreated rather than restarted: a CPU limit is fixed when the container is
   # created, so restarting keeps the old one.
-  TASKMANAGER_CPUS="$n" docker compose -f "$COMPOSE" up -d --force-recreate --wait taskmanager >/dev/null 2>&1
+  cores=$(awk -v n="$n" -v u="$CPU_PER_UNIT" 'BEGIN { printf "%.2f", n * u }')
+  # Exported, not prefixed onto this one command. Every later `docker compose`
+  # call in this loop -- `run --rm topics`, `run --rm submit` -- reads the same
+  # file, and one that cannot see this variable computes a different desired
+  # config for the taskmanager and silently recreates it without the limit. That
+  # is not hypothetical: it is what made a quarter of a core appear to drain
+  # 138,000 orders/sec, because by the time the drain started there was no limit
+  # left on the container.
+  export TASKMANAGER_CPUS="$cores"
+  docker compose -f "$COMPOSE" up -d --force-recreate --wait taskmanager >/dev/null 2>&1
   sleep 5
 
   # Filled fresh for each case, because the partition count differs.
@@ -94,6 +109,13 @@ for n in $CASES; do
   # stop being exported and Prometheus marks them stale within a scrape, but that
   # is a race worth closing rather than trusting: refuse to time a case whose
   # counter has not started from below the backlog.
+  applied=$(docker inspect ft-taskmanager --format '{{.HostConfig.NanoCpus}}')
+  want=$(awk -v c="$cores" 'BEGIN { printf "%d", c * 1000000000 }')
+  if [ "$applied" != "$want" ]; then
+    echo "taskmanager has NanoCpus=${applied}, expected ${want} for ${cores} cores: refusing to report a number for a limit that is not applied" >&2
+    exit 6
+  fi
+
   start_out=$(promq 'sum(flink_taskmanager_job_task_operator_numRecordsOut{operator_name="by_symbol"})')
   if [ "${start_out:-0}" -ge "$queued" ]; then
     echo "counter started at ${start_out} for a backlog of ${queued}: stale metrics, refusing to time this case" >&2
@@ -113,8 +135,8 @@ for n in $CASES; do
     say "  ${n} partitions, parallelism ${n}: did not drain ${queued} within ${TIMEOUT_SECONDS}s"
     continue
   fi
-  printf "  %2s cores, %2s partitions, parallelism %-2s: %4ss to drain %s = %8s orders/sec   peak back-pressure %s%%\n" \
-    "$n" "$n" "$n" "$done_at" "$queued" "$(( queued / done_at ))" "$(( bp_peak / 10 ))" | tee -a "$OUT"
+  printf "  %5s cores, %2s partitions, parallelism %-2s: %4ss to drain %s = %8s orders/sec   peak back-pressure %s%%\n" \
+    "$cores" "$n" "$n" "$done_at" "$queued" "$(( queued / done_at ))" "$(( bp_peak / 10 ))" | tee -a "$OUT"
 done
 
 say ""

@@ -271,11 +271,10 @@ Every dial on one machine, and the answer barely moves:
 | 1 broker, 12 partitions, parallelism 1 / 2 / 4 | 142,857 / 166,666 / 153,846 |
 | 3 brokers, 12 partitions, parallelism 1 / 2 / 4 | 72,072 / 74,074 / 76,190 |
 | tuned sinks, parallelism 1 / 2 / 4 | 153,846 / 166,666 / 173,913 |
-| cores + partitions + parallelism paired, 1 / 2 / 4 | 148,148 / 190,476 / 173,913 |
+| partitions + parallelism paired, 1 / 2 / 4 | 148,148 / 190,476 / 173,913 |
 | the same, repeated | 148,148 / 173,913 / 190,476 |
 
-The clinching number: **one partition, parallelism 1, one core sustains 148,148
-orders/sec** — 765,000 records/sec written against a broker measured to accept
+The clinching number: **one partition at parallelism 1 sustains 148,148 orders/sec** — 765,000 records/sec written against a broker measured to accept
 750,000. There is no configuration in which Flink is the constraint, so there is
 nothing for parallelism to relieve.
 
@@ -289,3 +288,69 @@ this host; the right one is a JMX exporter alongside the broker, which would giv
 bytes in and out, request handler idle time, log flush latency and log size on
 disk — the last being the disk-usage question directly. Worth doing before the
 AWS step, where the broker is the thing being sized.
+
+## Round 5
+
+### Feedback
+
+> this is not solving the stated goal to produce data faster than flink can
+> consume / What can we change, make message larger, multi thread producer?
+
+> Stop I use too much brute force
+
+> what config give the highest output from producer to topics and not put extra
+> on flink / with no compression so not adding work to flink
+
+### A harness bug that invalidated the core-budget rows
+
+The core budget never applied. `TASKMANAGER_CPUS` was set as a prefix on one
+`docker compose` command, and the `run --rm submit` immediately after could not
+see it -- so compose computed a different desired config for the TaskManager and
+recreated it with no limit, before every drain. `NanoCpus=0` afterwards is what
+gave it away.
+
+It is a dead end anyway, and one measurement settled it rather than a campaign:
+with the limit genuinely enforced, a quarter of a core drains **19 orders/sec**,
+against the 138,000 the broken harness reported. A JVM cannot run its garbage
+collector, network stack and Kafka clients in that budget, and anything large
+enough to work is already above the broker's ceiling. There is no band in
+between, so there is no scaling window to open this way.
+
+The script now exports the variable and refuses to report a number unless the
+container's `NanoCpus` matches the request.
+
+### Producer throughput, and where the decompress lands
+
+Asked what maximises producer output without adding decompress work to Flink.
+Measured, 20-second runs against a scratch topic:
+
+| uncompressed | orders/sec | MB/s |
+|---|---|---|
+| 16KB batch (Kafka's default) | 234,648 | 67 |
+| **256KB batch** | **322,155** | **92** |
+| 512KB batch, linger 25 | 285,534 | 82 |
+| *lz4, 256KB batch, for reference* | *927,711* | *265* |
+
+Three things. `batch.size` from 16KB to 256KB is worth **+37%** and costs Flink
+nothing, so it is now the default. Bigger is *not* better -- 512KB with a longer
+linger was worse than 256KB, so this is a setting rather than a direction. And
+uncompressed plateaus at 92MB/s against the 163MB/s one producer managed against
+this broker, so the generator is not purely byte-bound; the residual is the
+single producer thread.
+
+Multi-threading it was raised and not done. Generation is seeded and the project
+guarantees byte-identical replay, which CI checks; parallel generation would
+break that. It would have to be an opt-in flag that explicitly gives the
+guarantee up.
+
+### What this changes about the goal
+
+Nothing, and that is the useful part. The producer already outruns Flink either
+way -- 322,000 orders/sec uncompressed and 928,000 with lz4, against Flink's
+~200,000. The decompress cost is real but Flink is not CPU-bound; it sits at
+about half the machine idle, blocked on the broker. Removing compression buys
+Flink nothing it can use, while costing roughly three times the producer
+throughput and tripling the bytes through the broker, which is the bottleneck.
+
+So: `lz4` for the live demo, and `COMPRESSION_TYPE=none` with a 256KB batch only
+if a backlog fill needs Flink kept entirely clean of decompression.
