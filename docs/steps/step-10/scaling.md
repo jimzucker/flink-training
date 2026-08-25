@@ -149,6 +149,25 @@ partition at parallelism 1 on one core sustains 148,000 orders/sec**, which is
 765,000 records/sec written, against the 750,000 the broker was measured to
 accept. Everything saturates the same thing.
 
+### 2 and 2 against 4 and 4, replicated
+
+The paired rows above rest on single runs, and a 4,000,000-order drain takes
+about 20 seconds while the sampler ticks every 2 -- roughly 10% resolution, which
+is not enough to separate them. Repeated, and then repeated again against a
+12,000,000-order backlog so a drain lasts a minute:
+
+| | 2 cores, 2 partitions, parallelism 2 | 4 cores, 4 partitions, parallelism 4 |
+|---|---|---|
+| 4M backlog, three runs | 200,000 / 200,000 / 173,913 | 173,913 / 173,913 / 173,913 |
+| 12M backlog, resolved | **200,000 / 206,896** | **181,818** |
+| peak back-pressure | 49–56% | **80–92%** |
+
+**Four is not faster than two. It is consistently slightly slower**, and the
+back-pressure column says why: at parallelism 4 the pipeline spends 80–92% of its
+time blocked, against 53% at parallelism 2. The extra subtasks do not find extra
+capacity, they queue harder against the same broker. Doubling again would double
+the queueing and nothing else.
+
 ### More brokers made it worse
 
 Three brokers were the obvious response to a broker-bound pipeline, and they cut

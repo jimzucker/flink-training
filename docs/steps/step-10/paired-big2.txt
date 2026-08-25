@@ -1,0 +1,4 @@
+cores, partitions and parallelism raised together  (2026-08-25T09:16:14Z)
+backlog of 12000000 orders per case, drained with the producer stopped
+
+   2 cores,  2 partitions, parallelism 2 :   58s to drain 12000000 =   206896 orders/sec   peak back-pressure 54%
