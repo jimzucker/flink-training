@@ -1073,6 +1073,33 @@ producer at 387,000 orders/sec against lz4's 879,000 — gzip having been chosen
 avoid a native-library warning that only appears on Java 24+, while this project
 targets 17.
 
+### The generator, and a re-pinned sequence
+
+The generator, not Kafka, limits offered load: one thread serialising JSON
+manages about 300,000 orders/sec where a bare producer reaches 750,000.
+`GENERATOR_THREADS` now divides the trade sequence across threads with one writer
+per partition.
+
+| 4 partitions, tuned broker | orders/sec |
+|---|---|
+| 1 thread, uncompressed | 348,289 |
+| 4 threads, uncompressed | 337,638 |
+| **4 threads, lz4** | **2,054,648** |
+
+Threads only pay with compression. Uncompressed the run is pinned near 100MB/s
+however many threads produce it, because they share one `KafkaProducer` and its
+single sender thread does the network I/O; with lz4 each thread compresses on its
+own calling thread, so the work divides -- six times the throughput, and ten
+times what the pipeline can consume.
+
+**`DeterminismTest.demoSequenceIsPinned` was re-pinned**, deliberately, as its
+comment asks. Trade content used to come from a `Random` advanced across the
+sequence, which makes trade *n* depend on every draw before it: workable in one
+thread and meaningless in four. It is now a function of the sequence number
+alone, so the same seed gives the same trades at any thread count. Verified: two
+runs at two threads and two runs at four all produce the identical topic, and the
+hash is the same at both thread counts.
+
 ### What would prove scaling
 
 Raise the ceiling that actually binds, then vary parallelism against it: a

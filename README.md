@@ -192,6 +192,36 @@ knob independently:
 | `MAX_PRICES` | `0` | stop after N prices; `0` is unbounded |
 | `DURATION_SECONDS` | `0` | `0` runs until stopped |
 | `COMPRESSION_TYPE` | `lz4` | producer codec. gzip caps one producer near 387,000 orders/sec against lz4's 879,000 |
+| `GENERATOR_THREADS` | `1` | threads producing trades. Must divide the orders topic's partition count, so each partition has one writer |
+| `BATCH_SIZE` | `262144` | 256KB against Kafka's 16KB default, worth +37% |
+| `BUFFER_MEMORY` | `268435456` | so a stalled broker parks records instead of blocking |
+
+### Offering more load than the pipeline can take
+
+The generator, not Kafka, limits offered load: one thread serialising JSON
+manages about 300,000 orders/sec where a bare producer reaches 750,000.
+`GENERATOR_THREADS` divides the trade sequence across threads, one writer per
+partition:
+
+| 4 partitions, tuned broker | orders/sec |
+|---|---|
+| 1 thread, uncompressed | 348,289 |
+| 4 threads, uncompressed | 337,638 |
+| 1 thread, lz4 | ~879,000 |
+| **4 threads, lz4** | **2,054,648** |
+
+**Threads only pay with compression.** Uncompressed the run is pinned near
+100MB/s however many threads produce it, because they share one `KafkaProducer`
+and its single sender thread does the network I/O. With lz4 each thread
+compresses on its own calling thread, so the work actually divides -- six times
+the throughput, and ten times what the pipeline can consume.
+
+Replay stays byte-identical, and not only run to run: the same seed produces the
+same bytes at any thread count, because a trade's content is a function of its
+sequence number rather than of how many draws preceded it, and trade *n* goes to
+partition *n mod partitions* whoever writes it. A thread count that does not
+divide the partitions is rejected rather than quietly producing a topic that
+cannot be reproduced.
 
 ## What the demo is set to
 

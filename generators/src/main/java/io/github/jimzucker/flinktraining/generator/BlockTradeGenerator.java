@@ -8,7 +8,7 @@ import io.github.jimzucker.flinktraining.model.Side;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
+import java.util.SplittableRandom;
 import java.util.function.LongSupplier;
 
 /**
@@ -27,7 +27,7 @@ public final class BlockTradeGenerator implements Iterator<BlockTrade> {
     /** Each allocation takes this many shares of every block. */
     public static final long QUANTITY_PER_ALLOCATION = 100L;
 
-    private final Random random;
+    private final long seed;
     private final LongSupplier clock;
 
     private long sequence;
@@ -39,7 +39,7 @@ public final class BlockTradeGenerator implements Iterator<BlockTrade> {
      *              across runs.
      */
     public BlockTradeGenerator(long seed, LongSupplier clock) {
-        this.random = new Random(seed);
+        this.seed = seed;
         this.clock = clock;
     }
 
@@ -65,6 +65,28 @@ public final class BlockTradeGenerator implements Iterator<BlockTrade> {
 
     @Override
     public BlockTrade next() {
+        BlockTrade trade = at(seed, sequence, clock.getAsLong());
+        sequence++;
+        return trade;
+    }
+
+    /**
+     * The trade at a position in the sequence, derived from the seed and that
+     * position alone.
+     *
+     * <p>Written this way so several threads can produce disjoint parts of one
+     * sequence and still agree on its contents. A generator that advances a
+     * shared {@link Random} makes trade <em>n</em> depend on every draw before
+     * it, which is fine in one thread and meaningless in four. Here the draws for
+     * position <em>n</em> come from a generator seeded by <em>n</em>, so the
+     * sequence is the same whether one thread walks it or four divide it.
+     *
+     * <p>The seed is mixed rather than added: {@code new Random(seed + n)} for
+     * consecutive n produces visibly correlated first draws, which would show up
+     * as runs of the same symbol.
+     */
+    public static BlockTrade at(long seed, long sequence, long eventTime) {
+        SplittableRandom random = new SplittableRandom(mix(seed, sequence));
         String symbol = ReferenceData.SYMBOLS.get(random.nextInt(ReferenceData.SYMBOLS.size()));
         Side side = random.nextBoolean() ? Side.BUY : Side.SELL;
 
@@ -77,10 +99,16 @@ public final class BlockTradeGenerator implements Iterator<BlockTrade> {
         }
         long quantity = QUANTITY_PER_ALLOCATION * ReferenceData.ACCOUNTS.size();
 
-        BlockTrade trade = new BlockTrade(
-                tradeId(sequence), symbol, side, quantity, allocations, clock.getAsLong());
-        sequence++;
-        return trade;
+        return new BlockTrade(
+                tradeId(sequence), symbol, side, quantity, allocations, eventTime);
+    }
+
+    /** splitmix64's finalizer: scatters nearby inputs to unrelated outputs. */
+    private static long mix(long seed, long sequence) {
+        long z = seed * 0x9E3779B97F4A7C15L + sequence;
+        z = (z ^ (z >>> 30)) * 0xBF58476D1CE4E5B9L;
+        z = (z ^ (z >>> 27)) * 0x94D049BB133111EBL;
+        return z ^ (z >>> 31);
     }
 
     /** Zero-padded so trade ids sort in emission order in logs and dashboards. */

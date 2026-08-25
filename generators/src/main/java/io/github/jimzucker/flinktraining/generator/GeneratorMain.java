@@ -5,6 +5,8 @@ import io.github.jimzucker.flinktraining.model.ReferenceData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -36,9 +38,9 @@ public final class GeneratorMain {
         Runtime.getRuntime().addShutdownHook(new Thread(() -> running.set(false)));
 
         try (KafkaPublisher publisher = new KafkaPublisher(config)) {
-            Thread trades = new Thread(() -> publishTrades(config, publisher, running), "block-trades");
+            List<Thread> trades = tradeThreads(config, publisher, running);
             Thread prices = new Thread(() -> publishPrices(config, publisher, running), "prices");
-            trades.start();
+            trades.forEach(Thread::start);
             prices.start();
 
             // Three ways to finish, and only one of them stops the threads here.
@@ -51,11 +53,98 @@ public final class GeneratorMain {
                 Thread.sleep(config.durationSeconds() * 1_000L);
                 running.set(false);
             }
-            trades.join();
+            for (Thread thread : trades) {
+                thread.join();
+            }
             prices.join();
             publisher.flush();
         }
         LOG.info("generators stopped");
+    }
+
+    /**
+     * One thread per group of partitions, or a single thread producing exactly as
+     * it always has.
+     *
+     * <p>The thread count has to divide the partition count. With four partitions
+     * and two threads, one takes partitions 0 and 2 and the other 1 and 3; three
+     * threads would leave a partition with two writers, and two writers on one
+     * partition is precisely what makes replay stop being byte-identical.
+     */
+    private static List<Thread> tradeThreads(GeneratorConfig config, KafkaPublisher publisher,
+                                             AtomicBoolean running) {
+        int threads = config.generatorThreads();
+        if (threads == 1) {
+            return List.of(new Thread(() -> publishTrades(config, publisher, running), "block-trades"));
+        }
+        int partitions = publisher.ordersPartitionCount();
+        if (partitions % threads != 0) {
+            throw new IllegalArgumentException(
+                    "GENERATOR_THREADS=" + threads + " does not divide the orders topic's "
+                            + partitions + " partitions; each partition needs exactly one writer "
+                            + "for replay to stay byte-identical");
+        }
+        LOG.info("producing trades on {} threads over {} partitions", threads, partitions);
+        List<Thread> list = new ArrayList<>(threads);
+        for (int t = 0; t < threads; t++) {
+            int index = t;
+            list.add(new Thread(
+                    () -> publishTradeShard(config, publisher, running, index, partitions),
+                    "block-trades-" + t));
+        }
+        return list;
+    }
+
+    /**
+     * The part of the trade sequence belonging to one thread.
+     *
+     * <p>Trade <em>n</em> goes to partition {@code n % partitions}, and that
+     * partition belongs to one thread, so a thread walks its own subsequence in
+     * increasing order. Every partition therefore sees the same records in the
+     * same order on every run, whatever the threads do relative to each other.
+     */
+    private static void publishTradeShard(GeneratorConfig config, KafkaPublisher publisher,
+                                          AtomicBoolean running, int index, int partitions) {
+        // Each thread carries its share of the rate, so the total is the rate asked for.
+        Pacer pacer = new Pacer(Math.max(1, config.tradesPerSecond() / config.generatorThreads()));
+        int threads = config.generatorThreads();
+        long count = 0;
+        for (long n = firstSequence(index, threads, partitions);
+                running.get() && !GeneratorConfig.reached(config.maxTrades(), n);
+                n += step(threads, partitions, n, index)) {
+            long eventTime = config.isLive()
+                    ? System.currentTimeMillis()
+                    : config.startEpochMillis() + n * config.tradeIntervalMillis();
+            publisher.publish(BlockTradeGenerator.at(config.seed(), n, eventTime),
+                    (int) (n % partitions));
+            count++;
+            if (count % (Math.max(1, config.tradesPerSecond() / threads) * 10L) == 0) {
+                LOG.info("thread {} published {} block trades, latest sequence {}", index, count, n);
+            }
+            if (!pacer.awaitNext()) {
+                return;
+            }
+        }
+    }
+
+    /** The first sequence number whose partition belongs to this thread. */
+    private static long firstSequence(int index, int threads, int partitions) {
+        for (long n = 0; n < partitions; n++) {
+            if ((n % partitions) % threads == index) {
+                return n;
+            }
+        }
+        throw new IllegalStateException("no partition for thread " + index);
+    }
+
+    /** The gap to this thread's next sequence number. */
+    private static long step(int threads, int partitions, long current, int index) {
+        for (long d = 1; d <= partitions; d++) {
+            if (((current + d) % partitions) % threads == index) {
+                return d;
+            }
+        }
+        throw new IllegalStateException("no next partition for thread " + index);
     }
 
     private static void publishTrades(GeneratorConfig config, KafkaPublisher publisher, AtomicBoolean running) {

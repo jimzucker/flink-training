@@ -14,6 +14,7 @@ public record GeneratorConfig(
         int tradesPerSecond,
         int pricesPerSecond,
         long seed,
+        int generatorThreads,
         long startEpochMillis,
         long durationSeconds,
         long maxTrades,
@@ -40,7 +41,21 @@ public record GeneratorConfig(
     public static final long REPLAY_START_EPOCH_MILLIS = 1_700_000_000_000L;
     public static final long DEFAULT_SEED = 42L;
 
+    /**
+     * Threads producing trades. One by default.
+     *
+     * <p>A single thread serialising JSON tops out near 300,000 orders/sec while
+     * the broker accepts 750,000, so the generator, not Kafka, is what limits
+     * offered load. More threads close that gap; the count must divide the orders
+     * topic's partition count, so that each partition has exactly one writer and
+     * replay stays byte-identical.
+     */
+    public static final int DEFAULT_GENERATOR_THREADS = 1;
+
     public GeneratorConfig {
+        if (generatorThreads <= 0) {
+            throw new IllegalArgumentException("generatorThreads must be positive");
+        }
         if (tradesPerSecond <= 0) {
             throw new IllegalArgumentException("tradesPerSecond must be positive");
         }
@@ -57,6 +72,7 @@ public record GeneratorConfig(
                 envInt("TRADES_PER_SECOND", DEMO_TRADES_PER_SECOND),
                 envInt("PRICES_PER_SECOND", DEMO_PRICES_PER_SECOND),
                 envLong("SEED", DEFAULT_SEED),
+                envInt("GENERATOR_THREADS", DEFAULT_GENERATOR_THREADS),
                 envLong("START_EPOCH_MILLIS", WALL_CLOCK),
                 envLong("DURATION_SECONDS", 0L),
                 envLong("MAX_TRADES", 0L),

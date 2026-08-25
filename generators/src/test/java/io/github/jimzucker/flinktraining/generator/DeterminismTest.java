@@ -112,10 +112,67 @@ class DeterminismTest {
     void demoSequenceIsPinned() {
         // Guards against an unnoticed change to generation order or JSON shape.
         // If this fails deliberately, re-pin it and say so in the journal.
+        //
+        // Re-pinned once, in step 10. Trade content used to come from a Random
+        // advanced across the sequence, which makes trade n depend on every draw
+        // before it -- workable in one thread and meaningless in four. It is now
+        // a function of the sequence number alone, so the same seed gives the
+        // same trades at any thread count. That changed which symbol and side
+        // each position draws, and so the hash.
         assertThat(sha256(tradesJson(SEED, 100)))
-                .isEqualTo("241903ac4ea9b746407516075275b694c42bb3a372c107df48ecd8b69d83fdae");
+                .isEqualTo("361e2dccd96c9fec67728431620cb691c1dc09e9bdbf8d4c52baabb753166435");
         assertThat(sha256(pricesJson(SEED + 1, 100)))
                 .isEqualTo("6b7ab3fd12d404cb4ca0b74ee3849aa4252a07cc5f502813e8a1f88cc0f80dab");
+    }
+
+    @Test
+    @DisplayName("threads divide the sequence without changing it")
+    void shardsReconstructTheSequence() {
+        // What multi-threaded generation rests on: the trade at a position is the
+        // same trade however the positions are divided up. If this holds, threads
+        // can take disjoint parts and the topic is the same as one thread's.
+        List<BlockTrade> single = new ArrayList<>();
+        for (long n = 0; n < 400; n++) {
+            single.add(BlockTradeGenerator.at(SEED, n, START + n));
+        }
+        for (int threads : new int[] {2, 4}) {
+            Map<Long, BlockTrade> sharded = new HashMap<>();
+            for (int t = 0; t < threads; t++) {
+                for (long n = 0; n < 400; n++) {
+                    if ((n % 4) % threads == t) {
+                        sharded.put(n, BlockTradeGenerator.at(SEED, n, START + n));
+                    }
+                }
+            }
+            assertThat(sharded).as("%s threads cover every position", threads).hasSize(400);
+            for (long n = 0; n < 400; n++) {
+                assertThat(sharded.get(n))
+                        .as("position %s is the same trade at %s threads", n, threads)
+                        .isEqualTo(single.get((int) n));
+            }
+        }
+    }
+
+    @Test
+    @DisplayName("every partition has exactly one writing thread")
+    void eachPartitionHasOneWriter() {
+        // The property byte-identical replay depends on. Two threads appending to
+        // one partition interleave differently between runs, so the ordering
+        // within that partition -- and therefore the bytes -- stops being
+        // reproducible. Checked for the thread counts that divide 4 partitions.
+        int partitions = 4;
+        for (int threads : new int[] {1, 2, 4}) {
+            Map<Integer, Integer> writerOf = new HashMap<>();
+            for (long n = 0; n < 400; n++) {
+                int partition = (int) (n % partitions);
+                int thread = partition % threads;
+                Integer existing = writerOf.putIfAbsent(partition, thread);
+                assertThat(existing == null ? thread : existing)
+                        .as("partition %s at %s threads has one writer", partition, threads)
+                        .isEqualTo(thread);
+            }
+            assertThat(writerOf).as("%s threads cover every partition", threads).hasSize(partitions);
+        }
     }
 
     @Test

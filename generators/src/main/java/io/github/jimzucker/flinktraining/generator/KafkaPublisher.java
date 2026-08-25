@@ -102,6 +102,28 @@ public final class KafkaPublisher implements AutoCloseable {
                 ordersTopic, null, trade.eventTime(), trade.tradeId(), Json.toBytes(trade)));
     }
 
+    /**
+     * Publishes to a named partition rather than letting the key decide.
+     *
+     * <p>Only used when several threads produce trades. Byte-identical replay
+     * needs each partition to receive its records in a fixed order, and hashing
+     * the key sends records from every thread to every partition, so which
+     * arrives first varies from run to run. Naming the partition gives each one a
+     * single writer, and the order within it is that writer's sequence order.
+     *
+     * <p>The key is still the trade id: only the placement changes, not what
+     * downstream sees on the record.
+     */
+    public void publish(BlockTrade trade, int partition) {
+        producer.send(new ProducerRecord<>(
+                ordersTopic, partition, trade.eventTime(), trade.tradeId(), Json.toBytes(trade)));
+    }
+
+    /** Partition count of the orders topic, as the broker currently reports it. */
+    public int ordersPartitionCount() {
+        return producer.partitionsFor(ordersTopic).size();
+    }
+
     public void publish(Price price) {
         producer.send(new ProducerRecord<>(
                 pricesTopic, null, price.eventTime(), price.symbol(), Json.toBytes(price)));
