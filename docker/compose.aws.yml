@@ -1,0 +1,131 @@
+# The same Flink stack as compose.yml, with the broker somewhere else.
+#
+# A standalone file rather than an override, because the difference is a service
+# that must not exist: compose merges overrides, so a `depends_on: kafka` in the
+# base file cannot be removed by one. Everything else -- images, Flink
+# properties, slot count, the submit sequence -- is copied deliberately, so a run
+# here differs from a run on a laptop in the broker and the hardware and nothing
+# else.
+#
+#   BOOTSTRAP_SERVERS=b-1...:9092,b-2...:9092 PARALLELISM=4 \
+#     docker compose -f docker/compose.aws.yml up -d --wait jobmanager taskmanager prometheus
+name: flink-training
+
+services:
+  jobmanager:
+    image: flink:1.20.4-java17
+    container_name: ft-jobmanager
+    command: jobmanager
+    ports:
+      - "8081:8081"
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        parallelism.default: ${PARALLELISM:-4}
+        state.backend.type: hashmap
+        execution.checkpointing.interval: ${CHECKPOINT_INTERVAL_MS:-1000}ms
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.port: 9249
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:8081/overview > /dev/null"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 10s
+
+  taskmanager:
+    image: flink:1.20.4-java17
+    container_name: ft-taskmanager
+    command: taskmanager
+    depends_on:
+      jobmanager:
+        condition: service_healthy
+    environment:
+      FLINK_PROPERTIES: |
+        jobmanager.rpc.address: jobmanager
+        taskmanager.numberOfTaskSlots: ${TASK_SLOTS:-8}
+        metrics.reporter.prom.factory.class: org.apache.flink.metrics.prometheus.PrometheusReporterFactory
+        metrics.reporter.prom.port: 9249
+    restart: unless-stopped
+
+  submit:
+    build:
+      context: ..
+      target: jobs
+    image: flink-training/jobs
+    container_name: ft-submit
+    depends_on:
+      jobmanager:
+        condition: service_healthy
+      taskmanager:
+        condition: service_started
+    environment:
+      PARALLELISM: "${PARALLELISM:-4}"
+      CHECKPOINT_INTERVAL_MS: "${CHECKPOINT_INTERVAL_MS:-1000}"
+      BOOTSTRAP_SERVERS: "${BOOTSTRAP_SERVERS:?set to the MSK bootstrap brokers}"
+      WINDOW_MS: "${WINDOW_MS:-10000}"
+      IDLENESS_MS: "${IDLENESS_MS:-5000}"
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        set -e
+        for _ in $$(seq 1 60); do
+          slots=$$(curl -sf http://jobmanager:8081/overview | grep -o '"slots-available":[0-9]*' | cut -d: -f2)
+          [ "$${slots:-0}" -ge 1 ] && break
+          sleep 2
+        done
+        flink run -d -m jobmanager:8081 \
+          -c io.github.jimzucker.flinktraining.job.PositionsJob \
+          /opt/jobs/jobs.jar
+        flink run -d -m jobmanager:8081 \
+          -c io.github.jimzucker.flinktraining.job.MarketValueJob \
+          /opt/jobs/jobs.jar
+        flink list -m jobmanager:8081
+    restart: "no"
+
+  prometheus:
+    image: prom/prometheus:v2.55.1
+    container_name: ft-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus/prometheus-aws.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules-aws.yml:/etc/prometheus/rules-aws.yml:ro
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.retention.time=2h
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:9090/-/healthy >/dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # Same dashboard as the local stack, minus the server-side renderer -- this one
+  # is for watching a run in a browser rather than capturing images for a deck.
+  #
+  # Nothing is published to the internet: the security group opens port 22 only,
+  # so this is reached over an SSH tunnel. A Grafana with anonymous admin access
+  # on a public port would be an open door to the VPC.
+  grafana:
+    image: grafana/grafana:10.4.19
+    container_name: ft-grafana
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      prometheus:
+        condition: service_healthy
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Admin
+      GF_USERS_DEFAULT_THEME: light
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O- http://localhost:3000/api/health > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 30

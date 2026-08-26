@@ -1,0 +1,35 @@
+# One vocabulary for two very different brokers.
+#
+# The dashboard cannot query the broker directly and work in both places: a local
+# Kafka runs docker/kafka/jmx-exporter.yml, which flattens names deliberately to
+# keep the series count at 15, while MSK runs its own exporter config and
+# produces kafka_server_BrokerTopicMetrics_OneMinuteRate with a name label. Same
+# broker, same JMX beans, different names.
+#
+# So each environment records into the same ft: names, and the panels ask for
+# those. Adding a third environment means one more rules file and no dashboard
+# changes.
+groups:
+  - name: broker-vocabulary
+    interval: 5s
+    rules:
+      - record: ft:broker_bytes_in_per_sec
+        expr: rate(kafka_broker_bytesinpersec_total[1m])
+
+      - record: ft:broker_bytes_out_per_sec
+        expr: rate(kafka_broker_bytesoutpersec_total[1m])
+
+      - record: ft:broker_log_size_bytes
+        expr: sum by (topic) (kafka_log_size_bytes{topic!~"__.*"})
+
+      - record: ft:broker_disk_used_bytes
+        expr: sum(kafka_log_size_bytes)
+
+      - record: ft:broker_request_handler_idle_percent
+        expr: clamp_max(kafka_request_handler_avg_idle_percent * 100, 100)
+
+      - record: ft:broker_cpu_cores
+        expr: rate(kafka_jvm_process_cpu_time_ns_total[2m]) / 1e9
+
+      - record: ft:broker_heap_used_percent
+        expr: kafka_jvm_heap_used_bytes / kafka_jvm_heap_max_bytes * 100

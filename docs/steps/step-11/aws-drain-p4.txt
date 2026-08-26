@@ -1,0 +1,13 @@
+AWS drain  (2026-08-26T02:03:39Z)
+brokers: 3 x kafka.m5.xlarge, MSK 3.9.x.kraft
+client: c5.2xlarge (8 vCPU = 4 physical Cascade Lake cores)
+parallelism 4, 4 partitions, replication 1, checkpoint 1000ms
+
+DRAINED 88678174 orders in 1068s = 83031 orders/sec
+allocations 332124/sec   records written 415155/sec
+
+Client CPU 92% user, 2.4% idle; task manager 627% of 800%.
+MSK 0.66 cores across three brokers, 99.7% request-handler idle.
+The constraint was the client, not the broker -- and the client was
+under-sized: eight vCPUs here are four physical cores with hyperthreading,
+against eight real and faster cores on the laptop.

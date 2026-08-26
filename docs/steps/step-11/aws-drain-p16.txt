@@ -1,0 +1,32 @@
+AWS drain  (2026-08-26T02:57:03Z)
+brokers: b-1.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:9092,b-2.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:9092,b-3.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:9092
+parallelism 16, 32 slots, 16 partitions, replication 1, checkpoint 10000ms
+-- recreating the sink topics, keeping the backlog
+-- reusing the 88678174 orders already in the topic
+-- starting Flink at parallelism 16
+
+       t       consumed      remaining   orders/s
+     20s         106359       88571815       5317
+     41s         106359       88571815          0
+     63s         106359       88571815          0
+     84s         106359       88571815          0
+    105s        2688331       85989843     122951
+    127s        9343876       79334298     302524
+    150s       15510845       73167329     268129
+    173s       21182818       67495356     246607
+    195s       27556790       61121384     289726
+    218s       34371752       54306422     296302
+    241s       40171475       48506699     252161
+    264s       46144777       42533397     259708
+    287s       53372518       35305656     314249
+    311s       59295733       29382441     246800
+    334s       65051066       23627108     250231
+    357s       71317636       17360538     272459
+    379s       77692851       10985323     289782
+    402s       83367606        5310568     246728
+    425s       88678310           -136     230900
+
+  DRAINED 88678174 orders in 425s = 208654 orders/sec
+  allocations 834616/sec   records written 1043270/sec
+
+written to docs/steps/step-11/aws-drain-p16.txt

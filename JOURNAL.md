@@ -20,7 +20,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 08 | Local Docker demo | full | `step-08-docker-local` | in review |
 | 09 | Latency | full | `step-09-latency` | in review |
 | 10 | Scale | full | `step-10-scale` | done |
-| 11 | AWS | full | `step-11-aws` | not started |
+| 11 | AWS | full | `step-11-aws` | in review |
 | 12 | Final demo | full | `step-12-final-deck` | not started |
 
 The local Docker stack is stood up early and grown one service at a time, rather
@@ -1152,3 +1152,53 @@ fifteen seconds, and `.githooks/pre-push` runs it on every push. Every CI failur
 on this branch would have been caught by it.
 
 Full exchange: [`docs/reviews/step-10.md`](../docs/reviews/step-10.md)
+
+
+---
+
+## Step 11 — AWS
+
+- **Branch:** `step-11-aws`
+- **Prompt:** Prove on AWS what one laptop could not: that the ceiling was the
+  broker, and that Flink scales when Kafka is not the thing stopping it.
+
+### Results
+
+Same 88,678,174-order backlog as step 10, producer stopped, RF=1 throughout so
+the comparison isolates hardware.
+
+| | orders/sec | records written/sec | vs laptop |
+|---|---|---|---|
+| laptop, broker on-box, p=4 | 142,340 | 711,700 | 1.00× |
+| AWS `c5.2xlarge`, p=4 | 83,031 | 415,155 | 0.58× |
+| AWS `c7i.8xlarge`, p=16 | 208,654 | 1,043,270 | 1.47× |
+| **AWS `c7i.8xlarge`, p=8** | **260,053** | **1,300,265** | **1.83×** |
+
+**The step-10 conclusion held.** Against three MSK brokers the pipeline moved
+1,300,265 records/sec where one local broker capped it at 711,700 — and MSK never
+worked hard: 0.66 cores and 99.7% request-handler idle while the client
+saturated. The ceiling was Kafka, and it moved when Kafka did.
+
+**Parallelism 8 beat parallelism 16 by 25%** on the same 32 vCPUs. Each sink
+subtask opens its own transactional producer, so doubling parallelism doubles
+what the broker tracks and the checkpoint commits. More subtasks stopped buying
+capacity well before the cores ran out.
+
+The `c5.2xlarge` result is a sizing error rather than a finding: eight vCPUs
+there are four physical cores with hyperthreading against eight real and faster
+ones on the laptop.
+
+### The operational lesson worth carrying
+
+**Exactly-once at a one-second checkpoint interval does not survive a remote
+broker.** At parallelism 16 the pipeline halted at 106,355 records with both jobs
+RUNNING, no exception, and the machine 99% idle; 101 of 112 checkpoints had
+failed. Flink opens a transactional producer per sink subtask per checkpoint, so
+that interval demanded 64 `InitProducerId` round trips a second from a remote
+coordinator. One second was tuned against localhost at parallelism 2.
+
+Details: [`docs/steps/step-11/aws.md`](../docs/steps/step-11/aws.md)
+
+### Review
+
+_Pending._ Full exchange: [`docs/reviews/step-11.md`](../docs/reviews/step-11.md)
