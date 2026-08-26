@@ -1,0 +1,39 @@
+=== parallelism=4  offered=100000/s x3  run=90s ===
+-- resetting topics
+-- restarting job at parallelism 4
+-- generating (3 generator JVM(s))
+
+       t     produced          lag  offered/s   used/s     busy       bp   ckpt
+     10s     11212922     10410513     473614    43537      91%      50%   723ms
+     26s     16330277     14923070     378980    40006      94%      51%   452ms
+     43s     21421840     19461341     347559    37057     100%      54%   271ms
+     60s     26138542     23592291     327696    36320     100%      53%   292ms
+     75s     30936244     27656166     326126    38840     100%      55%   277ms
+     91s     35702846     31782303     321165    39049     100%      53%   369ms
+
+  offered          315854/s
+  sustained        37419/s
+  latency          p50=110088ms p95=110429ms p99=110439ms
+  lag drift        242861/s  (10410513 -> 31782303)
+  VERDICT          SATURATED - lag diverging, sustained rate is the ceiling
+
+
+=== parallelism=2  offered=100000/s x3  run=90s ===
+-- resetting topics
+-- restarting job at parallelism 2
+-- generating (3 generator JVM(s))
+
+       t     produced          lag  offered/s   used/s     busy       bp   ckpt
+     10s      9997368      8763938     428401    71193      89%      33%   310ms
+     25s     14682449     12888529     358763    50896      92%      36%   250ms
+     40s     19183476     16833007     336753    45724      98%      41%   276ms
+     56s     23678849     20722520     320812    43479      99%      42%   200ms
+     70s     28013543     24433385     318574    43695      99%      43%   714ms
+     85s     32367513     28318147     313578    41504      98%      43%    75ms
+     99s     36676302     31899218     312757    42985      98%      42%   358ms
+
+  offered          309012/s
+  sustained        43300/s
+  latency          p50=107080ms p95=107126ms p99=107128ms
+  lag drift        248766/s  (8763938 -> 31899218)
+  VERDICT          SATURATED - lag diverging, sustained rate is the ceiling

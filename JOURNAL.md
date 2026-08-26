@@ -19,7 +19,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
 | 08 | Local Docker demo | full | `step-08-docker-local` | in review |
 | 09 | Latency | full | `step-09-latency` | in review |
-| 10 | Scale | full | `step-10-scale` | not started |
+| 10 | Scale | full | `step-10-scale` | done |
 | 11 | AWS | full | `step-11-aws` | not started |
 | 12 | Final demo | full | `step-12-final-deck` | not started |
 
@@ -982,3 +982,173 @@ number means and the runbook has an answer ready.
 Full exchange: [`docs/reviews/step-09.md`](../docs/reviews/step-09.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-09`.
+
+---
+
+## Step 10 — Scale
+
+- **Branch:** `step-10-scale`
+- **Prompt:** The assignment's two scale cases — orders to 1000/sec without
+  losing throughput, and a very high price rate without hurting order latency —
+  plus the parallelism 2 to 4 comparison.
+
+### Results
+
+Both specified cases pass.
+
+| | orders/s asked | prices/s | orders through | latency p50 |
+|---|---|---|---|---|
+| baseline | 10 | 1000 | 8/s | 519 ms |
+| case 1 | 1000 | 1000 | **1000/s** | **522 ms** |
+| case 2 | 10 | **20000** | 8/s | **513 ms** |
+
+Case 1 raised throughput a hundredfold with latency unmoved. Case 2 raised the
+price rate twentyfold with order latency unchanged, which settles the question
+left open in step 05: broadcasting prices to every subtask was the concern, and
+at twenty times the rate it does not bite. Measuring rather than pre-reducing was
+the right call — pre-reducing would have traded away the exact price-at-close for
+a problem that is not there.
+
+### Forcing it to fail
+
+Passing runs say less than a broken one, so the rate went up until it broke:
+315,000 orders/sec offered at parallelism 4.
+
+| | sustained | lag drift | latency p50 | checkpoint |
+|---|---|---|---|---|
+| parallelism 4 | 37,419/s | **+242,861/s** | **110,088 ms** | 270–720 ms |
+| parallelism 2 | 43,300/s | +248,766/s | 107,080 ms | 200–714 ms |
+
+Nothing crashed. No failed checkpoint, no restart, no exception — Flink
+back-pressures the source and keeps producing correct output, just further behind
+every second. Latency rose two hundredfold because each record now waits behind a
+backlog of thirty million, so under saturation latency measures the queue rather
+than the work. The failure is invisible in correctness, invisible in throughput,
+and obvious only in lag.
+
+### Why parallelism does not move it here
+
+Parallelism 2 beat parallelism 4 in that run, because three generator JVMs were
+competing with the cluster for eight cores and for the same broker. Removing the
+producer entirely — filling the topics first and timing a drain of an identical
+8,000,000-order backlog — gives a clean and flat answer:
+
+| parallelism | time to drain | orders/sec |
+|---|---|---|
+| 1 | 58 s | 137,931/s |
+| 2 | 56 s | 142,857/s |
+| 4 | 61 s | 131,147/s |
+
+The first explanation I reached for was cores, and it was wrong — recorded here
+because the wrong answer was the plausible one. Each candidate was excluded by
+measurement:
+
+| Candidate | Result |
+|---|---|
+| TaskManager CPU | 385% at parallelism 1, 475% at 4, of 800% — **~40% of the box idle while throughput was pinned** |
+| A container CPU cap | `cpu.max` is `max`, quota `-1` — none |
+| Kafka reads | 1,908,570 records/sec — fourteen times the pipeline's rate |
+| Partition count | 16 partitions instead of 4: 137,931/sec against 131,147 — unchanged |
+| Checkpointing | a 10s interval instead of 1s: no better |
+
+Low CPU with high back-pressure is the tell: a thread blocked on a Kafka
+acknowledgement is neither busy nor idle for want of work.
+
+The constraint is the **single broker's write throughput**. Four concurrent
+producers measure its aggregate ceiling at **750,000 records/sec**, and the
+pipeline writes five records per order — one symbol-side, four account-side — so
+at 137,000 orders/sec it is issuing 685,000 writes/sec, **91% of the broker's
+capacity**. That explains every observation at once: flat across parallelism
+because the broker is shared, indifferent to partition count because the limit is
+the broker process, TaskManager cores half idle because its threads are blocked
+on acknowledgements, and the account writer pinned because it issues four of the
+five writes.
+
+**Flink parallelism scales the work inside the job; it cannot scale a broker
+outside it.**
+
+The earlier claim that the generator was the ceiling is also superseded twice
+over. The pacer was fixed, and then gzip compression turned out to cap the
+producer at 387,000 orders/sec against lz4's 879,000 — gzip having been chosen to
+avoid a native-library warning that only appears on Java 24+, while this project
+targets 17.
+
+### The generator, and a re-pinned sequence
+
+The generator, not Kafka, limits offered load: one thread serialising JSON
+manages about 300,000 orders/sec where a bare producer reaches 750,000.
+`GENERATOR_THREADS` now divides the trade sequence across threads with one writer
+per partition.
+
+| 4 partitions, tuned broker | orders/sec |
+|---|---|
+| 1 thread, uncompressed | 348,289 |
+| 4 threads, uncompressed | 337,638 |
+| **4 threads, lz4** | **2,054,648** |
+
+Threads only pay with compression. Uncompressed the run is pinned near 100MB/s
+however many threads produce it, because they share one `KafkaProducer` and its
+single sender thread does the network I/O; with lz4 each thread compresses on its
+own calling thread, so the work divides -- six times the throughput, and ten
+times what the pipeline can consume.
+
+**`DeterminismTest.demoSequenceIsPinned` was re-pinned**, deliberately, as its
+comment asks. Trade content used to come from a `Random` advanced across the
+sequence, which makes trade *n* depend on every draw before it: workable in one
+thread and meaningless in four. It is now a function of the sequence number
+alone, so the same seed gives the same trades at any thread count. Verified: two
+runs at two threads and two runs at four all produce the identical topic, and the
+hash is the same at both thread counts.
+
+### The measurement that settles it
+
+Draining the same 88,678,174-order backlog -- larger than the machine's RAM, so
+reads come off disk rather than page cache -- with 4 partitions, the producer
+stopped, and nothing varying but parallelism:
+
+| | p=2 | p=4 |
+|---|---|---|
+| time to drain | 726 s | **623 s** |
+| orders/sec | 122,146 | **142,340** |
+| allocations/sec | 488,584 | **569,360** |
+| records written/sec | 610,730 | **711,700** |
+| back-pressure | 20–21% | 42–43% |
+
+**Parallelism 4 is 16.5% faster than parallelism 2.** This supersedes the earlier
+12-million-record runs, which recorded 2 → 4 as a regression: that topic fitted
+in RAM, so those drains were reading from cache. p=2 at 20% back-pressure was not
+pressing the broker hard enough to limit itself; p=4 pushed until the sinks
+pushed back.
+
+The curve flattens rather than reversing, which is what a fixed external ceiling
+looks like -- p=4 writes 711,700 records/sec against the 750,000 the broker
+accepts.
+
+### What would prove scaling
+
+Raise the ceiling that actually binds, then vary parallelism against it: a
+three-broker cluster roughly triples write capacity, and the drain can then be
+run at 1, 2 and 4 against a limit that is not the first thing hit. Worth noting
+that four of every five records written come from the account branch, so reducing
+that write volume moves the ceiling further than any parallelism change — and
+that the same trap exists in the managed service, where KPUs and MSK brokers are
+provisioned separately.
+
+Details: [`docs/steps/step-10/scaling.md`](../docs/steps/step-10/scaling.md)
+
+### Review
+
+Two rounds. The first redirected the whole approach — force a failure and
+evaluate it rather than re-running passing cases. The second asked what the
+dashboard actually monitors, and the answer was: not enough. Back-pressure was
+not charted, per-operator usage was not charted, and consumer lag — the signal
+that defines saturation — had no panel at all. The account-chain diagnosis had
+come from an ad-hoc PromQL query, which meant the dashboard could not have found
+it. All three are now charted, with busy and back-pressure broken out per task.
+
+It also asked why CI failures were not being caught before the push. They are
+now: `scripts/precheck.sh` runs the two jobs that need no Docker stack in about
+fifteen seconds, and `.githooks/pre-push` runs it on every push. Every CI failure
+on this branch would have been caught by it.
+
+Full exchange: [`docs/reviews/step-10.md`](../docs/reviews/step-10.md)

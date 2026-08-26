@@ -191,6 +191,64 @@ knob independently:
 | `MAX_TRADES` | `0` | stop after N trades; `0` is unbounded |
 | `MAX_PRICES` | `0` | stop after N prices; `0` is unbounded |
 | `DURATION_SECONDS` | `0` | `0` runs until stopped |
+| `COMPRESSION_TYPE` | `lz4` | producer codec. gzip caps one producer near 387,000 orders/sec against lz4's 879,000 |
+| `GENERATOR_THREADS` | `1` | threads producing trades. Must divide the orders topic's partition count, so each partition has one writer |
+| `BATCH_SIZE` | `262144` | 256KB against Kafka's 16KB default, worth +37% |
+| `BUFFER_MEMORY` | `268435456` | so a stalled broker parks records instead of blocking |
+
+### Offering more load than the pipeline can take
+
+The generator, not Kafka, limits offered load: one thread serialising JSON
+manages about 300,000 orders/sec where a bare producer reaches 750,000.
+`GENERATOR_THREADS` divides the trade sequence across threads, one writer per
+partition:
+
+| 4 partitions, tuned broker | orders/sec |
+|---|---|
+| 1 thread, uncompressed | 348,289 |
+| 4 threads, uncompressed | 337,638 |
+| 1 thread, lz4 | ~879,000 |
+| **4 threads, lz4** | **2,054,648** |
+
+**Threads only pay with compression.** Uncompressed the run is pinned near
+100MB/s however many threads produce it, because they share one `KafkaProducer`
+and its single sender thread does the network I/O. With lz4 each thread
+compresses on its own calling thread, so the work actually divides -- six times
+the throughput, and ten times what the pipeline can consume.
+
+Replay stays byte-identical, and not only run to run: the same seed produces the
+same bytes at any thread count, because a trade's content is a function of its
+sequence number rather than of how many draws preceded it, and trade *n* goes to
+partition *n mod partitions* whoever writes it. A thread count that does not
+divide the partitions is rejected rather than quietly producing a topic that
+cannot be reproduced.
+
+## What the demo is set to
+
+Every default the stack runs with, in one place. All of them are environment
+overrides on `docker compose`, so a demo can change one without touching a file.
+
+| Setting | Default | Why this value |
+|---|---|---|
+| brokers | **1** | three were tried and halved throughput on one machine; `docker/compose.cluster.yml` repeats that measurement |
+| `PARTITIONS` | **12** | divisible by three and four, so any parallelism the scale test uses gets whole partitions. Measured no worse than 4 at every parallelism |
+| `PARALLELISM` | `2` | the assignment's baseline; the scale case raises it to 4 |
+| `TASK_SLOTS` | `8` | two jobs at parallelism 4 |
+| `TASKMANAGER_CPUS` | `0` | no limit. The scaling demo sets 1, 2 and 4 — naming a number as the default breaks on any machine with fewer cores |
+| `WINDOW_MS` | `10000` locally, `60000` in the job | 10s so a demo shows several windows closing; 60s is what the requirements state |
+| `CHECKPOINT_INTERVAL_MS` | `1000` | the floor under visible latency: a record is not readable until its checkpoint commits |
+| `IDLENESS_MS` | `5000` | how long a quiet partition may hold the watermark back |
+| `TRADES_PER_SECOND` | `10` | demo rate; scale case 1 raises it to 1000 |
+| `PRICES_PER_SECOND` | `1000` | demo rate; scale case 2 raises it to 20000 |
+| `SINK_COMPRESSION` | `lz4` | the broker's write path is the pipeline's ceiling and the TaskManager has cores to spare, so this spends the one on the other |
+| `SINK_LINGER_MS` | `10` | Kafka's default of 0 sends a batch as soon as one record is ready, giving the broker many small requests |
+| `SINK_BATCH_SIZE` | `131072` | 128KB, against Kafka's 16KB default |
+| `GENERATOR_START` | `manual` | so a demo starts the data itself rather than finding it already running |
+
+The last three moved in step 10 and are worth a sentence at the front of a talk:
+they took parallelism 4 from 153,846 to 173,913 orders/sec and its back-pressure
+from 85% to 66%, and they turned the curve the right way up — before them,
+parallelism 4 was *slower* than parallelism 2.
 
 Event times are wall clock by default, which is what makes end-to-end latency —
 the age of a record when it reaches a sink — measurable at all.
@@ -220,6 +278,45 @@ docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager p
 Sources on the left, sinks on the right, numbered as on the pipeline diagram. The
 key counts are the expected-output table made visible: sinks 3 and 5 hold 4 keys,
 sinks 4 and 6 hold 16.
+
+The dashboard is in four sections, in the order they get used. **The pipeline**
+first, because it is the demo: the six numbered topics, sources on the left and
+sinks on the right. **Latency**, then **Saturation**, then **Resources** — each
+one the answer to "why" for the section above it.
+
+Sections two through four are for diagnosis rather than demonstration:
+
+| Panel | The question it answers |
+|---|---|
+| **Consumer lag** | is the job keeping up? A bounded, sawtooth lag is healthy; a line that climbs and never returns is saturation, and it is the only panel that shows it — throughput looks fine right up to the point it is not |
+| **Busy by task** | which operator is the ceiling? One task near 100% while the rest sit low names the thing to fix |
+| **Back-pressure by task** | what is queued behind it? The back-pressured tasks are the victims; the busy task they feed is the cause |
+
+Read together they separate the ways a pipeline runs out of room. One task pinned
+means that operator is the ceiling; every task busy and none standing out means
+the cluster itself is. But a pinned task with *idle* cores means the constraint
+is outside the job entirely — waiting on something downstream — and that is the
+case parallelism cannot fix. Step 10 found the account chain at
+99% busy against 57% for the next task this way — `split_by_allocation` fans each
+order into four allocations, so that branch carries four times the record rate.
+
+The **Resources** section is where that distinction gets settled:
+
+| Panel | The question it answers |
+|---|---|
+| **CPU — cores in use** | derived from JVM CPU time, so it reads in cores rather than a share of an unstated whole. Read it *with* back-pressure: 3.85 of 8 cores alongside a pinned throughput looks like a CPU ceiling and is not one — threads blocked on Kafka acknowledgements are neither busy nor idle |
+| **Heap** and **Garbage collection** | the quietest failure. A rising heap floor and GC in the hundreds of ms/sec produce latency and back-pressure with no operator looking busy |
+| **Network — bytes moved** | read from Kafka, written back, and shuffled between subtasks — for when bytes rather than records are the constraint |
+| **Network buffers** | back-pressure is not a policy, it is these filling. Output pool usage moves before latency does |
+| **free task slots** | a submission with none free does not queue, it fails |
+
+One blind spot, deliberately: Prometheus scrapes Flink only, so the broker's own
+throughput is not charted — and in step 10 the broker turned out to be the
+ceiling. One broker absorbs about 750,000 records/sec, and each order becomes
+five records (one symbol-side, four account-side), so the pipeline tops out near
+137,000 orders/sec no matter what parallelism is set to. Low CPU with high
+back-pressure is the signature: **Flink parallelism scales the work inside the
+job and cannot scale a broker outside it.**
 
 Flink has no metric for distinct keys, so the jobs publish one. Keys are
 partitioned across subtasks, which is what makes summing the gauge give the total
@@ -323,7 +420,59 @@ the same boundary and so shares an age.
 
 ## Scale results
 
-_Added in step 10._
+Draining an 88,678,174-order backlog -- larger than the machine's memory, so the
+reads come off disk rather than page cache -- with 4 partitions and the producer
+stopped, so nothing varies but parallelism:
+
+| | p=2 | p=4 |
+|---|---|---|
+| time to drain | 726 s | **623 s** |
+| orders/sec | 122,146 | **142,340** |
+| allocations/sec | 488,584 | **569,360** |
+| records written/sec | 610,730 | **711,700** |
+| back-pressure | 20–21% | 42–43% |
+
+**Parallelism 4 is 16.5% faster than parallelism 2.** The ceiling is one broker's
+write path at ~750,000 records/sec, and each order becomes five records -- one
+position on the symbol side, four allocations on the account side -- so p=4 runs
+at about 95% of what the broker will accept. The curve flattens as it approaches
+that rather than reversing.
+
+Smaller drains are not to be trusted here: a 12-million-order topic fits in the
+machine's RAM, so the fill leaves it in page cache and the drain reads from
+memory. Those runs had 2 → 4 as a regression, which the larger backlog
+contradicts.
+
+
+Both cases the requirements specify pass.
+
+| | orders/s asked | prices/s | orders through | allocations | order latency p50 |
+|---|---|---|---|---|---|
+| baseline | 10 | 1000 | 8/s | 33/s | 519 ms |
+| **case 1** | 1000 | 1000 | **816/s** | **3269/s** | **522 ms** |
+| **case 2** | 10 | **20000** | 8/s | 33/s | **513 ms** |
+
+**Case 1** raised throughput a hundredfold and order latency did not move. The
+requirement allows latency to rise; it did not need to.
+
+**Case 2** raised the price rate twentyfold and order latency was unchanged. That
+settles the question left open when prices were made a broadcast: the concern was
+that every price would pass through the threads doing order work, and at twenty
+times the rate it does not.
+
+```bash
+./scripts/scale-test.sh
+```
+
+**Parallelism scaling is not demonstrated**, and the reason is worth stating
+plainly: raising parallelism from 2 to 4 changed nothing because the pipeline was
+never the constraint. The generator caps out around 3000 orders/sec, so there was
+no queue for the extra parallelism to work through. Measuring the pipeline
+directly means draining a backlog with the producer stopped, and on a development
+machine that measurement varied by a factor of two between identical runs. It is
+recorded as unproven rather than supported by an unreliable number — see
+[`docs/steps/step-10/scaling.md`](docs/steps/step-10/scaling.md), and the AWS step
+for where to measure it properly.
 
 ---
 
@@ -359,17 +508,38 @@ so both are held at 1.20.4 to keep the cluster and the job jars identical.
 
 ## Continuous integration
 
-Every push runs three jobs:
+Every push runs four jobs:
 
 | Job | What it proves |
 |---|---|
 | **Build and test** | compiles on Java 17 and runs all 23 tests, including the Testcontainers integration test that starts its own broker |
 | **Verify the expected numbers** | brings up Kafka, runs the generators bounded by record count, and asserts the expected-output table exactly |
+| **Cold start** | brings the whole stack up from nothing and checks it came up green, so `docker compose up` on a clean machine is a tested path |
 | **Shell scripts** | ShellCheck over the verification scripts, since they are part of how correctness is demonstrated |
 
 The second job is the one that matters: it is the same `verify-run.sh` used
 locally, so a change that quietly breaks the numbers fails the build rather than
 surfacing during a demo.
+
+### Catching it before the push
+
+Waiting for CI to find a three-second ShellCheck error wastes a round trip, so
+the two jobs that need no Docker stack run locally first:
+
+```bash
+scripts/precheck.sh           # shellcheck + mvn verify, about 15 seconds
+scripts/precheck.sh --quick   # shellcheck + compile, no tests
+```
+
+Wire it to the push so it is not something to remember:
+
+```bash
+git config core.hooksPath .githooks   # once per clone
+```
+
+`.githooks/pre-push` then runs it on every `git push`, and `--no-verify`
+bypasses it when that is deliberate. The two stack jobs still run on CI only;
+they need several minutes and a quiet machine.
 
 `main` is protected and requires all three checks to pass, so work reaches it
 through a pull request:

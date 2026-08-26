@@ -62,6 +62,8 @@ public class MarketValueAtClose
     private transient MapState<Long, String> closingTradeId;
     /** Event time of the position recorded for each window, so a later one wins. */
     private transient MapState<Long, Long> closingAt;
+    /** Update count of that position, which breaks ties on event time. */
+    private transient MapState<Long, Long> closingCount;
     private transient ValueState<String> symbol;
     /** The boundary a timer is already registered for, so it is set once per window. */
     private transient ValueState<Long> pendingBoundary;
@@ -88,6 +90,8 @@ public class MarketValueAtClose
                 new MapStateDescriptor<>("closing-trade-by-window", Types.LONG, Types.STRING));
         closingAt = getRuntimeContext().getMapState(
                 new MapStateDescriptor<>("closing-at-by-window", Types.LONG, Types.LONG));
+        closingCount = getRuntimeContext().getMapState(
+                new MapStateDescriptor<>("closing-count-by-window", Types.LONG, Types.LONG));
         symbol = getRuntimeContext().getState(new ValueStateDescriptor<>("symbol", Types.STRING));
         pendingBoundary = getRuntimeContext().getState(new ValueStateDescriptor<>("pendingBoundary", Types.LONG));
 
@@ -111,12 +115,26 @@ public class MarketValueAtClose
         // not simply the last to arrive. Orders are keyed by trade id and spread
         // across partitions, so Part 1 emits a symbol's positions from several
         // partitions at once and they do not arrive in event-time order.
+        //
+        // Two trades on the same key can share a millisecond, and then event time
+        // alone does not say which position closed the window. Taking whichever
+        // arrived last is not an answer: positions are keyed by trade id and
+        // spread across partitions, so arrival order varies between runs and the
+        // window could close on the running total from *before* the other trade,
+        // understating the position. updateCount is the accumulation sequence for
+        // the key, so the greater one is genuinely later -- a tie-break on the
+        // data rather than on timing, and identical on every replay.
         long window = Windows.nextBoundary(position.eventTime, windowMillis);
         Long recordedAt = closingAt.get(window);
-        if (recordedAt == null || position.eventTime >= recordedAt) {
+        Long recordedCount = closingCount.get(window);
+        boolean later = recordedAt == null
+                || position.eventTime > recordedAt
+                || (position.eventTime == recordedAt && position.updateCount > recordedCount);
+        if (later) {
             closingQuantity.put(window, position.quantity);
             closingTradeId.put(window, position.lastTradeId);
             closingAt.put(window, position.eventTime);
+            closingCount.put(window, position.updateCount);
         }
 
         // Register from the record's own event time, not from the current
@@ -189,9 +207,11 @@ public class MarketValueAtClose
     private void pruneClosing(long windowEnd) throws Exception {
         Long carried = closingQuantity.get(windowEnd);
         String carriedTrade = closingTradeId.get(windowEnd);
+        Long carriedCount = closingCount.get(windowEnd);
         if (carried == null) {
             carried = closingAt(closingQuantity, windowEnd);
             carriedTrade = closingAt(closingTradeId, windowEnd);
+            carriedCount = closingAt(closingCount, windowEnd);
         }
         List<Long> expired = new ArrayList<>();
         for (Long window : closingQuantity.keys()) {
@@ -203,11 +223,13 @@ public class MarketValueAtClose
             closingQuantity.remove(window);
             closingTradeId.remove(window);
             closingAt.remove(window);
+            closingCount.remove(window);
         }
         if (carried != null) {
             closingQuantity.put(windowEnd, carried);
             closingTradeId.put(windowEnd, carriedTrade);
             closingAt.put(windowEnd, windowEnd);
+            closingCount.put(windowEnd, carriedCount == null ? 0L : carriedCount);
         }
     }
 

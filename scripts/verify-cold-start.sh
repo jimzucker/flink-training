@@ -49,8 +49,8 @@ check "generator restarts" "0" "$RESTARTS"
 # Generators default to manual, so nothing should have been produced yet. This is
 # the state the demo opens in: everything up, dashboard visibly empty.
 records() {
-  docker exec ft-kafka /opt/kafka/bin/kafka-get-offsets.sh \
-      --bootstrap-server localhost:9092 --topic "$1" 2>/dev/null \
+  docker exec -e KAFKA_OPTS= ft-kafka /opt/kafka/bin/kafka-get-offsets.sh \
+      --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --topic "$1" 2>/dev/null \
     | awk -F: '{s += $3} END {print s + 0}'
 }
 check "orders before the trigger" "0" "$(records orders)"
@@ -79,8 +79,8 @@ echo
 echo "data reaching every topic"
 for pair in orders:1 prices:1 positions-by-symbol:1 positions-by-account:1; do
   topic="${pair%%:*}"
-  n=$(docker exec ft-kafka /opt/kafka/bin/kafka-get-offsets.sh \
-        --bootstrap-server localhost:9092 --topic "$topic" 2>/dev/null \
+  n=$(docker exec -e KAFKA_OPTS= ft-kafka /opt/kafka/bin/kafka-get-offsets.sh \
+        --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --topic "$topic" 2>/dev/null \
       | awk -F: '{s += $3} END {print (s > 0) ? 1 : 0}')
   check "$topic has records" "1" "${n:-0}"
 done

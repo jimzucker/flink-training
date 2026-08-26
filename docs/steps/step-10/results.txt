@@ -1,0 +1,15 @@
+scale test  (2026-08-24T04:37:08Z)
+each case runs for 50s with latency measured over 25s
+
+==============================================================
+baseline   parallelism=2  orders=10/s  prices=1000/s
+==============================================================
+
+  orders through the pipeline   8/sec
+  allocations                   33/sec
+  order latency                 n=240    p50=470    p95=960    p99=968    max=973     (ms)
+  checkpoint duration           12 ms
+
+==============================================================
+case 1: orders to 1000/sec   parallelism=2  orders=1000/s  prices=1000/s
+==============================================================

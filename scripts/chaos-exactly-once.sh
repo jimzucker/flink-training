@@ -13,8 +13,8 @@ TRADES="${TRADES:-100}"
 PRICES="${PRICES:-400}"
 
 committed() {  # topic want
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
-      --bootstrap-server localhost:9092 --topic "$1" \
+  docker exec -e KAFKA_OPTS= "$CONTAINER" /opt/kafka/bin/kafka-console-consumer.sh \
+      --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --topic "$1" \
       --isolation-level read_committed --from-beginning \
       --max-messages "$2" --timeout-ms 120000 2>/dev/null | grep -c . || true
 }
@@ -26,13 +26,13 @@ echo "   baseline run is green"
 echo
 echo "== rerunning, killing the task manager mid-flight =="
 for t in orders prices positions-by-symbol positions-by-account; do
-  docker exec "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
-      --bootstrap-server localhost:9092 --delete --topic "$t" >/dev/null 2>&1 || true
+  docker exec -e KAFKA_OPTS= "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
+      --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --delete --topic "$t" >/dev/null 2>&1 || true
 done
 for t in orders prices positions-by-symbol positions-by-account; do
   for _ in $(seq 1 60); do
-    docker exec "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
-        --bootstrap-server localhost:9092 --list 2>/dev/null | grep -qx "$t" || break
+    docker exec -e KAFKA_OPTS= "$CONTAINER" /opt/kafka/bin/kafka-topics.sh \
+        --bootstrap-server "${KAFKA_INTERNAL:-kafka:19092}" --list 2>/dev/null | grep -qx "$t" || break
     sleep 0.5
   done
 done

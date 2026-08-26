@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Runs the fast half of CI before a push, so shellcheck and test failures are
+# caught here instead of arriving as a failed-run email.
+#
+# Enable once per clone:   git config core.hooksPath .githooks
+# Bypass for a single push: git push --no-verify
+exec "$(git rev-parse --show-toplevel)/scripts/precheck.sh"

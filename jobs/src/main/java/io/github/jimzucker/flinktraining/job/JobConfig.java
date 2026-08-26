@@ -1,6 +1,8 @@
 package io.github.jimzucker.flinktraining.job;
 
 /** Everything the jobs can be pointed at, in one place. */
+import java.util.Properties;
+
 public record JobConfig(
         String bootstrapServers,
         String ordersTopic,
@@ -85,6 +87,26 @@ public record JobConfig(
                 envLong("IDLENESS_MS", DEFAULT_IDLENESS_MS),
                 envLong("OUT_OF_ORDERNESS_MS", DEFAULT_OUT_OF_ORDERNESS_MS),
                 envLong("LOG_EVERY", 50L));
+    }
+
+    /**
+     * Producer settings shared by every sink.
+     *
+     * <p>The defaults were left at Kafka's own until step 10 measured where the
+     * pipeline's ceiling actually was: not Flink, and not the cores, but how fast
+     * one broker accepts writes. Each order becomes five records, so the write
+     * path is the scarcest thing in the system, while the TaskManager sits at
+     * roughly half the machine's cores. Compressing and batching spends the CPU
+     * that is idle to save the broker capacity that is not.
+     */
+    public static Properties sinkProducerProperties() {
+        Properties properties = new Properties();
+        properties.setProperty("compression.type", env("SINK_COMPRESSION", "lz4"));
+        // Kafka defaults linger to 0, which sends a batch as soon as one record is
+        // ready and gives the broker many small requests instead of few large ones.
+        properties.setProperty("linger.ms", env("SINK_LINGER_MS", "10"));
+        properties.setProperty("batch.size", env("SINK_BATCH_SIZE", "131072"));
+        return properties;
     }
 
     private static String env(String name, String fallback) {

@@ -105,7 +105,7 @@ public final class PositionsJob {
      */
     private static KafkaSink<PositionState> positionsSink(
             JobConfig config, String topic, String transactionalIdPrefix) {
-        Properties properties = new Properties();
+        Properties properties = JobConfig.sinkProducerProperties();
         // Flink's default transaction timeout exceeds the broker's maximum, which
         // fails at submission. It also has to outlast a checkpoint, or a
         // transaction expires before it can be committed.

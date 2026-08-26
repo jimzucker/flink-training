@@ -32,3 +32,18 @@ ENTRYPOINT ["/app/entrypoint.sh"]
 # Carries the jar and the Flink client, so it can submit and then exit.
 FROM flink:1.20.4-java17 AS jobs
 COPY --from=build /src/jobs/target/jobs.jar /opt/jobs/jobs.jar
+
+
+# The broker with a JMX exporter attached, so Prometheus can see it.
+#
+# Kafka publishes everything worth knowing over JMX and nothing over HTTP, which
+# is why step 10 diagnosed a broker-bound pipeline by running `docker stats` by
+# hand. The agent turns JMX into a scrape endpoint: bytes in and out, request
+# handler idle time, and log size on disk.
+FROM apache/kafka:3.9.2 AS kafka
+ARG JMX_AGENT_VERSION=1.0.1
+USER root
+ADD https://repo1.maven.org/maven2/io/prometheus/jmx/jmx_prometheus_javaagent/${JMX_AGENT_VERSION}/jmx_prometheus_javaagent-${JMX_AGENT_VERSION}.jar /opt/jmx/jmx_prometheus_javaagent.jar
+COPY docker/kafka/jmx-exporter.yml /opt/jmx/jmx-exporter.yml
+RUN chmod 644 /opt/jmx/jmx_prometheus_javaagent.jar /opt/jmx/jmx-exporter.yml
+USER appuser

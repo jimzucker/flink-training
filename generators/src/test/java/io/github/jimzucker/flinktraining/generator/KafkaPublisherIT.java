@@ -67,7 +67,8 @@ class KafkaPublisherIT {
     private static GeneratorConfig config() {
         return new GeneratorConfig(KAFKA.getBootstrapServers(), ORDERS, PRICES,
                 GeneratorConfig.DEMO_TRADES_PER_SECOND, GeneratorConfig.DEMO_PRICES_PER_SECOND,
-                GeneratorConfig.DEFAULT_SEED, GeneratorConfig.REPLAY_START_EPOCH_MILLIS, 0L, 0L, 0L);
+                GeneratorConfig.DEFAULT_SEED, GeneratorConfig.DEFAULT_GENERATOR_THREADS,
+                GeneratorConfig.REPLAY_START_EPOCH_MILLIS, 0L, 0L, 0L);
     }
 
     private static <T> List<ConsumerRecord<String, byte[]>> drain(String topic, int expected) {

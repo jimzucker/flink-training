@@ -1,5 +1,7 @@
-# Scrapes Flink and the generators. Kafka is deliberately not scraped: the
-# assignment's dashboard is about what the pipeline produced, not broker health.
+# Scrapes Flink, and cAdvisor for the resources underneath it. Broker health was
+# once left out deliberately -- the dashboard is about what the pipeline
+# produced, not the plumbing -- but step 10 found the broker to be the pipeline's
+# ceiling, and a ceiling you cannot see is one you diagnose by hand.
 global:
   scrape_interval: 5s
   evaluation_interval: 5s
@@ -16,3 +18,10 @@ scrape_configs:
       - targets: ["taskmanager:9249"]
         labels:
           component: taskmanager
+
+  # The broker, via a JMX exporter running as an agent inside it.
+  - job_name: kafka
+    static_configs:
+      - targets: ["kafka:9404"]
+        labels:
+          component: broker

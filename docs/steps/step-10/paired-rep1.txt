@@ -1,0 +1,7 @@
+cores, partitions and parallelism raised together  (2026-08-25T09:00:37Z)
+backlog of 4000000 orders per case, drained with the producer stopped
+
+   2 cores,  2 partitions, parallelism 2 :   20s to drain 4000000 =   200000 orders/sec   peak back-pressure 50%
+   4 cores,  4 partitions, parallelism 4 :   23s to drain 4000000 =   173913 orders/sec   peak back-pressure 89%
+
+written to docs/steps/step-10/paired-rep1.txt
