@@ -123,10 +123,28 @@ visible.
 
 ## Cost and teardown
 
-The stack ran for about ninety minutes at roughly $1.70–2.80/hour — three MSK
-brokers, their storage, and one client instance — so the whole exercise cost
-under five dollars. Everything was destroyed afterwards and verified: no
-clusters, no instances, no addresses, empty state.
+Compute came to about **$3.75**: three MSK brokers and their storage for an hour
+and three quarters, a `c5.2xlarge` for the first hour and a `c7i.8xlarge` for the
+last forty minutes.
+
+**Data transfer probably cost more than the compute did, and that was avoidable.**
+The client sat in one availability zone while the three brokers spread across
+three, so roughly two thirds of Kafka traffic crossed an AZ boundary at a cent
+per gigabyte in each direction — and these runs moved hundreds of gigabytes on
+purpose. At an estimated 200–400GB that is **$4–8**, putting the exercise nearer
+**$8–12** in total.
+
+For a throughput test the brokers belong in the client's zone. Spreading them was
+reflexive habit from durable deployments, where it is right; here it bought
+nothing, cost more than the servers, and added a little cross-AZ latency to every
+number above. Worth fixing before this is repeated.
+
+These figures are computed from resource lifetimes and published rates. AWS
+billing data lags about a day, so Cost Explorer showed nothing for the run when
+checked immediately afterwards.
+
+Everything was destroyed and verified: no clusters, no instances, no addresses,
+empty state.
 
 MSK cannot be suspended. There is no pause: you either have a cluster and pay for
 it, or delete it and wait 25–30 minutes to rebuild. Only the client instance can

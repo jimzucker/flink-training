@@ -92,3 +92,24 @@ rejected outright — worth knowing before planning a migration around a tuning.
 JMX beans under different names, so each environment records into a shared `ft:`
 vocabulary and the panels query that. Per-topic disk is the one honest
 casualty: MSK does not publish it.
+
+
+### Cost, corrected
+
+Reported at the time as "under five dollars". That was wrong: it counted the
+servers and forgot the network.
+
+| | |
+|---|---|
+| compute (brokers, storage, two instances) | ~$3.75 |
+| cross-AZ data transfer, estimated | ~$4–8 |
+| **total, estimated** | **~$8–12** |
+
+The client ran in one availability zone and the brokers in three, so about two
+thirds of Kafka traffic crossed a zone boundary at a cent per gigabyte each way,
+on a test built to move hundreds of gigabytes. Spreading brokers across zones is
+right for a durable cluster and wrong for this — it cost more than the machines
+and added cross-AZ latency to every measurement.
+
+Figures are computed from resource lifetimes and published rates; AWS billing
+lags roughly a day, so actuals were not available when the stack came down.
