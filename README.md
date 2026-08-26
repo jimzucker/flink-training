@@ -420,20 +420,28 @@ the same boundary and so shares an age.
 
 ## Scale results
 
-Parallelism, partitions and cores raised together against a 12,000,000-order
-backlog:
+Draining an 88,678,174-order backlog -- larger than the machine's memory, so the
+reads come off disk rather than page cache -- with 4 partitions and the producer
+stopped, so nothing varies but parallelism:
 
-| partitions / parallelism | orders/sec | peak back-pressure |
+| | p=2 | p=4 |
 |---|---|---|
-| 1 / 1 / 1 | 162,280 | 47% |
-| **2 / 2 / 2** | **200,148** | 56% |
-| 4 / 4 / 4 | 181,818 | 86% |
+| time to drain | 726 s | **623 s** |
+| orders/sec | 122,146 | **142,340** |
+| allocations/sec | 488,584 | **569,360** |
+| records written/sec | 610,730 | **711,700** |
+| back-pressure | 20–21% | 42–43% |
 
-**1 → 2 is a real gain of about 23%; 2 → 4 is a real loss of about 9%.** The
-ceiling is one broker's write path at ~750,000 records/sec, and each order
-becomes five records -- one position on the symbol side, four allocations on the
-account side. Past parallelism 2 the extra subtasks find no capacity and only
-queue harder, which the back-pressure column shows going from 56% to 86%.
+**Parallelism 4 is 16.5% faster than parallelism 2.** The ceiling is one broker's
+write path at ~750,000 records/sec, and each order becomes five records -- one
+position on the symbol side, four allocations on the account side -- so p=4 runs
+at about 95% of what the broker will accept. The curve flattens as it approaches
+that rather than reversing.
+
+Smaller drains are not to be trusted here: a 12-million-order topic fits in the
+machine's RAM, so the fill leaves it in page cache and the drain reads from
+memory. Those runs had 2 → 4 as a regression, which the larger backlog
+contradicts.
 
 
 Both cases the requirements specify pass.

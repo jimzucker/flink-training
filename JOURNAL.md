@@ -19,7 +19,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
 | 08 | Local Docker demo | full | `step-08-docker-local` | in review |
 | 09 | Latency | full | `step-09-latency` | in review |
-| 10 | Scale | full | `step-10-scale` | in review |
+| 10 | Scale | full | `step-10-scale` | done |
 | 11 | AWS | full | `step-11-aws` | not started |
 | 12 | Final demo | full | `step-12-final-deck` | not started |
 
@@ -1099,6 +1099,30 @@ thread and meaningless in four. It is now a function of the sequence number
 alone, so the same seed gives the same trades at any thread count. Verified: two
 runs at two threads and two runs at four all produce the identical topic, and the
 hash is the same at both thread counts.
+
+### The measurement that settles it
+
+Draining the same 88,678,174-order backlog -- larger than the machine's RAM, so
+reads come off disk rather than page cache -- with 4 partitions, the producer
+stopped, and nothing varying but parallelism:
+
+| | p=2 | p=4 |
+|---|---|---|
+| time to drain | 726 s | **623 s** |
+| orders/sec | 122,146 | **142,340** |
+| allocations/sec | 488,584 | **569,360** |
+| records written/sec | 610,730 | **711,700** |
+| back-pressure | 20–21% | 42–43% |
+
+**Parallelism 4 is 16.5% faster than parallelism 2.** This supersedes the earlier
+12-million-record runs, which recorded 2 → 4 as a regression: that topic fitted
+in RAM, so those drains were reading from cache. p=2 at 20% back-pressure was not
+pressing the broker hard enough to limit itself; p=4 pushed until the sinks
+pushed back.
+
+The curve flattens rather than reversing, which is what a fixed external ceiling
+looks like -- p=4 writes 711,700 records/sec against the 750,000 the broker
+accepts.
 
 ### What would prove scaling
 

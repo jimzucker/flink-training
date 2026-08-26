@@ -412,3 +412,76 @@ Parallel generation gives that up unless it is an opt-in flag.
 | broker io / network threads | 16 / 8 |
 | broker socket buffers | 1MB |
 | `queued.max.requests` | 1000 |
+
+## Round 7
+
+### Feedback
+
+> start flink before producer we want to see how flink does over a 3 min test of
+> generator see how quickly it falls behind
+
+> what if we take a diff approach. queue up the data volume then start flink
+
+> lets do the same test with p=2 and compare to the p=4 we just ran
+
+### What the live runs showed
+
+Job started first, generator after, which is the arrangement a demo uses:
+
+| | offered | Flink consumed | lag at the end |
+|---|---|---|---|
+| 1 thread, uncompressed | 85,132/s | 85,132/s | **0 — kept up** |
+| 4 threads, lz4 | 224,501/s | **13,787/s** | **83,231,947, growing** |
+
+Neither measures Flink. The first generator was throttled by CPU contention to
+85,000/sec, well under what Flink takes, so Flink absorbed it all. The second
+took the cores Flink needed: Flink ran at 13,787/sec against the 142,340 it
+manages with the machine to itself, and latency reached 374 seconds. Starved, not
+outrun.
+
+**On one machine a live producer either cannot outrun Flink or starves it.**
+There is no setting in between, which is the same conclusion the drains reach
+from the other direction.
+
+### Queueing first, then starting Flink
+
+Exactly the right instinct, and it is what the drain method does. Run against the
+88,678,174 orders the saturated run left behind, with nothing varying but
+parallelism:
+
+| same backlog, 4 partitions | p=2 | p=4 |
+|---|---|---|
+| time to drain | 726 s | **623 s** |
+| orders/sec | 122,146 | **142,340** |
+| allocations/sec | 488,584 | **569,360** |
+| records written/sec | 610,730 | **711,700** |
+| back-pressure | 20–21% | 42–43% |
+
+**Parallelism 4 is 16.5% faster than parallelism 2**, over ten minutes, on
+identical data.
+
+### A correction this forces
+
+Earlier rounds recorded 2 → 4 as a 9% regression. That came from 12-million-order
+drains lasting about a minute, and a 12-million-record topic fits in the VM's
+RAM -- the fill left it in page cache and the drain read from memory. At 88
+million the reads come off disk and more subtasks means more concurrent read
+streams, which is where the parallelism earns its keep.
+
+The back-pressure column is the tell: **p=2 at 20% was not pressing the broker
+hard enough to back-pressure itself**, so its limit was its own two subtasks. p=4
+pushed until the sinks pushed back and moved 16.5% more.
+
+So the curve flattens rather than reversing, which is what approaching a fixed
+external ceiling looks like -- p=4's 711,700 records/sec is about 95% of the
+750,000 the broker accepts.
+
+Left open deliberately: the 1 → 2 figure of +23% is still from the small
+cache-warm runs and is not comparable. Completing the curve means draining the
+same 88-million backlog at parallelism 1.
+
+### Outcome
+
+Approved and merged. Step 10 closes with the two required cases passing, a
+measured ceiling and a measured cause, and the scaling claim supported at
+2 → 4 on data larger than memory.

@@ -149,52 +149,68 @@ partition at parallelism 1 sustains 148,000 orders/sec**, which is
 765,000 records/sec written, against the 750,000 the broker was measured to
 accept. Everything saturates the same thing.
 
-### Resolved: 1, 2 and 4, replicated
+### Resolved on a backlog larger than memory
 
-> **A core budget was attempted here and did not hold.** The harness set
-> `TASKMANAGER_CPUS` as a prefix on one `docker compose` command, and the
-> `run --rm submit` that followed could not see it, so compose computed a
-> different desired config for the TaskManager and recreated it with no limit --
-> before every drain. Every figure below was therefore measured with the
-> TaskManager free to use the whole machine. Partitions and parallelism were
-> applied correctly; only the cores column was fiction, and it has been removed.
->
-> The idea is a dead end regardless, and cheaply so: with the limit genuinely
-> enforced, a quarter of a core drains **19 orders/sec**, not the 138,000 the
-> broken harness reported. There is no usable band between a JVM that cannot run
-> its own garbage collector and network stack, and a core count already above the
-> broker's ceiling. `scripts/scale-paired.sh` now exports the variable and
-> refuses to report a number unless the container's `NanoCpus` matches what was
-> asked for.
+Every drain above used 4 to 12 million records, which fits in the VM's RAM. The
+fill leaves the topic in page cache and the drain then reads from memory, so what
+those runs measured was partly the cache. Repeated against **88,678,174 orders**,
+far larger than RAM, with nothing varying but parallelism:
 
-The paired rows above rest on single runs, and a 4,000,000-order drain takes
-about 20 seconds while the sampler ticks every 2 -- roughly 10% resolution, which
-cannot separate them. Repeated against a 12,000,000-order backlog so a drain
-lasts a minute and the resolution is nearer 3%:
+| same 88.7M-order backlog, 4 partitions | p=2 | p=4 |
+|---|---|---|
+| time to drain | 726 s | **623 s** |
+| orders/sec | 122,146 | **142,340** |
+| allocations/sec | 488,584 | **569,360** |
+| records written/sec | 610,730 | **711,700** |
+| back-pressure | 20–21% | 42–43% |
 
-| partitions / parallelism | orders/sec | mean | peak back-pressure |
+**Parallelism 4 is 16.5% faster than parallelism 2**, over ten minutes, on
+identical data.
+
+This supersedes the earlier reading from the 12-million-record runs, which had
+2 → 4 as a 9% *regression*. Those drains lasted about a minute against a topic
+the machine could hold entirely in cache; at 88 million the reads come off disk,
+and more subtasks means more concurrent read streams.
+
+The back-pressure column is the tell. **p=2 sat at 20% and p=4 at 42%**: two
+subtasks were not pressing the broker hard enough to back-pressure themselves, so
+the limit was their own capacity rather than the broker's. Four pushed until the
+sinks pushed back, and moved 16.5% more in the process.
+
+So the curve flattens rather than reversing, which is what approaching a fixed
+external ceiling looks like: p=4's 711,700 records/sec is about 95% of the
+750,000 the broker was measured to accept.
+
+One caveat kept deliberately. The **1 → 2 figure of +23% is still from the small,
+cache-warm runs** and is not comparable to the two above. Completing the curve
+means draining this same 88-million backlog at parallelism 1, which has not been
+done.
+
+### What a live generator can and cannot show
+
+Two three-minute runs with the job started first and the generator started after,
+which is the arrangement a demo actually uses:
+
+| | offered | Flink consumed | lag after the run |
 |---|---|---|---|
-| 1 / 1 / 1 | 157,894 · 166,666 | 162,280 | 47–48% |
-| **2 / 2 / 2** | 193,548 · 200,000 · 206,896 | **200,148** | 54–59% |
-| 4 / 4 / 4 | 181,818 | 181,818 | 80–92% |
+| 1 thread, uncompressed | 85,132/s | 85,132/s | **0 — kept up** |
+| 4 threads, lz4 | 224,501/s | **13,787/s** | **83,231,947 and growing** |
 
-Two results, and they point in opposite directions:
+Neither measures Flink. In the first the generator was throttled by contention to
+well under what Flink can take, so Flink absorbed everything with headroom to
+spare. In the second the generator's four threads took the cores Flink needed,
+and Flink ran at 13,787/sec against the 142,340 it manages with the machine to
+itself -- starved, not outrun. Latency reached 374 seconds and back-pressure
+pegged at 100%.
 
-- **1 → 2 is a real gain of about 23%.** Well outside the resolution, repeatable,
-  and the back-pressure barely moves (47% to 56%). This is parallelism working.
-- **2 → 4 is a real loss of about 9%**, and back-pressure jumps to 80–92%. The
-  extra subtasks find no extra capacity; they queue harder against the same
-  broker. Doubling again would double the queueing and nothing else.
+**On one machine a live producer either cannot outrun Flink or starves it, with
+nothing in between.** That is the same conclusion the drains reach, from the
+other direction, and it is why the backlog method is the one to trust.
 
-So the ceiling is not a wall the pipeline runs into at some parallelism, it is a
-wall it is already leaning on at parallelism 2. Past that, more parallelism costs
-throughput.
-
-That is a better demonstration than a clean doubling would have been. It shows
-scaling working, the point where it stops, and the price of asking for more after
-it stops -- all three from the same measurement, and all three explained by one
-number: the broker accepts about 750,000 records/sec, and each order is five of
-them.
+The saturated run is still worth keeping as a demo exhibit -- lag climbing,
+back-pressure red, latency in minutes is exactly what saturation looks like -- as
+long as it is narrated as offered load exceeding what the machine can do, rather
+than as Flink's ceiling.
 
 ### More brokers made it worse
 
