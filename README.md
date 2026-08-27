@@ -418,6 +418,32 @@ specification rather than a delay. Its figures step rather than spread — p95, 
 and the maximum are the same number, because every key in a window is emitted at
 the same boundary and so shares an age.
 
+## What parallelism buys, and where it stops
+
+One unit is one core and one degree of parallelism, bought together — a KPU in
+Managed Service for Apache Flink. On a laptop with one broker:
+
+| units | orders/sec | vs previous |
+|---|---|---|
+| 1 | 31,109 | — |
+| 2 | 82,760 | **2.66×** |
+| 4 | 149,164 | **1.80×** |
+| 8 | 154,543 | **1.04×** |
+
+```bash
+scripts/scale-units.sh
+```
+
+**Your first vCPU does not do a full vCPU of work** — the JVM's collector, the
+Netty stack and four Kafka clients all want it — which is why the first doubling
+returns more than 2×. Then it scales roughly linearly. Then it stops: eight cores
+buy three and a half percent over four, because 149,164 orders/sec is 745,820
+records/sec against the ~750,000 a single broker accepts. Each order becomes five
+records.
+
+Moving the broker moves the ceiling: step 11 measured three MSK brokers taking
+1,300,265 records/sec where one local broker took 711,700.
+
 ## Scale results
 
 Draining an 88,678,174-order backlog -- larger than the machine's memory, so the

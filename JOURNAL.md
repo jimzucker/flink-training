@@ -20,8 +20,9 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 08 | Local Docker demo | full | `step-08-docker-local` | in review |
 | 09 | Latency | full | `step-09-latency` | in review |
 | 10 | Scale | full | `step-10-scale` | done |
-| 11 | AWS | full | `step-11-aws` | in review |
-| 12 | Final demo | full | `step-12-final-deck` | not started |
+| 11 | AWS | full | `step-11-aws` | done |
+| 12 | Scaling demo | full | `step-12-scaling-demo` | in progress |
+| 13 | Final demo | full | `step-13-final-deck` | not started |
 
 The local Docker stack is stood up early and grown one service at a time, rather
 than assembled whole near the end. Everything runs against real Kafka and a real

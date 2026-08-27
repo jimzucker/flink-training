@@ -1,0 +1,15 @@
+what a unit of parallelism buys  (2026-08-27, laptop, 8 cores, one broker)
+a unit is one core and one degree of parallelism, bought together
+4 partitions, checkpoint 5000ms, 60s window after 180s warm-up
+
+  50,000,000 orders queued (25,000,000 for the 1 and 2 unit cases)
+
+   units     orders/sec    vs prev
+       1         31,109          -
+       2         82,760      2.66x
+       4        149,164      1.80x
+       8        154,543      1.04x
+
+The 4 and 8 unit cases consumed 28.9M and 27.2M of 50M respectively, so neither
+ran out of data inside its window. An earlier 4-unit run against a 25M backlog
+exhausted it mid-window and read 110,987 -- understated, and discarded.
