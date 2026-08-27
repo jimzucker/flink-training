@@ -1,15 +1,15 @@
-what a unit of parallelism buys  (2026-08-27, laptop, 8 cores, one broker)
+what a unit of parallelism buys  (2026-08-27T10:42:50Z)
 a unit is one core and one degree of parallelism, bought together
-4 partitions, checkpoint 5000ms, 60s window after 180s warm-up
+8 partitions, checkpoint 5000ms, 60s window after 240s warm-up
 
-  50,000,000 orders queued (25,000,000 for the 1 and 2 unit cases)
+-- filling 50000000 orders with the job stopped
+   50000000 orders queued
 
-   units     orders/sec    vs prev
-       1         31,109          -
-       2         82,760      2.66x
-       4        149,164      1.80x
-       8        154,543      1.04x
+   units    orders/sec   vs prev    flink   broker   back-pr
+                                    cores    cores    essure
+       1         30505         -     1.00     0.10    24.10%
+       2         65721     2.15x     2.00     0.25    28.50%
+       4        129056     1.96x     3.94     0.39    51.60%
+       8        151969     1.18x     4.98     0.48    72.70%
 
-The 4 and 8 unit cases consumed 28.9M and 27.2M of 50M respectively, so neither
-ran out of data inside its window. An earlier 4-unit run against a 25M backlog
-exhausted it mid-window and read 110,987 -- understated, and discarded.
+written to docs/steps/step-12/units.txt

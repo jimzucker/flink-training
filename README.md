@@ -421,25 +421,29 @@ the same boundary and so shares an age.
 ## What parallelism buys, and where it stops
 
 One unit is one core and one degree of parallelism, bought together — a KPU in
-Managed Service for Apache Flink. On a laptop with one broker:
+Managed Service for Apache Flink. On a laptop with one broker, eight partitions
+throughout:
 
-| units | orders/sec | vs previous |
-|---|---|---|
-| 1 | 31,109 | — |
-| 2 | 82,760 | **2.66×** |
-| 4 | 149,164 | **1.80×** |
-| 8 | 154,543 | **1.04×** |
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
+| 2 | 65,721 | **2.15×** | 2.00 | 0.25 | 28.5% |
+| 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
+| 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
 
 ```bash
 scripts/scale-units.sh
 ```
 
-**Your first vCPU does not do a full vCPU of work** — the JVM's collector, the
-Netty stack and four Kafka clients all want it — which is why the first doubling
-returns more than 2×. Then it scales roughly linearly. Then it stops: eight cores
-buy three and a half percent over four, because 149,164 orders/sec is 745,820
-records/sec against the ~750,000 a single broker accepts. Each order becomes five
-records.
+Up to four units Flink uses every core it is given and parallelism converts
+straight into throughput. At eight it reaches only 4.98 of 8 while back-pressure
+hits 72.7% — the subtasks are waiting, not computing.
+
+**And the broker is at 0.48 cores while being the thing in the way.** It has run
+out of write throughput, not CPU: 151,969 orders/sec is 759,845 records/sec
+against the ~750,000 one broker accepts, because each order becomes five records.
+A broker that looks asleep can still be the ceiling, and only the two CPU columns
+beside the throughput tell you which it is.
 
 Moving the broker moves the ceiling: step 11 measured three MSK brokers taking
 1,300,265 records/sec where one local broker took 711,700.

@@ -18,32 +18,44 @@ broker was the ceiling.
 
 ## The result, on one laptop with one broker
 
-| units | orders/sec | vs previous |
-|---|---|---|
-| 1 | 31,109 | — |
-| 2 | 82,760 | **2.66×** |
-| 4 | 149,164 | **1.80×** |
-| 8 | 154,543 | **1.04×** |
+Eight partitions throughout, 50,000,000 orders queued, a 60-second window after a
+240-second warm-up:
 
-Four beats, each with a reason you can point at on the dashboard.
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
+| 2 | 65,721 | **2.15×** | 2.00 | 0.25 | 28.5% |
+| 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
+| 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
 
-**One core is mostly overhead.** The JVM's garbage collector, the Netty stack and
-four Kafka clients all want that core, so the first unit spends much of itself on
-housekeeping. This is why the first doubling returns 2.66× rather than 2× — the
-second core is nearly all pipeline. It is also worth saying out loud when someone
-is sizing KPUs: **your first vCPU does not do a full vCPU of work.**
+It doubles, doubles again, then stops. The resource columns are there so the last
+step can be attributed rather than argued about, and they are what make this
+demo honest.
 
-**Then it scales.** Two to four returns 1.80×, near enough linear, and this is the
-part people expect.
+**Up to four units, Flink is the constraint and parallelism converts directly
+into throughput.** Flink uses every core it is given -- 1.00, 2.00, 3.94 of 1, 2
+and 4 -- and the broker sits under half a core throughout.
 
-**Then it stops.** Four to eight returns 1.04% — three and a half percent for
-double the cores. The broker is full: 149,164 orders/sec is 745,820 records/sec,
-against the ~750,000 a single broker was independently measured to accept in step
-10. Each order becomes five records, so the pipeline reaches the broker's ceiling
-at about 150,000 orders/sec no matter how much CPU it is given.
+**At eight units Flink cannot use what it was given.** It reaches 4.98 of 8 cores
+while back-pressure climbs to 72.7%: the subtasks are not computing, they are
+waiting. Adding cores past this point buys nothing because cores were never what
+was short.
 
-That last beat is the one worth having. Most scaling demos stop after the second
-and leave the audience believing throughput is bought with parallelism alone.
+**And it is not the broker's CPU either**, which is the part worth pausing on.
+The broker is at 0.48 cores -- nearly idle -- while being the thing in the way.
+What it has run out of is *write throughput*: 151,969 orders/sec is **759,845
+records/sec**, against the ~750,000 a single broker was independently measured to
+accept in step 10. Each order becomes five records. The limit is disk and page
+cache, not computation, so a broker that looks asleep can still be the ceiling.
+
+"The broker is full" would have been the wrong way to say it, and was how this
+was first written: it implies a busy broker. The two cases are only
+distinguishable with both CPU columns beside the throughput, which is why they
+are in the table.
+
+Partitions are ruled out by construction. They are held at eight for every case,
+so even the eight-unit run had a partition per subtask -- varying them with the
+units would have made this step unattributable.
 
 ## What it costs to run
 

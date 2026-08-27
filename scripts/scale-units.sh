@@ -22,6 +22,11 @@ cd "$(dirname "$0")/.." || exit 1
 COMPOSE="${COMPOSE:-docker/compose.yml}"
 UNITS="${UNITS:-1 2 4 8}"
 BACKLOG="${BACKLOG:-50000000}"
+# Held constant across every case, and at least the largest unit count. Varying
+# it with the units would change two things at once: a flat step could then be a
+# broker at its limit or simply too few partitions to read from, and the run
+# could not tell you which. Eight costs nothing at one unit, where a single
+# subtask reads all eight.
 PARTITIONS="${PARTITIONS:-8}"
 WARMUP_SECONDS="${WARMUP_SECONDS:-180}"
 WINDOW_SECONDS="${WINDOW_SECONDS:-60}"
@@ -34,12 +39,18 @@ say() { echo "$@" | tee -a "$OUT"; }
 
 # Locally the broker is a container to exec into; on MSK there is nothing to exec
 # into, so the CLI comes from a throwaway container instead.
+# Two addresses, not one. The CLI runs inside a container on the compose network
+# and reaches the broker by service name; the generator runs on this host and
+# cannot resolve that name at all. Using one for both fills nothing and reports
+# "0 orders queued" without an error anywhere.
 if docker ps --format '{{.Names}}' 2>/dev/null | grep -qx ft-kafka; then
-  BOOT="${BOOTSTRAP_SERVERS:-kafka:19092}"
+  BOOT="${BOOTSTRAP_SERVERS:-kafka:19092}"          # from inside the network
+  HOST_BOOT="${HOST_BOOTSTRAP_SERVERS:-localhost:9092}"   # from this host
   kcli() { local b="$1"; shift; docker exec -e KAFKA_OPTS= ft-kafka "/opt/kafka/bin/$b" "$@"; }
 else
   : "${BOOTSTRAP_SERVERS:?set BOOTSTRAP_SERVERS when there is no local broker}"
   BOOT="$BOOTSTRAP_SERVERS"
+  HOST_BOOT="${HOST_BOOTSTRAP_SERVERS:-$BOOTSTRAP_SERVERS}"
   kcli() { local b="$1"; shift; docker run --rm --network host apache/kafka:3.9.2 "/opt/kafka/bin/$b" "$@"; }
 fi
 
@@ -76,14 +87,23 @@ say ""
 cancel_all
 recreate "orders prices $SINKS"
 say "-- filling $BACKLOG orders with the job stopped"
-BOOTSTRAP_SERVERS="$BOOT" GENERATOR_THREADS=4 COMPRESSION_TYPE=lz4 BATCH_SIZE=262144 \
+BOOTSTRAP_SERVERS="$HOST_BOOT" GENERATOR_THREADS=4 COMPRESSION_TYPE=lz4 BATCH_SIZE=262144 \
   TRADES_PER_SECOND=4000000 PRICES_PER_SECOND=200000 \
   MAX_TRADES="$BACKLOG" MAX_PRICES=$(( BACKLOG / 100 )) \
   java -jar generators/target/generators.jar >/dev/null 2>&1
 queued=$(count orders)
 say "   $queued orders queued"
+if [ "$queued" -lt "$BACKLOG" ]; then
+  say "   expected $BACKLOG; the fill did not complete, so nothing below would mean anything"
+  exit 3
+fi
 say ""
-printf "  %6s %14s %10s\n" units "orders/sec" "vs prev" | tee -a "$OUT"
+# Each row carries what it cost, so a flat step can be attributed rather than
+# guessed at: whether Flink ran out of cores, or the broker did, or neither and
+# the job simply queued.
+printf "  %6s %13s %9s %8s %8s %9s\n" \
+  units "orders/sec" "vs prev" "flink" "broker" "back-pr" | tee -a "$OUT"
+printf "  %6s %13s %9s %8s %8s %9s\n" "" "" "" "cores" "cores" "essure" | tee -a "$OUT"
 
 prev=0
 for n in $UNITS; do
@@ -122,12 +142,26 @@ for n in $UNITS; do
   fi
 
   rate=$(( (b - a) / WINDOW_SECONDS ))
+  if [ "$rate" -le 0 ]; then
+    say "  ${n}: no progress in the window -- the warm-up was too short to clear the cold start"
+    continue
+  fi
+
+  promq() {
+    curl -sfG 'http://localhost:9090/api/v1/query' --data-urlencode "query=$1" 2>/dev/null \
+      | grep -o '"value":\[[0-9.]*,"[0-9.e+-]*"' | sed 's/.*,"//' | head -1
+  }
+  fmt() { awk -v v="${1:-0}" 'BEGIN { printf "%.2f", v }'; }
+  flink_cores=$(fmt "$(promq 'rate(flink_taskmanager_Status_JVM_CPU_Time[2m]) / 1e9')")
+  broker_cores=$(fmt "$(promq 'ft:broker_cpu_cores')")
+  backpressure=$(fmt "$(promq 'max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10')")
   if [ "$prev" -gt 0 ]; then
     ratio=$(awk -v r="$rate" -v p="$prev" 'BEGIN { printf "%.2fx", r/p }')
   else
     ratio="-"
   fi
-  printf "  %6s %14s %10s\n" "$n" "$rate" "$ratio" | tee -a "$OUT"
+  printf "  %6s %13s %9s %8s %8s %8s%%\n" \
+    "$n" "$rate" "$ratio" "$flink_cores" "$broker_cores" "$backpressure" | tee -a "$OUT"
   prev=$rate
 done
 
