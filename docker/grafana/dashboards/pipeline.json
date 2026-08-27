@@ -2301,8 +2301,8 @@
     {
       "id": 42,
       "type": "timeseries",
-      "title": "Disk \u2014 log size per topic",
-      "description": "How much disk each topic holds. The account topic dominates, because every order becomes four allocations there against one position on the symbol side -- the same four-to-one that makes the write path the ceiling shows up here as four-to-one on disk.",
+      "title": "Disk \u2014 broker storage in use",
+      "description": "Per topic where the broker publishes it, which locally shows the account topic at roughly four times the symbol topic -- the same four-to-one that makes the write path the ceiling, visible on disk. MSK's exporter does not publish per-topic log size, so on AWS only the total is available: how much disk, but not which topic is spending it.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
@@ -2346,8 +2346,17 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (topic) (kafka_log_size_bytes{topic!~\"__.*\"})",
+          "expr": "ft:broker_log_size_bytes",
           "legendFormat": "{{topic}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "ft:broker_disk_used_bytes",
+          "legendFormat": "all topics"
         }
       ]
     },
@@ -2399,7 +2408,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(kafka_broker_bytesinpersec_total[1m])",
+          "expr": "ft:broker_bytes_in_per_sec",
           "legendFormat": "in"
         },
         {
@@ -2408,7 +2417,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(kafka_broker_bytesoutpersec_total[1m])",
+          "expr": "ft:broker_bytes_out_per_sec",
           "legendFormat": "out"
         }
       ]
@@ -2463,17 +2472,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "kafka_request_handler_avg_idle_percent * 100",
+          "expr": "ft:broker_request_handler_idle_percent",
           "legendFormat": "request handlers idle"
-        },
-        {
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "kafka_network_processor_avg_idle_percent * 100",
-          "legendFormat": "network processors idle"
         }
       ]
     },
@@ -2608,7 +2608,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "rate(kafka_jvm_process_cpu_time_ns_total[2m]) / 1e9",
+          "expr": "ft:broker_cpu_cores",
           "legendFormat": ""
         }
       ]
@@ -2673,7 +2673,7 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "kafka_jvm_heap_used_bytes / kafka_jvm_heap_max_bytes * 100",
+          "expr": "ft:broker_heap_used_percent",
           "legendFormat": ""
         }
       ]

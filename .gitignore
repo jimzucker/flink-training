@@ -35,3 +35,12 @@ logs/
 pom.xml.versionsBackup
 replay_pid*.log
 target/
+
+# Terraform state holds resource ids and can hold secrets; the tfvars file
+# carries the operator's own address.
+aws/.terraform/
+aws/.terraform.lock.hcl
+aws/*.tfstate
+aws/*.tfstate.*
+aws/terraform.tfvars
+aws/tfplan

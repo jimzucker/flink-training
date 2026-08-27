@@ -1,0 +1,33 @@
+# The MSK half of the vocabulary defined in rules-local.yml. Same recorded names,
+# derived from the names MSK's own exporter publishes.
+groups:
+  - name: broker-vocabulary
+    interval: 5s
+    rules:
+      # MSK publishes a rate directly rather than a counter, and once per topic
+      # per broker. Internal topics are excluded so this counts the pipeline's
+      # traffic and not the canary's.
+      - record: ft:broker_bytes_in_per_sec
+        expr: sum(kafka_server_BrokerTopicMetrics_OneMinuteRate{name="BytesInPerSec",topic!="",topic!~"__.*"})
+
+      - record: ft:broker_bytes_out_per_sec
+        expr: sum(kafka_server_BrokerTopicMetrics_OneMinuteRate{name="BytesOutPerSec",topic!="",topic!~"__.*"})
+
+      # No equivalent for ft:broker_log_size_bytes. MSK's exporter config does not
+      # publish kafka.log:type=Log,name=Size, so per-topic disk is simply not
+      # available -- the panel falls back to the brokers' filesystem usage, which
+      # answers "how much disk" but not "which topic is using it".
+      - record: ft:broker_disk_used_bytes
+        expr: sum(node_filesystem_size_bytes{mountpoint="/kafka/datalogs"} - node_filesystem_avail_bytes{mountpoint="/kafka/datalogs"})
+
+      # Already a 0-1 ratio here, and honest: the local metric reads over 100%,
+      # which is a defect on that side rather than a difference in the broker.
+      - record: ft:broker_request_handler_idle_percent
+        expr: avg(kafka_server_KafkaRequestHandlerPool_FiveMinuteRate{name="RequestHandlerAvgIdlePercent"}) * 100
+
+      # From the node exporter: the whole broker host, not just its JVM.
+      - record: ft:broker_cpu_cores
+        expr: sum(rate(node_cpu_seconds_total{mode!="idle"}[2m]))
+
+      - record: ft:broker_heap_used_percent
+        expr: avg(java_lang_Memory_HeapMemoryUsage_used / java_lang_Memory_HeapMemoryUsage_max) * 100
