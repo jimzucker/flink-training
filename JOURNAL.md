@@ -11,17 +11,18 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 |---|---|---|---|---|
 | 00 | Scaffold | — | `step-00-scaffold` | done |
 | 01 | Pipeline design | — | `step-01-pipeline-design` | done |
-| 02 | Generators | Kafka | `step-02-generators` | in review |
+| 02 | Generators | Kafka | `step-02-generators` | done |
 | 03 | CI | Kafka | `step-03-ci` | done |
-| 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | in review |
-| 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | in review |
-| 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | in review |
-| 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
-| 08 | Local Docker demo | full | `step-08-docker-local` | in review |
-| 09 | Latency | full | `step-09-latency` | in review |
+| 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | done |
+| 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | done |
+| 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | done |
+| 07 | Correctness demo | full | `step-07-correctness-demo` | done |
+| 08 | Local Docker demo | full | `step-08-docker-local` | done |
+| 09 | Latency | full | `step-09-latency` | done |
 | 10 | Scale | full | `step-10-scale` | done |
-| 11 | AWS | full | `step-11-aws` | in review |
-| 12 | Final demo | full | `step-12-final-deck` | not started |
+| 11 | AWS | full | `step-11-aws` | done |
+| 12 | Scaling demo | full | `step-12-scaling-demo` | in progress |
+| 13 | Final demo | full | `step-13-final-deck` | not started |
 
 The local Docker stack is stood up early and grown one service at a time, rather
 than assembled whole near the end. Everything runs against real Kafka and a real
@@ -1202,3 +1203,56 @@ Details: [`docs/steps/step-11/aws.md`](../docs/steps/step-11/aws.md)
 ### Review
 
 _Pending._ Full exchange: [`docs/reviews/step-11.md`](../docs/reviews/step-11.md)
+
+
+---
+
+## Step 12 — Scaling demo
+
+- **Branch:** `step-12-scaling-demo`
+- **Prompt:** The infrastructure steps 10 and 11 needed makes a bad story and
+  scares people. Find a better way to show that Flink pipelines scale, locally
+  and on AWS.
+
+### The key fix
+
+A **unit** is one core and one degree of parallelism, bought together — a KPU in
+Managed Service for Apache Flink. Step 10 varied parallelism while the task
+manager held all eight cores, so Flink already had every core it could use and
+the answer was flat. **You can only demonstrate that something scales when it is
+the thing that is constrained**, and capping the cores is how Flink becomes it.
+
+### Results
+
+Eight partitions held constant, 50,000,000 orders queued, a 60s window after a
+240s warm-up, on one laptop with one broker:
+
+| units | orders/sec | vs prev | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
+| 2 | 65,721 | **2.15×** | 2.00 | 0.25 | 28.5% |
+| 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
+| 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
+
+It doubles, doubles again, then stops — and the resource columns say why. At
+eight units Flink uses only 4.98 of the eight cores it was given while
+back-pressure reaches 72.7%: the subtasks are waiting, not computing. The broker
+is at 0.48 cores while being the thing in the way, because what it has run out of
+is write throughput rather than CPU — 759,845 records/sec against the ~750,000 it
+was measured to accept.
+
+The reported number is **orders/sec**, counted as records arriving in
+`positions-by-symbol`, which is exactly one per order. Allocations are four times
+that and total records written five times.
+
+### What it costs
+
+A laptop, one broker, `docker compose up`, four minutes per case. The AWS work
+from steps 10 and 11 becomes a one-slide appendix — *the ceiling is the broker,
+and here is what moving it costs* — rather than the main event.
+
+Details: [`docs/steps/step-12/scaling-demo.md`](../docs/steps/step-12/scaling-demo.md)
+
+### Review
+
+_Pending._ Full exchange: [`docs/reviews/step-12.md`](../docs/reviews/step-12.md)

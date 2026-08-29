@@ -231,10 +231,10 @@ overrides on `docker compose`, so a demo can change one without touching a file.
 | Setting | Default | Why this value |
 |---|---|---|
 | brokers | **1** | three were tried and halved throughput on one machine; `docker/compose.cluster.yml` repeats that measurement |
-| `PARTITIONS` | **12** | divisible by three and four, so any parallelism the scale test uses gets whole partitions. Measured no worse than 4 at every parallelism |
+| `PARTITIONS` | `4` | one per symbol key, and the assignment's shape. `scripts/scale-units.sh` raises it to 8 for its own runs so no unit count is short of source subtasks |
 | `PARALLELISM` | `2` | the assignment's baseline; the scale case raises it to 4 |
 | `TASK_SLOTS` | `8` | two jobs at parallelism 4 |
-| `TASKMANAGER_CPUS` | `0` | no limit. The scaling demo sets 1, 2 and 4 — naming a number as the default breaks on any machine with fewer cores |
+| `TASKMANAGER_CPUS` | `0` | no limit. `scripts/scale-units.sh` sets 1, 2, 4 and 8 — naming a number as the default breaks on any machine with fewer cores |
 | `WINDOW_MS` | `10000` locally, `60000` in the job | 10s so a demo shows several windows closing; 60s is what the requirements state |
 | `CHECKPOINT_INTERVAL_MS` | `1000` | the floor under visible latency: a record is not readable until its checkpoint commits |
 | `IDLENESS_MS` | `5000` | how long a quiet partition may hold the watermark back |
@@ -244,6 +244,10 @@ overrides on `docker compose`, so a demo can change one without touching a file.
 | `SINK_LINGER_MS` | `10` | Kafka's default of 0 sends a batch as soon as one record is ready, giving the broker many small requests |
 | `SINK_BATCH_SIZE` | `131072` | 128KB, against Kafka's 16KB default |
 | `GENERATOR_START` | `manual` | so a demo starts the data itself rather than finding it already running |
+| `KAFKA_IO_THREADS` | `16` | Kafka's default is 8. Kept for latency, not throughput: measured against the defaults it moved throughput 2.9% and p95 produce latency from 136ms to 14ms |
+| `KAFKA_NETWORK_THREADS` | `8` | Kafka's default is 3 |
+| `KAFKA_SOCKET_BUFFER` | `1048576` | 1MB, against a 100KB default that is smaller than one producer batch |
+| `KAFKA_QUEUED_MAX_REQUESTS` | `1000` | depth of the queue between network threads and handlers |
 
 The last three moved in step 10 and are worth a sentence at the front of a talk:
 they took parallelism 4 from 153,846 to 173,913 orders/sec and its back-pressure
@@ -417,6 +421,36 @@ Market value is measured from the **window close**, since the window is the
 specification rather than a delay. Its figures step rather than spread — p95, p99
 and the maximum are the same number, because every key in a window is emitted at
 the same boundary and so shares an age.
+
+## What parallelism buys, and where it stops
+
+One unit is one core and one degree of parallelism, bought together — a KPU in
+Managed Service for Apache Flink. On a laptop with one broker, eight partitions
+throughout:
+
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
+| 2 | 65,721 | **2.15×** | 2.00 | 0.25 | 28.5% |
+| 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
+| 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
+
+```bash
+scripts/scale-units.sh
+```
+
+Up to four units Flink uses every core it is given and parallelism converts
+straight into throughput. At eight it reaches only 4.98 of 8 while back-pressure
+hits 72.7% — the subtasks are waiting, not computing.
+
+**And the broker is at 0.48 cores while being the thing in the way.** It has run
+out of write throughput, not CPU: 151,969 orders/sec is 759,845 records/sec
+against the ~750,000 one broker accepts, because each order becomes five records.
+A broker that looks asleep can still be the ceiling, and only the two CPU columns
+beside the throughput tell you which it is.
+
+Moving the broker moves the ceiling: step 11 measured three MSK brokers taking
+1,300,265 records/sec where one local broker took 711,700.
 
 ## Scale results
 

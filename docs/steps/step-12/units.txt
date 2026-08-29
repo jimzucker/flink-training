@@ -1,0 +1,15 @@
+what a unit of parallelism buys  (2026-08-27T10:42:50Z)
+a unit is one core and one degree of parallelism, bought together
+8 partitions, checkpoint 5000ms, 60s window after 240s warm-up
+
+-- filling 50000000 orders with the job stopped
+   50000000 orders queued
+
+   units    orders/sec   vs prev    flink   broker   back-pr
+                                    cores    cores    essure
+       1         30505         -     1.00     0.10    24.10%
+       2         65721     2.15x     2.00     0.25    28.50%
+       4        129056     1.96x     3.94     0.39    51.60%
+       8        151969     1.18x     4.98     0.48    72.70%
+
+written to docs/steps/step-12/units.txt
