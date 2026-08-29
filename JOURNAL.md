@@ -11,14 +11,14 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 |---|---|---|---|---|
 | 00 | Scaffold | — | `step-00-scaffold` | done |
 | 01 | Pipeline design | — | `step-01-pipeline-design` | done |
-| 02 | Generators | Kafka | `step-02-generators` | in review |
+| 02 | Generators | Kafka | `step-02-generators` | done |
 | 03 | CI | Kafka | `step-03-ci` | done |
-| 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | in review |
-| 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | in review |
-| 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | in review |
-| 07 | Correctness demo | full | `step-07-correctness-demo` | in review |
-| 08 | Local Docker demo | full | `step-08-docker-local` | in review |
-| 09 | Latency | full | `step-09-latency` | in review |
+| 04 | Part 1 — positions | Kafka, Flink | `step-04-part1-positions` | done |
+| 05 | Part 2 — market value | Kafka, Flink | `step-05-part2-marketvalue` | done |
+| 06 | Observability | Kafka, Flink, Prometheus, Grafana | `step-06-observability` | done |
+| 07 | Correctness demo | full | `step-07-correctness-demo` | done |
+| 08 | Local Docker demo | full | `step-08-docker-local` | done |
+| 09 | Latency | full | `step-09-latency` | done |
 | 10 | Scale | full | `step-10-scale` | done |
 | 11 | AWS | full | `step-11-aws` | done |
 | 12 | Scaling demo | full | `step-12-scaling-demo` | in progress |

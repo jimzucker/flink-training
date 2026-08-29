@@ -111,7 +111,39 @@ the account market values sum to -207900.00, which is what sink 5 reports  OK
 
 Offer this rather than waiting to be asked.
 
-### 5. If someone asks something you cannot answer
+### 5. Scaling, if there is time
+
+Not a live run — each case needs four minutes of warm-up, which is dead air.
+Run `scripts/scale-units.sh` beforehand and show the table:
+
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
+| 2 | 65,721 | 2.15× | 2.00 | 0.25 | 28.5% |
+| 4 | 129,056 | 1.96× | 3.94 | 0.39 | 51.6% |
+| 8 | 151,969 | 1.18× | 4.98 | 0.48 | 72.7% |
+
+A unit is one core and one degree of parallelism, bought together — a KPU in
+Managed Service for Apache Flink. Three things to say, in this order:
+
+1. **It doubles, then doubles again.** Parallelism converts into throughput while
+   Flink is the constraint, and up to four units it uses every core it is given.
+2. **Then it stops.** Eight units returns 1.18×, and Flink reaches only 4.98 of
+   the eight cores it was given — the subtasks are waiting, not computing.
+3. **The broker is at 0.48 cores while being the thing in the way.** It has run
+   out of write throughput, not CPU. 151,969 orders/sec is 759,845 records/sec,
+   against the ~750,000 one broker accepts, because each order becomes five
+   records — one position and four allocations.
+
+The third point is the one worth the time. A broker that looks idle can still be
+the ceiling, and the only way to tell is to have both CPU figures beside the
+throughput.
+
+If asked what it costs to move that ceiling: three MSK brokers took 1,300,265
+records/sec where one local broker took 711,700. That is `docs/steps/step-11/`,
+and it is a slide rather than a demo.
+
+### 6. If someone asks something you cannot answer
 
 Say so, and take it as an action item to change the logging until you can. That
 is the instruction in the requirements, and it is better than an explanation
