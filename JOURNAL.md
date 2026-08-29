@@ -22,7 +22,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 10 | Scale | full | `step-10-scale` | done |
 | 11 | AWS | full | `step-11-aws` | done |
 | 12 | Scaling demo | full | `step-12-scaling-demo` | done |
-| 13 | Final demo | full | `step-13-final-deck` | in review |
+| 13 | Final demo | full | `step-13-final-deck` | done |
 
 The local Docker stack is stood up early and grown one service at a time, rather
 than assembled whole near the end. Everything runs against real Kafka and a real
@@ -1352,5 +1352,19 @@ the canvas, speaker notes present on all of them, and the handout carrying one
 extra prose block per content slide as designed. **Text fitting was not verified**
 — there is no renderer on this machine, so nothing confirms a paragraph does not
 overflow its box. That needs one pass in PowerPoint.
+
+### Review
+
+Four rounds. The first chose the format and the depth — PowerPoint, and both
+versions rather than one. The second caught the deck quoting the specification's
+one-minute window when the demo runs ten seconds, which mattered because slide 4
+exists to commit to numbers the audience will actually see. The third replaced a
+redrawn pipeline with the project's own diagram. The fourth was a documentation
+audit that found the same window error in the README the deck was built from,
+plus three other stale figures.
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-13`.
+
+Full exchange: [`docs/reviews/step-13.md`](../docs/reviews/step-13.md)
 
 Details: [`docs/steps/step-13/deck.md`](../docs/steps/step-13/deck.md)

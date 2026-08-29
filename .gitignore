@@ -44,3 +44,8 @@ aws/*.tfstate
 aws/*.tfstate.*
 aws/terraform.tfvars
 aws/tfplan
+
+# python, for the deck build
+__pycache__/
+*.pyc
+.venv/
