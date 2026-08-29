@@ -18,8 +18,8 @@ EMU_IN = 914400
 SLIDE_W, SLIDE_H = 13.333 * EMU_IN, 7.5 * EMU_IN
 PX_W = 1280.0                      # nominal stage width; everything scales off it
 
-DECKS = [("spine", "Presenter's spine", "docs/steps/step-13/final-demo.pptx"),
-         ("handout", "Standalone handout", "docs/steps/step-13/final-demo-handout.pptx")]
+DECKS = [("spine", "Presenter's spine", "docs/deck/final-demo.pptx"),
+         ("handout", "Standalone handout", "docs/deck/final-demo-handout.pptx")]
 
 
 def pct(v, total):

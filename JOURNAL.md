@@ -1367,4 +1367,8 @@ plus three other stale figures.
 
 Full exchange: [`docs/reviews/step-13.md`](../docs/reviews/step-13.md)
 
+The files: [`docs/deck/`](../docs/deck/) — a deliverable, not per-step evidence,
+so they sit where someone looking for the deck would look rather than under a
+step number.
+
 Details: [`docs/steps/step-13/deck.md`](../docs/steps/step-13/deck.md)

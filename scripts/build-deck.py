@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Builds the final demo deck, in two versions, from one content model.
 
-  docs/steps/step-13/final-demo.pptx           presenter's spine -- titles and
+  docs/deck/final-demo.pptx           presenter's spine -- titles and
                                                evidence, nothing to read aloud
-  docs/steps/step-13/final-demo-handout.pptx   stands alone -- prose on every
+  docs/deck/final-demo-handout.pptx   stands alone -- prose on every
                                                slide, readable by someone who
                                                missed the demo
 
@@ -22,7 +22,7 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
 W, H = Inches(13.333), Inches(7.5)
-DIAGRAM = "docs/steps/step-13/pipeline.png"
+DIAGRAM = "docs/deck/pipeline.png"
 
 INK     = RGBColor(0x14, 0x22, 0x2E)   # near-black slate, all headings
 BODY    = RGBColor(0x2E, 0x3D, 0x4A)
@@ -484,7 +484,7 @@ def build(path, handout):
 
 
 if __name__ == "__main__":
-    out = "docs/steps/step-13"
+    out = "docs/deck"
     os.makedirs(out, exist_ok=True)
     import importlib.util                       # keeps the embedded PNG in step
     _spec = importlib.util.spec_from_file_location(

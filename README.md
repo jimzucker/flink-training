@@ -586,8 +586,8 @@ The live demo is the deliverable; the slides are the handout and the backup.
 
 | file | for |
 |---|---|
-| [`docs/steps/step-13/final-demo.pptx`](docs/steps/step-13/final-demo.pptx) | presenting — nothing to read aloud |
-| [`docs/steps/step-13/final-demo-handout.pptx`](docs/steps/step-13/final-demo-handout.pptx) | leaving behind, and the fallback if the stack fails |
+| [`docs/deck/final-demo.pptx`](docs/deck/final-demo.pptx) | presenting — nothing to read aloud |
+| [`docs/deck/final-demo-handout.pptx`](docs/deck/final-demo-handout.pptx) | leaving behind, and the fallback if the stack fails |
 
 Both are generated from one content model, so a number cannot drift between them:
 
@@ -596,8 +596,8 @@ python3 -m venv .venv && .venv/bin/pip install python-pptx
 .venv/bin/python scripts/build-deck.py
 ```
 
-See [`docs/steps/step-13/deck.md`](docs/steps/step-13/deck.md) for what each of
-the thirteen slides carries.
+See [`docs/deck/`](docs/deck/) for what each of the thirteen slides carries and
+how to review them without PowerPoint.
 
 ## Repository layout
 
@@ -611,6 +611,7 @@ jobs/                  Flink jobs
 docker/                local stack: Kafka, Flink, Prometheus, Grafana
 docker/grafana/        dashboard and provisioning
 scripts/               helper scripts, including the deck build
+docs/deck/             the final demo deck, both versions
 docs/design/           pipeline diagram and design notes
 docs/steps/            per-step evidence: logs, metrics, screenshots
 docs/reviews/          review exchanges for each step
