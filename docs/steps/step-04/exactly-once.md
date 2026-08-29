@@ -12,15 +12,18 @@ A missing number is obvious; a wrong one is not.
 |---|---|
 | Delivery | `EXACTLY_ONCE`, one transactional id prefix per sink |
 | Transaction timeout | 5 minutes — must outlast a checkpoint, must stay under the broker's 15-minute maximum |
-| Checkpoint interval | 5 seconds |
+| Checkpoint interval | 5 seconds *(lowered to 1s in step 09 — see below)* |
 | Readers | must use `read_committed` |
 
 Two consequences, both real and both visible rather than hidden:
 
 - **The sinks advance once per checkpoint.** A record is not readable until the
-  checkpoint that produced it commits, so sinks 3 and 4 move in five-second steps
-  rather than continuously. This is also a floor under end-to-end latency, which
-  matters for the latency step.
+  checkpoint that produced it commits, so sinks 3 and 4 move in steps rather than
+  continuously — five-second steps at the interval this step set. This is also a
+  floor under end-to-end latency, which is what the latency step went on to
+  measure: it found the floor was the whole story and **lowered the default to
+  one second**, where the median consumer wait is 518ms rather than 2,488ms. The
+  current default is 1s; the five-second figures below are this step's.
 - **Reading uncommitted shows records that may still abort.** Every consumer in
   the verification path now reads `read_committed`, or it would be claiming more
   than is durable.
