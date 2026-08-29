@@ -190,11 +190,11 @@ def pipeline(slide, top):
 
     arrow(Inches(3.22), y0 + Inches(2.43), Inches(0.5))
     node(Inches(3.80), y0 + Inches(1.95), Inches(2.5), Inches(1.12), None,
-         "market value", "price × position, 1-min window", FLINK, FLINK)
+         "market value", "price × position, 10s window", FLINK, FLINK)
 
     arrow(Inches(6.42), y0 + Inches(2.43), Inches(0.5))
-    node(Inches(7.00), y0 + Inches(2.10), bw, bh, "5", "mv-by-symbol", "4 keys · 4/min", KAFKA, KAFKA)
-    node(Inches(7.00), y0 + Inches(3.15), bw, bh, "6", "mv-by-account", "16 keys · 16/min", KAFKA, KAFKA)
+    node(Inches(7.00), y0 + Inches(2.10), bw, bh, "5", "mv-by-symbol", "4 keys · 4 per window", KAFKA, KAFKA)
+    node(Inches(7.00), y0 + Inches(3.15), bw, bh, "6", "mv-by-account", "16 keys · 16 per window", KAFKA, KAFKA)
 
     tf = _tb(slide, Inches(9.75), y0 + Inches(0.35), Inches(3.1), Inches(3.2))
     for i, (lead, rest) in enumerate([
@@ -252,7 +252,7 @@ def s_problem(slide, handout):
         ("Publish positions two ways, in parallel.  ",
          "By symbol, and by account / sub-account / symbol."),
         ("Then join prices to those positions  ",
-         "and publish market value the same two ways, emitted once per minute."),
+         "and publish market value the same two ways, once per key per window."),
     ])
     if handout:
         prose(slide, top + Inches(2.5),
@@ -279,26 +279,32 @@ def s_expected(slide, handout):
     top = heading(slide, "What the numbers should be, before we run anything",
                   "Expected output")
     table(slide, Inches(0.75), top,
-          [["Input", "Rate"],
+          [["Input / setting", "Demo value"],
            ["Trades", "10 / sec"],
            ["Prices", "1 000 / sec"],
            ["Symbols", "4 unique"],
            ["Accounts", "4 unique"],
-           ["Allocations per trade", "4 (one per account)"]],
-          [Inches(3.1), Inches(2.0)], size=13.5)
+           ["Allocations per trade", "4 (one per account)"],
+           ["Window", "10 s  (spec: 1 min)"],
+           ["Checkpoint interval", "1 s"]],
+          [Inches(3.1), Inches(2.3)], size=13.5, highlight={6, 7})
     table(slide, Inches(6.35), top,
-          [["#", "Sink", "Rate", "Keys"],
+          [["#", "Sink", "Rate in the demo", "Keys"],
            ["3", "positions-by-symbol", "10 / sec", "4"],
            ["4", "positions-by-account", "40 / sec", "16"],
-           ["5", "mv-by-symbol", "4 / min", "4"],
-           ["6", "mv-by-account", "16 / min", "16"]],
-          [Inches(0.45), Inches(3.05), Inches(1.5), Inches(0.9)], size=13.5)
-    statline(slide, Inches(5.55),
-             "Committing to the numbers before the run is what makes the demo a verification "
-             "rather than a tour. scripts/verify-topics.sh checks every one of them against the "
-             "real topics, and runs on every push.", GOOD, italic=False)
-    notes(slide, "Say the numbers out loud BEFORE starting the generators. "
-                 "Then the dashboard either matches or it does not.")
+           ["5", "mv-by-symbol", "4 per 10 s", "4"],
+           ["6", "mv-by-account", "16 per 10 s", "16"]],
+          [Inches(0.45), Inches(3.05), Inches(1.9), Inches(0.9)], size=13.5)
+    statline(slide, Inches(5.9),
+             "The window is 10 s for the demo so the market value sinks say something without a "
+             "minute of waiting — the job defaults to the specified minute, and the calculation is "
+             "identical either way. Committing to these numbers before the run is what makes the "
+             "demo a verification rather than a tour; scripts/verify-topics.sh checks every one of "
+             "them against the real topics, on every push.", GOOD, italic=False)
+    notes(slide, "Say the numbers out loud BEFORE starting the generators. Then the dashboard "
+                 "either matches or it does not. If asked why the window is 10s and not a minute: "
+                 "only for the demo, so the sinks say something without a minute of waiting. The "
+                 "job defaults to the specified minute and the verification runs against both.")
 
 
 def s_live(slide, handout):
@@ -371,8 +377,8 @@ def s_latency(slide, handout):
     table(slide, Inches(7.4), top,
           [["Checkpoint interval", "p50", "max"],
            ["5 s", "2 488 ms", "4 988 ms"],
-           ["1 s", "497 ms", "1 041 ms"]],
-          [Inches(2.5), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
+           ["1 s  (the default)", "497 ms", "1 041 ms"]],
+          [Inches(2.9), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
     if handout:
         prose(slide, top + Inches(1.9),
               "The gap is the guarantee, not the work. Under exactly-once nothing is readable until "

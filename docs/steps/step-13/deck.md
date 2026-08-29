@@ -34,7 +34,7 @@ SVG converter in the build path.
 | 1 | Title | What it is, what it runs on |
 | 2 | One order becomes four allocations | The problem, and why the two aggregations differ |
 | 3 | Six numbered elements, end to end | The pipeline diagram |
-| 4 | What the numbers should be | Expected inputs and sinks 3–6, **before** running |
+| 4 | What the numbers should be | Expected inputs, the demo's window and checkpoint settings, and sinks 3–6 — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
 | 6 | Every number has an answer | The three questions the dashboard invites |
 | 7 | A replayed record is a wrong number | Exactly-once, proved by killing a task manager |
@@ -60,6 +60,13 @@ are a backup slide.
 was a confirmation rather than a second demo, that its step ratios behave oddly in
 a way that is not yet explained, and that its two highest points were measured
 once each.
+
+**It quotes the demo's settings, not the specification's.** The window is 10 s in
+the demo and the checkpoint interval is 1 s, so the market value sinks emit 4 and
+16 records *per window* rather than the 4/min and 16/min a 60-second window would
+give. Slide 4 states both the setting and the reason, because a slide that
+promises numbers the audience will not see defeats the purpose of committing to
+them in advance.
 
 **It does not include a screenshot of Grafana.** The dashboard is the live
 artefact; a picture of it invites the audience to read a still image instead of
