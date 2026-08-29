@@ -13,7 +13,8 @@ figure here is quoted from a doc in this repo; the comment beside it says which.
   python3 -m venv .venv && .venv/bin/pip install python-pptx
   .venv/bin/python scripts/build-deck.py
 """
-import copy
+import os
+from PIL import Image
 from pptx import Presentation
 from pptx.util import Inches, Pt, Emu
 from pptx.dml.color import RGBColor
@@ -21,6 +22,7 @@ from pptx.enum.text import PP_ALIGN, MSO_ANCHOR
 from pptx.enum.shapes import MSO_SHAPE
 
 W, H = Inches(13.333), Inches(7.5)
+DIAGRAM = "docs/steps/step-13/pipeline.png"
 
 INK     = RGBColor(0x14, 0x22, 0x2E)   # near-black slate, all headings
 BODY    = RGBColor(0x2E, 0x3D, 0x4A)
@@ -148,65 +150,6 @@ def prose(slide, y, text, size=15):
     return tf
 
 
-# ----------------------------------------------------------------- diagram --
-def pipeline(slide, top):
-    """The six numbered elements, drawn natively so they stay editable."""
-    def node(x, y, w, h, n, label, sub, fill, edge, txt=WHITE):
-        s = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, x, y, w, h)
-        s.fill.solid(); s.fill.fore_color.rgb = fill
-        s.line.color.rgb = edge; s.line.width = Pt(1.25)
-        s.shadow.inherit = False
-        tf = s.text_frame; tf.word_wrap = True
-        tf.margin_top = tf.margin_bottom = Inches(0.04)
-        p = tf.paragraphs[0]; p.alignment = PP_ALIGN.CENTER
-        if n:
-            _run(p, f"{n}  ", 11, txt, bold=True)
-        _run(p, label, 12.5, txt, bold=True, font=MONO)
-        if sub:
-            p2 = tf.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
-            _run(p2, sub, 10, txt)
-        return s
-
-    def arrow(x, y, w):
-        a = slide.shapes.add_shape(MSO_SHAPE.RIGHT_ARROW, x, y, w, Pt(9))
-        a.fill.solid(); a.fill.fore_color.rgb = RGBColor(0xA9, 0xB6, 0xC0)
-        a.line.fill.background(); a.shadow.inherit = False
-
-    KAFKA = RGBColor(0x23, 0x36, 0x45)
-    FLINK = RGBColor(0x1B, 0x6B, 0x8A)
-    y0 = top
-    bw, bh = Inches(2.35), Inches(0.86)
-
-    node(Inches(0.75), y0 + Inches(0.55), bw, bh, "1", "orders", "K: tradeId", KAFKA, KAFKA)
-    node(Inches(0.75), y0 + Inches(2.05), bw, bh, "2", "prices", "K: symbol", KAFKA, KAFKA)
-
-    arrow(Inches(3.22), y0 + Inches(0.93), Inches(0.5))
-    node(Inches(3.80), y0 + Inches(0.42), Inches(2.5), Inches(1.12), None,
-         "positions", "keyBy symbol  /  acct·sub·sym", FLINK, FLINK)
-
-    arrow(Inches(6.42), y0 + Inches(0.93), Inches(0.5))
-    node(Inches(7.00), y0, bw, bh, "3", "positions-by-symbol", "4 keys · 10/sec", KAFKA, KAFKA)
-    node(Inches(7.00), y0 + Inches(1.05), bw, bh, "4", "positions-by-account", "16 keys · 40/sec", KAFKA, KAFKA)
-
-    arrow(Inches(3.22), y0 + Inches(2.43), Inches(0.5))
-    node(Inches(3.80), y0 + Inches(1.95), Inches(2.5), Inches(1.12), None,
-         "market value", "price × position, 10s window", FLINK, FLINK)
-
-    arrow(Inches(6.42), y0 + Inches(2.43), Inches(0.5))
-    node(Inches(7.00), y0 + Inches(2.10), bw, bh, "5", "mv-by-symbol", "4 keys · 4 per window", KAFKA, KAFKA)
-    node(Inches(7.00), y0 + Inches(3.15), bw, bh, "6", "mv-by-account", "16 keys · 16 per window", KAFKA, KAFKA)
-
-    tf = _tb(slide, Inches(9.75), y0 + Inches(0.35), Inches(3.1), Inches(3.2))
-    for i, (lead, rest) in enumerate([
-        ("One order, five records.  ", "Four account-side allocations plus one symbol-side position."),
-        ("Two aggregations, in parallel.  ", "One key per symbol; one per account and symbol."),
-        ("Prices are broadcast.  ", "Every task sees every price."),
-    ]):
-        p = _para(tf, first=(i == 0)); p.space_after = Pt(12)
-        _run(p, lead, 12, INK, bold=True)
-        _run(p, rest, 12, BODY)
-
-
 # ------------------------------------------------------------------ slides --
 # HANDOUT carries the prose; SPINE omits it. Numbers live here once.
 
@@ -266,13 +209,22 @@ def s_problem(slide, handout):
 
 
 def s_design(slide, handout):
+    """The project's own diagram, rendered by scripts/render-diagram.py."""
     top = heading(slide, "Six numbered elements, end to end", "The design")
-    pipeline(slide, top - Inches(0.15))
-    statline(slide, Inches(6.35),
-             "Every edge is labelled with its key and value; the full walkthrough and object model "
-             "are in docs/design/pipeline-design.md.")
-    notes(slide, "Numbered left to right, in the order the demo talks through them. "
-                 "Point at 1 and 2 as the inputs, 3-6 as the outputs to verify.")
+    if not os.path.exists(DIAGRAM):
+        raise SystemExit(f"{DIAGRAM} is missing -- run scripts/render-diagram.py first")
+    with Image.open(DIAGRAM) as im:
+        aspect = im.width / im.height
+    w = Inches(12.2)
+    h = Emu(int(w / aspect))
+    slide.shapes.add_picture(DIAGRAM, Inches(0.57), top + Inches(0.28), width=w, height=h)
+    statline(slide, top + Inches(0.28) + h + Inches(0.14),
+             "Every edge carries its partition key and value. The diagram states the specified "
+             "one-minute window; the demo overrides it to ten seconds, and the calculation is "
+             "identical either way.")
+    notes(slide, "Numbered left to right, in the order the demo talks through them. Point at 1 "
+                 "and 2 as the inputs, 3-6 as the outputs to verify. If anyone reads '1 min' off "
+                 "the diagram, that is the specification -- the demo runs a 10s window.")
 
 
 def s_expected(slide, handout):
@@ -532,9 +484,13 @@ def build(path, handout):
 
 
 if __name__ == "__main__":
-    import os
     out = "docs/steps/step-13"
     os.makedirs(out, exist_ok=True)
+    import importlib.util                       # keeps the embedded PNG in step
+    _spec = importlib.util.spec_from_file_location(
+        "render_diagram", os.path.join(os.path.dirname(os.path.abspath(__file__)), "render-diagram.py"))
+    _rd = importlib.util.module_from_spec(_spec); _spec.loader.exec_module(_rd)
+    _rd.main()
     for name, handout in [("final-demo.pptx", False),
                           ("final-demo-handout.pptx", True)]:
         p = build(os.path.join(out, name), handout)

@@ -7,6 +7,7 @@ the page shows what the files contain rather than what they were meant to.
 
   .venv/bin/python scripts/preview-deck.py > /tmp/deck-preview.html
 """
+import base64
 import html
 import sys
 from pptx import Presentation
@@ -102,6 +103,12 @@ def shape_html(sh):
     pos = (f"left:{pct(sh.left, SLIDE_W)};top:{pct(sh.top, SLIDE_H)};"
            f"width:{pct(sh.width, SLIDE_W)};height:{pct(sh.height, SLIDE_H)}")
 
+    if sh.shape_type == MSO_SHAPE_TYPE.PICTURE:
+        img = sh.image
+        b64 = base64.b64encode(img.blob).decode("ascii")
+        return (f'<div class="sh" style="{pos}">'
+                f'<img src="data:{img.content_type};base64,{b64}" alt=""></div>')
+
     if sh.has_table:
         return f'<div class="sh tblwrap" style="{pos}">{table_html(sh)}</div>'
 
@@ -183,6 +190,7 @@ TEMPLATE = """<title>Final Demo Deck</title>
          background:#fff;border:1px solid var(--line);border-radius:5px;overflow:hidden;
          box-shadow:0 1px 3px rgba(16,28,38,.10),0 8px 24px rgba(16,28,38,.06)}
   .sh{position:absolute;overflow:visible}
+  .sh img{width:100%;height:100%;object-fit:contain;display:block}
   .tf{position:absolute;inset:0;display:flex;flex-direction:column;
       justify-content:flex-start;padding:.55cqw .7cqw}
   .tf p{margin:0;line-height:1.32;color:#2E3D4A}  /* slide-local: the stage is always white, like the real slide */

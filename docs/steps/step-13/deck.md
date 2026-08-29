@@ -23,9 +23,21 @@ in it is quoted from a doc in this repo, with a pointer to which — so updating
 measurement means changing it in one place and rebuilding, rather than hunting
 for it across two binary files.
 
-The pipeline diagram is drawn as native PowerPoint shapes rather than embedded as
-an image. It stays editable, it stays crisp at any zoom, and it does not need an
-SVG converter in the build path.
+The pipeline diagram is **the project's own** `docs/design/pipeline.svg`, rendered
+by `scripts/render-diagram.py` and embedded on slide 3. An earlier version drew a
+simplified pipeline in native PowerPoint shapes; it was not good enough, and there
+is no reason for the deck to have a second, worse diagram when the real one exists.
+
+Rendering it needs one repair. The arrowheads are applied through a CSS class —
+`.edge { marker-end:url(#arrow) }` — and `svglib` does not resolve CSS-applied
+markers, so every edge came out as a plain line. The renderer bakes an explicit
+polygon onto the end of each edge first, sized and positioned from the `<marker>`
+definition rather than by eye, and the edges are all orthogonal so the direction
+of the final segment is unambiguous. Then `svglib` → PDF → `sips` → PNG → trim,
+which needs no native cairo.
+
+`scripts/build-deck.py` re-runs the diagram render on every build, so the deck
+cannot carry a stale copy of it.
 
 ## The thirteen slides
 
@@ -33,7 +45,7 @@ SVG converter in the build path.
 |---|---|---|
 | 1 | Title | What it is, what it runs on |
 | 2 | One order becomes four allocations | The problem, and why the two aggregations differ |
-| 3 | Six numbered elements, end to end | The pipeline diagram |
+| 3 | Six numbered elements, end to end | The project's pipeline diagram, with a note that its 1-min window is the specification |
 | 4 | What the numbers should be | Expected inputs, the demo's window and checkpoint settings, and sinks 3–6 — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
 | 6 | Every number has an answer | The three questions the dashboard invites |
