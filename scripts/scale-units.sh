@@ -11,8 +11,18 @@
 # million records, 32 vCPUs and three brokers to make Flink the constraint; this
 # does it on a laptop by making Flink small instead.
 #
-#   scripts/scale-units.sh                 # 1, 2, 4, 8 units
-#   UNITS="1 2 4" BACKLOG=25000000 scripts/scale-units.sh
+#   scripts/scale-units.sh                    # 2 and 4 units -- the demo pair
+#   UNITS="1 2 4 8" OUT=docs/steps/step-12/units.txt scripts/scale-units.sh
+#                                             # the full curve, including the ceiling
+#
+# The default is two cases because each one costs several minutes of warm-up
+# that is dead air in front of an audience, and 2 -> 4 is where the result is
+# sharpest: 65,721 -> 129,056 orders/sec, a 1.96x return on double the units,
+# with Flink using 2.00 of 2 cores and then 3.94 of 4. Near-perfect linear
+# scaling, in the time it takes to explain what a unit is.
+#
+# The full curve is what the docs report and where the ceiling shows up at 8
+# units -- see docs/steps/step-12/scaling-demo.md.
 #
 # On AWS, point it at the remote stack:
 #   COMPOSE=docker/compose.aws.yml BOOTSTRAP_SERVERS=b-1...:9092 scripts/scale-units.sh
@@ -20,7 +30,7 @@ set -uo pipefail
 cd "$(dirname "$0")/.." || exit 1
 
 COMPOSE="${COMPOSE:-docker/compose.yml}"
-UNITS="${UNITS:-1 2 4 8}"
+UNITS="${UNITS:-2 4}"
 BACKLOG="${BACKLOG:-50000000}"
 # Held constant across every case, and at least the largest unit count. Varying
 # it with the units would change two things at once: a flat step could then be a
@@ -31,7 +41,7 @@ PARTITIONS="${PARTITIONS:-8}"
 WARMUP_SECONDS="${WARMUP_SECONDS:-180}"
 WINDOW_SECONDS="${WINDOW_SECONDS:-60}"
 CHECKPOINT_INTERVAL_MS="${CHECKPOINT_INTERVAL_MS:-5000}"
-OUT="${OUT:-docs/steps/step-12/units.txt}"
+OUT="${OUT:-docs/steps/step-12/units-demo.txt}"
 SINKS="positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
 RUN_ID="${RUN_ID:-$(date +%s)}"
 

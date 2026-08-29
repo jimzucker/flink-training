@@ -1271,6 +1271,18 @@ that every sink startup had to fence before emitting anything. Scoping the prefi
 per run took first output from **470s to 31s** and checkpoints in the measurement
 window from **0 to 16**.
 
+### What the demo actually runs
+
+Two cases, not four. `scripts/scale-units.sh` defaults to **2 and 4 units** —
+65,721 to 129,056 orders/sec, a 1.96× return on double the units, with Flink
+using 2.00 of 2 cores and then 3.94 of 4. Near-perfect linear scaling, and the
+sharpest form of the claim.
+
+Each case costs minutes of warm-up that is dead air in front of an audience, so
+four cases buy a ceiling discussion at twice the running time. The full curve
+stays in the docs and in `units.txt` as the record, reachable with
+`UNITS="1 2 4 8"`, and is a backup slide rather than the demo.
+
 ### What it costs
 
 A laptop, one broker, `docker compose up`, four minutes per case. The AWS work
