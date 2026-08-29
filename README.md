@@ -575,6 +575,25 @@ Squash-merging keeps `main` linear with one commit per step, and the step branch
 stays for inspection. Direct pushes to `main` are rejected — verified, not
 assumed.
 
+## The deck
+
+The live demo is the deliverable; the slides are the handout and the backup.
+
+| file | for |
+|---|---|
+| [`docs/steps/step-13/final-demo.pptx`](docs/steps/step-13/final-demo.pptx) | presenting — nothing to read aloud |
+| [`docs/steps/step-13/final-demo-handout.pptx`](docs/steps/step-13/final-demo-handout.pptx) | leaving behind, and the fallback if the stack fails |
+
+Both are generated from one content model, so a number cannot drift between them:
+
+```bash
+python3 -m venv .venv && .venv/bin/pip install python-pptx
+.venv/bin/python scripts/build-deck.py
+```
+
+See [`docs/steps/step-13/deck.md`](docs/steps/step-13/deck.md) for what each of
+the thirteen slides carries.
+
 ## Repository layout
 
 ```

@@ -22,7 +22,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 10 | Scale | full | `step-10-scale` | done |
 | 11 | AWS | full | `step-11-aws` | done |
 | 12 | Scaling demo | full | `step-12-scaling-demo` | done |
-| 13 | Final demo | full | `step-13-final-deck` | not started |
+| 13 | Final demo | full | `step-13-final-deck` | in review |
 
 The local Docker stack is stood up early and grown one service at a time, rather
 than assembled whole near the end. Everything runs against real Kafka and a real
@@ -1303,3 +1303,54 @@ the cold-start question by finding the bug behind it.
 **Outcome:** approved, squash-merged to `main`, tagged `step-12`.
 
 Full exchange: [`docs/reviews/step-12.md`](../docs/reviews/step-12.md)
+
+---
+
+## Step 13 — Final deck
+
+- **Branch:** `step-13-final-deck`
+- **Prompt:** Merge the AWS work and make the demo deck its own step.
+
+### The shape of it
+
+The live demo is the deliverable and the slides are the handout and the backup,
+which the assignment says in as many words. That settles what the deck is for and
+leaves only how much it should carry — so it carries both amounts, in two files
+built from one content model:
+
+| file | for |
+|---|---|
+| `final-demo.pptx` | presenting — nothing to read aloud, attention stays on the live screen |
+| `final-demo-handout.pptx` | leaving behind — a paragraph of prose per slide, and the fallback if the stack fails |
+
+`scripts/build-deck.py` holds every figure once and renders it twice. Two binary
+decks that each contain the numbers independently would drift the first time a
+measurement changed; this way updating one means editing one line and rebuilding.
+
+### Decisions worth recording
+
+**The pipeline diagram is drawn as native shapes**, not embedded as an image. No
+SVG converter is needed in the build, it stays crisp at any zoom, and anyone can
+edit it in PowerPoint without regenerating anything.
+
+**The demo pair leads; the ceiling is a backup slide.** Slide 10 is 2 → 4 units
+at 1.96×. The four-point curve, the idle-broker explanation and the AWS
+comparison are slides 11 and 12, to be reached only if asked.
+
+**The AWS slide states its own caveats in its own text** — a confirmation rather
+than a second demo, step ratios that behave oddly and are not yet explained, two
+points measured once each. A backup slide that overstates its evidence is worse
+than no backup slide, because it gets used under pressure.
+
+**Slide 4 commits to the numbers before anything runs.** That is what makes the
+demo a verification rather than a tour.
+
+### Verification
+
+Both files were read back and checked: thirteen slides each, every shape inside
+the canvas, speaker notes present on all of them, and the handout carrying one
+extra prose block per content slide as designed. **Text fitting was not verified**
+— there is no renderer on this machine, so nothing confirms a paragraph does not
+overflow its box. That needs one pass in PowerPoint.
+
+Details: [`docs/steps/step-13/deck.md`](../docs/steps/step-13/deck.md)
