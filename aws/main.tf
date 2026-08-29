@@ -26,7 +26,10 @@ data "aws_subnet" "by_id" {
 # a re-plan does not reshuffle which three are used.
 locals {
   subnets_by_az = { for s in data.aws_subnet.by_id : s.availability_zone => s.id }
-  msk_azs       = slice(sort(keys(local.subnets_by_az)), 0, 3)
+  # Two zones rather than three. MSK requires at least two, and every extra zone
+  # is another slice of Kafka traffic crossing a zone boundary at a cent per
+  # gigabyte each way -- which on the step 11 run cost more than the servers did.
+  msk_azs       = slice(sort(keys(local.subnets_by_az)), 0, var.broker_count)
   msk_subnets   = [for az in local.msk_azs : local.subnets_by_az[az]]
   client_subnet = local.msk_subnets[0]
 }

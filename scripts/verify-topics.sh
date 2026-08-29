@@ -215,26 +215,70 @@ if [ "${CHECK_MARKET_VALUE:-0}" = "1" ]; then
     local mv_topic="$1" pos_topic="$2" label="$3"
     local pos_file="$DUMP_DIR/.pos.tsv" mv_file="$DUMP_DIR/.mv.tsv"
 
-    # Sorted by update count as well as event time. Two trades on a key can share
-    # a millisecond, and event time alone then leaves the closing position
-    # ambiguous -- the job breaks that tie on updateCount, which is the
-    # accumulation sequence for the key, so this has to break it the same way or
-    # it is checking a different rule.
-    drain "$pos_topic" | jq -r '[.key, .eventTime, .updateCount, .quantity] | @tsv' \
-      | sort -k1,1 -k2,2n -k3,3n > "$pos_file"
-    drain "$mv_topic" | jq -r '[.key, .windowEnd, .quantity] | @tsv' > "$mv_file"
+    # Checked against the position the job says it used, identified by trade id,
+    # rather than against whichever position this script would have picked.
+    #
+    # The earlier version recomputed "the last position for this key before the
+    # window closed" and compared quantities. That disagrees with the job
+    # whenever a position arrives late: the window has already fired on the
+    # watermark, so the job correctly ignores it and does not retract, while a
+    # scan of the finished topic cannot tell a late arrival from a timely one and
+    # happily picks it. Positions are keyed by trade id and spread across
+    # partitions, so some lateness is normal -- and the check failed
+    # intermittently, on main, roughly one run in several.
+    #
+    # Every market value already carries lastTradeId, the trade that closed its
+    # window. Comparing against that position is exact and has no opinion about
+    # lateness at all.
+    drain "$pos_topic" | jq -r '[.key, .lastTradeId, .eventTime, .quantity, .updateCount] | @tsv' > "$pos_file"
+    drain "$mv_topic" | jq -r '[.key, .windowEnd, .quantity, .lastTradeId] | @tsv' | sort -k1,1 -k2,2n > "$mv_file"
 
-    # For each market value, the last position for that key strictly before the
-    # window close is the one it must report.
-    check "$label quantity differs from the position topic" "0" \
+    check "$label quantity differs from the position it names" "0" \
           "$(awk -F'\t' '
-               NR == FNR { n[$1]++; t[$1 SUBSEP n[$1]] = $2; q[$1 SUBSEP n[$1]] = $4; next }
+               NR == FNR { q[$1 SUBSEP $2] = $4; t[$1 SUBSEP $2] = $3; seen[$1 SUBSEP $2] = 1; next }
                {
-                 found = 0; want = ""
-                 for (i = 1; i <= n[$1]; i++) {
-                   if (t[$1 SUBSEP i] < $2) { want = q[$1 SUBSEP i]; found = 1 }
-                 }
-                 if (!found || want != $3) bad++
+                 k = $1 SUBSEP $4
+                 if (!(k in seen))      { bad++; next }   # names a position that does not exist
+                 if (q[k] != $3)        { bad++; next }   # reports a different quantity
+               }
+               END { print bad + 0 }' "$pos_file" "$mv_file")"
+
+    # The identity check above would still pass if the job closed a window
+    # against a position belonging to some other window, which is a mistake this
+    # project has actually made -- market value once closed against a position
+    # from its own future. The position a window names must fall inside it.
+    check "$label closed on a position outside its window" "0" \
+          "$(awk -F'\t' -v w="$WINDOW_MS" '
+               NR == FNR { t[$1 SUBSEP $2] = $3; seen[$1 SUBSEP $2] = 1; next }
+               {
+                 k = $1 SUBSEP $4
+                 if (!(k in seen)) next
+                 # Carried forward from an earlier window when this one was quiet,
+                 # so the only firm requirement is that it is not from the future.
+                 if (t[k] >= $2) bad++
+               }
+               END { print bad + 0 }' "$pos_file" "$mv_file")"
+
+    # Checking identity and window membership alone would still pass if the job
+    # closed a window on a position older than the one it closed the window
+    # before on -- picking a stale position rather than the latest it had.
+    # Successive windows for a key must therefore name positions whose event
+    # times never go backwards.
+    #
+    # Expressed on event time, not on updateCount. updateCount was tried and is
+    # the wrong quantity: it is assigned in arrival order as records reach the
+    # operator, so it neither tracks event time nor has any obligation to advance
+    # across windows. One key ran 52, 14, 23, 38 over four windows whose named
+    # positions were at 9124ms, 19518ms, 29417ms and 39921ms -- perfectly ordered
+    # in time, and meaningless by counter.
+    check "$label closed on a position older than the window before" "0" \
+          "$(awk -F'\t' '
+               NR == FNR { t[$1 SUBSEP $2] = $3; seen[$1 SUBSEP $2] = 1; next }
+               {
+                 k = $1 SUBSEP $4
+                 if (!(k in seen)) next
+                 if ($1 == prevkey && t[k] < prev) bad++
+                 prevkey = $1; prev = t[k]
                }
                END { print bad + 0 }' "$pos_file" "$mv_file")"
   }
