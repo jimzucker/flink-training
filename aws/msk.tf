@@ -75,6 +75,16 @@ resource "aws_msk_configuration" "this" {
     default.replication.factor=1
     min.insync.replicas=1
     num.partitions=4
+
+    # The internal topics, and not an afterthought. MSK defaults
+    # transaction.state.log.replication.factor to 3, so on a two-broker cluster
+    # Kafka cannot create __transaction_state at all -- and without it no
+    # transactional producer can initialise. Exactly-once sinks then sit in
+    # INITIALIZING for ever, every checkpoint fails, and nothing is written, with
+    # no error that names the cause. Step 11 ran three brokers and never met this.
+    transaction.state.log.replication.factor=${var.broker_count}
+    transaction.state.log.min.isr=1
+    offsets.topic.replication.factor=${var.broker_count}
   PROPERTIES
 
   lifecycle {

@@ -1,0 +1,18 @@
+what a unit of parallelism buys -- AWS  (2026-08-29)
+a unit is one core and one degree of parallelism, bought together
+c7i.4xlarge client (8 physical cores / 16 vCPU), 2 x kafka.m5.large, RF=1
+8 partitions, checkpoint 10000ms, 60s window after 120s warm-up
+120000000 orders queued, measured draining the backlog with the producer stopped
+
+   units    orders/sec   vs prev    flink   broker   back-pr    runs
+                                    cores    cores    essure
+       1         43538         -     1.00     0.30    20.40%    2 (43974, 43101)
+       2         64106     1.47x     2.00     0.39    20.55%    2 (64669, 63543)
+       4        104912     1.64x     3.99     0.45    34.90%    1
+       8        181133     1.73x     7.99     0.62    65.40%    1
+
+one order becomes five records: four account-side allocations plus one
+symbol-side position, so 181133 orders/sec is 905665 records/sec.
+
+the 1- and 2-unit cases were each measured twice and agree within 2%.
+the 4- and 8-unit cases were measured once.

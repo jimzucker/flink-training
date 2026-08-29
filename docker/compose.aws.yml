@@ -37,6 +37,14 @@ services:
     image: flink:1.20.4-java17
     container_name: ft-taskmanager
     command: taskmanager
+    # The core budget, which this file was missing. Without it every unit count
+    # ran with the whole instance and the scaling demo measured parallelism
+    # alone -- exactly the mistake step 12 exists to avoid, and it produced a
+    # one-unit figure larger than the laptop's four-unit one.
+    deploy:
+      resources:
+        limits:
+          cpus: "${TASKMANAGER_CPUS:-0}"
     depends_on:
       jobmanager:
         condition: service_healthy
@@ -63,6 +71,7 @@ services:
       PARALLELISM: "${PARALLELISM:-4}"
       CHECKPOINT_INTERVAL_MS: "${CHECKPOINT_INTERVAL_MS:-1000}"
       BOOTSTRAP_SERVERS: "${BOOTSTRAP_SERVERS:?set to the MSK bootstrap brokers}"
+      TRANSACTIONAL_ID_SCOPE: "${TRANSACTIONAL_ID_SCOPE:-}"
       WINDOW_MS: "${WINDOW_MS:-10000}"
       IDLENESS_MS: "${IDLENESS_MS:-5000}"
     entrypoint:

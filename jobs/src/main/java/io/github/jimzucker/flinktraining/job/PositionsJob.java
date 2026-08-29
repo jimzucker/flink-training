@@ -66,13 +66,13 @@ public final class PositionsJob {
         orders.flatMap(new ToSymbolUpdate()).name("by symbol")
                 .keyBy(update -> update.key)
                 .process(new AccumulatePosition(config.logEvery())).name("aggregate by symbol")
-                .sinkTo(positionsSink(config, config.positionsBySymbolTopic(), "positions-by-symbol-tx"))
+                .sinkTo(positionsSink(config, config.positionsBySymbolTopic(), JobConfig.transactionalIdPrefix("positions-by-symbol-tx")))
                 .name("positions-by-symbol");
 
         orders.flatMap(new SplitByAllocation()).name("split by allocation")
                 .keyBy(update -> update.key)
                 .process(new AccumulatePosition(config.logEvery())).name("aggregate by account")
-                .sinkTo(positionsSink(config, config.positionsByAccountTopic(), "positions-by-account-tx"))
+                .sinkTo(positionsSink(config, config.positionsByAccountTopic(), JobConfig.transactionalIdPrefix("positions-by-account-tx")))
                 .name("positions-by-account");
     }
 

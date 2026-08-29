@@ -33,6 +33,7 @@ WINDOW_SECONDS="${WINDOW_SECONDS:-60}"
 CHECKPOINT_INTERVAL_MS="${CHECKPOINT_INTERVAL_MS:-5000}"
 OUT="${OUT:-docs/steps/step-12/units.txt}"
 SINKS="positions-by-symbol positions-by-account mv-by-symbol mv-by-account"
+RUN_ID="${RUN_ID:-$(date +%s)}"
 
 mkdir -p "$(dirname "$OUT")"
 say() { echo "$@" | tee -a "$OUT"; }
@@ -58,10 +59,27 @@ count() {
   kcli kafka-get-offsets.sh --bootstrap-server "$BOOT" --topic "$1" 2>/dev/null \
     | awk -F: '{s += $3} END {print s + 0}'
 }
+# Cancels, then confirms. Killing the script that started a run does not cancel
+# the jobs it submitted -- they keep their slots, and the next submission finds
+# none free, never schedules its tasks, and aborts every checkpoint with "not all
+# required tasks are running". Nothing is written and nothing says why, so the
+# symptom reads as a slow cold start and invites a longer warm-up that cannot
+# help. Leaving even one job behind poisons every case after it.
 cancel_all() {
   for id in $(curl -sf http://localhost:8081/jobs | grep -oE '[0-9a-f]{32}'); do
     docker compose -f "$COMPOSE" exec -T jobmanager flink cancel "$id" >/dev/null 2>&1
   done
+  for _ in $(seq 1 30); do
+    local n
+    # grep -c prints 0 and exits non-zero when nothing matches, so "|| echo 0"
+    # appends a second line and the count becomes "0\n0" -- which fails the
+    # numeric test and reports a busy cluster on an empty one.
+    n=$(curl -sf http://localhost:8081/jobs 2>/dev/null | grep -o '"status":"RUNNING"' | wc -l | tr -d ' ')
+    [ "${n:-0}" -eq 0 ] && return 0
+    sleep 2
+  done
+  say "  jobs still running after cancel; refusing to measure against a busy cluster"
+  exit 9
 }
 recreate() {
   for t in $1; do kcli kafka-topics.sh --bootstrap-server "$BOOT" --delete --topic "$t" >/dev/null 2>&1; done
@@ -110,9 +128,17 @@ for n in $UNITS; do
   cancel_all
   recreate "$SINKS"
 
+  # A fresh transactional namespace per case. Flink must fence every lingering
+  # transaction under a sink's prefix before that sink can start, and a benchmark
+  # restarting the same job dozens of times against one cluster leaves all of
+  # them behind: 98,677 ids had accumulated on MSK, and a sink took 470s to reach
+  # RUNNING instead of 31s. It reads as an unexplained cold start that grows with
+  # every run, and no amount of extra warm-up touches it.
+  export TRANSACTIONAL_ID_SCOPE="u${n}-${RUN_ID}"
   export TASKMANAGER_CPUS="$n" PARALLELISM="$n" CHECKPOINT_INTERVAL_MS
   # Two jobs run, each wanting its own slots.
   export TASK_SLOTS=$(( n * 2 ))
+  docker compose -f "$COMPOSE" up -d --wait prometheus >/dev/null 2>&1
   docker compose -f "$COMPOSE" up -d --force-recreate --wait taskmanager >/dev/null 2>&1
 
   # Refuse to report a number for a limit that was not applied. Setting
@@ -121,14 +147,17 @@ for n in $UNITS; do
   # recreates the container without the limit.
   applied=$(docker inspect ft-taskmanager --format '{{.HostConfig.NanoCpus}}' 2>/dev/null)
   want=$(( n * 1000000000 ))
-  if [ "${applied:-0}" != "$want" ] && [ "$COMPOSE" = "docker/compose.yml" ]; then
+  # Checked wherever the run happens. Limiting this to the local compose file let
+  # an AWS run report four numbers taken with no CPU limit at all.
+  if [ "${applied:-0}" != "$want" ]; then
     say "  ${n}: NanoCpus=${applied}, expected ${want} -- refusing to report"
-    continue
+    say "     stopping here: the remaining cases would fail the same way"
+    exit 5
   fi
 
   docker compose -f "$COMPOSE" run --rm submit >/dev/null 2>&1
   running=$(curl -sf http://localhost:8081/jobs | grep -c '"status":"RUNNING"')
-  [ "$running" -ge 1 ] || { say "  ${n}: no running job -- refusing to report"; continue; }
+  [ "$running" -ge 1 ] || { say "  ${n}: no running job -- refusing to report"; exit 6; }
 
   sleep "$WARMUP_SECONDS"
   a=$(count positions-by-symbol)
@@ -138,13 +167,15 @@ for n in $UNITS; do
   # A window that runs past the end of the backlog measures the silence after it.
   if [ "$b" -ge "$queued" ]; then
     say "  ${n}: backlog exhausted inside the window -- raise BACKLOG"
-    continue
+    say "     stopping here: every later case is faster and would exhaust it too"
+    exit 7
   fi
 
   rate=$(( (b - a) / WINDOW_SECONDS ))
   if [ "$rate" -le 0 ]; then
     say "  ${n}: no progress in the window -- the warm-up was too short to clear the cold start"
-    continue
+    say "     stopping here rather than repeating it three more times"
+    exit 8
   fi
 
   promq() {

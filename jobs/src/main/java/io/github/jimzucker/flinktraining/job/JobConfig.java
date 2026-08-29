@@ -99,6 +99,29 @@ public record JobConfig(
      * roughly half the machine's cores. Compressing and batching spends the CPU
      * that is idle to save the broker capacity that is not.
      */
+    /**
+     * Namespace for the sinks' transactional ids, empty by default.
+     *
+     * <p>Flink names an exactly-once transaction {@code prefix-subtask-checkpoint}
+     * and, on startup, must fence every lingering transaction under that prefix
+     * before a sink can run. A stable prefix is what makes that correct: it is how
+     * a restarted job finds and closes what its previous incarnation left open.
+     *
+     * <p>It is also cumulative. A benchmark that restarts the same job forty times
+     * against one cluster leaves the ids of every earlier run behind, and each
+     * startup pays a round trip for all of them. On MSK that reached 98,677 ids
+     * and roughly 470 seconds before a sink reached RUNNING -- which reads as an
+     * unexplained cold start, and gets slower every run.
+     *
+     * <p>Setting this per run gives each one a clean namespace. It is the right
+     * thing for a benchmark and the wrong thing for a deployment, where losing the
+     * old prefix means losing the ability to fence the job you just replaced.
+     */
+    public static String transactionalIdPrefix(String sinkName) {
+        String scope = env("TRANSACTIONAL_ID_SCOPE", "");
+        return scope.isBlank() ? sinkName : sinkName + "-" + scope;
+    }
+
     public static Properties sinkProducerProperties() {
         Properties properties = new Properties();
         properties.setProperty("compression.type", env("SINK_COMPRESSION", "lz4"));

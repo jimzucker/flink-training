@@ -1241,9 +1241,35 @@ is at 0.48 cores while being the thing in the way, because what it has run out o
 is write throughput rather than CPU — 759,845 records/sec against the ~750,000 it
 was measured to accept.
 
+That curve is the deliverable: clean, monotone, four minutes a case, and every
+step attributable without argument.
+
+One question it invites — *is that Flink's ceiling or the laptop's?* — was
+answered by running the same script unchanged against a two-broker MSK cluster.
+The last doubling returns **1.73×** there instead of 1.18×, with Flink using 7.99
+of its 8 cores instead of 4.98 and the broker never passing 0.62. The laptop's
+ceiling is its broker, not Flink.
+
+That AWS run is a confirmation, not a second demo, and it is deliberately kept to
+one row. Its step ratios *rise* (1.47×, 1.64×, 1.73×) rather than decaying, which
+is backwards and is recorded as unexplained rather than explained away; a
+shuffle-cost hypothesis was checked against the dataflow graph and refuted; and
+the 4- and 8-unit points were measured once each. Full data:
+[`docs/steps/step-12/units-aws.txt`](../docs/steps/step-12/units-aws.txt).
+
 The reported number is **orders/sec**, counted as records arriving in
 `positions-by-symbol`, which is exactly one per order. Allocations are four times
-that and total records written five times.
+that and total records written five times — so 151,969 orders/sec is 759,845
+records/sec.
+
+### The cold start was a bug, not a warm-up
+
+At low unit counts the pipeline sat idle for 150 seconds or more, which is why
+the local warm-up is 240s. The cause: sink transactional-ID prefixes were fixed
+strings, so across roughly ten runs Kafka accumulated 98,677 transactional IDs
+that every sink startup had to fence before emitting anything. Scoping the prefix
+per run took first output from **470s to 31s** and checkpoints in the measurement
+window from **0 to 16**.
 
 ### What it costs
 
@@ -1255,10 +1281,12 @@ Details: [`docs/steps/step-12/scaling-demo.md`](../docs/steps/step-12/scaling-de
 
 ### Review
 
-Two rounds. The first rejected the AWS rig as a demo — excessive infrastructure
+Three rounds. The first rejected the AWS rig as a demo — excessive infrastructure
 that scares people before a word is spoken — and produced the unit idea. The
 second asked what was constrained at four to eight units, which turned out to be
-neither CPU, and added the resource columns that answer it.
+neither CPU, and added the resource columns that answer it. The third ran the AWS
+half so the comparison rests on measurement rather than prediction, and closed
+the cold-start question by finding the bug behind it.
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-12`.
 
