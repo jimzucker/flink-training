@@ -466,8 +466,12 @@ units:
 | 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
 
 ```bash
-scripts/scale-units.sh
+scripts/scale-units.sh          # 2 and 4 units -- the demo pair
+UNITS="1 2 4 8" OUT=docs/steps/step-12/units.txt scripts/scale-units.sh
 ```
+
+The script defaults to **2 and 4**, which is the pair worth showing live: 1.96×
+for double the units, in two cases rather than four. The full curve is the record.
 
 **It doubles, doubles again, then stops.** Up to four units Flink uses every core
 it is given and parallelism converts straight into throughput. At eight it

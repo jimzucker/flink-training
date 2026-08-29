@@ -41,8 +41,16 @@ a 60-second window after warm-up, producer stopped so nothing varies but units:
 | 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
 
 ```bash
-scripts/scale-units.sh
+scripts/scale-units.sh          # 2 and 4 units -- the demo pair
+UNITS="1 2 4 8" OUT=docs/steps/step-12/units.txt scripts/scale-units.sh
 ```
+
+**In front of an audience, run only 2 and 4.** Each case costs minutes of warm-up
+that is dead air, and that pair is where the result is sharpest — 65,721 to
+129,056 orders/sec, a **1.96× return on double the units**, with Flink using 2.00
+of 2 cores and then 3.94 of 4. Near-perfect linear scaling in two cases. The full
+curve is what this document reports and what the ceiling discussion below needs,
+but it is a backup slide rather than the demo.
 
 **It doubles, doubles again, then stops.** Three things follow, in order.
 

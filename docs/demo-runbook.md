@@ -113,41 +113,56 @@ Offer this rather than waiting to be asked.
 
 ### 5. Scaling, if there is time
 
-Not a live run — each case needs four minutes of warm-up, which is dead air.
-Run `scripts/scale-units.sh` beforehand and show the table:
+Not a live run — each case needs minutes of warm-up, which is dead air. Run it
+beforehand and show two cases:
+
+```bash
+scripts/scale-units.sh          # 2 and 4 units, the demo pair
+```
+
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 2 | 65,721 | — | 2.00 of 2 | 0.25 | 28.5% |
+| 4 | **129,056** | **1.96×** | 3.94 of 4 | 0.39 | 51.6% |
+
+A unit is one core and one degree of parallelism, bought together — a KPU in
+Managed Service for Apache Flink. Two things to say:
+
+1. **Double the units, double the throughput** — 1.96× of it, which is as close
+   to linear as this gets.
+2. **Flink used every core it was given**, 2.00 of 2 and 3.94 of 4, while the
+   broker stayed under half a core. That is what makes the first point mean
+   something: Flink is the constrained component, and you can only show that
+   something scales when it is the thing that is constrained. Step 10 got this
+   wrong — it varied parallelism while Flink already had every core it could
+   use, and the answer came back flat.
+
+Two cases, one claim, no dead air. The full curve is the backup slide below.
+
+#### Backup: the whole curve, and where it stops
+
+`UNITS="1 2 4 8" OUT=docs/steps/step-12/units.txt scripts/scale-units.sh` — only
+if asked, or if there is real time:
 
 | units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
 |---|---|---|---|---|---|
 | 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
 | 2 | 65,721 | 2.15× | 2.00 | 0.25 | 28.5% |
 | 4 | 129,056 | 1.96× | 3.94 | 0.39 | 51.6% |
-| 8 | 151,969 | 1.18× | 4.98 | 0.48 | 72.7% |
+| 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
 
-A unit is one core and one degree of parallelism, bought together — a KPU in
-Managed Service for Apache Flink. Three things to say, in this order:
+**It stops at eight, and the broker is at 0.48 cores while being the thing in the
+way.** It has run out of write throughput, not CPU: 151,969 orders/sec is 759,845
+records/sec against the ~750,000 one broker accepts, because each order becomes
+five records. A broker that looks idle can still be the ceiling, and the only way
+to tell is to have both CPU figures beside the throughput.
 
-1. **It doubles, then doubles again.** Parallelism converts into throughput while
-   Flink is the constraint, and up to four units it uses every core it is given.
-2. **Then it stops.** Eight units returns 1.18×, and Flink reaches only 4.98 of
-   the eight cores it was given — the subtasks are waiting, not computing.
-3. **The broker is at 0.48 cores while being the thing in the way.** It has run
-   out of write throughput, not CPU. 151,969 orders/sec is 759,845 records/sec,
-   against the ~750,000 one broker accepts, because each order becomes five
-   records — one position and four allocations.
-
-The third point is the one worth the time. A broker that looks idle can still be
-the ceiling, and the only way to tell is to have both CPU figures beside the
-throughput.
-
-**If asked whether that is Flink's ceiling or the laptop's** — the laptop's, and
-there is a measurement. The same script against a two-broker MSK cluster returns
-**1.73×** for that last doubling instead of 1.18×, with Flink using 7.99 of its 8
-cores instead of 4.98. Nothing about the job changed, only what was in its way.
-
-One line, not a second table. If pressed further, say that the AWS run was a
-confirmation rather than a demo, that its step ratios behave oddly in a way that
-is not yet explained, and that the two highest points were measured once each.
-The laptop numbers are the ones to stand behind.
+**If asked whether that is Flink's ceiling or the laptop's** — the laptop's. The
+same script against a two-broker MSK cluster returns 1.73× for that last doubling
+instead of 1.18×, with Flink using 7.99 of its 8 cores instead of 4.98. Nothing
+about the job changed, only what was in its way. That run was a confirmation
+rather than a demo; its step ratios behave oddly in a way that is not yet
+explained, and its two highest points were measured once each.
 
 ### 6. If someone asks something you cannot answer
 
