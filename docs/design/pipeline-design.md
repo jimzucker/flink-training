@@ -111,8 +111,13 @@ element above.
 | 6 | `mv-by-account` | 16 / min | **16** | one emit per key per minute |
 
 Sink 4 emits 4× the rate of sink 3 because each trade fans out to 4 allocations.
-Sinks 5 and 6 emit once per minute per key regardless of input rate, because the
-window collapses all updates in that minute to a single value.
+Sinks 5 and 6 emit once per key per window regardless of input rate, because the
+window collapses every update within it to a single value.
+
+The rates above assume the **specified one-minute window**. The demo and the
+verification both override it to 10s via `WINDOW_MS`, so what you actually watch
+is 4 and 16 records every ten seconds. The calculation is identical either way —
+only the emit boundary moves.
 
 ## Determinism
 

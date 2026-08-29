@@ -39,6 +39,22 @@ which needs no native cairo.
 `scripts/build-deck.py` re-runs the diagram render on every build, so the deck
 cannot carry a stale copy of it.
 
+## Seeing them without PowerPoint
+
+`scripts/preview-deck.py` renders the generated `.pptx` files to a single HTML
+page by reading their **real shape geometry** — every position, size, fill, font,
+table cell and embedded picture, laid out at its actual coordinates. It shows what
+the files contain rather than what they were meant to contain, which is the point:
+it caught a build where an edit silently failed to apply and a slide still carried
+the old text.
+
+```bash
+.venv/bin/python scripts/preview-deck.py > /tmp/deck-preview.html
+```
+
+Browser text metrics are not PowerPoint's, so this narrows the question of whether
+anything overflows its box but does not settle it.
+
 ## The thirteen slides
 
 | # | Slide | Carries |

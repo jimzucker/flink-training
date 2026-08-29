@@ -322,14 +322,14 @@ def s_exactly_once(slide, handout):
 def s_latency(slide, handout):
     top = heading(slide, "Two numbers, and they are not the same", "Latency")
     table(slide, Inches(0.75), top,
-          [["", "p50", "p99"],
-           ["What the pipeline takes", "59 ms", "110 ms"],
-           ["What a consumer waits for", "518 ms", "1 020 ms"]],
+          [["", "p50", "max"],
+           ["What the pipeline takes", "59 ms", "110 ms  (p99)"],
+           ["What a consumer waits for", "518 ms", "1 025 ms"]],
           [Inches(3.6), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
     table(slide, Inches(7.4), top,
           [["Checkpoint interval", "p50", "max"],
            ["5 s", "2 488 ms", "4 988 ms"],
-           ["1 s  (the default)", "497 ms", "1 041 ms"]],
+           ["1 s  (the default)", "518 ms", "1 025 ms"]],
           [Inches(2.9), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
     if handout:
         prose(slide, top + Inches(1.9),

@@ -44,11 +44,16 @@ element in the diagram.
 |---|---|---|---|
 | 3 | `positions-by-symbol` | 10 / sec — one per trade | **4** |
 | 4 | `positions-by-account` | 40 / sec — one per allocation | **16** |
-| 5 | `mv-by-symbol` | 4 / min — one per key per window | **4** |
-| 6 | `mv-by-account` | 16 / min — one per key per window | **16** |
+| 5 | `mv-by-symbol` | 4 per window — one per key | **4** |
+| 6 | `mv-by-account` | 16 per window — one per key | **16** |
 
-Verified against the real topics by `scripts/verify-topics.sh`. Sinks 3–6 are
-produced by the jobs in later steps; what step 02 proves is the input side.
+The window is **10s locally** and 60s in the job's own default, so sinks 5 and 6
+emit 4 and 16 records every ten seconds in the demo, and 4 and 16 per minute at
+the rate the requirements state. The calculation is identical either way.
+
+Verified against the real topics by `scripts/verify-topics.sh`, which runs at the
+same 10s window. Sinks 3–6 are produced by the jobs in later steps; what step 02
+proves is the input side.
 
 ## Running it locally
 
@@ -234,7 +239,7 @@ overrides on `docker compose`, so a demo can change one without touching a file.
 | `PARTITIONS` | `4` | one per symbol key, and the assignment's shape. `scripts/scale-units.sh` raises it to 8 for its own runs so no unit count is short of source subtasks |
 | `PARALLELISM` | `2` | the assignment's baseline; the scale case raises it to 4 |
 | `TASK_SLOTS` | `8` | two jobs at parallelism 4 |
-| `TASKMANAGER_CPUS` | `0` | no limit. `scripts/scale-units.sh` sets 1, 2, 4 and 8 — naming a number as the default breaks on any machine with fewer cores |
+| `TASKMANAGER_CPUS` | `0` | no limit. `scripts/scale-units.sh` sets it per case — 2 and 4 by default, 1 through 8 for the full curve — since naming a number as the default breaks on any machine with fewer cores |
 | `WINDOW_MS` | `10000` locally, `60000` in the job | 10s so a demo shows several windows closing; 60s is what the requirements state |
 | `CHECKPOINT_INTERVAL_MS` | `1000` | the floor under visible latency: a record is not readable until its checkpoint commits |
 | `IDLENESS_MS` | `5000` | how long a quiet partition may hold the watermark back |
@@ -605,7 +610,7 @@ generators/            block trade and price generators
 jobs/                  Flink jobs
 docker/                local stack: Kafka, Flink, Prometheus, Grafana
 docker/grafana/        dashboard and provisioning
-scripts/               helper scripts
+scripts/               helper scripts, including the deck build
 docs/design/           pipeline diagram and design notes
 docs/steps/            per-step evidence: logs, metrics, screenshots
 docs/reviews/          review exchanges for each step

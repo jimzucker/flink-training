@@ -75,6 +75,39 @@ specification, while slide 4 says the demo runs a 10-second window. Slide 3 now
 carries a caption saying so, and the speaker note repeats it, rather than leaving
 two slides that appear to disagree.
 
+### Round 4 — a documentation audit
+
+> Check that all docs are now correct and aligned
+
+Five misalignments, four of them predating this step:
+
+**`README.md` quoted the specification's window in the expected-output table.**
+Sinks 5 and 6 were listed at "4 / min" and "16 / min", but `verify-topics.sh`
+runs at `WINDOW_MS=10000` — so the table promised rates that neither the demo nor
+the verification produces. Now stated per window, with the 10s/60s split spelled
+out. This is the same error the deck had, in the doc the deck was built from.
+
+**`README.md` described a stale `scale-units.sh`.** It said the script "sets 1,
+2, 4 and 8"; the default is now 2 and 4.
+
+**`docs/steps/step-04/exactly-once.md` stated the 5-second checkpoint interval as
+current.** It was current at step 04 and step 09 lowered the default to one
+second. Marked as superseded, with the current figure alongside.
+
+**`docs/design/pipeline-design.md` gave the one-minute rates without noting the
+override.** Correct as a specification document, but it is where the deck's
+diagram comes from, so it now says which number you will actually watch.
+
+**The deck disagreed with itself on one slide.** Slide 8 carried "518 ms" in the
+consumer-wait table and "497 ms" in the interval-comparison table beside it. Both
+are real measurements from step 09 — the first taken after one second became the
+default, the second from the interval experiment — but presented side by side
+they read as two answers to one question. The slide now uses 518 ms / 1 025 ms in
+both, matching the README.
+
+`scripts/preview-deck.py` was also undocumented despite being committed; it is
+now described in the step doc.
+
 ## Still open
 
 **Text fitting is unverified.** There is no renderer on this machine — no
