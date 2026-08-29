@@ -21,7 +21,7 @@ own branch, reviewed, reworked if the review calls for it, then squash-merged to
 | 09 | Latency | full | `step-09-latency` | done |
 | 10 | Scale | full | `step-10-scale` | done |
 | 11 | AWS | full | `step-11-aws` | done |
-| 12 | Scaling demo | full | `step-12-scaling-demo` | in progress |
+| 12 | Scaling demo | full | `step-12-scaling-demo` | done |
 | 13 | Final demo | full | `step-13-final-deck` | not started |
 
 The local Docker stack is stood up early and grown one service at a time, rather
@@ -1255,4 +1255,11 @@ Details: [`docs/steps/step-12/scaling-demo.md`](../docs/steps/step-12/scaling-de
 
 ### Review
 
-_Pending._ Full exchange: [`docs/reviews/step-12.md`](../docs/reviews/step-12.md)
+Two rounds. The first rejected the AWS rig as a demo — excessive infrastructure
+that scares people before a word is spoken — and produced the unit idea. The
+second asked what was constrained at four to eight units, which turned out to be
+neither CPU, and added the resource columns that answer it.
+
+**Outcome:** approved, squash-merged to `main`, tagged `step-12`.
+
+Full exchange: [`docs/reviews/step-12.md`](../docs/reviews/step-12.md)
