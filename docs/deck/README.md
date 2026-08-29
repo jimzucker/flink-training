@@ -12,7 +12,8 @@ Both carry speaker notes on every slide.
 ## Rebuilding
 
 ```bash
-python3 -m venv .venv && .venv/bin/pip install python-pptx svglib reportlab pillow
+python3 -m venv .venv
+.venv/bin/pip install -r scripts/deck-requirements.txt
 .venv/bin/python scripts/build-deck.py
 ```
 

@@ -6,6 +6,8 @@ Final project: calculate **positions** and **market value** from a stream of blo
 trades, using Apache Flink and Kafka.
 
 Requirements come from [`assignment.pptx`](assignment.pptx).
+The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
+[`docs/demo-runbook.md`](docs/demo-runbook.md).
 
 ---
 
@@ -500,6 +502,26 @@ Full analysis: [`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling
 
 ---
 
+## The deck
+
+The live demo is the deliverable; the slides are the handout and the backup.
+
+| file | for |
+|---|---|
+| [`docs/deck/final-demo.pptx`](docs/deck/final-demo.pptx) | presenting — nothing to read aloud |
+| [`docs/deck/final-demo-handout.pptx`](docs/deck/final-demo-handout.pptx) | leaving behind, and the fallback if the stack fails |
+
+Both are generated from one content model, so a number cannot drift between them:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r scripts/deck-requirements.txt
+.venv/bin/python scripts/build-deck.py
+```
+
+See [`docs/deck/`](docs/deck/) for what each of the thirteen slides carries and
+how to review them without PowerPoint.
+
 ## Prerequisites
 
 | Tool | Version | Notes |
@@ -579,25 +601,6 @@ gh pr merge --squash          # once CI is green
 Squash-merging keeps `main` linear with one commit per step, and the step branch
 stays for inspection. Direct pushes to `main` are rejected — verified, not
 assumed.
-
-## The deck
-
-The live demo is the deliverable; the slides are the handout and the backup.
-
-| file | for |
-|---|---|
-| [`docs/deck/final-demo.pptx`](docs/deck/final-demo.pptx) | presenting — nothing to read aloud |
-| [`docs/deck/final-demo-handout.pptx`](docs/deck/final-demo-handout.pptx) | leaving behind, and the fallback if the stack fails |
-
-Both are generated from one content model, so a number cannot drift between them:
-
-```bash
-python3 -m venv .venv && .venv/bin/pip install python-pptx
-.venv/bin/python scripts/build-deck.py
-```
-
-See [`docs/deck/`](docs/deck/) for what each of the thirteen slides carries and
-how to review them without PowerPoint.
 
 ## Repository layout
 

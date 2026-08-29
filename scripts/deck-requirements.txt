@@ -1,0 +1,7 @@
+# Only needed to rebuild the deck (scripts/build-deck.py). Nothing in the
+# pipeline itself uses Python -- this is why the repo has no other requirements
+# file and why .gitignore gained its python entries only at step 13.
+python-pptx        # writes the .pptx files
+svglib             # parses docs/design/pipeline.svg
+reportlab          # svglib's render target; SVG -> PDF without native cairo
+pillow             # trims the rendered diagram and reads its aspect ratio
