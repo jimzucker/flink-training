@@ -20,7 +20,7 @@ variable "name" {
 # where Flink stops when the broker is not what stops it.
 variable "client_instance_type" {
   type    = string
-  default = "c7i.8xlarge"
+  default = "c7i.4xlarge"
 }
 
 # Three brokers, four vCPUs each. The local ceiling was one broker's write path
@@ -28,13 +28,22 @@ variable "client_instance_type" {
 # becomes what Flink does when the broker is not the thing stopping it.
 variable "broker_instance_type" {
   type    = string
-  default = "kafka.m5.xlarge"
+  default = "kafka.m5.large"
+}
+
+# Two brokers, the minimum MSK allows. The question this answers is whether the
+# curve keeps its shape with the ceiling further out, and that needs a broker
+# that is not a laptop -- not a large cluster. Step 11 established what three
+# bigger brokers can do; nothing here needs repeating it.
+variable "broker_count" {
+  type    = number
+  default = 2
 }
 
 # The 88M-order backlog is about 26GB of orders and roughly 90GB of positions.
 variable "broker_volume_gb" {
   type    = number
-  default = 250
+  default = 120
 }
 
 variable "kafka_version" {
