@@ -4,10 +4,13 @@
 the backup. Two decks are generated from one content model so a number cannot
 drift between them.
 
+The files live in [`docs/deck/`](../../deck/) — they are a deliverable, not
+per-step evidence, so they sit where someone looking for the deck would look.
+
 | file | for |
 |---|---|
-| `final-demo.pptx` | **presenting.** Titles, tables and the diagram. Nothing to read aloud, so attention stays on the live screen. |
-| `final-demo-handout.pptx` | **leaving behind.** The same thirteen slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
+| `docs/deck/final-demo.pptx` | **presenting.** Titles, tables and the diagram. Nothing to read aloud, so attention stays on the live screen. |
+| `docs/deck/final-demo-handout.pptx` | **leaving behind.** The same thirteen slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
 
 Both carry speaker notes on every slide.
 

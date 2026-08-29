@@ -20,7 +20,7 @@ import sys
 import tempfile
 
 SVG = "docs/design/pipeline.svg"
-OUT = "docs/steps/step-13/pipeline.png"
+OUT = "docs/deck/pipeline.png"
 SCALE = 3.0                      # raster at 3x so it stays crisp at slide width
 
 # from the <marker> defs: viewBox 0 0 10 10, refX 9, refY 5, markerWidth 7,
