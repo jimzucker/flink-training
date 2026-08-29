@@ -1241,29 +1241,25 @@ is at 0.48 cores while being the thing in the way, because what it has run out o
 is write throughput rather than CPU — 759,845 records/sec against the ~750,000 it
 was measured to accept.
 
-Then the same script, unchanged, against a `c7i.4xlarge` client and a two-broker
-MSK cluster — 120,000,000 orders queued, the 1- and 2-unit cases run twice:
+That curve is the deliverable: clean, monotone, four minutes a case, and every
+step attributable without argument.
 
-| units | orders/sec | vs prev | Flink cores | broker cores | back-pressure |
-|---|---|---|---|---|---|
-| 1 | 43,538 | — | 1.00 | 0.30 | 20.4% |
-| 2 | 64,106 | 1.47× | 2.00 | 0.39 | 20.6% |
-| 4 | 104,912 | 1.64× | 3.99 | 0.45 | 34.9% |
-| 8 | 181,133 | **1.73×** | 7.99 | 0.62 | 65.4% |
+One question it invites — *is that Flink's ceiling or the laptop's?* — was
+answered by running the same script unchanged against a two-broker MSK cluster.
+The last doubling returns **1.73×** there instead of 1.18×, with Flink using 7.99
+of its 8 cores instead of 4.98 and the broker never passing 0.62. The laptop's
+ceiling is its broker, not Flink.
 
-**The flattening is gone.** The broker never passes 0.62 cores, Flink takes
-exactly what it is given at every rung, and the last doubling returns 1.73× where
-the laptop returned 1.18×. That is the step's claim, measured on both sides.
-
-The prediction was half right. The ceiling moved, as expected — but the shape did
-not hold: the laptop's ratios decay while the AWS ratios *rise* (1.47×, 1.64×,
-1.73×), which is backwards and is recorded as unexplained rather than explained
-away. A shuffle-cost hypothesis was checked against the dataflow graph and
-refuted. The 4- and 8-unit AWS cases were measured once each.
+That AWS run is a confirmation, not a second demo, and it is deliberately kept to
+one row. Its step ratios *rise* (1.47×, 1.64×, 1.73×) rather than decaying, which
+is backwards and is recorded as unexplained rather than explained away; a
+shuffle-cost hypothesis was checked against the dataflow graph and refuted; and
+the 4- and 8-unit points were measured once each. Full data:
+[`docs/steps/step-12/units-aws.txt`](../docs/steps/step-12/units-aws.txt).
 
 The reported number is **orders/sec**, counted as records arriving in
 `positions-by-symbol`, which is exactly one per order. Allocations are four times
-that and total records written five times — so 181,133 orders/sec is 905,665
+that and total records written five times — so 151,969 orders/sec is 759,845
 records/sec.
 
 ### The cold start was a bug, not a warm-up

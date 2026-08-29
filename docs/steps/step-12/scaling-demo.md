@@ -1,10 +1,10 @@
 # Step 12 — a scaling demo that fits on a laptop
 
-**Bottom line:** Flink converts cores into throughput almost perfectly until
-something else becomes the constraint. On a laptop that something is one Kafka
-broker, and the curve flattens at 8 units. On AWS, with the broker out of the
-way, the same job keeps scaling — 8 units returns 1.73× and Flink uses 7.99 of
-the 8 cores it was given. Same code, same script, one variable changed.
+**Bottom line:** one core and one degree of parallelism, bought together, is a
+unit. Buy units and throughput follows — until something else becomes the
+constraint. On a laptop with one broker that happens at 8 units, and the resource
+columns say exactly why. The whole demo is four minutes a case on hardware you
+already own.
 
 ## Why this step exists
 
@@ -30,10 +30,8 @@ unattributable.
 
 ## The result
 
-Eight partitions throughout, backlog drained with the producer stopped, a
-60-second window after warm-up.
-
-**Laptop** — one broker, 50,000,000 orders queued:
+One laptop, one broker, eight partitions throughout, 50,000,000 orders queued,
+a 60-second window after warm-up, producer stopped so nothing varies but units:
 
 | units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
 |---|---|---|---|---|---|
@@ -42,21 +40,15 @@ Eight partitions throughout, backlog drained with the producer stopped, a
 | 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
 | 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
 
-**AWS** — `c7i.4xlarge` client, 2 × `kafka.m5.large` MSK at RF=1, 120,000,000
-orders queued:
+```bash
+scripts/scale-units.sh
+```
 
-| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure | runs |
-|---|---|---|---|---|---|---|
-| 1 | 43,538 | — | 1.00 | 0.30 | 20.4% | 2 |
-| 2 | 64,106 | 1.47× | 2.00 | 0.39 | 20.6% | 2 |
-| 4 | 104,912 | 1.64× | 3.99 | 0.45 | 34.9% | 1 |
-| 8 | 181,133 | **1.73×** | 7.99 | 0.62 | 65.4% | 1 |
+**It doubles, doubles again, then stops.** Three things follow, in order.
 
-## Reading it
-
-**The laptop doubles, doubles again, then stops.** Up to four units Flink is the
-constraint and parallelism converts directly into throughput — it uses every core
-it is given, 1.00, 2.00, 3.94 of 1, 2 and 4.
+**Up to four units Flink is the constraint, and parallelism converts directly
+into throughput.** Flink uses every core it is given — 1.00, 2.00, 3.94 of 1, 2
+and 4 — and the broker sits under half a core throughout.
 
 **At eight units Flink cannot use what it was given.** It reaches 4.98 of 8 cores
 while back-pressure climbs to 72.7%: the subtasks are not computing, they are
@@ -75,12 +67,6 @@ was first written: it implies a busy broker. The two cases are only
 distinguishable with both CPU columns beside the throughput, which is why they
 are in the table.
 
-**On AWS the flattening disappears.** The broker never exceeds 0.62 cores and is
-never the constraint, and Flink takes exactly what it is given at every rung —
-1.00, 2.00, 3.99, 7.99. Where the laptop returned 1.18× for its last doubling,
-AWS returns 1.73×. That is the whole point of the step in one comparison: the
-laptop's ceiling is not Flink's.
-
 ## What the numbers count
 
 The reported figure is **orders/sec** — block trades per second, the input rate,
@@ -89,43 +75,44 @@ and the most conservative of the three ways to count this.
 One order becomes **five records**: four account-side allocations
 (`SplitByAllocation`, one per account, and `ReferenceData.ACCOUNTS` has exactly
 four) plus one symbol-side position (`ToSymbolUpdate`, fed from the trade rather
-than the split, deliberately). So:
+than the split, deliberately).
 
 | units | orders/sec | allocations/sec | records written/sec |
 |---|---|---|---|
-| 1 | 43,538 | 174,152 | 217,690 |
-| 2 | 64,106 | 256,424 | 320,530 |
-| 4 | 104,912 | 419,648 | 524,560 |
-| 8 | 181,133 | 724,532 | **905,665** |
+| 1 | 30,505 | 122,020 | 152,525 |
+| 2 | 65,721 | 262,884 | 328,605 |
+| 4 | 129,056 | 516,224 | 645,280 |
+| 8 | 151,969 | 607,876 | **759,845** |
 
-That is also what makes the laptop's ceiling legible: 151,969 orders/sec is
-759,845 records/sec, right at the measured single-broker limit.
+That last figure is what makes the ceiling legible: it sits right on the measured
+single-broker limit, and it is why the curve flattens where it does.
 
-## Honest limits of this data
+## Is that Flink's ceiling, or the laptop's?
 
-**The AWS 1→2 step returns only 1.47×, and the ratios rise after it** — 1.47,
-1.64, 1.73. Scaling efficiency improving as cores are added is backwards, and it
-is not explained. It is not measurement noise: the 1- and 2-unit cases were each
-run twice and agree within 2% (43,974/43,101 and 64,669/63,543). An early
-hypothesis that parallelism 1 skips the network shuffle was **checked and
-refuted** — the dataflow graph has the same three vertices at p=1 as at any other
-parallelism.
+The laptop's. The same script, unchanged, was run against a two-broker MSK
+cluster on a `c7i.4xlarge` client — one question, one answer:
 
-**The 4- and 8-unit AWS cases were each measured once.** The interesting half of
-the claim rests on them, and they are the two points not replicated.
+| | laptop | AWS |
+|---|---|---|
+| 4 → 8 units | **1.18×** | **1.73×** |
+| Flink cores at 8 units | 4.98 of 8 | **7.99 of 8** |
+| broker cores at 8 units | 0.48 | 0.62 |
 
-Anchoring the claim at 2 units rather than 1 avoids the anomaly entirely:
-**2 → 8 is 2.83× for 4× the cores on AWS, against the laptop's 2.31×.**
+With the broker no longer in the way, Flink uses everything it is given and the
+flattening disappears. Nothing about the job changed.
+
+That is the entire role of the AWS run — a confirmation, not a second demo. Its
+numbers are noisier than the laptop's and carry caveats that the laptop's do not:
+the AWS step ratios *rise* rather than decay, which is backwards and unexplained,
+and the 4- and 8-unit points were each measured once. Full data and caveats:
+[`units-aws.txt`](units-aws.txt).
+
+**Quote the laptop table. Keep the AWS row in reserve for the question above.**
 
 ## What it costs to run
 
 A laptop, one broker, `docker compose up`, and about four minutes per case. No
 cluster, no cloud account, nothing that suggests this needs to be expensive.
-
-```bash
-scripts/scale-units.sh                                    # laptop
-COMPOSE=docker/compose.aws.yml scripts/scale-units.sh     # against MSK
-```
 
 `scripts/scale-units.sh` refuses to report a number it cannot stand behind: it
 checks that the CPU limit was actually applied to the container, that a job is

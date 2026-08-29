@@ -454,10 +454,9 @@ times the rate it does not.
 ### What a unit of parallelism buys
 
 One unit is one core and one degree of parallelism, bought together — a KPU in
-Managed Service for Apache Flink. Eight partitions throughout, backlog drained
-with the producer stopped, so nothing varies but the units.
-
-Laptop, one broker:
+Managed Service for Apache Flink. One laptop, one broker, eight partitions
+throughout, backlog drained with the producer stopped, so nothing varies but the
+units:
 
 | units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
 |---|---|---|---|---|---|
@@ -466,24 +465,14 @@ Laptop, one broker:
 | 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
 | 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
 
-AWS, `c7i.4xlarge` client against 2-broker MSK:
-
-| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
-|---|---|---|---|---|---|
-| 1 | 43,538 | — | 1.00 | 0.30 | 20.4% |
-| 2 | 64,106 | 1.47× | 2.00 | 0.39 | 20.6% |
-| 4 | 104,912 | 1.64× | 3.99 | 0.45 | 34.9% |
-| 8 | 181,133 | **1.73×** | 7.99 | 0.62 | 65.4% |
-
 ```bash
-scripts/scale-units.sh                                    # laptop
-COMPOSE=docker/compose.aws.yml scripts/scale-units.sh     # against MSK
+scripts/scale-units.sh
 ```
 
-**The laptop doubles, doubles again, then stops.** Up to four units Flink uses
-every core it is given and parallelism converts straight into throughput. At
-eight it reaches only 4.98 of 8 while back-pressure hits 72.7% — the subtasks are
-waiting, not computing.
+**It doubles, doubles again, then stops.** Up to four units Flink uses every core
+it is given and parallelism converts straight into throughput. At eight it
+reaches only 4.98 of 8 while back-pressure hits 72.7% — the subtasks are waiting,
+not computing.
 
 **And the broker is at 0.48 cores while being the thing in the way.** It has run
 out of write throughput, not CPU: 151,969 orders/sec is 759,845 records/sec
@@ -492,15 +481,11 @@ against the ~750,000 one broker accepts, because each order becomes five records
 looks asleep can still be the ceiling, and only the two CPU columns beside the
 throughput tell you which it is.
 
-**On AWS the flattening disappears.** The broker never passes 0.62 cores, and
-Flink takes exactly what it is given at every rung — 1.00, 2.00, 3.99, 7.99.
-Where the laptop returned 1.18× for its last doubling, AWS returns 1.73×.
-
-Two caveats worth stating: the AWS 1→2 step returns only 1.47× and the ratios
-*rise* after it, which is backwards and remains unexplained (it is not noise —
-both points were measured twice and agree within 2%); and the 4- and 8-unit AWS
-cases were each measured once. Anchoring at 2 units sidesteps the anomaly: 2 → 8
-is **2.83×** for 4× the cores on AWS, against the laptop's 2.31×.
+**Is that Flink's ceiling or the laptop's?** The laptop's. The same script
+against a two-broker MSK cluster returns **1.73×** for that last doubling instead
+of 1.18×, with Flink using 7.99 of its 8 cores instead of 4.98. Nothing about the
+job changed — only what was in its way. That run is a confirmation rather than a
+second demo, and its caveats are recorded with it.
 
 Full analysis: [`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling-demo.md)
 
