@@ -166,3 +166,12 @@ unknown -- only that it turns below 16.
 
 **The `1 -> 2` figure from step 10 is still from small cache-warm runs** and is
 not comparable to anything measured here.
+
+---
+
+**Resolved in step 12.** This step made Flink the constraint by overwhelming
+everything around it, which works but makes a poor demo. Capping Flink's cores
+instead reproduces the whole result on a laptop, and the same script run against
+a smaller MSK cluster gives the AWS comparison this step was reaching for --
+without a 32-vCPU instance or three brokers. See
+[`docs/steps/step-12/scaling-demo.md`](../step-12/scaling-demo.md).

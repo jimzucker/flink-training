@@ -19,6 +19,12 @@ scrape_configs:
           component: taskmanager
 
   # MSK open monitoring: one JMX exporter and one node exporter per broker.
+  #
+  # These hostnames belong to one particular cluster and are regenerated from the
+  # bootstrap string whenever it is rebuilt. Left over from an earlier cluster
+  # they simply fail to resolve, and the broker panels read zero with nothing to
+  # say why -- which is how an AWS run reported 0.00 broker cores while the
+  # broker was the whole question.
   # Names differ from the local stack's -- MSK ships its own exporter config, so
   # these arrive as kafka_server_BrokerTopicMetrics_* with a name label rather
   # than the flattened names docker/kafka/jmx-exporter.yml produces. The broker
@@ -27,9 +33,8 @@ scrape_configs:
   - job_name: msk-jmx
     static_configs:
       - targets:
-          - "b-1.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:11001"
-          - "b-2.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:11001"
-          - "b-3.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:11001"
+          - "b-1.flinktraining.bgihq0.c13.kafka.us-east-1.amazonaws.com:11001"
+          - "b-2.flinktraining.bgihq0.c13.kafka.us-east-1.amazonaws.com:11001"
         labels:
           component: broker
 
@@ -38,8 +43,7 @@ scrape_configs:
   - job_name: msk-node
     static_configs:
       - targets:
-          - "b-1.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:11002"
-          - "b-2.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:11002"
-          - "b-3.flinktraining.iltzq2.c13.kafka.us-east-1.amazonaws.com:11002"
+          - "b-1.flinktraining.bgihq0.c13.kafka.us-east-1.amazonaws.com:11002"
+          - "b-2.flinktraining.bgihq0.c13.kafka.us-east-1.amazonaws.com:11002"
         labels:
           component: broker

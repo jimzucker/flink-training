@@ -1,0 +1,12 @@
+what a unit of parallelism buys  (2026-08-29T13:49:29Z)
+a unit is one core and one degree of parallelism, bought together
+8 partitions, checkpoint 10000ms, 60s window after 120s warm-up
+
+-- filling 120000000 orders with the job stopped
+   120000000 orders queued
+
+   units    orders/sec   vs prev    flink   broker   back-pr
+                                    cores    cores    essure
+       2         64669         -     2.00     0.43    23.00%
+
+written to docs/steps/step-12/units-aws-2.txt

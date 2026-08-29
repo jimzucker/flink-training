@@ -139,9 +139,27 @@ The third point is the one worth the time. A broker that looks idle can still be
 the ceiling, and the only way to tell is to have both CPU figures beside the
 throughput.
 
-If asked what it costs to move that ceiling: three MSK brokers took 1,300,265
-records/sec where one local broker took 711,700. That is `docs/steps/step-11/`,
-and it is a slide rather than a demo.
+**If asked whether that is Flink's ceiling or the laptop's** — it is the
+laptop's, and there is a measurement. The identical script against a two-broker
+MSK cluster, one slide, no live run:
+
+| units | laptop | AWS |
+|---|---|---|
+| 1 | 30,505 | 43,538 |
+| 2 | 65,721 | 64,106 |
+| 4 | 129,056 | 104,912 |
+| 8 | **151,969** | **181,133** |
+| last doubling | **1.18×** | **1.73×** |
+
+The two machines agree almost exactly at 2 units and separate after it, because
+that is where the laptop starts hitting its broker. On AWS the broker never
+passes 0.62 cores and Flink uses 7.99 of its 8 — it is still scaling when the run
+ends.
+
+Do not oversell it: the AWS curve's step ratios *rise* (1.47×, 1.64×, 1.73×),
+which is backwards and is not yet explained, and the 4- and 8-unit points were
+measured once. If someone presses, say that. The safe form of the claim is
+**2 → 8 returns 2.83× for 4× the cores on AWS against 2.31× on the laptop.**
 
 ### 6. If someone asks something you cannot answer
 

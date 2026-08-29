@@ -51,9 +51,9 @@ public final class MarketValueJob {
                 prices.broadcast(MarketValueAtClose.PRICES);
 
         emitMarketValue(env, config, config.positionsBySymbolTopic(),
-                config.mvBySymbolTopic(), broadcastPrices, "by symbol", "mv-by-symbol-tx");
+                config.mvBySymbolTopic(), broadcastPrices, "by symbol", JobConfig.transactionalIdPrefix("mv-by-symbol-tx"));
         emitMarketValue(env, config, config.positionsByAccountTopic(),
-                config.mvByAccountTopic(), broadcastPrices, "by account", "mv-by-account-tx");
+                config.mvByAccountTopic(), broadcastPrices, "by account", JobConfig.transactionalIdPrefix("mv-by-account-tx"));
 
         env.execute("Part 2 - market value");
     }

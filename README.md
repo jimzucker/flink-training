@@ -422,63 +422,16 @@ specification rather than a delay. Its figures step rather than spread — p95, 
 and the maximum are the same number, because every key in a window is emitted at
 the same boundary and so shares an age.
 
-## What parallelism buys, and where it stops
+## Scaling
 
-One unit is one core and one degree of parallelism, bought together — a KPU in
-Managed Service for Apache Flink. On a laptop with one broker, eight partitions
-throughout:
+**Flink converts cores into throughput almost perfectly until something else
+becomes the constraint.** On a laptop that something is one Kafka broker, and the
+curve flattens at 8 units. On AWS, with the broker out of the way, the same job
+keeps scaling. Same code, same script, one variable changed.
 
-| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
-|---|---|---|---|---|---|
-| 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
-| 2 | 65,721 | **2.15×** | 2.00 | 0.25 | 28.5% |
-| 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
-| 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
+### The two cases the requirements specify
 
-```bash
-scripts/scale-units.sh
-```
-
-Up to four units Flink uses every core it is given and parallelism converts
-straight into throughput. At eight it reaches only 4.98 of 8 while back-pressure
-hits 72.7% — the subtasks are waiting, not computing.
-
-**And the broker is at 0.48 cores while being the thing in the way.** It has run
-out of write throughput, not CPU: 151,969 orders/sec is 759,845 records/sec
-against the ~750,000 one broker accepts, because each order becomes five records.
-A broker that looks asleep can still be the ceiling, and only the two CPU columns
-beside the throughput tell you which it is.
-
-Moving the broker moves the ceiling: step 11 measured three MSK brokers taking
-1,300,265 records/sec where one local broker took 711,700.
-
-## Scale results
-
-Draining an 88,678,174-order backlog -- larger than the machine's memory, so the
-reads come off disk rather than page cache -- with 4 partitions and the producer
-stopped, so nothing varies but parallelism:
-
-| | p=2 | p=4 |
-|---|---|---|
-| time to drain | 726 s | **623 s** |
-| orders/sec | 122,146 | **142,340** |
-| allocations/sec | 488,584 | **569,360** |
-| records written/sec | 610,730 | **711,700** |
-| back-pressure | 20–21% | 42–43% |
-
-**Parallelism 4 is 16.5% faster than parallelism 2.** The ceiling is one broker's
-write path at ~750,000 records/sec, and each order becomes five records -- one
-position on the symbol side, four allocations on the account side -- so p=4 runs
-at about 95% of what the broker will accept. The curve flattens as it approaches
-that rather than reversing.
-
-Smaller drains are not to be trusted here: a 12-million-order topic fits in the
-machine's RAM, so the fill leaves it in page cache and the drain reads from
-memory. Those runs had 2 → 4 as a regression, which the larger backlog
-contradicts.
-
-
-Both cases the requirements specify pass.
+Both pass.
 
 | | orders/s asked | prices/s | orders through | allocations | order latency p50 |
 |---|---|---|---|---|---|
@@ -498,15 +451,58 @@ times the rate it does not.
 ./scripts/scale-test.sh
 ```
 
-**Parallelism scaling is not demonstrated**, and the reason is worth stating
-plainly: raising parallelism from 2 to 4 changed nothing because the pipeline was
-never the constraint. The generator caps out around 3000 orders/sec, so there was
-no queue for the extra parallelism to work through. Measuring the pipeline
-directly means draining a backlog with the producer stopped, and on a development
-machine that measurement varied by a factor of two between identical runs. It is
-recorded as unproven rather than supported by an unreliable number — see
-[`docs/steps/step-10/scaling.md`](docs/steps/step-10/scaling.md), and the AWS step
-for where to measure it properly.
+### What a unit of parallelism buys
+
+One unit is one core and one degree of parallelism, bought together — a KPU in
+Managed Service for Apache Flink. Eight partitions throughout, backlog drained
+with the producer stopped, so nothing varies but the units.
+
+Laptop, one broker:
+
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 1 | 30,505 | — | 1.00 | 0.10 | 24.1% |
+| 2 | 65,721 | **2.15×** | 2.00 | 0.25 | 28.5% |
+| 4 | 129,056 | **1.96×** | 3.94 | 0.39 | 51.6% |
+| 8 | 151,969 | **1.18×** | 4.98 | 0.48 | 72.7% |
+
+AWS, `c7i.4xlarge` client against 2-broker MSK:
+
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure |
+|---|---|---|---|---|---|
+| 1 | 43,538 | — | 1.00 | 0.30 | 20.4% |
+| 2 | 64,106 | 1.47× | 2.00 | 0.39 | 20.6% |
+| 4 | 104,912 | 1.64× | 3.99 | 0.45 | 34.9% |
+| 8 | 181,133 | **1.73×** | 7.99 | 0.62 | 65.4% |
+
+```bash
+scripts/scale-units.sh                                    # laptop
+COMPOSE=docker/compose.aws.yml scripts/scale-units.sh     # against MSK
+```
+
+**The laptop doubles, doubles again, then stops.** Up to four units Flink uses
+every core it is given and parallelism converts straight into throughput. At
+eight it reaches only 4.98 of 8 while back-pressure hits 72.7% — the subtasks are
+waiting, not computing.
+
+**And the broker is at 0.48 cores while being the thing in the way.** It has run
+out of write throughput, not CPU: 151,969 orders/sec is 759,845 records/sec
+against the ~750,000 one broker accepts, because each order becomes five records
+— four account-side allocations plus one symbol-side position. A broker that
+looks asleep can still be the ceiling, and only the two CPU columns beside the
+throughput tell you which it is.
+
+**On AWS the flattening disappears.** The broker never passes 0.62 cores, and
+Flink takes exactly what it is given at every rung — 1.00, 2.00, 3.99, 7.99.
+Where the laptop returned 1.18× for its last doubling, AWS returns 1.73×.
+
+Two caveats worth stating: the AWS 1→2 step returns only 1.47× and the ratios
+*rise* after it, which is backwards and remains unexplained (it is not noise —
+both points were measured twice and agree within 2%); and the 4- and 8-unit AWS
+cases were each measured once. Anchoring at 2 units sidesteps the anomaly: 2 → 8
+is **2.83×** for 4× the cores on AWS, against the laptop's 2.31×.
+
+Full analysis: [`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling-demo.md)
 
 ---
 

@@ -91,17 +91,55 @@ error anywhere. And a window that found no progress reported 0 orders/sec as
 though it were a measurement, rather than saying the warm-up was too short to
 clear the cold start.
 
-### Still open
+## Round 3 — the AWS half, and one open item closed
 
-**The cold start is unexplained.** At low unit counts the pipeline sits idle for
-150 seconds or more before it begins, which is why the warm-up is 240s. It is
-excluded from the measurement rather than understood, and it would show in a live
-demo that was not pre-warmed.
+**Prompt:** run the AWS side so the comparison rests on measurement rather than
+prediction, one case at a time, reporting each before proceeding.
 
-**The AWS half has not been run.** The script takes
-`COMPOSE=docker/compose.aws.yml` and a bootstrap string, but the claim that the
-shape holds there with the ceiling further right is a prediction, not a
-measurement.
+Four cases ran: 1, 2, 4 and 8 units against a `c7i.4xlarge` client and a
+two-broker MSK cluster at RF=1. The 1- and 2-unit cases were each run twice.
+
+| units | orders/sec | vs previous | Flink cores | broker cores | back-pressure | runs |
+|---|---|---|---|---|---|---|
+| 1 | 43,538 | — | 1.00 | 0.30 | 20.4% | 2 |
+| 2 | 64,106 | 1.47× | 2.00 | 0.39 | 20.6% | 2 |
+| 4 | 104,912 | 1.64× | 3.99 | 0.45 | 34.9% | 1 |
+| 8 | 181,133 | **1.73×** | 7.99 | 0.62 | 65.4% | 1 |
+
+The prediction held on the part that mattered — the laptop's flattening is the
+broker, and removing it removes the flattening — but **not** on the part that had
+been asserted more confidently. The shape is not the same with the ceiling moved
+right; the laptop's curve decays (2.15×, 1.96×, 1.18×) while the AWS curve
+*improves* (1.47×, 1.64×, 1.73×).
+
+**The cold start is explained, and was a bug.** Sink transactional-ID prefixes
+were fixed strings, so across roughly ten runs Kafka accumulated 98,677
+transactional IDs that every subsequent sink startup had to fence before emitting
+a record. That is the 150s-plus idle at low unit counts. Scoping the prefix per
+run (`TRANSACTIONAL_ID_SCOPE`) took first output from **470s to 31s** and
+checkpoints in the window from **0 to 16**. The 240s warm-up exists to hide a
+defect, and with the defect fixed the AWS runs used 120s.
+
+**A hypothesis was raised and refuted rather than kept.** The rising ratios
+looked like a one-time shuffle cost paid between parallelism 1 and 2. Snapshotting
+the dataflow graph during a p=1 run showed the same three vertices as at any other
+parallelism, so nothing collapses into a single chain and the explanation is
+wrong. It is recorded as unexplained.
+
+**Three process failures, all of them mine.** An entire AWS run was invalidated
+because `compose.aws.yml` had no `deploy.resources.limits.cpus`, so it measured
+parallelism alone with 16 vCPUs available — and the guard that should have caught
+it exempted non-local compose files. An orphaned run held the cluster for 26
+minutes because `exec bash` replaced the command line that `pkill` was matching,
+starving every later submission of slots. And the cluster was left running
+overnight, roughly nine and a half hours, because a question was asked instead of
+the idle timer being started.
+
+## Still open
+
+**The AWS curve's rising ratios are unexplained**, and the two points that carry
+the interesting half of the claim — 4 and 8 units — were each measured once.
+Replicating them is the next thing worth doing.
 
 **The broker has no volume.** It writes to the container's writable layer —
 12GB of it — which on Docker Desktop means overlay2 copy-on-write inside a VM.
