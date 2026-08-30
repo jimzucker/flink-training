@@ -16,7 +16,7 @@ And it is real work: every trade fans out to five downstream updates, so at four
 
 All of it on a laptop, against a single Kafka broker.
 
-Claude Code built all of it — the pipeline, the tests, the monitoring, the benchmark behind these numbers. Twenty hours of build, six of them mine.
+Claude Code built all of it — the pipeline, the tests, the monitoring, the benchmark behind these numbers. Twenty hours of build in total — six of those were my time at the keyboard.
 
 Repo and the measurement in the comments.
 
