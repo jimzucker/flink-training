@@ -16,7 +16,7 @@ S = 2                                    # 2x for a crisp upload
 W, H = 1200 * S, 627 * S                 # LinkedIn's 1.91:1
 
 # from docs/steps/step-12/units.txt -- one laptop run, 8 partitions throughout
-CASES = [(1, 30505, "1.00 of 1"), (2, 65721, "2.00 of 2"), (4, 129056, "3.94 of 4")]
+CASES = [(1, 30505), (2, 65721), (4, 129056)]
 STEPS = ["2.15x", "1.96x"]               # measured, between consecutive bars
 
 INK   = (0x14, 0x22, 0x2E)
@@ -37,8 +37,7 @@ d = ImageDraw.Draw(im)
 
 d.text((60 * S, 44 * S), "One core in, one core's worth out", font=font(38, True), fill=INK)
 d.text((60 * S, 96 * S),
-       "Block trades to positions on a laptop with a single Kafka broker. "
-       "A unit is one core and one degree of parallelism, bought together.",
+       "Block trades to positions on a laptop with a single Kafka broker.",
        font=font(19), fill=MUTED)
 
 BASE = int(468 * S)                      # baseline y
@@ -52,9 +51,9 @@ d.line([(60 * S, BASE), (1140 * S, BASE)], fill=RULE, width=int(2 * S))
 BW = int(150 * S)
 XS = [int(x * S) for x in (170, 430, 690)]
 
-# ideal-linear reference, computed from the one-unit result
+# ideal-linear reference, computed from the one-core result
 per_unit = CASES[0][1]
-pts = [(XS[i] + BW // 2, BASE - h(per_unit * u)) for i, (u, _, _) in enumerate(CASES)]
+pts = [(XS[i] + BW // 2, BASE - h(per_unit * u)) for i, (u, _) in enumerate(CASES)]
 x, seg = pts[0][0], 0
 while seg < len(pts) - 1:
     (x0, y0), (x1, y1) = pts[seg], pts[seg + 1]
@@ -67,9 +66,9 @@ while seg < len(pts) - 1:
 # in the clear space left of where the line starts, not over a bar
 cx, cy = pts[0][0] - 176 * S, pts[0][1] - 74 * S
 d.text((cx, cy), "perfect linear,", font=font(16, True), fill=IDEAL)
-d.text((cx, cy + 21 * S), "from the 1-unit result", font=font(16), fill=IDEAL)
+d.text((cx, cy + 21 * S), "from the 1-core result", font=font(16), fill=IDEAL)
 
-for i, (units, val, cores) in enumerate(CASES):
+for i, (units, val) in enumerate(CASES):
     bh = h(val)
     x0 = XS[i]
     d.rounded_rectangle([x0, BASE - bh, x0 + BW, BASE],
@@ -78,12 +77,9 @@ for i, (units, val, cores) in enumerate(CASES):
     w = d.textlength(lab, font=font(30, True))
     d.text((x0 + (BW - w) / 2, BASE - bh - 46 * S), lab, font=font(30, True), fill=INK)
 
-    t = f"{units} unit" + ("s" if units > 1 else "")
-    w = d.textlength(t, font=font(21, True))
-    d.text((x0 + (BW - w) / 2, BASE + 16 * S), t, font=font(21, True), fill=INK)
-    c = cores + " cores used"
-    w = d.textlength(c, font=font(16), )
-    d.text((x0 + (BW - w) / 2, BASE + 44 * S), c, font=font(16), fill=MUTED)
+    t = f"{units} core" + ("s" if units > 1 else "")
+    w = d.textlength(t, font=font(24, True))
+    d.text((x0 + (BW - w) / 2, BASE + 18 * S), t, font=font(24, True), fill=INK)
 
     if i:                                 # multiplier between this bar and the last
         mx = (XS[i - 1] + BW + x0) / 2
