@@ -2,6 +2,11 @@
 !.mvn/wrapper/maven-wrapper.jar
 .classpath
 .claude/
+# ...except skills, which are meant to be shared: anyone who clones this repo
+# gets them with no setup. Local settings.json stays ignored.
+!.claude/
+.claude/*
+!.claude/skills/
 .DS_Store
 .env
 .env.local
