@@ -371,11 +371,100 @@ def s_units(slide, handout):
                  "it could use, and the answer came back flat.")
 
 
-# Eight slides. Exactly-once, latency and the three backup slides were cut: the
-# deck ends on the scaling result rather than trailing off into caveats, and the
-# guarantees are shown live rather than described.
-SLIDES = [s_title, s_problem, s_design, s_expected, s_live, s_numbers,
-          s_cases, s_units]
+def s_units_chart(slide, handout):
+    """The 2x result as a chart -- bars against a marked ideal, not a table.
+
+    Two bars and a dashed line at exactly twice the first bar. The whole claim is
+    whether the second bar reaches that line, so the line is drawn rather than
+    described and the reader checks it in one glance.
+    """
+    top = heading(slide, "Two units, then four — against a perfect 2x", "Scaling")
+
+    BASE = Inches(5.62)                     # baseline both bars stand on
+    PLOT = Inches(3.42)                     # full height of the plot area
+    FULL = 140000.0                         # value at the top of the plot
+    def h(v):
+        return Emu(int(PLOT * (v / FULL)))
+
+    CASES = [(2, 65721, Inches(1.75)), (4, 129056, Inches(4.35))]
+    BW = Inches(1.65)
+    IDEAL = 65721 * 2                       # what a perfect 2x would reach
+
+    # axis
+    ax = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.15), BASE, Inches(5.9), Pt(1.25))
+    ax.fill.solid(); ax.fill.fore_color.rgb = RULE
+    ax.line.fill.background(); ax.shadow.inherit = False
+
+    # the ideal-2x reference, drawn as a series of dashes so it reads as a target
+    iy = BASE - h(IDEAL)
+    x = Inches(1.30)
+    while x < Inches(6.95):
+        d = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, iy, Inches(0.14), Pt(1.6))
+        d.fill.solid(); d.fill.fore_color.rgb = WARN
+        d.line.fill.background(); d.shadow.inherit = False
+        x += Inches(0.26)
+    tf = _tb(slide, Inches(5.55), iy - Inches(0.32), Inches(2.4), Inches(0.3))
+    _run(tf.paragraphs[0], "perfect 2x  =  131,442", 11.5, WARN, bold=True)
+
+    for units, val, bx in CASES:
+        bh = h(val)
+        bar = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, bx, BASE - bh, BW, bh)
+        bar.fill.solid()
+        bar.fill.fore_color.rgb = ACCENT if units == 4 else RGBColor(0x9F, 0xC2, 0xD1)
+        bar.line.fill.background(); bar.shadow.inherit = False
+
+        v = _tb(slide, bx - Inches(0.35), BASE - bh - Inches(0.46), BW + Inches(0.7),
+                Inches(0.4), PP_ALIGN.CENTER)
+        _run(v.paragraphs[0], f"{val:,}", 19, INK, bold=True)
+
+        lab = _tb(slide, bx - Inches(0.35), BASE + Inches(0.10), BW + Inches(0.7),
+                  Inches(0.66), PP_ALIGN.CENTER)
+        p1 = lab.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
+        _run(p1, f"{units} units", 15, INK, bold=True)
+        p2 = lab.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
+        _run(p2, f"{units:.2f} of {units} cores used" if units == 2 else "3.94 of 4 cores used",
+             11.5, MUTED)
+
+    # the multiplier, between the two bars
+    m = _tb(slide, Inches(3.10), BASE - h(90000), Inches(1.5), Inches(0.8), PP_ALIGN.CENTER)
+    p1 = m.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
+    _run(p1, "1.96x", 30, ACCENT, bold=True)
+    p2 = m.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
+    _run(p2, "orders / sec", 11, MUTED)
+
+    # what the chart cannot show on its own
+    rt = _tb(slide, Inches(7.75), top + Inches(0.30), Inches(4.9), Inches(4.0))
+    for i, (lead, rest) in enumerate([
+        ("A unit is one core and one degree of parallelism, bought together. ",
+         "That is what a KPU is in Managed Service for Apache Flink."),
+        ("Flink used every core it was given — ",
+         "2.00 of 2, then 3.94 of 4. A unit bought is a unit worked."),
+        ("The broker stayed under half a core. ",
+         "Flink was the constrained component, and you can only show that something "
+         "scales when it is the thing that is constrained."),
+    ]):
+        para = _para(rt, first=(i == 0)); para.space_after = Pt(15)
+        _run(para, "\u25b8   ", 15, ACCENT, bold=True)
+        _run(para, lead, 15, INK, bold=True)
+        _run(para, rest, 15, BODY)
+
+    if handout:
+        statline(slide, Inches(6.42),
+                 "Eight partitions were held constant across both cases, and the backlog was "
+                 "drained with the producer stopped, so nothing varied but the units. The dashed "
+                 "line is exactly twice the two-unit result; the four-unit bar reaches 98% of it.",
+                 MUTED, 13)
+    notes(slide, "The dashed line is exactly 2x the first bar. The whole claim is whether the "
+                 "second bar reaches it -- 129,056 against 131,442, which is 98%. Step 10 got this "
+                 "wrong by varying parallelism while Flink already had every core it could use, "
+                 "and the answer came back flat.")
+
+
+# Nine slides. The design comes before the problem -- the diagram makes the
+# problem legible rather than the other way round. Scaling sits right after the
+# live demo, while the pipeline is still on screen, instead of trailing the deck.
+SLIDES = [s_title, s_design, s_problem, s_expected, s_live,
+          s_units, s_units_chart, s_numbers, s_cases]
 
 
 def build(path, handout):

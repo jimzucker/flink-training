@@ -5,7 +5,7 @@ The live demo is the deliverable. These slides are the handout and the backup.
 | file | for |
 |---|---|
 | [`final-demo.pptx`](final-demo.pptx) | **presenting.** Titles, tables and the diagram — nothing to read aloud, so attention stays on the live screen. |
-| [`final-demo-handout.pptx`](final-demo-handout.pptx) | **leaving behind.** The same eight slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
+| [`final-demo-handout.pptx`](final-demo-handout.pptx) | **leaving behind.** The same nine slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
 
 Both carry speaker notes on every slide.
 
@@ -39,13 +39,14 @@ without settling it.
 | # | Slide | |
 |---|---|---|
 | 1 | Title | What it is, what it runs on |
-| 2 | One order becomes four allocations | The problem, and why the two aggregations differ |
-| 3 | Six numbered elements, end to end | The pipeline diagram |
+| 2 | Six numbered elements, end to end | The pipeline diagram |
+| 3 | One order becomes four allocations | The problem, and why the two aggregations differ |
 | 4 | What the numbers should be | Inputs, sinks 3–6, and the demo's settings — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
-| 6 | Every number has an answer | The three questions the dashboard invites |
-| 7 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
-| 8 | Double the units, double the throughput | 2 → 4 units, **1.96×** — the note to end on |
+| 6 | Double the units, double the throughput | The numbers: 2 → 4 units, **1.96×**, with the cores and broker columns |
+| 7 | Two units, then four — against a perfect 2× | The same result as a chart, with the ideal drawn |
+| 8 | Every number has an answer | The three questions the dashboard invites |
+| 9 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
 
 **Eight slides, ending on the scaling result.** Exactly-once and latency were cut
 along with the three backup slides: the guarantees are demonstrated live rather

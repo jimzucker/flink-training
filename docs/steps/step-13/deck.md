@@ -10,7 +10,7 @@ per-step evidence, so they sit where someone looking for the deck would look.
 | file | for |
 |---|---|
 | `docs/deck/final-demo.pptx` | **presenting.** Titles, tables and the diagram. Nothing to read aloud, so attention stays on the live screen. |
-| `docs/deck/final-demo-handout.pptx` | **leaving behind.** The same eight slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
+| `docs/deck/final-demo-handout.pptx` | **leaving behind.** The same nine slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
 
 Both carry speaker notes on every slide.
 
@@ -58,23 +58,36 @@ the old text.
 Browser text metrics are not PowerPoint's, so this narrows the question of whether
 anything overflows its box but does not settle it.
 
-## The eight slides
+## The nine slides
 
 | # | Slide | |
 |---|---|---|
 | 1 | Title | What it is, what it runs on |
-| 2 | One order becomes four allocations | The problem, and why the two aggregations differ |
-| 3 | Six numbered elements, end to end | The pipeline diagram |
+| 2 | Six numbered elements, end to end | The pipeline diagram |
+| 3 | One order becomes four allocations | The problem, and why the two aggregations differ |
 | 4 | What the numbers should be | Inputs, sinks 3–6, and the demo's settings — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
-| 6 | Every number has an answer | The three questions the dashboard invites |
-| 7 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
-| 8 | Double the units, double the throughput | 2 → 4 units, **1.96×** — the note to end on |
+| 6 | Double the units, double the throughput | The numbers: 2 → 4 units, **1.96×**, with the cores and broker columns |
+| 7 | Two units, then four — against a perfect 2× | The same result as a chart, with the ideal drawn |
+| 8 | Every number has an answer | The three questions the dashboard invites |
+| 9 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
 
 Slide 4 is the one that makes the demo a verification rather than a tour: the
 numbers are committed to out loud before anything starts.
 
 ## What the deck deliberately does not do
+
+**The design comes before the problem.** The diagram makes the problem legible —
+once someone has seen one order fan out to four allocations on the picture, the
+sentence explaining it lands. The other order asks them to hold an abstraction
+until the diagram arrives.
+
+**Scaling sits right after the live demo**, while the pipeline is still on screen
+and the audience still has the shape of it, rather than trailing the deck. It gets
+two slides: the numbers with their cores and broker columns, then the same result
+as a chart with a perfect 2× drawn as a dashed line. The bars are exactly
+proportional to throughput — their height ratio is 1.964, the same as the data —
+so the chart cannot flatter the result with a truncated axis.
 
 **It ends on the scaling result.** The deck closes on 2 → 4 units at 1.96× rather
 than continuing into the curve's ceiling, the AWS comparison, and how the project

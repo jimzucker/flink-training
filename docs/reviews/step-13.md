@@ -139,6 +139,33 @@ past its neighbour. The settings now have their own full-width strip beneath bot
 tables, the inputs table is inputs again, and the two tables end within half an
 inch of each other.
 
+### Round 6 — order, and a chart for the 2x
+
+> Witch slides 2 and 3, move 8 before 6, as a slide with relevant graphs showing
+> 2x scaling clearly
+>
+> Keep the current scaling slide add one with graphs
+
+**Design before problem.** The diagram makes the problem legible; the other order
+asks the audience to hold an abstraction until the picture arrives.
+
+**Scaling moved up behind the live demo**, while the pipeline is still on screen,
+instead of trailing the deck.
+
+**Two scaling slides, not one.** The table keeps the cores and broker columns —
+which is what makes the result attributable rather than asserted — and a new
+chart puts the same numbers against a dashed line at exactly twice the two-unit
+result. The claim is whether the second bar reaches that line, so the line is
+drawn rather than described.
+
+The bars are drawn from the values with no baseline offset: their height ratio is
+**1.964**, identical to the throughput ratio. A chart that argues for 2× must not
+flatter itself with a truncated axis, and this one is checked rather than assumed
+— the build verifies the two heights against the two numbers.
+
+Nine slides: title, design, problem, expected output, live, scaling, scaling
+chart, explain-any-number, load.
+
 ## Still open
 
 **Text fitting is unverified.** There is no renderer on this machine — no
