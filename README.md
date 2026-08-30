@@ -11,6 +11,55 @@ The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 
 ---
 
+## The result
+
+| | |
+|---|---|
+| **Correctness** | every one of the six sinks asserted against the real topics on each run, with no tolerances anywhere — and in CI on every push |
+| **Exactly-once** | proved by killing a task manager mid-run: the job recovers from its checkpoint and the totals still reconcile |
+| **Latency** | **59 ms** p50 to compute a position; **518 ms** p50 before a consumer can read it — that gap is the commit interval, not the work |
+| **Load** | **100×** the order rate and **20×** the price rate, with order latency unmoved |
+| **Scaling** | double the units, get **~2×** the throughput, with Flink using every core it is given |
+| **To reproduce** | one laptop, `docker compose up`, about four minutes per scaling case — no cluster, no cloud account |
+
+Details for each: [correctness](#verifying-the-numbers) · [latency](#latency) ·
+[load and scaling](#scaling) · [how it was built](#how-this-project-is-built).
+
+## The deck
+
+The live demo is the deliverable; the slides are the handout and the backup.
+
+| file | for |
+|---|---|
+| [`docs/deck/final-demo.pptx`](docs/deck/final-demo.pptx) | presenting — nothing to read aloud |
+| [`docs/deck/final-demo-handout.pptx`](docs/deck/final-demo-handout.pptx) | leaving behind, and the fallback if the stack fails |
+
+Both are generated from one content model, so a number cannot drift between them:
+
+```bash
+python3 -m venv .venv
+.venv/bin/pip install -r scripts/deck-requirements.txt
+.venv/bin/python scripts/build-deck.py
+```
+
+See [`docs/deck/`](docs/deck/) for what each of the eleven slides carries and
+how to review them without PowerPoint.
+
+## Pipeline design
+
+![Pipeline](docs/design/pipeline.svg)
+
+Numbered left to right, in the order the demo talks through them. Full walkthrough,
+object model and design rationale: [`docs/design/pipeline-design.md`](docs/design/pipeline-design.md).
+
+And what Flink actually executes — the same shape, as the job graph:
+
+![Flink job graph, Part 1](docs/deck/img/flink-part1.png)
+
+Part 2 is a second job, because it reads sinks ③ and ④ back out of Kafka rather
+than taking the streams in-process: it consumes exactly what any other consumer
+would, so if the published topics are wrong it is visibly wrong too.
+
 ## Problem statement
 
 Process a stream of **block trades** and publish **positions** aggregated two ways
@@ -21,13 +70,6 @@ per window.
 A block trade is one order split across several accounts: a trade of 400 shares
 allocated to 4 accounts becomes 4 allocations of 100. That split is why the two
 aggregations differ — one key per symbol, versus one key per account and symbol.
-
-## Pipeline design
-
-![Pipeline](docs/design/pipeline.svg)
-
-Numbered left to right, in the order the demo talks through them. Full walkthrough,
-object model and design rationale: [`docs/design/pipeline-design.md`](docs/design/pipeline-design.md).
 
 ## Expected inputs and outputs
 
@@ -53,10 +95,29 @@ Verified against the real topics by `scripts/verify-topics.sh`, at the same
 settings. Sinks 3–6 are produced by the jobs in later steps; what step 02 proves
 is the input side.
 
+## Prerequisites
+
+| Tool | Version | Notes |
+|---|---|---|
+| Java | **17** | Flink 1.20 does not run on newer JDKs |
+| Maven | 3.8+ | |
+| Docker | with Compose v2 | for Kafka, Flink, Prometheus, Grafana |
+
+This machine's default JDK is newer than Flink supports, so the build pins Java 17:
+
+```bash
+source scripts/env.sh    # exports JAVA_HOME for Java 17
+mvn validate
+```
+
+The build fails fast with a clear message if the JDK is wrong, rather than
+surfacing as a stack trace deep inside Flink.
+
 ## Running it locally
 
-Full one-command start arrives in step 08. Today the stack is Kafka, and the
-generators run on the host.
+**One command brings up everything and leaves it idle**, so the dashboard is
+visibly empty until you start the data. About half a minute from nothing to a
+running pipeline, with no Java on the host.
 
 ```bash
 docker compose -f docker/compose.yml up -d --build   # everything, idle
@@ -271,6 +332,16 @@ START_EPOCH_MILLIS=1700000000000 MAX_TRADES=100 MAX_PRICES=400 \
 
 ## Watching it run
 
+**Grafana is the demo surface**, and every panel is there to answer a question
+someone will ask. Prometheus scrapes Flink and Kafka; the dashboard is
+provisioned with the stack rather than clicked together.
+
+![Dashboard](docs/steps/step-08/dashboard.png)
+
+That is the expected-output table made visible: 10 orders/sec in, 40/sec on the
+account side because every trade splits four ways, and exactly 4 and 16 unique
+keys. Nothing on this screen is a number you have to take on trust.
+
 ```bash
 docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager prometheus grafana
 ```
@@ -472,6 +543,25 @@ scripts/scale-units.sh          # 2 and 4 units -- the demo pair
 UNITS="1 2 4 8" OUT=docs/steps/step-12/units.txt scripts/scale-units.sh
 ```
 
+The same dashboard over each case's own measurement window — same panels, same
+axes, twice the units:
+
+**2 units**
+
+![2 units](docs/deck/img/grafana-2units.png)
+
+**4 units**
+
+![4 units](docs/deck/img/grafana-4units.png)
+
+Orders in and positions-by-account both roughly double. Stacked rather than side
+by side on purpose: the y-axis is the evidence, and two columns on a README
+shrink it past reading.
+
+These are rendered over the windows the numbers were taken in, not screenshots
+caught at a good moment — `scale-units.sh` records each window's bounds and
+Grafana renders any past range.
+
 The script defaults to **2 and 4**, which is the pair worth showing live: 1.96×
 for double the units, in two cases rather than four. The full curve is the record.
 
@@ -497,44 +587,6 @@ Full analysis: [`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling
 
 ---
 
-## The deck
-
-The live demo is the deliverable; the slides are the handout and the backup.
-
-| file | for |
-|---|---|
-| [`docs/deck/final-demo.pptx`](docs/deck/final-demo.pptx) | presenting — nothing to read aloud |
-| [`docs/deck/final-demo-handout.pptx`](docs/deck/final-demo-handout.pptx) | leaving behind, and the fallback if the stack fails |
-
-Both are generated from one content model, so a number cannot drift between them:
-
-```bash
-python3 -m venv .venv
-.venv/bin/pip install -r scripts/deck-requirements.txt
-.venv/bin/python scripts/build-deck.py
-```
-
-See [`docs/deck/`](docs/deck/) for what each of the eleven slides carries and
-how to review them without PowerPoint.
-
-## Prerequisites
-
-| Tool | Version | Notes |
-|---|---|---|
-| Java | **17** | Flink 1.20 does not run on newer JDKs |
-| Maven | 3.8+ | |
-| Docker | with Compose v2 | for Kafka, Flink, Prometheus, Grafana |
-
-This machine's default JDK is newer than Flink supports, so the build pins Java 17:
-
-```bash
-source scripts/env.sh    # exports JAVA_HOME for Java 17
-mvn validate
-```
-
-The build fails fast with a clear message if the JDK is wrong, rather than
-surfacing as a stack trace deep inside Flink.
-
 ## Versions
 
 | Component | Version | Why |
@@ -549,7 +601,9 @@ so both are held at 1.20.4 to keep the cluster and the job jars identical.
 
 ## Continuous integration
 
-Every push runs four jobs:
+**Every push stands the whole stack up and checks the numbers**, not just the
+unit tests — the expected-output table is asserted against real topics, and a
+cold start is run from nothing. Four jobs:
 
 | Job | What it proves |
 |---|---|
@@ -628,3 +682,4 @@ every step runs against real Kafka and a real Flink cluster rather than against
 scaffolding that is later replaced.
 
 See [`JOURNAL.md`](JOURNAL.md) for the step-by-step record.
+
