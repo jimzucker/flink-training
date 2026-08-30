@@ -243,6 +243,36 @@ carried the old figures after the first pass, because it writes its numbers with
 thin spaces and the replacement had looked for commas; and the design slide's
 caption sat 0.29in off the bottom of the canvas once the diagram grew.
 
+### Round 10 — the deck consistent with one run
+
+> For slide deck can we simply make consistent with current run?
+
+Every scaling figure in the deck now comes from the run that produced its
+dashboard images: 73,397 and 146,063 orders/sec, 1.99 of 2 and 3.89 of 4 cores,
+1.99x.
+
+Auditing for that turned up three things the numbers alone would not have caught:
+
+**Slide 4 claimed 4 partitions where it said 8.** The demo runs `PARTITIONS=4`;
+8 is the scaling harness's value, copied across when the settings strip was
+built. The slide describes the demo, so it says 4.
+
+**Two runs, two configurations.** The demo runs 4 partitions and a 1 s
+checkpoint; the scaling harness runs 8 partitions and a 5 s checkpoint. Slide 8
+now states the harness's settings explicitly and says they are not the demo's,
+because otherwise slide 4 and slide 8 look like they disagree about the same
+system.
+
+**"The broker stayed under half a core" was no longer true.** Today's four-unit
+case put the broker at 0.78. Both the table slide and the chart slide now say
+0.78 rather than repeating a claim that had quietly expired.
+
+One self-inflicted failure worth recording: the first attempt at this edit used a
+slice between two anchors, and the closing anchor matched an earlier occurrence —
+which replaced most of the file with a fragment and left a 441,700-line
+build-deck.py. Caught by the build failing with an IndentationError on line 1,
+restored from HEAD, and redone with exact string matches.
+
 ## Still open
 
 **Text fitting is unverified.** There is no renderer on this machine — no

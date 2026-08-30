@@ -269,7 +269,7 @@ def s_expected(slide, handout):
     _run(p, "     checkpoint interval ", 15, BODY)
     _run(p, "1 s", 15, INK, bold=True, font=MONO)
     _run(p, "     partitions ", 15, BODY)
-    _run(p, "8", 15, INK, bold=True, font=MONO)
+    _run(p, "4", 15, INK, bold=True, font=MONO)
 
     statline(slide, y + Inches(1.02),
              "Committing to these numbers before the run is what makes the demo a verification "
@@ -408,7 +408,8 @@ def s_grafana(slide, handout):
         _run(p2, "Each image is the dashboard rendered over that case's own measurement window, "
                  "so the plateau in the middle is the number the next slides quote — not a "
                  "picture taken at a convenient moment.", 13.5, MUTED, italic=True)
-    notes(slide, "These are rendered from the real measurement windows. If the live demo will "
+    notes(slide, "Rendered from the real measurement windows of the same run the next two slides "
+                 "quote -- 8 partitions, 5s checkpoint, 50M queued orders. If the live demo will "
                  "not start, this slide and the Flink graph slide are the demo.")
 
 
@@ -420,19 +421,22 @@ def s_units(slide, handout):
            ["4", "146 063", "1.99×", "3.89 of 4", "0.78", "47.3%"]],
           [Inches(1.3), Inches(2.0), Inches(2.0), Inches(2.1), Inches(2.0), Inches(2.2)],
           highlight={2}, size=14)
+    statline(slide, top + Inches(1.38),
+             "50,000,000 queued orders drained with the producer stopped, 8 partitions and a 5 s "
+             "checkpoint interval held constant across both cases — so nothing varies but the "
+             "units. These are the harness's settings, not the demo's.", MUTED, 13)
     if handout:
-        prose(slide, top + Inches(1.85),
+        prose(slide, top + Inches(2.30),
               "A unit is one core and one degree of parallelism, bought together — which is exactly "
               "what a KPU is in Managed Service for Apache Flink. Two columns turn this from an "
-              "assertion into a measurement. Flink used every core it was given, 2.00 of 2 and 3.94 "
-              "of 4, so a unit bought is a unit worked. And the broker stayed under half a core, so "
-              "Flink was unambiguously the constrained component — which is the precondition for "
-              "showing that anything scales at all. Eight partitions were held constant across both "
-              "cases, so nothing varied but the units.")
+              "assertion into a measurement. Flink used every core it was given, 1.99 of 2 and 3.89 "
+              "of 4, so a unit bought is a unit worked. And the broker never passed 0.78 of a core "
+              "while Flink was saturated, so Flink was unambiguously the constrained component — "
+              "which is the precondition for showing that anything scales at all.")
     else:
-        statline(slide, top + Inches(1.85),
+        statline(slide, top + Inches(2.30),
                  "A unit is one core and one degree of parallelism, bought together — a KPU.  "
-                 "Flink used every core it was given; the broker stayed under half a core.",
+                 "Flink used every core it was given; the broker never passed 0.78 of one.",
                  INK, 16, italic=False)
     notes(slide, "You can only show that something scales when it is the thing that is constrained. "
                  "Step 10 got this wrong — it varied parallelism while Flink already had every core "
@@ -507,7 +511,7 @@ def s_units_chart(slide, handout):
          "That is what a KPU is in Managed Service for Apache Flink."),
         ("Flink used every core it was given — ",
          "1.99 of 2, then 3.89 of 4. A unit bought is a unit worked."),
-        ("The broker stayed under half a core. ",
+        ("The broker never passed 0.78 of a core. ",
          "Flink was the constrained component, and you can only show that something "
          "scales when it is the thing that is constrained."),
     ]):
@@ -518,7 +522,7 @@ def s_units_chart(slide, handout):
 
     if handout:
         statline(slide, Inches(6.42),
-                 "Eight partitions were held constant across both cases, and the backlog was "
+                 "Eight partitions and a 5 s checkpoint were held constant across both cases, and the backlog was "
                  "drained with the producer stopped, so nothing varied but the units. The dashed "
                  "line is exactly twice the two-unit result; the four-unit bar reaches 99.5% of it.",
                  MUTED, 13)
