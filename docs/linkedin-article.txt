@@ -18,6 +18,19 @@ All of it on a laptop, against a single Kafka broker.
 
 Claude Code built all of it — the pipeline, the tests, the monitoring, the benchmark behind these numbers. Twenty hours of build, six of them mine.
 
+Repo and the measurement in the comments.
+
+—————————————————————————————
+FIRST COMMENT — post this yourself, right after the post goes up
+
+Repo: https://github.com/jimzucker/flink-training
+
+The scaling numbers come from scripts/scale-units.sh, which caps the task manager's cores and holds everything else still — same single broker, eight partitions, the same 50,000,000-order backlog drained with the producer stopped. It records what Flink actually used at each step (1.00, 2.00 and 3.94 of the 1, 2 and 4 cores), which is what shows the cores were the variable rather than something that happened to correlate.
+
+Worth saying plainly: this is one pipeline — a keyed split, two aggregations, exactly-once Kafka sinks — not a claim about every Flink job. A workload with heavy state or skewed keys could look different.
+
+docs/steps/step-12/scaling-demo.md has the full write-up, including where it stops: push past four cores on this laptop and a single broker's write path becomes the ceiling, at which point you are measuring Kafka, not Flink.
+
 —————————————————————————————
 NOT FOR POSTING — provenance
 
