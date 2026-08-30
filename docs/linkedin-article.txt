@@ -1,37 +1,30 @@
 A Flink pipeline that scales linearly: double the cores, double the throughput
 
-Measured, not asserted. 30,505 block trades a second on one core; 129,056 on four. On a laptop, against a single Kafka broker.
+Measured, not asserted. On a laptop, against a single Kafka broker.
 
-Claude Code built the whole thing — the pipeline, the test suite, the measurement harness, the CI, the dashboards and the deck. It cost about six hours of my own time at the keyboard.
+Claude Code built the whole thing — the pipeline, the tests, the measurement harness, the CI, the dashboards and the deck. It cost about six hours of my own time at the keyboard.
 
 [LEAD IMAGE: docs/img/scaling-linear.png]
 
-Orders in, per second:
+Block trades in, per second:
 
 • 1 core — 30,505/sec
 • 2 cores — 65,721/sec, 2.15× the previous
 • 4 cores — 129,056/sec, 1.96× the previous
 
-Four times the cores, 4.23× the throughput.
-
-What makes that a statement about the pipeline and not about the machine: the broker never moved. Same single Kafka broker in every case, eight partitions throughout, each case draining a 50,000,000-order backlog with the producer stopped. The only thing that changed was how many cores Flink was allowed — and it used every one it was given, 1.00, 2.00 and 3.94 of 1, 2 and 4.
-
-To be precise about what this is evidence of: it is one pipeline — a keyed split, two aggregations, exactly-once Kafka sinks — not a claim about every Flink job. A workload with heavy state or skewed keys could behave differently. What it does show is that when this one was given more cores, Flink turned all of them into throughput, with no tuning between the cases.
-
-Those are input rates. Every order fans out to five records — four account-side allocations plus one symbol-side position — so at four cores Flink is writing 645,280 records a second back to Kafka.
-
-Exactly-once throughout, with every output verified against the real topics. One docker compose command, about four minutes per data point.
-
-Flink 1.20, Kafka 3.9, Java 17, all in Docker.
+Four times the cores, 4.23× the throughput — and since every order fans out to five records, that is 645,280 records a second written back to Kafka.
 
 —————————————————————————————
 NOT FOR POSTING — provenance
 
 Lead image: docs/img/scaling-linear.png, 2400x1254 (LinkedIn's 1.91:1), drawn
 by scripts/article-chart.py from the same numbers so it cannot drift from them.
-Figures: docs/steps/step-12/units.txt, one laptop run. The cores-used column is
-in the same file; it is what shows the cores were the variable and were real.
-645,280 = 129,056 x 5, the fan-out in PositionsJob. In the text but off the
-graphic, which stays one message: input rate against cores.
+Figures: docs/steps/step-12/units.txt, one laptop run. Broker, partitions (8)
+and backlog (50,000,000 orders, producer stopped) held constant across cases;
+Flink used 1.00, 2.00 and 3.94 of the 1, 2 and 4 cores it was given.
+645,280 = 129,056 x 5, the fan-out in PositionsJob.
+Scope: one pipeline -- keyed split, two aggregations, exactly-once Kafka sinks
+-- not a claim about every Flink job. The headline says "a Flink pipeline" for
+that reason; do not widen it to "Flink" when posting.
 Session figures from the Claude Code transcript: 20.6h active, 6.2h prompting.
 Reproduce: scripts/scale-units.sh
