@@ -41,6 +41,12 @@ move on.
    Every measurement decision afterwards is judged against whether it supports
    that sentence.
 
+**Stop when you can state the claim and the fan-out.** That is usually four to
+six questions, not all seven — skip any the user has already answered. If you are
+past eight you are gathering rather than deciding, and the user has stopped
+reading. Anything still unknown becomes a stated assumption in the plan, not
+another question.
+
 ## Build in reviewable steps
 
 One branch per step, squash-merged, one commit per step on the main line. Each
@@ -95,6 +101,15 @@ fits in RAM measures memory.
 
 Hold partitions, checkpoint interval and backlog size constant across every case.
 Nothing varies but the one thing under test.
+
+**Carry the delivery guarantee into the plan, not just the design.** If question 4
+said the outputs must be exactly right, then nothing is readable until the
+checkpoint that produced it commits — which puts a floor under visible latency
+equal to roughly the checkpoint interval, and makes that interval a number you
+must fix, report, and never quietly change between cases. Decide it once, write
+it in the results header, and expect someone to ask why the consumer-visible
+latency is far larger than the processing time. The answer is the guarantee, not
+the pipeline.
 
 ### Repeat the cheap measurement, not just the expensive one
 
