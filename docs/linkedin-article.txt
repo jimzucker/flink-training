@@ -1,4 +1,4 @@
-Flink scales linearly: double the cores, double the throughput
+A Flink pipeline that scales linearly: double the cores, double the throughput
 
 Measured, not asserted. 30,505 block trades a second on one core; 129,056 on four. On a laptop, against a single Kafka broker.
 
@@ -14,7 +14,9 @@ Orders in, per second:
 
 Four times the cores, 4.23× the throughput.
 
-What makes that a statement about Flink and not about the machine: the broker never moved. Same single Kafka broker in every case, eight partitions throughout, each case draining a 50,000,000-order backlog with the producer stopped. The only thing that changed was how many cores Flink was allowed — and it used every one it was given, 1.00, 2.00 and 3.94 of 1, 2 and 4.
+What makes that a statement about the pipeline and not about the machine: the broker never moved. Same single Kafka broker in every case, eight partitions throughout, each case draining a 50,000,000-order backlog with the producer stopped. The only thing that changed was how many cores Flink was allowed — and it used every one it was given, 1.00, 2.00 and 3.94 of 1, 2 and 4.
+
+To be precise about what this is evidence of: it is one pipeline — a keyed split, two aggregations, exactly-once Kafka sinks — not a claim about every Flink job. A workload with heavy state or skewed keys could behave differently. What it does show is that when this one was given more cores, Flink turned all of them into throughput, with no tuning between the cases.
 
 Those are input rates. Every order fans out to five records — four account-side allocations plus one symbol-side position — so at four cores Flink is writing 645,280 records a second back to Kafka.
 
