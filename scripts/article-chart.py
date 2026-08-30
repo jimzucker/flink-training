@@ -35,9 +35,11 @@ def font(sz, bold=False):
 im = Image.new("RGB", (W, H), BG)
 d = ImageDraw.Draw(im)
 
-d.text((60 * S, 44 * S), "One core in, one core's worth out", font=font(38, True), fill=INK)
+d.text((60 * S, 40 * S), "645,280 records per second. On a laptop.",
+       font=font(38, True), fill=INK)
 d.text((60 * S, 96 * S),
-       "Block trades into positions on a laptop with a single Kafka broker.",
+       "Block trades into positions and market value. One Kafka broker, four cores, "
+       "exactly-once — and it scales linearly on the way there.",
        font=font(19), fill=MUTED)
 
 BASE = int(468 * S)                      # baseline y
@@ -51,8 +53,8 @@ d.line([(60 * S, BASE), (1140 * S, BASE)], fill=RULE, width=int(2 * S))
 # what the bars measure, stated once where the eye lands before reading them
 d.text((60 * S, 158 * S), "ORDERS IN, PER SECOND", font=font(16, True), fill=MUTED)
 
-BW = int(150 * S)
-XS = [int(x * S) for x in (170, 430, 690)]
+BW = int(138 * S)
+XS = [int(x * S) for x in (150, 370, 590)]
 
 # ideal-linear reference, computed from the one-core result
 per_unit = CASES[0][1]
@@ -94,8 +96,18 @@ for i, (units, val) in enumerate(CASES):
         w = d.textlength(m, font=font(26, True))
         d.text((mx - w / 2, BASE - bh - 46 * S), m, font=font(26, True), fill=BAR)
 
+# the fan-out: what the four-core case actually writes
+cx = int(790 * S)
+d.line([(cx - 22 * S, TOP + 6 * S), (cx - 22 * S, BASE)], fill=RULE, width=int(2 * S))
+d.text((cx, TOP + 4 * S), "every order becomes", font=font(18), fill=MUTED)
+d.text((cx, TOP + 28 * S), "five records", font=font(18, True), fill=MUTED)
+d.text((cx, TOP + 66 * S), "645,280", font=font(52, True), fill=BAR)
+d.text((cx, TOP + 126 * S), "records/sec written", font=font(20, True), fill=BAR)
+d.text((cx, TOP + 156 * S), "four account-side allocations", font=font(16), fill=MUTED)
+d.text((cx, TOP + 178 * S), "plus one symbol-side position", font=font(16), fill=MUTED)
+
 d.text((60 * S, 556 * S),
-       "4x the cores, 4.23x the throughput.  129,056 orders/sec in is 645,280 records/sec out.",
+       "4x the cores, 4.23x the throughput. Nothing varies but the cores.",
        font=font(20, True), fill=BODY)
 d.text((60 * S, 590 * S),
        "Eight partitions held constant; each case drains a 50,000,000-order backlog with the producer stopped.",

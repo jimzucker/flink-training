@@ -1,22 +1,20 @@
-You don't need a cluster to prove Kafka and Flink scale linearly
+129,056 orders a second in. 645,280 records a second out. On a laptop.
 
-You need a laptop, one broker, and about four minutes per data point.
+One Kafka broker, four cores, one docker compose command. Exactly-once delivery, with every output verified against the real topics.
 
 Claude Code built the whole thing — the pipeline, the test suite, the measurement harness, the CI, the dashboards and the deck. It cost about six hours of my own time at the keyboard.
 
-The pipeline turns block trades into positions and market value, exactly-once, with every output verified against real Kafka topics. Then I measured what one more core actually buys. The answer is: almost exactly one more core's worth.
-
 [LEAD IMAGE: docs/img/scaling-linear.png]
 
-Orders in, per second:
+The pipeline turns block trades into positions and market value. Every order fans out to five records: four account-side allocations plus one symbol-side position. So 129,056 orders in per second is 645,280 records written per second.
+
+And it gets there linearly. Orders in, per second:
 
 • 1 core — 30,505/sec
 • 2 cores — 65,721/sec, 2.15× the previous
 • 4 cores — 129,056/sec, 1.96× the previous
 
-Four times the cores, 4.23× the throughput. On a laptop. One Kafka broker. One docker compose command.
-
-Those are input rates. On the way out it is five times more: 645,280 records per second, because every order fans out to four account-side allocations plus one symbol-side position.
+Four times the cores, 4.23× the throughput. Nothing varies but the cores.
 
 Flink 1.20, Kafka 3.9, Java 17, all in Docker.
 
@@ -27,5 +25,6 @@ Lead image: docs/img/scaling-linear.png, 2400x1254 (LinkedIn's 1.91:1), drawn
 by scripts/article-chart.py from the same numbers so it cannot drift from them.
 Figures: docs/steps/step-12/units.txt, one laptop run, 8 partitions throughout,
 each case draining a 50,000,000-order backlog with the producer stopped.
+645,280 = 129,056 x 5, the fan-out documented in PositionsJob.
 Session figures from the Claude Code transcript: 20.6h active, 6.2h prompting.
 Reproduce: scripts/scale-units.sh
