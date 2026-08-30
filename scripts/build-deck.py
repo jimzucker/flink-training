@@ -23,6 +23,10 @@ from pptx.enum.shapes import MSO_SHAPE
 
 W, H = Inches(13.333), Inches(7.5)
 DIAGRAM = "docs/deck/pipeline.png"
+FLINK_P1 = "docs/deck/img/flink-part1.png"
+FLINK_P2 = "docs/deck/img/flink-part2.png"
+GRAF_2 = "docs/deck/img/grafana-2units.png"
+GRAF_4 = "docs/deck/img/grafana-4units.png"
 
 INK     = RGBColor(0x14, 0x22, 0x2E)   # near-black slate, all headings
 BODY    = RGBColor(0x2E, 0x3D, 0x4A)
@@ -215,11 +219,11 @@ def s_design(slide, handout):
         raise SystemExit(f"{DIAGRAM} is missing -- run scripts/render-diagram.py first")
     with Image.open(DIAGRAM) as im:
         aspect = im.width / im.height
-    w = Inches(12.2)
+    w = Inches(11.5)
     h = Emu(int(w / aspect))
-    slide.shapes.add_picture(DIAGRAM, Inches(0.57), top + Inches(0.28), width=w, height=h)
-    statline(slide, top + Inches(0.28) + h + Inches(0.14),
-             "Every edge carries its partition key and value.")
+    slide.shapes.add_picture(DIAGRAM, Inches(0.92), top + Inches(0.24), width=w, height=h)
+    cap = _tb(slide, Inches(0.92), top + Inches(0.24) + h + Inches(0.12), w, Inches(0.4))
+    _run(cap.paragraphs[0], "Every edge carries its partition key and value.", 13.5, MUTED, italic=True)
     notes(slide, "Numbered left to right, in the order the demo talks through them. Point at 1 "
                  "and 2 as the inputs, 3-6 as the outputs to verify.")
 
@@ -337,12 +341,83 @@ def s_cases(slide, handout):
     notes(slide, "Case 2 is the one that settles the broadcast-prices question.")
 
 
+def s_flink_graph(slide, handout):
+    """What Flink itself shows -- the fallback if the live UI cannot be reached."""
+    top = heading(slide, "What Flink shows: two jobs, six operators",
+                  "The running pipeline")
+    for img, x, label, sub in [
+        (FLINK_P1, Inches(0.62), "Part 1 — positions",
+         "orders  →  split by allocation  →  two keyed aggregates, each with its own sink"),
+        (FLINK_P2, Inches(6.95), "Part 2 — market value",
+         "prices broadcast to both joins; positions read back from topics 3 and 4"),
+    ]:
+        with Image.open(img) as im:
+            aspect = im.width / im.height
+        w = Inches(5.76)
+        h = Emu(int(w / aspect))
+        cap = _tb(slide, x, top + Inches(0.06), w, Inches(0.34))
+        _run(cap.paragraphs[0], label, 15, INK, bold=True)
+        slide.shapes.add_picture(img, x, top + Inches(0.46), width=w, height=h)
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, top + Inches(0.46), w, h)
+        box.fill.background()
+        box.line.color.rgb = RULE; box.line.width = Pt(1)
+        box.shadow.inherit = False
+        st = _tb(slide, x, top + Inches(0.56) + h, w, Inches(0.6))
+        _run(st.paragraphs[0], sub, 12, MUTED)
+
+    statline(slide, Inches(6.10),
+             "Part 2 reads sinks 3 and 4 back out of Kafka rather than taking the streams "
+             "in-process, so it consumes exactly what any other consumer would — which is why "
+             "Flink draws two graphs and not one.")
+    notes(slide, "Two jobs because Part 2 consumes the published position topics rather than "
+                 "an in-process stream. Either part can be restarted or rescaled without the "
+                 "other, and Part 2 validates the topics that are themselves deliverables. "
+                 "Use this slide if the Flink UI is not reachable.")
+
+
+def s_grafana(slide, handout):
+    """The dashboard during each measured window -- the fallback for the live run."""
+    top = heading(slide, "The same pipeline at two units, then four", "What it looked like")
+    for img, x, units, rate in [
+        (GRAF_2, Inches(0.62), "2 units", "73,397 orders/sec"),
+        (GRAF_4, Inches(6.95), "4 units", "146,063 orders/sec"),
+    ]:
+        with Image.open(img) as im:
+            aspect = im.width / im.height
+        w = Inches(5.76)
+        h = Emu(int(w / aspect))
+        cap = _tb(slide, x, top + Inches(0.06), w, Inches(0.34))
+        p1 = cap.paragraphs[0]
+        _run(p1, units + "   ", 15, INK, bold=True)
+        _run(p1, rate, 15, ACCENT, bold=True)
+        slide.shapes.add_picture(img, x, top + Inches(0.46), width=w, height=h)
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, top + Inches(0.46), w, h)
+        box.fill.background()
+        box.line.color.rgb = RULE; box.line.width = Pt(1)
+        box.shadow.inherit = False
+
+    y = top + Inches(0.46) + Emu(int(Inches(5.76) / 2.55)) + Inches(0.22)
+    tf = _tb(slide, Inches(0.62), y, Inches(12.1), Inches(1.4))
+    p1 = tf.paragraphs[0]
+    _run(p1, "Same panels, same axes, twice the units.  ", 16, INK, bold=True)
+    _run(p1, "Orders in and positions-by-account both roughly double; the account side runs at "
+             "four times the order rate throughout, because every trade splits across four "
+             "accounts.", 16, BODY)
+    if handout:
+        p2 = tf.add_paragraph(); p2.space_before = Pt(10)
+        _run(p2, "Each image is the dashboard rendered over that case's own measurement window, "
+                 "so the plateau in the middle is the number the next slides quote — not a "
+                 "picture taken at a convenient moment.", 13.5, MUTED, italic=True)
+    notes(slide, "These are rendered from the real measurement windows. If the live demo will "
+                 "not start, this slide and the Flink graph slide are the demo.")
+
+
 def s_units(slide, handout):
     top = heading(slide, "Double the units, double the throughput", "Scaling")
     table(slide, Inches(0.75), top,
           [["units", "orders/sec", "vs previous", "Flink cores", "broker cores", "back-pressure"],
-           ["2", "65 721", "—", "2.00 of 2", "0.25", "28.5%"],
-           ["4", "129 056", "1.96×", "3.94 of 4", "0.39", "51.6%"]],
+           ["2", "73 397", "—", "1.99 of 2", "0.39", "26.5%"],
+           ["4", "146 063", "1.99×", "3.89 of 4", "0.78", "47.3%"]],
           [Inches(1.3), Inches(2.0), Inches(2.0), Inches(2.1), Inches(2.0), Inches(2.2)],
           highlight={2}, size=14)
     if handout:
@@ -375,13 +450,13 @@ def s_units_chart(slide, handout):
 
     BASE = Inches(5.62)                     # baseline both bars stand on
     PLOT = Inches(3.42)                     # full height of the plot area
-    FULL = 140000.0                         # value at the top of the plot
+    FULL = 158000.0                         # value at the top of the plot
     def h(v):
         return Emu(int(PLOT * (v / FULL)))
 
-    CASES = [(2, 65721, Inches(1.75)), (4, 129056, Inches(4.35))]
+    CASES = [(2, 73397, Inches(1.75)), (4, 146063, Inches(4.35))]
     BW = Inches(1.65)
-    IDEAL = 65721 * 2                       # what a perfect 2x would reach
+    IDEAL = 73397 * 2                       # what a perfect 2x would reach
 
     # axis
     ax = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.15), BASE, Inches(5.9), Pt(1.25))
@@ -397,7 +472,7 @@ def s_units_chart(slide, handout):
         d.line.fill.background(); d.shadow.inherit = False
         x += Inches(0.26)
     tf = _tb(slide, Inches(5.55), iy - Inches(0.32), Inches(2.4), Inches(0.3))
-    _run(tf.paragraphs[0], "perfect 2x  =  131,442", 11.5, WARN, bold=True)
+    _run(tf.paragraphs[0], "perfect 2x  =  146,794", 11.5, WARN, bold=True)
 
     for units, val, bx in CASES:
         bh = h(val)
@@ -415,13 +490,13 @@ def s_units_chart(slide, handout):
         p1 = lab.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
         _run(p1, f"{units} units", 15, INK, bold=True)
         p2 = lab.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
-        _run(p2, f"{units:.2f} of {units} cores used" if units == 2 else "3.94 of 4 cores used",
+        _run(p2, "1.99 of 2 cores used" if units == 2 else "3.89 of 4 cores used",
              11.5, MUTED)
 
     # the multiplier, between the two bars
     m = _tb(slide, Inches(3.10), BASE - h(90000), Inches(1.5), Inches(0.8), PP_ALIGN.CENTER)
     p1 = m.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
-    _run(p1, "1.96x", 30, ACCENT, bold=True)
+    _run(p1, "1.99x", 30, ACCENT, bold=True)
     p2 = m.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
     _run(p2, "orders / sec", 11, MUTED)
 
@@ -431,7 +506,7 @@ def s_units_chart(slide, handout):
         ("A unit is one core and one degree of parallelism, bought together. ",
          "That is what a KPU is in Managed Service for Apache Flink."),
         ("Flink used every core it was given — ",
-         "2.00 of 2, then 3.94 of 4. A unit bought is a unit worked."),
+         "1.99 of 2, then 3.89 of 4. A unit bought is a unit worked."),
         ("The broker stayed under half a core. ",
          "Flink was the constrained component, and you can only show that something "
          "scales when it is the thing that is constrained."),
@@ -445,19 +520,19 @@ def s_units_chart(slide, handout):
         statline(slide, Inches(6.42),
                  "Eight partitions were held constant across both cases, and the backlog was "
                  "drained with the producer stopped, so nothing varied but the units. The dashed "
-                 "line is exactly twice the two-unit result; the four-unit bar reaches 98% of it.",
+                 "line is exactly twice the two-unit result; the four-unit bar reaches 99.5% of it.",
                  MUTED, 13)
     notes(slide, "The dashed line is exactly 2x the first bar. The whole claim is whether the "
-                 "second bar reaches it -- 129,056 against 131,442, which is 98%. Step 10 got this "
+                 "second bar reaches it -- 146,063 against 146,794, which is 99.5%. Step 10 got this "
                  "wrong by varying parallelism while Flink already had every core it could use, "
                  "and the answer came back flat.")
 
 
-# Nine slides. The design comes before the problem -- the diagram makes the
+# Eleven slides. The design comes before the problem -- the diagram makes the
 # problem legible rather than the other way round. Scaling sits right after the
 # live demo, while the pipeline is still on screen, instead of trailing the deck.
 SLIDES = [s_title, s_design, s_problem, s_expected, s_live,
-          s_units, s_units_chart, s_numbers, s_cases]
+          s_flink_graph, s_grafana, s_units, s_units_chart, s_numbers, s_cases]
 
 
 def build(path, handout):

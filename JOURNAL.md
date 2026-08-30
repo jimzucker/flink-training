@@ -1347,7 +1347,7 @@ demo a verification rather than a tour.
 
 ### Verification
 
-Both files were read back and checked: nine slides each, every shape inside
+Both files were read back and checked: eleven slides each, every shape inside
 the canvas, speaker notes present on all of them, and the handout carrying one
 extra prose block per content slide as designed. **Text fitting was not verified**
 — there is no renderer on this machine, so nothing confirms a paragraph does not

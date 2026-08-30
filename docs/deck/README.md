@@ -5,9 +5,22 @@ The live demo is the deliverable. These slides are the handout and the backup.
 | file | for |
 |---|---|
 | [`final-demo.pptx`](final-demo.pptx) | **presenting.** Titles, tables and the diagram — nothing to read aloud, so attention stays on the live screen. |
-| [`final-demo-handout.pptx`](final-demo-handout.pptx) | **leaving behind.** The same nine slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
+| [`final-demo-handout.pptx`](final-demo-handout.pptx) | **leaving behind.** The same eleven slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
 
 Both carry speaker notes on every slide.
+
+## Slides 6 and 7 are the fallback
+
+If the stack will not start, or the Flink UI will not load, those two slides are
+the demo. Both are captured from a real run rather than mocked up:
+`docs/deck/img/` holds the two Flink job graphs and the dashboard rendered over
+each measurement window, and `units-deck-run.txt` is the run they came from.
+
+Regenerate them by running `WINDOWS_OUT=/tmp/windows.txt UNITS="2 4"
+scripts/scale-units.sh`, then rendering the dashboard for each recorded window
+with `scripts/capture-dashboard.sh` (it takes `FROM` and `TO`). Grafana renders
+any past range, so the capture happens after the run rather than being timed
+against it.
 
 ## Rebuilding
 
@@ -43,12 +56,14 @@ without settling it.
 | 3 | One order becomes four allocations | The problem, and why the two aggregations differ |
 | 4 | What the numbers should be | Inputs, sinks 3–6, and the demo's settings — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
-| 6 | Double the units, double the throughput | The numbers: 2 → 4 units, **1.96×**, with the cores and broker columns |
-| 7 | Two units, then four — against a perfect 2× | The same result as a chart, with the ideal drawn |
-| 8 | Every number has an answer | The three questions the dashboard invites |
-| 9 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
+| 6 | What Flink shows | Both job graphs — **the fallback if the Flink UI will not load** |
+| 7 | The same pipeline at two units, then four | The dashboard over each measured window — **the fallback if the demo will not run** |
+| 8 | Double the units, double the throughput | The numbers, with the cores and broker columns |
+| 9 | Two units, then four — against a perfect 2× | The same result as a chart, with the ideal drawn |
+| 10 | Every number has an answer | The three questions the dashboard invites |
+| 11 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
 
-**Eight slides, ending on the scaling result.** Exactly-once and latency were cut
+**Eleven slides.** Exactly-once and latency were cut
 along with the three backup slides: the guarantees are demonstrated live rather
 than described, and the deck closes on 1.96× rather than trailing off into the
 curve's ceiling and its caveats. The evidence for everything cut is still in the

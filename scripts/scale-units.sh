@@ -171,8 +171,15 @@ for n in $UNITS; do
 
   sleep "$WARMUP_SECONDS"
   a=$(count positions-by-symbol)
+  win_start=$(date +%s)
   sleep "$WINDOW_SECONDS"
   b=$(count positions-by-symbol)
+  win_end=$(date +%s)
+  # Set WINDOWS_OUT to record when each measurement window ran. The dashboard
+  # images for the deck have to show the window a number came from, and Grafana
+  # renders any past range -- so the capture can happen after the run rather
+  # than being timed against it.
+  [ -n "${WINDOWS_OUT:-}" ] && echo "$n $win_start $win_end" >> "$WINDOWS_OUT"
 
   # A window that runs past the end of the backlog measures the silence after it.
   if [ "$b" -ge "$queued" ]; then

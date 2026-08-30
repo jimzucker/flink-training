@@ -514,7 +514,7 @@ python3 -m venv .venv
 .venv/bin/python scripts/build-deck.py
 ```
 
-See [`docs/deck/`](docs/deck/) for what each of the nine slides carries and
+See [`docs/deck/`](docs/deck/) for what each of the eleven slides carries and
 how to review them without PowerPoint.
 
 ## Prerequisites

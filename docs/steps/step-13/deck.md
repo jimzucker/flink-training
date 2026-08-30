@@ -10,7 +10,7 @@ per-step evidence, so they sit where someone looking for the deck would look.
 | file | for |
 |---|---|
 | `docs/deck/final-demo.pptx` | **presenting.** Titles, tables and the diagram. Nothing to read aloud, so attention stays on the live screen. |
-| `docs/deck/final-demo-handout.pptx` | **leaving behind.** The same nine slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
+| `docs/deck/final-demo-handout.pptx` | **leaving behind.** The same eleven slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
 
 Both carry speaker notes on every slide.
 
@@ -58,7 +58,7 @@ the old text.
 Browser text metrics are not PowerPoint's, so this narrows the question of whether
 anything overflows its box but does not settle it.
 
-## The nine slides
+## The eleven slides
 
 | # | Slide | |
 |---|---|---|
@@ -67,10 +67,12 @@ anything overflows its box but does not settle it.
 | 3 | One order becomes four allocations | The problem, and why the two aggregations differ |
 | 4 | What the numbers should be | Inputs, sinks 3–6, and the demo's settings — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
-| 6 | Double the units, double the throughput | The numbers: 2 → 4 units, **1.96×**, with the cores and broker columns |
-| 7 | Two units, then four — against a perfect 2× | The same result as a chart, with the ideal drawn |
-| 8 | Every number has an answer | The three questions the dashboard invites |
-| 9 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
+| 6 | What Flink shows | Both job graphs — **the fallback if the Flink UI will not load** |
+| 7 | The same pipeline at two units, then four | The dashboard over each measured window — **the fallback if the demo will not run** |
+| 8 | Double the units, double the throughput | The numbers, with the cores and broker columns |
+| 9 | Two units, then four — against a perfect 2× | The same result as a chart, with the ideal drawn |
+| 10 | Every number has an answer | The three questions the dashboard invites |
+| 11 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
 
 Slide 4 is the one that makes the demo a verification rather than a tour: the
 numbers are committed to out loud before anything starts.

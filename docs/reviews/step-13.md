@@ -206,6 +206,43 @@ rather than a rule about when each applies.
 requirement encoded in the code, and changing it is a behavioural change rather
 than a documentation one.
 
+### Round 9 — two fallback slides, from a real run
+
+> Before slide 6 can we put a slide showing flinks graph of the pipeline and
+> slide showing graphana outputs after running 2 and 4? (in case demo doesn't
+> work we can use the slides)
+
+Slide 6 is both Flink job graphs, captured from the running cluster. Slide 7 is
+the Grafana dashboard rendered over each measurement window — 2 units beside 4
+units, same panels, same axes.
+
+Neither is mocked up. `scale-units.sh` gained a `WINDOWS_OUT` hook that records
+the epoch bounds of each measurement window, and Grafana renders any past range,
+so the images are the dashboard *during the window the numbers came from* rather
+than a screenshot taken at a convenient moment.
+
+**The capture forced a correction to the deck's own figures.** Today's run gave
+73,397 and 146,063 orders/sec, against the 65,721 and 129,056 the deck had been
+quoting from an earlier run — 12–13% higher. The dashboard images show today's
+rates, so leaving the old numbers on slides 8 and 9 would have put a table on the
+screen contradicting the picture two slides earlier. The scaling table and the
+chart now both use today's run.
+
+That leaves a known divergence: `docs/steps/step-12/units.txt` still holds the
+four-point curve (30,505 / 65,721 / 129,056 / 151,969) from the earlier run, and
+the README and journal quote it. The deck is internally consistent and so are the
+docs, but they are consistent with different runs.
+
+**Run-to-run variance on this laptop is ~12%,** which had never been measured
+locally — the AWS cases were repeated and agreed within 2%, the local ones never
+were. The 1.96× and 1.99× ratios agree closely; it is the absolute throughput
+that moves.
+
+Two defects found by checking rather than assuming: the scaling table still
+carried the old figures after the first pass, because it writes its numbers with
+thin spaces and the replacement had looked for commas; and the design slide's
+caption sat 0.29in off the bottom of the canvas once the diagram grew.
+
 ## Still open
 
 **Text fitting is unverified.** There is no renderer on this machine — no
