@@ -14,6 +14,8 @@ Orders in, per second:
 
 Four times the cores, 4.23× the throughput. Nothing varies but the cores: eight partitions throughout, each case draining a 50,000,000-order backlog with the producer stopped.
 
+Those are input rates. Every order fans out to five records — four account-side allocations plus one symbol-side position — so at four cores the pipeline is writing 645,280 records a second back to Kafka.
+
 One docker compose command, about four minutes per data point.
 
 Flink 1.20, Kafka 3.9, Java 17, all in Docker.
@@ -27,5 +29,5 @@ Figures: docs/steps/step-12/units.txt, one laptop run.
 Session figures from the Claude Code transcript: 20.6h active, 6.2h prompting.
 Reproduce: scripts/scale-units.sh
 
-Dropped, available if wanted: the output side. Every order fans out to five
-records, so 129,056 orders/sec in is 645,280 records/sec written.
+645,280 = 129,056 x 5, the fan-out in PositionsJob. Kept in the text but
+deliberately left off the graphic, which stays one message: input rate vs cores.
