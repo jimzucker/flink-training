@@ -1,0 +1,47 @@
+Proving Apache Flink scales linearly
+
+We built a trading pipeline on Apache Flink and Kafka — block trades in, positions and market value out — and measured exactly what each additional core buys.
+
+[LEAD IMAGE: docs/img/scaling-linear.png]
+
+Block trades handled, per second:
+
+• 1 core — 30,505
+• 2 cores — 65,721
+• 4 cores — 129,056
+
+Four cores do 4.23× the work of one. Straight line, no cliff. That is a capacity model you can budget against — you know what the next core buys before you buy it.
+
+And it is real work: every trade fans out to five downstream updates, so at four cores the pipeline is writing 645,280 records a second.
+
+All of it on a laptop, against a single Kafka broker.
+
+Claude Code built all of it — the pipeline, the tests, the monitoring, the benchmark behind these numbers. Twenty hours of build in total — six of those were my time at the keyboard.
+
+Repo and the measurement in the comments.
+
+—————————————————————————————
+FIRST COMMENT — post this yourself, right after the post goes up
+
+Repo: https://github.com/jimzucker/flink-training
+
+The scaling numbers come from scripts/scale-units.sh, which caps the task manager's cores and holds everything else still — same single broker, eight partitions, the same 50,000,000-order backlog drained with the producer stopped. It records what Flink actually used at each step (1.00, 2.00 and 3.94 of the 1, 2 and 4 cores), which is what shows the cores were the variable rather than something that happened to correlate.
+
+Worth saying plainly: this is one pipeline — a keyed split, two aggregations, exactly-once Kafka sinks — not a claim about every Flink job. A workload with heavy state or skewed keys could look different.
+
+docs/steps/step-12/scaling-demo.md has the full write-up, including where it stops: push past four cores on this laptop and a single broker's write path becomes the ceiling, at which point you are measuring Kafka, not Flink.
+
+—————————————————————————————
+NOT FOR POSTING — provenance
+
+Lead image: docs/img/scaling-linear.png, 2400x1254 (LinkedIn's 1.91:1), drawn
+by scripts/article-chart.py from the same numbers so it cannot drift from them.
+Figures: docs/steps/step-12/units.txt, one laptop run. Broker, partitions (8)
+and backlog (50,000,000 orders, producer stopped) held constant across cases;
+Flink used 1.00, 2.00 and 3.94 of the 1, 2 and 4 cores it was given.
+645,280 = 129,056 x 5, the fan-out in PositionsJob.
+Scope: one pipeline -- keyed split, two aggregations, exactly-once Kafka sinks
+-- not a claim about every Flink job. Say "a pipeline" or "our pipeline", never
+"Flink scales linearly", if anyone asks you to widen it.
+Session figures from the Claude Code transcript: 20.6h active, 6.2h prompting.
+Reproduce: scripts/scale-units.sh
