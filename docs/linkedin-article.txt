@@ -6,6 +6,8 @@ Claude Code built the whole thing — the pipeline, the test suite, the measurem
 
 The pipeline turns block trades into positions and market value, exactly-once, with every output verified against real Kafka topics. Then I measured what one more core actually buys. The answer is: almost exactly one more core's worth.
 
+[LEAD IMAGE: docs/img/scaling-linear.png]
+
 • 1 unit — 30,505 orders/sec, Flink using 1.00 of 1 core
 • 2 units — 65,721 orders/sec, 2.15× the previous, 2.00 of 2 cores
 • 4 units — 129,056 orders/sec, 1.96× the previous, 3.94 of 4 cores
@@ -63,6 +65,8 @@ One honest caveat: repeated laptop runs vary about 12% in absolute throughput. T
 —————————————————————————————
 NOT FOR POSTING — provenance
 
+Lead image: docs/img/scaling-linear.png, 2400x1254 (LinkedIn's 1.91:1), drawn
+by scripts/article-chart.py from the same numbers so it cannot drift from them.
 Figures: docs/steps/step-12/units.txt (laptop, one run), units-aws.txt (AWS).
 Session figures from the Claude Code transcript: 223 prompts, 20 PRs, 20.6h
 active of which 6.2h prompting. Reproduce: scripts/scale-units.sh
