@@ -16,7 +16,9 @@ And it is real work: every trade fans out to five downstream updates, so at four
 
 All of it on a laptop, against a single Kafka broker.
 
-And Claude Code built the whole thing: the pipeline, the tests, the monitoring, the build and release path, and the benchmark harness that produced these numbers. Thirteen reviewed steps, about 20 hours end to end — roughly six of them mine.
+And Claude Code built the whole thing: the pipeline, the tests, the monitoring, the build and release path, and the benchmark harness that produced these numbers.
+
+Twenty hours of build across thirteen reviewed steps. Six of those hours were mine, at the keyboard, directing and reviewing. The other fourteen, Claude worked while I did something else.
 
 —————————————————————————————
 NOT FOR POSTING — provenance
