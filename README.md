@@ -52,6 +52,14 @@ how to review them without PowerPoint.
 Numbered left to right, in the order the demo talks through them. Full walkthrough,
 object model and design rationale: [`docs/design/pipeline-design.md`](docs/design/pipeline-design.md).
 
+And what Flink actually executes — the same shape, as the job graph:
+
+![Flink job graph, Part 1](docs/deck/img/flink-part1.png)
+
+Part 2 is a second job, because it reads sinks ③ and ④ back out of Kafka rather
+than taking the streams in-process: it consumes exactly what any other consumer
+would, so if the published topics are wrong it is visibly wrong too.
+
 ## Problem statement
 
 Process a stream of **block trades** and publish **positions** aggregated two ways
@@ -328,6 +336,12 @@ START_EPOCH_MILLIS=1700000000000 MAX_TRADES=100 MAX_PRICES=400 \
 someone will ask. Prometheus scrapes Flink and Kafka; the dashboard is
 provisioned with the stack rather than clicked together.
 
+![Dashboard](docs/steps/step-08/dashboard.png)
+
+That is the expected-output table made visible: 10 orders/sec in, 40/sec on the
+account side because every trade splits four ways, and exactly 4 and 16 unique
+keys. Nothing on this screen is a number you have to take on trust.
+
 ```bash
 docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager prometheus grafana
 ```
@@ -528,6 +542,28 @@ units:
 scripts/scale-units.sh          # 2 and 4 units -- the demo pair
 UNITS="1 2 4 8" OUT=docs/steps/step-12/units.txt scripts/scale-units.sh
 ```
+
+The same dashboard over each case's own measurement window — same panels, same
+axes, twice the units:
+
+**2 units**
+
+![2 units](docs/deck/img/grafana-2units.png)
+
+**4 units**
+
+![4 units](docs/deck/img/grafana-4units.png)
+
+Orders in and positions-by-account both roughly double. Stacked rather than side
+by side on purpose: the y-axis is the evidence, and two columns on a README
+shrink it past reading.
+
+These are rendered over the windows the numbers were taken in, not screenshots
+caught at a good moment — `scale-units.sh` records each window's bounds and
+Grafana renders any past range. **They are from a later run than the table above**
+— 73,397 and 146,063 orders/sec, a 1.99× step. Repeated runs on this laptop vary
+about 12% in absolute throughput while the ratio holds, which is why the summary
+at the top of this file quotes a range rather than a figure.
 
 The script defaults to **2 and 4**, which is the pair worth showing live: 1.96×
 for double the units, in two cases rather than four. The full curve is the record.
