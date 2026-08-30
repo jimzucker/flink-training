@@ -1,6 +1,6 @@
-You don't need a cluster to prove Kafka and Flink scale linearly
+Flink scales linearly: double the cores, double the throughput
 
-129,056 block trades a second, on a laptop with one Kafka broker. Exactly-once, with every output verified against the real topics.
+Measured, not asserted. 30,505 block trades a second on one core; 129,056 on four. On a laptop, against a single Kafka broker.
 
 Claude Code built the whole thing — the pipeline, the test suite, the measurement harness, the CI, the dashboards and the deck. It cost about six hours of my own time at the keyboard.
 
@@ -12,11 +12,13 @@ Orders in, per second:
 • 2 cores — 65,721/sec, 2.15× the previous
 • 4 cores — 129,056/sec, 1.96× the previous
 
-Four times the cores, 4.23× the throughput. Nothing varies but the cores: eight partitions throughout, each case draining a 50,000,000-order backlog with the producer stopped.
+Four times the cores, 4.23× the throughput.
 
-Those are input rates. Every order fans out to five records — four account-side allocations plus one symbol-side position — so at four cores the pipeline is writing 645,280 records a second back to Kafka.
+What makes that a statement about Flink and not about the machine: the broker never moved. Same single Kafka broker in every case, eight partitions throughout, each case draining a 50,000,000-order backlog with the producer stopped. The only thing that changed was how many cores Flink was allowed — and it used every one it was given, 1.00, 2.00 and 3.94 of 1, 2 and 4.
 
-One docker compose command, about four minutes per data point.
+Those are input rates. Every order fans out to five records — four account-side allocations plus one symbol-side position — so at four cores Flink is writing 645,280 records a second back to Kafka.
+
+Exactly-once throughout, with every output verified against the real topics. One docker compose command, about four minutes per data point.
 
 Flink 1.20, Kafka 3.9, Java 17, all in Docker.
 
@@ -25,9 +27,9 @@ NOT FOR POSTING — provenance
 
 Lead image: docs/img/scaling-linear.png, 2400x1254 (LinkedIn's 1.91:1), drawn
 by scripts/article-chart.py from the same numbers so it cannot drift from them.
-Figures: docs/steps/step-12/units.txt, one laptop run.
+Figures: docs/steps/step-12/units.txt, one laptop run. The cores-used column is
+in the same file; it is what shows the cores were the variable and were real.
+645,280 = 129,056 x 5, the fan-out in PositionsJob. In the text but off the
+graphic, which stays one message: input rate against cores.
 Session figures from the Claude Code transcript: 20.6h active, 6.2h prompting.
 Reproduce: scripts/scale-units.sh
-
-645,280 = 129,056 x 5, the fan-out in PositionsJob. Kept in the text but
-deliberately left off the graphic, which stays one message: input rate vs cores.
