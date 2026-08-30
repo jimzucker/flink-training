@@ -1347,7 +1347,7 @@ demo a verification rather than a tour.
 
 ### Verification
 
-Both files were read back and checked: thirteen slides each, every shape inside
+Both files were read back and checked: eleven slides each, every shape inside
 the canvas, speaker notes present on all of them, and the handout carrying one
 extra prose block per content slide as designed. **Text fitting was not verified**
 — there is no renderer on this machine, so nothing confirms a paragraph does not
@@ -1355,13 +1355,18 @@ overflow its box. That needs one pass in PowerPoint.
 
 ### Review
 
-Four rounds. The first chose the format and the depth — PowerPoint, and both
+Five rounds. The first chose the format and the depth — PowerPoint, and both
 versions rather than one. The second caught the deck quoting the specification's
 one-minute window when the demo runs ten seconds, which mattered because slide 4
 exists to commit to numbers the audience will actually see. The third replaced a
 redrawn pipeline with the project's own diagram. The fourth was a documentation
 audit that found the same window error in the README the deck was built from,
-plus three other stale figures.
+plus three other stale figures. The fifth cut the deck from thirteen slides
+to eight — dropping exactly-once, latency and the three backup slides — and
+rebuilt slide 4, whose two tables had drifted a full inch out of balance once the
+demo's settings were bolted onto the inputs table. The sixth put the design ahead
+of the problem, moved scaling up behind the live demo, and gave the 2× result a
+chart alongside its table.
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-13`.
 

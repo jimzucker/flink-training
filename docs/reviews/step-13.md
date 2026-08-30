@@ -108,6 +108,171 @@ both, matching the README.
 `scripts/preview-deck.py` was also undocumented despite being committed; it is
 now described in the step doc.
 
+### Round 5 — eight slides, ending on the result
+
+> Remove slides 11/12/13 we stop showing the objective of 2x scaling, slide 4
+> looks wrong, remove slides 7 and 8
+
+**Cut to eight.** Slides 11, 12 and 13 were backup — the full curve and its
+ceiling, the AWS comparison, and how the project was built. A backup slide that
+follows the conclusion undercuts it, because the last thing shown is the thing
+remembered: the deck was ending on "here is where it stops working" rather than
+on 1.96×. Slides 7 and 8, exactly-once and latency, went too — both are better
+demonstrated on the running dashboard than read off a table.
+
+Nothing was deleted from the repo. `docs/steps/step-04`, `step-09` and `step-12`
+still hold the evidence, and the runbook still has the answers ready.
+
+**Slide 4 was wrong in three ways**, and the diagnosis is worth recording because
+the cause was a previous fix:
+
+| | |
+|---|---|
+| ragged bottoms | the inputs table ran to 5.15" while the sinks table stopped at 3.95" — a 1.2" hole |
+| a muddled table | "Input / setting" covered inputs, reference data *and* settings in one column |
+| a stranded caption | floating at 5.90", below both tables and attached to neither |
+
+The second caused the first. Round 2 added the window and checkpoint rows to fix
+a real error, but bolted them onto a table that was already an inputs table — so
+the header became a slash-compound to cover both, and the table grew two rows
+past its neighbour. The settings now have their own full-width strip beneath both
+tables, the inputs table is inputs again, and the two tables end within half an
+inch of each other.
+
+### Round 6 — order, and a chart for the 2x
+
+> Witch slides 2 and 3, move 8 before 6, as a slide with relevant graphs showing
+> 2x scaling clearly
+>
+> Keep the current scaling slide add one with graphs
+
+**Design before problem.** The diagram makes the problem legible; the other order
+asks the audience to hold an abstraction until the picture arrives.
+
+**Scaling moved up behind the live demo**, while the pipeline is still on screen,
+instead of trailing the deck.
+
+**Two scaling slides, not one.** The table keeps the cores and broker columns —
+which is what makes the result attributable rather than asserted — and a new
+chart puts the same numbers against a dashed line at exactly twice the two-unit
+result. The claim is whether the second bar reaches that line, so the line is
+drawn rather than described.
+
+The bars are drawn from the values with no baseline offset: their height ratio is
+**1.964**, identical to the throughput ratio. A chart that argues for 2× must not
+flatter itself with a truncated axis, and this one is checked rather than assumed
+— the build verifies the two heights against the two numbers.
+
+Nine slides: title, design, problem, expected output, live, scaling, scaling
+chart, explain-any-number, load.
+
+### Round 7 — one configuration, not two
+
+> Why does slide 4 say 1 min specified? Remove notes like that just focus on how
+> we agreed to run the demo
+
+Round 2 fixed a real error — the deck had been promising rates the demo does not
+produce — but fixed it by carrying *both* numbers, so every settings line became
+an argument with itself. The audience does not need to be told which of two
+values is not in force.
+
+The deck now states one configuration: window 10 s, checkpoint interval 1 s, 8
+partitions. Every "(specified: 1 min)", "the job defaults to the specified
+minute" and the matching speaker notes are gone, from both files.
+
+That exposed a dependency. The pipeline diagram had "Window 1 min" drawn into it,
+so removing the caption would have left slide 2 contradicting slide 4.
+
+### Round 8 — the design matches the demo too
+
+> Change design so match how demo runs also, consistent
+
+The first attempt at round 7 relabelled only the deck's copy of the diagram and
+left the design document stating the specification. That is defensible in
+isolation and wrong overall: it means two documents describing one system
+disagree, and the reader has to know which is which.
+
+`docs/design/pipeline.svg` now says **Window 10s**, and `pipeline-design.md`
+gives its rates per window rather than per minute. The relabelling step in
+`render-diagram.py` is gone — with the source correct there is nothing to
+substitute.
+
+The 60-second default is stated in exactly one place, the settings table in the
+README, as what the code ships with. Everything demonstrated — the demo, the
+verification, the diagram, the deck — is 10s, so there is one number to remember
+rather than a rule about when each applies.
+
+**Not changed:** `JobConfig.DEFAULT_WINDOW_MS` is still `60_000L`. That is the
+requirement encoded in the code, and changing it is a behavioural change rather
+than a documentation one.
+
+### Round 9 — two fallback slides, from a real run
+
+> Before slide 6 can we put a slide showing flinks graph of the pipeline and
+> slide showing graphana outputs after running 2 and 4? (in case demo doesn't
+> work we can use the slides)
+
+Slide 6 is both Flink job graphs, captured from the running cluster. Slide 7 is
+the Grafana dashboard rendered over each measurement window — 2 units beside 4
+units, same panels, same axes.
+
+Neither is mocked up. `scale-units.sh` gained a `WINDOWS_OUT` hook that records
+the epoch bounds of each measurement window, and Grafana renders any past range,
+so the images are the dashboard *during the window the numbers came from* rather
+than a screenshot taken at a convenient moment.
+
+**The capture forced a correction to the deck's own figures.** Today's run gave
+73,397 and 146,063 orders/sec, against the 65,721 and 129,056 the deck had been
+quoting from an earlier run — 12–13% higher. The dashboard images show today's
+rates, so leaving the old numbers on slides 8 and 9 would have put a table on the
+screen contradicting the picture two slides earlier. The scaling table and the
+chart now both use today's run.
+
+That leaves a known divergence: `docs/steps/step-12/units.txt` still holds the
+four-point curve (30,505 / 65,721 / 129,056 / 151,969) from the earlier run, and
+the README and journal quote it. The deck is internally consistent and so are the
+docs, but they are consistent with different runs.
+
+**Run-to-run variance on this laptop is ~12%,** which had never been measured
+locally — the AWS cases were repeated and agreed within 2%, the local ones never
+were. The 1.96× and 1.99× ratios agree closely; it is the absolute throughput
+that moves.
+
+Two defects found by checking rather than assuming: the scaling table still
+carried the old figures after the first pass, because it writes its numbers with
+thin spaces and the replacement had looked for commas; and the design slide's
+caption sat 0.29in off the bottom of the canvas once the diagram grew.
+
+### Round 10 — the deck consistent with one run
+
+> For slide deck can we simply make consistent with current run?
+
+Every scaling figure in the deck now comes from the run that produced its
+dashboard images: 73,397 and 146,063 orders/sec, 1.99 of 2 and 3.89 of 4 cores,
+1.99x.
+
+Auditing for that turned up three things the numbers alone would not have caught:
+
+**Slide 4 claimed 4 partitions where it said 8.** The demo runs `PARTITIONS=4`;
+8 is the scaling harness's value, copied across when the settings strip was
+built. The slide describes the demo, so it says 4.
+
+**Two runs, two configurations.** The demo runs 4 partitions and a 1 s
+checkpoint; the scaling harness runs 8 partitions and a 5 s checkpoint. Slide 8
+now states the harness's settings explicitly and says they are not the demo's,
+because otherwise slide 4 and slide 8 look like they disagree about the same
+system.
+
+**"The broker stayed under half a core" was no longer true.** Today's four-unit
+case put the broker at 0.78. Both the table slide and the chart slide now say
+0.78 rather than repeating a claim that had quietly expired.
+
+One self-inflicted failure worth recording: the first attempt at this edit used a
+slice between two anchors, and the closing anchor matched an earlier occurrence —
+which replaced most of the file with a fragment and left a 441,700-line
+build-deck.py. Caught by the build failing with an IndentationError on line 1,
+restored from HEAD, and redone with exact string matches.
+
 ## Still open
 
 **Text fitting is unverified.** There is no renderer on this machine — no

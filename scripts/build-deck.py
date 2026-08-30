@@ -23,6 +23,10 @@ from pptx.enum.shapes import MSO_SHAPE
 
 W, H = Inches(13.333), Inches(7.5)
 DIAGRAM = "docs/deck/pipeline.png"
+FLINK_P1 = "docs/deck/img/flink-part1.png"
+FLINK_P2 = "docs/deck/img/flink-part2.png"
+GRAF_2 = "docs/deck/img/grafana-2units.png"
+GRAF_4 = "docs/deck/img/grafana-4units.png"
 
 INK     = RGBColor(0x14, 0x22, 0x2E)   # near-black slate, all headings
 BODY    = RGBColor(0x2E, 0x3D, 0x4A)
@@ -215,31 +219,31 @@ def s_design(slide, handout):
         raise SystemExit(f"{DIAGRAM} is missing -- run scripts/render-diagram.py first")
     with Image.open(DIAGRAM) as im:
         aspect = im.width / im.height
-    w = Inches(12.2)
+    w = Inches(11.5)
     h = Emu(int(w / aspect))
-    slide.shapes.add_picture(DIAGRAM, Inches(0.57), top + Inches(0.28), width=w, height=h)
-    statline(slide, top + Inches(0.28) + h + Inches(0.14),
-             "Every edge carries its partition key and value. The diagram states the specified "
-             "one-minute window; the demo overrides it to ten seconds, and the calculation is "
-             "identical either way.")
+    slide.shapes.add_picture(DIAGRAM, Inches(0.92), top + Inches(0.24), width=w, height=h)
+    cap = _tb(slide, Inches(0.92), top + Inches(0.24) + h + Inches(0.12), w, Inches(0.4))
+    _run(cap.paragraphs[0], "Every edge carries its partition key and value.", 13.5, MUTED, italic=True)
     notes(slide, "Numbered left to right, in the order the demo talks through them. Point at 1 "
-                 "and 2 as the inputs, 3-6 as the outputs to verify. If anyone reads '1 min' off "
-                 "the diagram, that is the specification -- the demo runs a 10s window.")
+                 "and 2 as the inputs, 3-6 as the outputs to verify.")
 
 
 def s_expected(slide, handout):
     top = heading(slide, "What the numbers should be, before we run anything",
                   "Expected output")
+
+    # inputs and sinks sit side by side and end within half an inch of each
+    # other; the demo's settings are a separate thing and get their own strip,
+    # rather than being bolted onto the inputs table under a slash-compound
+    # heading that has to cover both.
     table(slide, Inches(0.75), top,
-          [["Input / setting", "Demo value"],
+          [["Input", "Rate"],
            ["Trades", "10 / sec"],
            ["Prices", "1 000 / sec"],
            ["Symbols", "4 unique"],
            ["Accounts", "4 unique"],
-           ["Allocations per trade", "4 (one per account)"],
-           ["Window", "10 s  (spec: 1 min)"],
-           ["Checkpoint interval", "1 s"]],
-          [Inches(3.1), Inches(2.3)], size=13.5, highlight={6, 7})
+           ["Allocations per trade", "4 (one per account)"]],
+          [Inches(3.1), Inches(2.3)], size=13.5)
     table(slide, Inches(6.35), top,
           [["#", "Sink", "Rate in the demo", "Keys"],
            ["3", "positions-by-symbol", "10 / sec", "4"],
@@ -247,16 +251,32 @@ def s_expected(slide, handout):
            ["5", "mv-by-symbol", "4 per 10 s", "4"],
            ["6", "mv-by-account", "16 per 10 s", "16"]],
           [Inches(0.45), Inches(3.05), Inches(1.9), Inches(0.9)], size=13.5)
-    statline(slide, Inches(5.9),
-             "The window is 10 s for the demo so the market value sinks say something without a "
-             "minute of waiting — the job defaults to the specified minute, and the calculation is "
-             "identical either way. Committing to these numbers before the run is what makes the "
-             "demo a verification rather than a tour; scripts/verify-topics.sh checks every one of "
-             "them against the real topics, on every push.", GOOD, italic=False)
+
+    y = top + Inches(2.72)
+    bar = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                 Inches(0.75), y, Inches(11.9), Inches(0.78))
+    bar.fill.solid(); bar.fill.fore_color.rgb = BAND
+    bar.line.color.rgb = RULE; bar.line.width = Pt(1)
+    bar.shadow.inherit = False
+    tf = bar.text_frame
+    tf.margin_left = Inches(0.28)
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.alignment = PP_ALIGN.LEFT
+    _run(p, "Set for the demo:   ", 14, MUTED, bold=True)
+    _run(p, "window ", 15, BODY)
+    _run(p, "10 s", 15, INK, bold=True, font=MONO)
+    _run(p, "     checkpoint interval ", 15, BODY)
+    _run(p, "1 s", 15, INK, bold=True, font=MONO)
+    _run(p, "     partitions ", 15, BODY)
+    _run(p, "4", 15, INK, bold=True, font=MONO)
+
+    statline(slide, y + Inches(1.02),
+             "Committing to these numbers before the run is what makes the demo a verification "
+             "rather than a tour. scripts/verify-topics.sh checks every one of them against the "
+             "real topics, at these settings, on every push.", GOOD, italic=False)
     notes(slide, "Say the numbers out loud BEFORE starting the generators. Then the dashboard "
-                 "either matches or it does not. If asked why the window is 10s and not a minute: "
-                 "only for the demo, so the sinks say something without a minute of waiting. The "
-                 "job defaults to the specified minute and the verification runs against both.")
+                 "either matches or it does not.")
 
 
 def s_live(slide, handout):
@@ -298,55 +318,6 @@ def s_numbers(slide, handout):
                  "explanation invented on the spot.")
 
 
-def s_exactly_once(slide, handout):
-    top = heading(slide, "A replayed record is a wrong number, not a duplicate",
-                  "Correctness under failure")
-    bullets(slide, top, [
-        ("A position is a running sum.  ",
-         "At-least-once would silently corrupt it — and a wrong number is harder to spot than a missing one."),
-        ("EXACTLY_ONCE, one transactional id prefix per sink.  ",
-         "Every reader in the verification path uses read_committed."),
-        ("Proved by breaking it.  ",
-         "scripts/chaos-exactly-once.sh kills a task manager mid-run; the job recovers from checkpoint and the totals still reconcile."),
-    ])
-    if handout:
-        prose(slide, top + Inches(2.6),
-              "Exactly-once is a claim about what happens when something fails, so without a failure "
-              "the setting is untested and at-least-once looks identical. That is why the proof is a "
-              "chaos script rather than a configuration screenshot. It also has a visible cost, which "
-              "the next slide is about.")
-    notes(slide, "The cost of this guarantee is the latency on the next slide. Don't let anyone "
-                 "read the 518ms as slowness — it is the commit interval, and it is a dial.")
-
-
-def s_latency(slide, handout):
-    top = heading(slide, "Two numbers, and they are not the same", "Latency")
-    table(slide, Inches(0.75), top,
-          [["", "p50", "max"],
-           ["What the pipeline takes", "59 ms", "110 ms  (p99)"],
-           ["What a consumer waits for", "518 ms", "1 025 ms"]],
-          [Inches(3.6), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
-    table(slide, Inches(7.4), top,
-          [["Checkpoint interval", "p50", "max"],
-           ["5 s", "2 488 ms", "4 988 ms"],
-           ["1 s  (the default)", "518 ms", "1 025 ms"]],
-          [Inches(2.9), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
-    if handout:
-        prose(slide, top + Inches(1.9),
-              "The gap is the guarantee, not the work. Under exactly-once nothing is readable until "
-              "the checkpoint that produced it commits, so a consumer waits a roughly uniform interval "
-              "on top of the processing time. Cut the interval by five and the latency falls by five, "
-              "with the maximum landing inside one interval each time — which is what a uniform wait "
-              "for the next commit looks like, and the strongest evidence that the delay is the "
-              "guarantee rather than the pipeline. A checkpoint itself takes about 13 ms.")
-    else:
-        statline(slide, top + Inches(2.0),
-                 "The gap is the guarantee, not the work. Shorten the interval fivefold, "
-                 "the latency falls fivefold. A checkpoint itself takes 13 ms.", INK, 16, italic=False)
-    notes(slide, "Market value latency is measured from the window close, not the trade — the "
-                 "window is the specification, not a delay to account for.")
-
-
 def s_cases(slide, handout):
     top = heading(slide, "Both required cases pass", "Load")
     table(slide, Inches(0.75), top,
@@ -370,108 +341,202 @@ def s_cases(slide, handout):
     notes(slide, "Case 2 is the one that settles the broadcast-prices question.")
 
 
+def s_flink_graph(slide, handout):
+    """What Flink itself shows -- the fallback if the live UI cannot be reached."""
+    top = heading(slide, "What Flink shows: two jobs, six operators",
+                  "The running pipeline")
+    for img, x, label, sub in [
+        (FLINK_P1, Inches(0.62), "Part 1 — positions",
+         "orders  →  split by allocation  →  two keyed aggregates, each with its own sink"),
+        (FLINK_P2, Inches(6.95), "Part 2 — market value",
+         "prices broadcast to both joins; positions read back from topics 3 and 4"),
+    ]:
+        with Image.open(img) as im:
+            aspect = im.width / im.height
+        w = Inches(5.76)
+        h = Emu(int(w / aspect))
+        cap = _tb(slide, x, top + Inches(0.06), w, Inches(0.34))
+        _run(cap.paragraphs[0], label, 15, INK, bold=True)
+        slide.shapes.add_picture(img, x, top + Inches(0.46), width=w, height=h)
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, top + Inches(0.46), w, h)
+        box.fill.background()
+        box.line.color.rgb = RULE; box.line.width = Pt(1)
+        box.shadow.inherit = False
+        st = _tb(slide, x, top + Inches(0.56) + h, w, Inches(0.6))
+        _run(st.paragraphs[0], sub, 12, MUTED)
+
+    statline(slide, Inches(6.10),
+             "Part 2 reads sinks 3 and 4 back out of Kafka rather than taking the streams "
+             "in-process, so it consumes exactly what any other consumer would — which is why "
+             "Flink draws two graphs and not one.")
+    notes(slide, "Two jobs because Part 2 consumes the published position topics rather than "
+                 "an in-process stream. Either part can be restarted or rescaled without the "
+                 "other, and Part 2 validates the topics that are themselves deliverables. "
+                 "Use this slide if the Flink UI is not reachable.")
+
+
+def s_grafana(slide, handout):
+    """The dashboard during each measured window -- the fallback for the live run."""
+    top = heading(slide, "The same pipeline at two units, then four", "What it looked like")
+    for img, x, units, rate in [
+        (GRAF_2, Inches(0.62), "2 units", "73,397 orders/sec"),
+        (GRAF_4, Inches(6.95), "4 units", "146,063 orders/sec"),
+    ]:
+        with Image.open(img) as im:
+            aspect = im.width / im.height
+        w = Inches(5.76)
+        h = Emu(int(w / aspect))
+        cap = _tb(slide, x, top + Inches(0.06), w, Inches(0.34))
+        p1 = cap.paragraphs[0]
+        _run(p1, units + "   ", 15, INK, bold=True)
+        _run(p1, rate, 15, ACCENT, bold=True)
+        slide.shapes.add_picture(img, x, top + Inches(0.46), width=w, height=h)
+        box = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, top + Inches(0.46), w, h)
+        box.fill.background()
+        box.line.color.rgb = RULE; box.line.width = Pt(1)
+        box.shadow.inherit = False
+
+    y = top + Inches(0.46) + Emu(int(Inches(5.76) / 2.55)) + Inches(0.22)
+    tf = _tb(slide, Inches(0.62), y, Inches(12.1), Inches(1.4))
+    p1 = tf.paragraphs[0]
+    _run(p1, "Same panels, same axes, twice the units.  ", 16, INK, bold=True)
+    _run(p1, "Orders in and positions-by-account both roughly double; the account side runs at "
+             "four times the order rate throughout, because every trade splits across four "
+             "accounts.", 16, BODY)
+    if handout:
+        p2 = tf.add_paragraph(); p2.space_before = Pt(10)
+        _run(p2, "Each image is the dashboard rendered over that case's own measurement window, "
+                 "so the plateau in the middle is the number the next slides quote — not a "
+                 "picture taken at a convenient moment.", 13.5, MUTED, italic=True)
+    notes(slide, "Rendered from the real measurement windows of the same run the next two slides "
+                 "quote -- 8 partitions, 5s checkpoint, 50M queued orders. If the live demo will "
+                 "not start, this slide and the Flink graph slide are the demo.")
+
+
 def s_units(slide, handout):
     top = heading(slide, "Double the units, double the throughput", "Scaling")
     table(slide, Inches(0.75), top,
           [["units", "orders/sec", "vs previous", "Flink cores", "broker cores", "back-pressure"],
-           ["2", "65 721", "—", "2.00 of 2", "0.25", "28.5%"],
-           ["4", "129 056", "1.96×", "3.94 of 4", "0.39", "51.6%"]],
+           ["2", "73 397", "—", "1.99 of 2", "0.39", "26.5%"],
+           ["4", "146 063", "1.99×", "3.89 of 4", "0.78", "47.3%"]],
           [Inches(1.3), Inches(2.0), Inches(2.0), Inches(2.1), Inches(2.0), Inches(2.2)],
           highlight={2}, size=14)
+    statline(slide, top + Inches(1.38),
+             "50,000,000 queued orders drained with the producer stopped, 8 partitions and a 5 s "
+             "checkpoint interval held constant across both cases — so nothing varies but the "
+             "units. These are the harness's settings, not the demo's.", MUTED, 13)
     if handout:
-        prose(slide, top + Inches(1.85),
+        prose(slide, top + Inches(2.30),
               "A unit is one core and one degree of parallelism, bought together — which is exactly "
               "what a KPU is in Managed Service for Apache Flink. Two columns turn this from an "
-              "assertion into a measurement. Flink used every core it was given, 2.00 of 2 and 3.94 "
-              "of 4, so a unit bought is a unit worked. And the broker stayed under half a core, so "
-              "Flink was unambiguously the constrained component — which is the precondition for "
-              "showing that anything scales at all. Eight partitions were held constant across both "
-              "cases, so nothing varied but the units.")
+              "assertion into a measurement. Flink used every core it was given, 1.99 of 2 and 3.89 "
+              "of 4, so a unit bought is a unit worked. And the broker never passed 0.78 of a core "
+              "while Flink was saturated, so Flink was unambiguously the constrained component — "
+              "which is the precondition for showing that anything scales at all.")
     else:
-        statline(slide, top + Inches(1.85),
+        statline(slide, top + Inches(2.30),
                  "A unit is one core and one degree of parallelism, bought together — a KPU.  "
-                 "Flink used every core it was given; the broker stayed under half a core.",
+                 "Flink used every core it was given; the broker never passed 0.78 of one.",
                  INK, 16, italic=False)
     notes(slide, "You can only show that something scales when it is the thing that is constrained. "
                  "Step 10 got this wrong — it varied parallelism while Flink already had every core "
                  "it could use, and the answer came back flat.")
 
 
-def s_curve(slide, handout):
-    top = heading(slide, "Where it stops, and why the broker looks idle",
-                  "Backup — the whole curve")
-    table(slide, Inches(0.75), top,
-          [["units", "orders/sec", "vs previous", "Flink cores", "broker cores", "back-pressure"],
-           ["1", "30 505", "—", "1.00 of 1", "0.10", "24.1%"],
-           ["2", "65 721", "2.15×", "2.00 of 2", "0.25", "28.5%"],
-           ["4", "129 056", "1.96×", "3.94 of 4", "0.39", "51.6%"],
-           ["8", "151 969", "1.18×", "4.98 of 8", "0.48", "72.7%"]],
-          [Inches(1.3), Inches(2.0), Inches(2.0), Inches(2.1), Inches(2.0), Inches(2.2)],
-          highlight={4}, size=14)
-    y = top + Inches(2.65)
-    tf = _tb(slide, Inches(0.75), y, Inches(11.9), Inches(1.8))
-    p = tf.paragraphs[0]
-    _run(p, "The broker is at 0.48 cores while being the thing in the way.  ", 16, WARN, bold=True)
-    _run(p, "It has run out of write throughput, not CPU: 151 969 orders/sec is 759 845 records/sec, "
-            "against the ~750 000 one broker accepts — because each order becomes five records.", 16, BODY)
+def s_units_chart(slide, handout):
+    """The 2x result as a chart -- bars against a marked ideal, not a table.
+
+    Two bars and a dashed line at exactly twice the first bar. The whole claim is
+    whether the second bar reaches that line, so the line is drawn rather than
+    described and the reader checks it in one glance.
+    """
+    top = heading(slide, "Two units, then four — against a perfect 2x", "Scaling")
+
+    BASE = Inches(5.62)                     # baseline both bars stand on
+    PLOT = Inches(3.42)                     # full height of the plot area
+    FULL = 158000.0                         # value at the top of the plot
+    def h(v):
+        return Emu(int(PLOT * (v / FULL)))
+
+    CASES = [(2, 73397, Inches(1.75)), (4, 146063, Inches(4.35))]
+    BW = Inches(1.65)
+    IDEAL = 73397 * 2                       # what a perfect 2x would reach
+
+    # axis
+    ax = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(1.15), BASE, Inches(5.9), Pt(1.25))
+    ax.fill.solid(); ax.fill.fore_color.rgb = RULE
+    ax.line.fill.background(); ax.shadow.inherit = False
+
+    # the ideal-2x reference, drawn as a series of dashes so it reads as a target
+    iy = BASE - h(IDEAL)
+    x = Inches(1.30)
+    while x < Inches(6.95):
+        d = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, x, iy, Inches(0.14), Pt(1.6))
+        d.fill.solid(); d.fill.fore_color.rgb = WARN
+        d.line.fill.background(); d.shadow.inherit = False
+        x += Inches(0.26)
+    tf = _tb(slide, Inches(5.55), iy - Inches(0.32), Inches(2.4), Inches(0.3))
+    _run(tf.paragraphs[0], "perfect 2x  =  146,794", 11.5, WARN, bold=True)
+
+    for units, val, bx in CASES:
+        bh = h(val)
+        bar = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE, bx, BASE - bh, BW, bh)
+        bar.fill.solid()
+        bar.fill.fore_color.rgb = ACCENT if units == 4 else RGBColor(0x9F, 0xC2, 0xD1)
+        bar.line.fill.background(); bar.shadow.inherit = False
+
+        v = _tb(slide, bx - Inches(0.35), BASE - bh - Inches(0.46), BW + Inches(0.7),
+                Inches(0.4), PP_ALIGN.CENTER)
+        _run(v.paragraphs[0], f"{val:,}", 19, INK, bold=True)
+
+        lab = _tb(slide, bx - Inches(0.35), BASE + Inches(0.10), BW + Inches(0.7),
+                  Inches(0.66), PP_ALIGN.CENTER)
+        p1 = lab.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
+        _run(p1, f"{units} units", 15, INK, bold=True)
+        p2 = lab.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
+        _run(p2, "1.99 of 2 cores used" if units == 2 else "3.89 of 4 cores used",
+             11.5, MUTED)
+
+    # the multiplier, between the two bars
+    m = _tb(slide, Inches(3.10), BASE - h(90000), Inches(1.5), Inches(0.8), PP_ALIGN.CENTER)
+    p1 = m.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
+    _run(p1, "1.99x", 30, ACCENT, bold=True)
+    p2 = m.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
+    _run(p2, "orders / sec", 11, MUTED)
+
+    # what the chart cannot show on its own
+    rt = _tb(slide, Inches(7.75), top + Inches(0.30), Inches(4.9), Inches(4.0))
+    for i, (lead, rest) in enumerate([
+        ("A unit is one core and one degree of parallelism, bought together. ",
+         "That is what a KPU is in Managed Service for Apache Flink."),
+        ("Flink used every core it was given — ",
+         "1.99 of 2, then 3.89 of 4. A unit bought is a unit worked."),
+        ("The broker never passed 0.78 of a core. ",
+         "Flink was the constrained component, and you can only show that something "
+         "scales when it is the thing that is constrained."),
+    ]):
+        para = _para(rt, first=(i == 0)); para.space_after = Pt(15)
+        _run(para, "\u25b8   ", 15, ACCENT, bold=True)
+        _run(para, lead, 15, INK, bold=True)
+        _run(para, rest, 15, BODY)
+
     if handout:
-        p2 = tf.add_paragraph(); p2.space_before = Pt(12)
-        _run(p2, "A broker that looks asleep can still be the ceiling, and the only way to tell is to "
-                 "have both CPU figures beside the throughput. \"The broker is full\" would have been "
-                 "the wrong way to say it — it implies a busy broker, and the two cases are only "
-                 "distinguishable from this table.", 15, BODY)
-    notes(slide, "Only show this if asked where it stops. The demo pair is 2 and 4.")
+        statline(slide, Inches(6.42),
+                 "Eight partitions and a 5 s checkpoint were held constant across both cases, and the backlog was "
+                 "drained with the producer stopped, so nothing varied but the units. The dashed "
+                 "line is exactly twice the two-unit result; the four-unit bar reaches 99.5% of it.",
+                 MUTED, 13)
+    notes(slide, "The dashed line is exactly 2x the first bar. The whole claim is whether the "
+                 "second bar reaches it -- 146,063 against 146,794, which is 99.5%. Step 10 got this "
+                 "wrong by varying parallelism while Flink already had every core it could use, "
+                 "and the answer came back flat.")
 
 
-def s_ceiling(slide, handout):
-    top = heading(slide, "Is that Flink's ceiling, or the laptop's?",
-                  "Backup — same script, bigger Kafka")
-    table(slide, Inches(0.75), top,
-          [["", "laptop", "AWS"],
-           ["4 → 8 units", "1.18×", "1.73×"],
-           ["Flink cores at 8 units", "4.98 of 8", "7.99 of 8"],
-           ["broker cores at 8 units", "0.48", "0.62"]],
-          [Inches(4.4), Inches(2.4), Inches(2.4)], highlight={1, 2}, size=15)
-    y = top + Inches(2.25)
-    tf = _tb(slide, Inches(0.75), y, Inches(11.9), Inches(2.0))
-    p = tf.paragraphs[0]
-    _run(p, "The laptop's.  ", 17, GOOD, bold=True)
-    _run(p, "The same script, unchanged, against a two-broker MSK cluster. With the broker no longer "
-            "in the way, Flink uses everything it is given and the flattening disappears. "
-            "Nothing about the job changed.", 17, BODY)
-    if handout:
-        p2 = tf.add_paragraph(); p2.space_before = Pt(14)
-        _run(p2, "Stated honestly: that run was a confirmation, not a second demo. Its step ratios "
-                 "rise rather than decay, which is backwards and is not yet explained, and its two "
-                 "highest points were measured once each. The laptop numbers are the ones to stand "
-                 "behind.", 14.5, MUTED, italic=True)
-    notes(slide, "Do not volunteer this. It is an answer to one question, not a slide in the flow.")
-
-
-def s_built(slide, handout):
-    top = heading(slide, "Thirteen steps, each reviewed before the next",
-                  "Backup — how it was built")
-    bullets(slide, top, [
-        ("One branch per step, squash-merged.  ",
-         "Linear history, one commit and one tag per step, branches kept so the working history stays inspectable."),
-        ("CI on every push.  ",
-         "Build and unit tests, shellcheck, a cold-start run of the whole stack, and a job that verifies the expected numbers against real topics."),
-        ("Everything is scripted.  ",
-         "The demo, the chaos test, the latency measurement, the scaling run — and this deck."),
-    ], size=16)
-    if handout:
-        prose(slide, top + Inches(2.5),
-              "The scaling harness refuses to report a number it cannot stand behind: it checks that "
-              "the CPU limit was applied to the container, that a job is actually running, that the "
-              "backlog outlasted the measurement window, and that no previous run still owns the "
-              "cluster. Every one of those was a real failure during the scaling work, and each had "
-              "produced a confident wrong answer.")
-    notes(slide, "The journal records what drove each step, what was decided, and what its review "
-                 "changed. docs/reviews/ has the exchanges verbatim.")
-
-
-SLIDES = [s_title, s_problem, s_design, s_expected, s_live, s_numbers,
-          s_exactly_once, s_latency, s_cases, s_units, s_curve, s_ceiling, s_built]
+# Eleven slides. The design comes before the problem -- the diagram makes the
+# problem legible rather than the other way round. Scaling sits right after the
+# live demo, while the pipeline is still on screen, instead of trailing the deck.
+SLIDES = [s_title, s_design, s_problem, s_expected, s_live,
+          s_flink_graph, s_grafana, s_units, s_units_chart, s_numbers, s_cases]
 
 
 def build(path, handout):

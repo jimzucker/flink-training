@@ -83,7 +83,10 @@ def table_html(shape):
     for r_i, row in enumerate(tbl.rows):
         cells = []
         for c_i, cell in enumerate(row.cells):
-            bg = rgb(cell.fill.fore_color) if cell.fill.type is not None else None
+            try:
+                bg = rgb(cell.fill.fore_color)
+            except (TypeError, AttributeError):
+                bg = None
             st = [f"width:{widths[c_i] / total * 100:.3f}%"]
             if bg:
                 st.append(f"background:{bg}")
@@ -119,10 +122,18 @@ def shape_html(sh):
             auto = sh.auto_shape_type
         except Exception:
             auto = None
-        f = rgb(sh.fill.fore_color) if sh.fill.type is not None else None
+        # a border-only shape has _NoFill, whose fore_color raises rather than
+        # returning None -- asking for the type is not enough of a guard
+        try:
+            f = rgb(sh.fill.fore_color)
+        except (TypeError, AttributeError):
+            f = None
         if f:
             extra.append(f"background:{f}")
-        ln = rgb(sh.line.color)
+        try:
+            ln = rgb(sh.line.color)
+        except (TypeError, AttributeError):
+            ln = None
         if ln and sh.line.width:
             extra.append(f"border:{max(1, round(sh.line.width.pt))}px solid {ln}")
         if auto in ROUND:

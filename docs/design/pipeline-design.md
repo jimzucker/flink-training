@@ -6,7 +6,7 @@
 
 Process a stream of **block trades** and publish **positions** aggregated two ways
 in parallel. Then join **prices** to those positions and publish **market value**
-the same two ways, emitted once per minute.
+the same two ways, emitted once per window.
 
 A block trade is a single order that is split across several accounts. One trade
 of 400 shares allocated to 4 accounts becomes 4 allocations of 100 shares each.
@@ -68,8 +68,8 @@ That the two sides must agree in total is the strongest available check on Part 
 the same question answered two different ways. It is asserted on every run.
 
 **Part 2 — market value.** Reads ③, ④ and ②. *Join price × position* attaches the
-latest price for the symbol to each position. *Window 1 min* is a tumbling
-one-minute window that emits one market value per key per minute, computed as:
+latest price for the symbol to each position. *Window 10s* is a tumbling window
+that emits one market value per key per window, computed as:
 
 ```
 marketValue = position quantity at window close
@@ -107,17 +107,17 @@ element above.
 |---|---|---|---|---|
 | 3 | `positions-by-symbol` | 10 / sec | **4** | one key per symbol |
 | 4 | `positions-by-account` | 40 / sec | **16** | 10 trades × 4 allocations; 4 accounts × 4 symbols |
-| 5 | `mv-by-symbol` | 4 / min | **4** | one emit per key per minute |
-| 6 | `mv-by-account` | 16 / min | **16** | one emit per key per minute |
+| 5 | `mv-by-symbol` | 4 per window | **4** | one emit per key per window |
+| 6 | `mv-by-account` | 16 per window | **16** | one emit per key per window |
 
 Sink 4 emits 4× the rate of sink 3 because each trade fans out to 4 allocations.
 Sinks 5 and 6 emit once per key per window regardless of input rate, because the
 window collapses every update within it to a single value.
 
-The rates above assume the **specified one-minute window**. The demo and the
-verification both override it to 10s via `WINDOW_MS`, so what you actually watch
-is 4 and 16 records every ten seconds. The calculation is identical either way —
-only the emit boundary moves.
+**The window is 10s** — `WINDOW_MS`, the value the demo and the verification both
+run at — so sinks 5 and 6 emit 4 and 16 records every ten seconds. The window
+length is the only thing that moves those two rates; the calculation behind them
+does not change with it.
 
 ## Determinism
 
@@ -135,9 +135,9 @@ The demo has to be reproducible and the numbers have to be explainable, so:
   positive, one whose net is negative, and one that nets to zero.
 - **Every key starts flat.** Positions open at zero; there is no opening book to
   load, so the state at any point is derivable from the trades alone.
-- **Every key emits every minute.** A key with no trade during a minute still
+- **Every key emits every window.** A key with no trade during a window still
   holds a position, so it still emits. That is what makes sinks 5 and 6 a steady
-  4 and 16 per minute rather than a number that varies with activity.
+  4 and 16 per window rather than a number that varies with activity.
 - **Fixed reference data.** Exactly 4 symbols, 4 accounts, 4 allocations per
   trade — the numbers above are arithmetic, not statistics.
 - **Event time, not processing time.** Windows key off an event timestamp stamped
@@ -187,7 +187,7 @@ last one to arrive.
 **Idleness is the real risk, not lateness.** Each join has two inputs and its
 watermark advances at the slower of them. If an input goes quiet — a symbol with
 no price for a while, or a partition with no traffic — the watermark stalls and
-the one-minute windows stop firing, even though every record that did arrive was
+the windows stop firing, even though every record that did arrive was
 perfectly in order. Sinks 5 and 6 would simply go silent, which looks identical
 to a broken pipeline during a demo.
 
