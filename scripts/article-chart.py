@@ -68,10 +68,16 @@ while seg < len(pts) - 1:
         d.line([(x0 + (x1 - x0) * a, y0 + (y1 - y0) * a),
                 (x0 + (x1 - x0) * b, y0 + (y1 - y0) * b)], fill=IDEAL, width=int(3 * S))
     seg += 1
-# in the clear space left of where the line starts, not over a bar
-cx, cy = pts[0][0] - 176 * S, pts[0][1] - 74 * S
-d.text((cx, cy), "perfect linear,", font=font(16, True), fill=IDEAL)
-d.text((cx, cy + 21 * S), "from the 1-core result", font=font(16), fill=IDEAL)
+# a legend rather than a caption floating next to the line: the bars moved when
+# the output callout was added, and a positioned caption collides the moment
+# anything else on the plot shifts
+LY = int(196 * S)
+lx = int(60 * S)
+for k in range(0, 44, 12):
+    d.line([(lx + k * S, LY + 8 * S), (lx + (k + 7) * S, LY + 8 * S)],
+           fill=IDEAL, width=int(3 * S))
+d.text((lx + 54 * S, LY), "perfect linear, from the 1-core result",
+       font=font(16, True), fill=IDEAL)
 
 for i, (units, val) in enumerate(CASES):
     bh = h(val)
