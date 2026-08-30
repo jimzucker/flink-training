@@ -5,7 +5,7 @@ The live demo is the deliverable. These slides are the handout and the backup.
 | file | for |
 |---|---|
 | [`final-demo.pptx`](final-demo.pptx) | **presenting.** Titles, tables and the diagram — nothing to read aloud, so attention stays on the live screen. |
-| [`final-demo-handout.pptx`](final-demo-handout.pptx) | **leaving behind.** The same thirteen slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
+| [`final-demo-handout.pptx`](final-demo-handout.pptx) | **leaving behind.** The same eight slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
 
 Both carry speaker notes on every slide.
 
@@ -41,18 +41,18 @@ without settling it.
 | 1 | Title | What it is, what it runs on |
 | 2 | One order becomes four allocations | The problem, and why the two aggregations differ |
 | 3 | Six numbered elements, end to end | The pipeline diagram |
-| 4 | What the numbers should be | Expected inputs, the demo's settings, sinks 3–6 — **before** running |
+| 4 | What the numbers should be | Inputs, sinks 3–6, and the demo's settings — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
 | 6 | Every number has an answer | The three questions the dashboard invites |
-| 7 | A replayed record is a wrong number | Exactly-once, proved by killing a task manager |
-| 8 | Two numbers, and they are not the same | 59 ms of work vs 518 ms to a consumer |
-| 9 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
-| 10 | Double the units, double the throughput | The demo pair: 2 → 4 units, 1.96× |
-| 11 | *Backup* — the whole curve | Where it stops, and why the broker looks idle |
-| 12 | *Backup* — laptop's ceiling or Flink's? | The AWS comparison, with its caveats stated |
-| 13 | *Backup* — how it was built | Thirteen steps, CI, everything scripted |
+| 7 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
+| 8 | Double the units, double the throughput | 2 → 4 units, **1.96×** — the note to end on |
 
-Slides 11–13 are answers, not part of the flow.
+**Eight slides, ending on the scaling result.** Exactly-once and latency were cut
+along with the three backup slides: the guarantees are demonstrated live rather
+than described, and the deck closes on 1.96× rather than trailing off into the
+curve's ceiling and its caveats. The evidence for everything cut is still in the
+repo — `docs/steps/step-04`, `step-09` and `step-12` — and the runbook has the
+answers ready if anyone asks.
 
 Why the deck is shaped this way, and what its review changed:
 [`docs/steps/step-13/deck.md`](../steps/step-13/deck.md).

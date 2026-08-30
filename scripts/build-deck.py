@@ -230,16 +230,19 @@ def s_design(slide, handout):
 def s_expected(slide, handout):
     top = heading(slide, "What the numbers should be, before we run anything",
                   "Expected output")
+
+    # inputs and sinks sit side by side and end within half an inch of each
+    # other; the demo's settings are a separate thing and get their own strip,
+    # rather than being bolted onto the inputs table under a slash-compound
+    # heading that has to cover both.
     table(slide, Inches(0.75), top,
-          [["Input / setting", "Demo value"],
+          [["Input", "Rate"],
            ["Trades", "10 / sec"],
            ["Prices", "1 000 / sec"],
            ["Symbols", "4 unique"],
            ["Accounts", "4 unique"],
-           ["Allocations per trade", "4 (one per account)"],
-           ["Window", "10 s  (spec: 1 min)"],
-           ["Checkpoint interval", "1 s"]],
-          [Inches(3.1), Inches(2.3)], size=13.5, highlight={6, 7})
+           ["Allocations per trade", "4 (one per account)"]],
+          [Inches(3.1), Inches(2.3)], size=13.5)
     table(slide, Inches(6.35), top,
           [["#", "Sink", "Rate in the demo", "Keys"],
            ["3", "positions-by-symbol", "10 / sec", "4"],
@@ -247,12 +250,32 @@ def s_expected(slide, handout):
            ["5", "mv-by-symbol", "4 per 10 s", "4"],
            ["6", "mv-by-account", "16 per 10 s", "16"]],
           [Inches(0.45), Inches(3.05), Inches(1.9), Inches(0.9)], size=13.5)
-    statline(slide, Inches(5.9),
-             "The window is 10 s for the demo so the market value sinks say something without a "
-             "minute of waiting — the job defaults to the specified minute, and the calculation is "
-             "identical either way. Committing to these numbers before the run is what makes the "
-             "demo a verification rather than a tour; scripts/verify-topics.sh checks every one of "
-             "them against the real topics, on every push.", GOOD, italic=False)
+
+    y = top + Inches(2.72)
+    bar = slide.shapes.add_shape(MSO_SHAPE.ROUNDED_RECTANGLE,
+                                 Inches(0.75), y, Inches(11.9), Inches(0.78))
+    bar.fill.solid(); bar.fill.fore_color.rgb = BAND
+    bar.line.color.rgb = RULE; bar.line.width = Pt(1)
+    bar.shadow.inherit = False
+    tf = bar.text_frame
+    tf.margin_left = Inches(0.28)
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.alignment = PP_ALIGN.LEFT
+    _run(p, "Set for the demo:   ", 14, MUTED, bold=True)
+    _run(p, "window ", 15, BODY)
+    _run(p, "10 s", 15, INK, bold=True, font=MONO)
+    _run(p, "  (specified: 1 min)     checkpoint interval ", 15, BODY)
+    _run(p, "1 s", 15, INK, bold=True, font=MONO)
+    _run(p, "     partitions ", 15, BODY)
+    _run(p, "8", 15, INK, bold=True, font=MONO)
+
+    statline(slide, y + Inches(1.02),
+             "The window is 10 s so the market value sinks say something without a minute of "
+             "waiting — the job defaults to the specified minute, and the calculation is identical "
+             "either way. Committing to these numbers before the run is what makes the demo a "
+             "verification rather than a tour; scripts/verify-topics.sh checks every one of them "
+             "against the real topics, on every push.", GOOD, italic=False)
     notes(slide, "Say the numbers out loud BEFORE starting the generators. Then the dashboard "
                  "either matches or it does not. If asked why the window is 10s and not a minute: "
                  "only for the demo, so the sinks say something without a minute of waiting. The "
@@ -296,55 +319,6 @@ def s_numbers(slide, handout):
     notes(slide, "If you cannot answer something, say so and take it as an action item to change "
                  "the logging. That is the instruction in the requirements, and it beats an "
                  "explanation invented on the spot.")
-
-
-def s_exactly_once(slide, handout):
-    top = heading(slide, "A replayed record is a wrong number, not a duplicate",
-                  "Correctness under failure")
-    bullets(slide, top, [
-        ("A position is a running sum.  ",
-         "At-least-once would silently corrupt it — and a wrong number is harder to spot than a missing one."),
-        ("EXACTLY_ONCE, one transactional id prefix per sink.  ",
-         "Every reader in the verification path uses read_committed."),
-        ("Proved by breaking it.  ",
-         "scripts/chaos-exactly-once.sh kills a task manager mid-run; the job recovers from checkpoint and the totals still reconcile."),
-    ])
-    if handout:
-        prose(slide, top + Inches(2.6),
-              "Exactly-once is a claim about what happens when something fails, so without a failure "
-              "the setting is untested and at-least-once looks identical. That is why the proof is a "
-              "chaos script rather than a configuration screenshot. It also has a visible cost, which "
-              "the next slide is about.")
-    notes(slide, "The cost of this guarantee is the latency on the next slide. Don't let anyone "
-                 "read the 518ms as slowness — it is the commit interval, and it is a dial.")
-
-
-def s_latency(slide, handout):
-    top = heading(slide, "Two numbers, and they are not the same", "Latency")
-    table(slide, Inches(0.75), top,
-          [["", "p50", "max"],
-           ["What the pipeline takes", "59 ms", "110 ms  (p99)"],
-           ["What a consumer waits for", "518 ms", "1 025 ms"]],
-          [Inches(3.6), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
-    table(slide, Inches(7.4), top,
-          [["Checkpoint interval", "p50", "max"],
-           ["5 s", "2 488 ms", "4 988 ms"],
-           ["1 s  (the default)", "518 ms", "1 025 ms"]],
-          [Inches(2.9), Inches(1.35), Inches(1.35)], highlight={2}, size=14)
-    if handout:
-        prose(slide, top + Inches(1.9),
-              "The gap is the guarantee, not the work. Under exactly-once nothing is readable until "
-              "the checkpoint that produced it commits, so a consumer waits a roughly uniform interval "
-              "on top of the processing time. Cut the interval by five and the latency falls by five, "
-              "with the maximum landing inside one interval each time — which is what a uniform wait "
-              "for the next commit looks like, and the strongest evidence that the delay is the "
-              "guarantee rather than the pipeline. A checkpoint itself takes about 13 ms.")
-    else:
-        statline(slide, top + Inches(2.0),
-                 "The gap is the guarantee, not the work. Shorten the interval fivefold, "
-                 "the latency falls fivefold. A checkpoint itself takes 13 ms.", INK, 16, italic=False)
-    notes(slide, "Market value latency is measured from the window close, not the trade — the "
-                 "window is the specification, not a delay to account for.")
 
 
 def s_cases(slide, handout):
@@ -397,81 +371,11 @@ def s_units(slide, handout):
                  "it could use, and the answer came back flat.")
 
 
-def s_curve(slide, handout):
-    top = heading(slide, "Where it stops, and why the broker looks idle",
-                  "Backup — the whole curve")
-    table(slide, Inches(0.75), top,
-          [["units", "orders/sec", "vs previous", "Flink cores", "broker cores", "back-pressure"],
-           ["1", "30 505", "—", "1.00 of 1", "0.10", "24.1%"],
-           ["2", "65 721", "2.15×", "2.00 of 2", "0.25", "28.5%"],
-           ["4", "129 056", "1.96×", "3.94 of 4", "0.39", "51.6%"],
-           ["8", "151 969", "1.18×", "4.98 of 8", "0.48", "72.7%"]],
-          [Inches(1.3), Inches(2.0), Inches(2.0), Inches(2.1), Inches(2.0), Inches(2.2)],
-          highlight={4}, size=14)
-    y = top + Inches(2.65)
-    tf = _tb(slide, Inches(0.75), y, Inches(11.9), Inches(1.8))
-    p = tf.paragraphs[0]
-    _run(p, "The broker is at 0.48 cores while being the thing in the way.  ", 16, WARN, bold=True)
-    _run(p, "It has run out of write throughput, not CPU: 151 969 orders/sec is 759 845 records/sec, "
-            "against the ~750 000 one broker accepts — because each order becomes five records.", 16, BODY)
-    if handout:
-        p2 = tf.add_paragraph(); p2.space_before = Pt(12)
-        _run(p2, "A broker that looks asleep can still be the ceiling, and the only way to tell is to "
-                 "have both CPU figures beside the throughput. \"The broker is full\" would have been "
-                 "the wrong way to say it — it implies a busy broker, and the two cases are only "
-                 "distinguishable from this table.", 15, BODY)
-    notes(slide, "Only show this if asked where it stops. The demo pair is 2 and 4.")
-
-
-def s_ceiling(slide, handout):
-    top = heading(slide, "Is that Flink's ceiling, or the laptop's?",
-                  "Backup — same script, bigger Kafka")
-    table(slide, Inches(0.75), top,
-          [["", "laptop", "AWS"],
-           ["4 → 8 units", "1.18×", "1.73×"],
-           ["Flink cores at 8 units", "4.98 of 8", "7.99 of 8"],
-           ["broker cores at 8 units", "0.48", "0.62"]],
-          [Inches(4.4), Inches(2.4), Inches(2.4)], highlight={1, 2}, size=15)
-    y = top + Inches(2.25)
-    tf = _tb(slide, Inches(0.75), y, Inches(11.9), Inches(2.0))
-    p = tf.paragraphs[0]
-    _run(p, "The laptop's.  ", 17, GOOD, bold=True)
-    _run(p, "The same script, unchanged, against a two-broker MSK cluster. With the broker no longer "
-            "in the way, Flink uses everything it is given and the flattening disappears. "
-            "Nothing about the job changed.", 17, BODY)
-    if handout:
-        p2 = tf.add_paragraph(); p2.space_before = Pt(14)
-        _run(p2, "Stated honestly: that run was a confirmation, not a second demo. Its step ratios "
-                 "rise rather than decay, which is backwards and is not yet explained, and its two "
-                 "highest points were measured once each. The laptop numbers are the ones to stand "
-                 "behind.", 14.5, MUTED, italic=True)
-    notes(slide, "Do not volunteer this. It is an answer to one question, not a slide in the flow.")
-
-
-def s_built(slide, handout):
-    top = heading(slide, "Thirteen steps, each reviewed before the next",
-                  "Backup — how it was built")
-    bullets(slide, top, [
-        ("One branch per step, squash-merged.  ",
-         "Linear history, one commit and one tag per step, branches kept so the working history stays inspectable."),
-        ("CI on every push.  ",
-         "Build and unit tests, shellcheck, a cold-start run of the whole stack, and a job that verifies the expected numbers against real topics."),
-        ("Everything is scripted.  ",
-         "The demo, the chaos test, the latency measurement, the scaling run — and this deck."),
-    ], size=16)
-    if handout:
-        prose(slide, top + Inches(2.5),
-              "The scaling harness refuses to report a number it cannot stand behind: it checks that "
-              "the CPU limit was applied to the container, that a job is actually running, that the "
-              "backlog outlasted the measurement window, and that no previous run still owns the "
-              "cluster. Every one of those was a real failure during the scaling work, and each had "
-              "produced a confident wrong answer.")
-    notes(slide, "The journal records what drove each step, what was decided, and what its review "
-                 "changed. docs/reviews/ has the exchanges verbatim.")
-
-
+# Eight slides. Exactly-once, latency and the three backup slides were cut: the
+# deck ends on the scaling result rather than trailing off into caveats, and the
+# guarantees are shown live rather than described.
 SLIDES = [s_title, s_problem, s_design, s_expected, s_live, s_numbers,
-          s_exactly_once, s_latency, s_cases, s_units, s_curve, s_ceiling, s_built]
+          s_cases, s_units]
 
 
 def build(path, handout):

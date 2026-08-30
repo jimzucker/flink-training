@@ -10,7 +10,7 @@ per-step evidence, so they sit where someone looking for the deck would look.
 | file | for |
 |---|---|
 | `docs/deck/final-demo.pptx` | **presenting.** Titles, tables and the diagram. Nothing to read aloud, so attention stays on the live screen. |
-| `docs/deck/final-demo-handout.pptx` | **leaving behind.** The same thirteen slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
+| `docs/deck/final-demo-handout.pptx` | **leaving behind.** The same eight slides with a paragraph of prose on each, readable by someone who missed the demo — and the fallback if the live stack fails. |
 
 Both carry speaker notes on every slide.
 
@@ -58,39 +58,33 @@ the old text.
 Browser text metrics are not PowerPoint's, so this narrows the question of whether
 anything overflows its box but does not settle it.
 
-## The thirteen slides
+## The eight slides
 
-| # | Slide | Carries |
+| # | Slide | |
 |---|---|---|
 | 1 | Title | What it is, what it runs on |
 | 2 | One order becomes four allocations | The problem, and why the two aggregations differ |
-| 3 | Six numbered elements, end to end | The project's pipeline diagram, with a note that its 1-min window is the specification |
-| 4 | What the numbers should be | Expected inputs, the demo's window and checkpoint settings, and sinks 3–6 — **before** running |
+| 3 | Six numbered elements, end to end | The pipeline diagram |
+| 4 | What the numbers should be | Inputs, sinks 3–6, and the demo's settings — **before** running |
 | 5 | **LIVE** | Start the generators, switch to Grafana |
 | 6 | Every number has an answer | The three questions the dashboard invites |
-| 7 | A replayed record is a wrong number | Exactly-once, proved by killing a task manager |
-| 8 | Two numbers, and they are not the same | 59 ms of work vs 518 ms to a consumer |
-| 9 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
-| 10 | Double the units, double the throughput | The demo pair: 2 → 4 units, 1.96× |
-| 11 | *Backup* — the whole curve | Where it stops, and why the broker looks idle |
-| 12 | *Backup* — laptop's ceiling or Flink's? | The AWS comparison, with its caveats stated |
-| 13 | *Backup* — how it was built | Thirteen steps, CI, everything scripted |
+| 7 | Both required cases pass | 100× orders, 20× prices, latency unmoved |
+| 8 | Double the units, double the throughput | 2 → 4 units, **1.96×** — the note to end on |
 
-Slides 11–13 are answers, not part of the flow. Slide 4 is the one that makes the
-demo a verification rather than a tour: the numbers are committed to out loud
-before anything starts.
+Slide 4 is the one that makes the demo a verification rather than a tour: the
+numbers are committed to out loud before anything starts.
 
 ## What the deck deliberately does not do
 
-**It does not lead with the scaling curve.** The demo pair is two cases — 2 and 4
-units — because each case costs minutes of warm-up that is dead air, and 2 → 4 is
-the sharpest form of the claim at 1.96×. The full four-point curve and its ceiling
-are a backup slide.
+**It ends on the scaling result.** The deck closes on 2 → 4 units at 1.96× rather
+than continuing into the curve's ceiling, the AWS comparison, and how the project
+was built. Those three were backup slides, and a backup slide that follows the
+conclusion undercuts it — the last thing shown is the thing remembered.
 
-**It does not oversell the AWS run.** Slide 12 states in its own text that the run
-was a confirmation rather than a second demo, that its step ratios behave oddly in
-a way that is not yet explained, and that its two highest points were measured
-once each.
+**It does not describe the guarantees it can demonstrate.** Exactly-once and
+latency each had a slide; both are better shown on the running dashboard than
+read off a table, and the runbook carries the numbers for anyone who asks. The
+evidence stays in `docs/steps/step-04` and `step-09`.
 
 **It quotes the demo's settings, not the specification's.** The window is 10 s in
 the demo and the checkpoint interval is 1 s, so the market value sinks emit 4 and

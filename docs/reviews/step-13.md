@@ -108,6 +108,37 @@ both, matching the README.
 `scripts/preview-deck.py` was also undocumented despite being committed; it is
 now described in the step doc.
 
+### Round 5 — eight slides, ending on the result
+
+> Remove slides 11/12/13 we stop showing the objective of 2x scaling, slide 4
+> looks wrong, remove slides 7 and 8
+
+**Cut to eight.** Slides 11, 12 and 13 were backup — the full curve and its
+ceiling, the AWS comparison, and how the project was built. A backup slide that
+follows the conclusion undercuts it, because the last thing shown is the thing
+remembered: the deck was ending on "here is where it stops working" rather than
+on 1.96×. Slides 7 and 8, exactly-once and latency, went too — both are better
+demonstrated on the running dashboard than read off a table.
+
+Nothing was deleted from the repo. `docs/steps/step-04`, `step-09` and `step-12`
+still hold the evidence, and the runbook still has the answers ready.
+
+**Slide 4 was wrong in three ways**, and the diagnosis is worth recording because
+the cause was a previous fix:
+
+| | |
+|---|---|
+| ragged bottoms | the inputs table ran to 5.15" while the sinks table stopped at 3.95" — a 1.2" hole |
+| a muddled table | "Input / setting" covered inputs, reference data *and* settings in one column |
+| a stranded caption | floating at 5.90", below both tables and attached to neither |
+
+The second caused the first. Round 2 added the window and checkpoint rows to fix
+a real error, but bolted them onto a table that was already an inputs table — so
+the header became a slash-compound to cover both, and the table grew two rows
+past its neighbour. The settings now have their own full-width strip beneath both
+tables, the inputs table is inputs again, and the two tables end within half an
+inch of each other.
+
 ## Still open
 
 **Text fitting is unverified.** There is no renderer on this machine — no
