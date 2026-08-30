@@ -19,7 +19,7 @@ The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 | **Exactly-once** | proved by killing a task manager mid-run: the job recovers from its checkpoint and the totals still reconcile |
 | **Latency** | **59 ms** p50 to compute a position; **518 ms** p50 before a consumer can read it — that gap is the commit interval, not the work |
 | **Load** | **100×** the order rate and **20×** the price rate, with order latency unmoved |
-| **Scaling** | double the units, get **~2×** the throughput (1.96–1.99× measured), with Flink using every core it is given |
+| **Scaling** | double the units, get **~2×** the throughput, with Flink using every core it is given |
 | **To reproduce** | one laptop, `docker compose up`, about four minutes per scaling case — no cluster, no cloud account |
 
 Details for each: [correctness](#verifying-the-numbers) · [latency](#latency) ·
@@ -560,10 +560,7 @@ shrink it past reading.
 
 These are rendered over the windows the numbers were taken in, not screenshots
 caught at a good moment — `scale-units.sh` records each window's bounds and
-Grafana renders any past range. **They are from a later run than the table above**
-— 73,397 and 146,063 orders/sec, a 1.99× step. Repeated runs on this laptop vary
-about 12% in absolute throughput while the ratio holds, which is why the summary
-at the top of this file quotes a range rather than a figure.
+Grafana renders any past range.
 
 The script defaults to **2 and 4**, which is the pair worth showing live: 1.96×
 for double the units, in two cases rather than four. The full curve is the record.
