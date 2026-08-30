@@ -1,4 +1,4 @@
-Proving Apache Flink scales linearly
+Capacity you can plan: double the cores, double the throughput
 
 We built a trading pipeline on Apache Flink and Kafka — block trades in, positions and market value out — and measured exactly what each additional core buys.
 
@@ -10,7 +10,7 @@ Block trades handled, per second:
 • 2 cores — 65,721
 • 4 cores — 129,056
 
-Four cores do 4.23× the work of one. Straight line, no cliff. That is a capacity model you can budget against — you know what the next core buys before you buy it.
+Four cores do 4.23× the work of one. No surprises, no cliff. That is a capacity model you can budget against — you know what the next core buys before you buy it.
 
 And it is real work: every trade fans out to five downstream updates, so at four cores the pipeline is writing 645,280 records a second.
 
