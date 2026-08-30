@@ -16,7 +16,7 @@ The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 Process a stream of **block trades** and publish **positions** aggregated two ways
 in parallel — by symbol, and by account/sub-account/symbol. Then join **prices**
 to those positions and publish **market value** the same two ways, emitted once
-per minute.
+per window.
 
 A block trade is one order split across several accounts: a trade of 400 shares
 allocated to 4 accounts becomes 4 allocations of 100. That split is why the two
@@ -46,16 +46,12 @@ element in the diagram.
 |---|---|---|---|
 | 3 | `positions-by-symbol` | 10 / sec — one per trade | **4** |
 | 4 | `positions-by-account` | 40 / sec — one per allocation | **16** |
-| 5 | `mv-by-symbol` | 4 per window — one per key | **4** |
-| 6 | `mv-by-account` | 16 per window — one per key | **16** |
+| 5 | `mv-by-symbol` | 4 per 10s window — one per key | **4** |
+| 6 | `mv-by-account` | 16 per 10s window — one per key | **16** |
 
-The window is **10s locally** and 60s in the job's own default, so sinks 5 and 6
-emit 4 and 16 records every ten seconds in the demo, and 4 and 16 per minute at
-the rate the requirements state. The calculation is identical either way.
-
-Verified against the real topics by `scripts/verify-topics.sh`, which runs at the
-same 10s window. Sinks 3–6 are produced by the jobs in later steps; what step 02
-proves is the input side.
+Verified against the real topics by `scripts/verify-topics.sh`, at the same
+settings. Sinks 3–6 are produced by the jobs in later steps; what step 02 proves
+is the input side.
 
 ## Running it locally
 
@@ -125,9 +121,8 @@ change to the calculation.
 
 | | Window | Set by | Why |
 |---|---|---|---|
-| Specification, and the job default | **60s** | `WINDOW_MS` default | what the requirements state; this is what the design diagram shows |
-| Live demo | **10s** | `docker/compose.yml` | a minute of dead air before the market value sinks say anything is a long time in front of an audience |
-| Verification | **10s** | `scripts/verify-run.sh` | closing three one-minute windows would need three and a half minutes per run, and a check that slow stops being run |
+| Everything demonstrated | **10s** | `docker/compose.yml`, `scripts/verify-run.sh` | the demo, the verification and the design diagram all use it, so there is one number to remember |
+| The job's own default | **60s** | `WINDOW_MS` default in `JobConfig` | what the requirements state, kept as the default the code ships with |
 
 Event time is the wall clock and pacing is real time in all three — only the
 window length differs. The demo runbook says to volunteer that when reaching

@@ -180,13 +180,31 @@ The deck now states one configuration: window 10 s, checkpoint interval 1 s, 8
 partitions. Every "(specified: 1 min)", "the job defaults to the specified
 minute" and the matching speaker notes are gone, from both files.
 
-That exposed a dependency worth recording. The pipeline diagram has "Window 1
-min" drawn into it, so removing the caption would have left slide 2 contradicting
-slide 4. `scripts/render-diagram.py` now relabels the deck's copy — "Window 1
-min" to "Window 10s", "once per minute" to "once per window" — and fails loudly
-if either string stops appearing in the source, so a diagram edit cannot silently
-break the substitution. `docs/design/pipeline.svg` is untouched and still states
-the specification, which is what a design document is for.
+That exposed a dependency. The pipeline diagram had "Window 1 min" drawn into it,
+so removing the caption would have left slide 2 contradicting slide 4.
+
+### Round 8 — the design matches the demo too
+
+> Change design so match how demo runs also, consistent
+
+The first attempt at round 7 relabelled only the deck's copy of the diagram and
+left the design document stating the specification. That is defensible in
+isolation and wrong overall: it means two documents describing one system
+disagree, and the reader has to know which is which.
+
+`docs/design/pipeline.svg` now says **Window 10s**, and `pipeline-design.md`
+gives its rates per window rather than per minute. The relabelling step in
+`render-diagram.py` is gone — with the source correct there is nothing to
+substitute.
+
+The 60-second default is stated in exactly one place, the settings table in the
+README, as what the code ships with. Everything demonstrated — the demo, the
+verification, the diagram, the deck — is 10s, so there is one number to remember
+rather than a rule about when each applies.
+
+**Not changed:** `JobConfig.DEFAULT_WINDOW_MS` is still `60_000L`. That is the
+requirement encoded in the code, and changing it is a behavioural change rather
+than a documentation one.
 
 ## Still open
 

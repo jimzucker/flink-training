@@ -78,23 +78,6 @@ def triangle(pt, direction, fill):
     return f'<polygon points="{pts}" fill="{fill}" stroke="none"/>'
 
 
-# The source diagram states the specified one-minute window, which is right for a
-# design document. The deck shows one configuration -- the one the demo runs --
-# so its copy is relabelled here rather than caveated on the slide.
-DEMO_LABELS = [
-    ("Window 1 min", "Window 10s"),
-    ("Sinks 5 and 6 emit once per minute:", "Sinks 5 and 6 emit once per window:"),
-]
-
-
-def relabel(svg):
-    for old, new in DEMO_LABELS:
-        if old not in svg:
-            raise SystemExit(f"diagram no longer contains {old!r} -- check DEMO_LABELS")
-        svg = svg.replace(old, new)
-    return svg
-
-
 def bake(svg):
     """Append an explicit arrowhead for every .edge / .price path."""
     heads, n = [], 0
@@ -112,7 +95,7 @@ def main():
     root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.chdir(root)
     svg = open(SVG, encoding="utf-8").read()
-    baked, n = bake(relabel(svg))
+    baked, n = bake(svg)
     if not n:
         sys.exit("no .edge/.price paths found -- has the diagram changed?")
 
