@@ -1,18 +1,20 @@
-A Flink pipeline that scales linearly: double the cores, double the throughput
+Capacity you can plan: double the cores, double the throughput
 
-Measured, not asserted. On a laptop, against a single Kafka broker.
-
-Claude Code built the whole thing — the pipeline, the tests, the measurement harness, the CI, the dashboards and the deck. It cost about six hours of my own time at the keyboard.
+We built a trading pipeline on Apache Flink and Kafka — block trades in, positions and market value out — and measured exactly what each additional core buys.
 
 [LEAD IMAGE: docs/img/scaling-linear.png]
 
-Block trades in, per second:
+Block trades handled, per second:
 
-• 1 core — 30,505/sec
-• 2 cores — 65,721/sec, 2.15× the previous
-• 4 cores — 129,056/sec, 1.96× the previous
+• 1 core — 30,505
+• 2 cores — 65,721
+• 4 cores — 129,056
 
-Four times the cores, 4.23× the throughput — and since every order fans out to five records, that is 645,280 records a second written back to Kafka.
+Four cores do 4.23× the work of one. No surprises, no cliff. That is a capacity model you can budget against — you know what the next core buys before you buy it.
+
+And it is real work: every trade fans out to five downstream updates, so at four cores the pipeline is writing 645,280 records a second.
+
+All of it on a laptop, against a single Kafka broker. Claude Code built it — the pipeline, the tests, the monitoring, the whole build and release path — for about six hours of my time.
 
 —————————————————————————————
 NOT FOR POSTING — provenance
@@ -24,7 +26,7 @@ and backlog (50,000,000 orders, producer stopped) held constant across cases;
 Flink used 1.00, 2.00 and 3.94 of the 1, 2 and 4 cores it was given.
 645,280 = 129,056 x 5, the fan-out in PositionsJob.
 Scope: one pipeline -- keyed split, two aggregations, exactly-once Kafka sinks
--- not a claim about every Flink job. The headline says "a Flink pipeline" for
-that reason; do not widen it to "Flink" when posting.
+-- not a claim about every Flink job. Say "a pipeline" or "our pipeline", never
+"Flink scales linearly", if anyone asks you to widen it.
 Session figures from the Claude Code transcript: 20.6h active, 6.2h prompting.
 Reproduce: scripts/scale-units.sh
