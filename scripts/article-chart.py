@@ -37,7 +37,7 @@ d = ImageDraw.Draw(im)
 
 d.text((60 * S, 44 * S), "One core in, one core's worth out", font=font(38, True), fill=INK)
 d.text((60 * S, 96 * S),
-       "Block trades to positions on a laptop with a single Kafka broker.",
+       "Block trades into positions on a laptop with a single Kafka broker.",
        font=font(19), fill=MUTED)
 
 BASE = int(468 * S)                      # baseline y
@@ -47,6 +47,9 @@ FULL = 140000.0
 def h(v): return int(PLOT * (v / FULL))
 
 d.line([(60 * S, BASE), (1140 * S, BASE)], fill=RULE, width=int(2 * S))
+
+# what the bars measure, stated once where the eye lands before reading them
+d.text((60 * S, 158 * S), "ORDERS IN, PER SECOND", font=font(16, True), fill=MUTED)
 
 BW = int(150 * S)
 XS = [int(x * S) for x in (170, 430, 690)]
@@ -76,6 +79,10 @@ for i, (units, val) in enumerate(CASES):
     lab = f"{val:,}"
     w = d.textlength(lab, font=font(30, True))
     d.text((x0 + (BW - w) / 2, BASE - bh - 46 * S), lab, font=font(30, True), fill=INK)
+    if i == len(CASES) - 1:
+        u = "orders/sec"
+        wu = d.textlength(u, font=font(17))
+        d.text((x0 + (BW - wu) / 2, BASE - bh - 70 * S), u, font=font(17), fill=MUTED)
 
     t = f"{units} core" + ("s" if units > 1 else "")
     w = d.textlength(t, font=font(24, True))
@@ -88,7 +95,7 @@ for i, (units, val) in enumerate(CASES):
         d.text((mx - w / 2, BASE - bh - 46 * S), m, font=font(26, True), fill=BAR)
 
 d.text((60 * S, 556 * S),
-       "4x the resources, 4.23x the throughput.  129,056 orders/sec is 645,280 records/sec written.",
+       "4x the cores, 4.23x the throughput.  129,056 orders/sec in is 645,280 records/sec out.",
        font=font(20, True), fill=BODY)
 d.text((60 * S, 590 * S),
        "Eight partitions held constant; each case drains a 50,000,000-order backlog with the producer stopped.",

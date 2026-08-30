@@ -8,13 +8,15 @@ The pipeline turns block trades into positions and market value, exactly-once, w
 
 [LEAD IMAGE: docs/img/scaling-linear.png]
 
-• 1 core — 30,505 orders/sec
-• 2 cores — 65,721 orders/sec, 2.15× the previous
-• 4 cores — 129,056 orders/sec, 1.96× the previous
+Orders in, per second:
 
-Four times the resources, 4.23× the throughput. On a laptop. One Kafka broker. One docker compose command.
+• 1 core — 30,505/sec
+• 2 cores — 65,721/sec, 2.15× the previous
+• 4 cores — 129,056/sec, 1.96× the previous
 
-At four cores that is 129,056 orders per second in and 645,280 records per second out, because every order fans out to five records: four account-side allocations plus one symbol-side position.
+Four times the cores, 4.23× the throughput. On a laptop. One Kafka broker. One docker compose command.
+
+Those are input rates. On the way out it is five times more: 645,280 records per second, because every order fans out to four account-side allocations plus one symbol-side position.
 
 Flink 1.20, Kafka 3.9, Java 17, all in Docker.
 
