@@ -35,10 +35,11 @@ def font(sz, bold=False):
 im = Image.new("RGB", (W, H), BG)
 d = ImageDraw.Draw(im)
 
-d.text((60 * S, 44 * S), "One core in, one core's worth out",
+d.text((60 * S, 40 * S), "Double the cores, double the throughput. On a laptop.",
        font=font(38, True), fill=INK)
 d.text((60 * S, 96 * S),
-       "Block trades into positions on a laptop with a single Kafka broker.",
+       "129,056 block trades a second at four cores, against one Kafka broker. "
+       "Exactly-once, every output verified.",
        font=font(19), fill=MUTED)
 
 BASE = int(468 * S)                      # baseline y
