@@ -166,6 +166,28 @@ flatter itself with a truncated axis, and this one is checked rather than assume
 Nine slides: title, design, problem, expected output, live, scaling, scaling
 chart, explain-any-number, load.
 
+### Round 7 — one configuration, not two
+
+> Why does slide 4 say 1 min specified? Remove notes like that just focus on how
+> we agreed to run the demo
+
+Round 2 fixed a real error — the deck had been promising rates the demo does not
+produce — but fixed it by carrying *both* numbers, so every settings line became
+an argument with itself. The audience does not need to be told which of two
+values is not in force.
+
+The deck now states one configuration: window 10 s, checkpoint interval 1 s, 8
+partitions. Every "(specified: 1 min)", "the job defaults to the specified
+minute" and the matching speaker notes are gone, from both files.
+
+That exposed a dependency worth recording. The pipeline diagram has "Window 1
+min" drawn into it, so removing the caption would have left slide 2 contradicting
+slide 4. `scripts/render-diagram.py` now relabels the deck's copy — "Window 1
+min" to "Window 10s", "once per minute" to "once per window" — and fails loudly
+if either string stops appearing in the source, so a diagram edit cannot silently
+break the substitution. `docs/design/pipeline.svg` is untouched and still states
+the specification, which is what a design document is for.
+
 ## Still open
 
 **Text fitting is unverified.** There is no renderer on this machine — no

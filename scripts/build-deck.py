@@ -219,12 +219,9 @@ def s_design(slide, handout):
     h = Emu(int(w / aspect))
     slide.shapes.add_picture(DIAGRAM, Inches(0.57), top + Inches(0.28), width=w, height=h)
     statline(slide, top + Inches(0.28) + h + Inches(0.14),
-             "Every edge carries its partition key and value. The diagram states the specified "
-             "one-minute window; the demo overrides it to ten seconds, and the calculation is "
-             "identical either way.")
+             "Every edge carries its partition key and value.")
     notes(slide, "Numbered left to right, in the order the demo talks through them. Point at 1 "
-                 "and 2 as the inputs, 3-6 as the outputs to verify. If anyone reads '1 min' off "
-                 "the diagram, that is the specification -- the demo runs a 10s window.")
+                 "and 2 as the inputs, 3-6 as the outputs to verify.")
 
 
 def s_expected(slide, handout):
@@ -265,21 +262,17 @@ def s_expected(slide, handout):
     _run(p, "Set for the demo:   ", 14, MUTED, bold=True)
     _run(p, "window ", 15, BODY)
     _run(p, "10 s", 15, INK, bold=True, font=MONO)
-    _run(p, "  (specified: 1 min)     checkpoint interval ", 15, BODY)
+    _run(p, "     checkpoint interval ", 15, BODY)
     _run(p, "1 s", 15, INK, bold=True, font=MONO)
     _run(p, "     partitions ", 15, BODY)
     _run(p, "8", 15, INK, bold=True, font=MONO)
 
     statline(slide, y + Inches(1.02),
-             "The window is 10 s so the market value sinks say something without a minute of "
-             "waiting — the job defaults to the specified minute, and the calculation is identical "
-             "either way. Committing to these numbers before the run is what makes the demo a "
-             "verification rather than a tour; scripts/verify-topics.sh checks every one of them "
-             "against the real topics, on every push.", GOOD, italic=False)
+             "Committing to these numbers before the run is what makes the demo a verification "
+             "rather than a tour. scripts/verify-topics.sh checks every one of them against the "
+             "real topics, at these settings, on every push.", GOOD, italic=False)
     notes(slide, "Say the numbers out loud BEFORE starting the generators. Then the dashboard "
-                 "either matches or it does not. If asked why the window is 10s and not a minute: "
-                 "only for the demo, so the sinks say something without a minute of waiting. The "
-                 "job defaults to the specified minute and the verification runs against both.")
+                 "either matches or it does not.")
 
 
 def s_live(slide, handout):

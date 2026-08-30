@@ -99,12 +99,14 @@ latency each had a slide; both are better shown on the running dashboard than
 read off a table, and the runbook carries the numbers for anyone who asks. The
 evidence stays in `docs/steps/step-04` and `step-09`.
 
-**It quotes the demo's settings, not the specification's.** The window is 10 s in
-the demo and the checkpoint interval is 1 s, so the market value sinks emit 4 and
-16 records *per window* rather than the 4/min and 16/min a 60-second window would
-give. Slide 4 states both the setting and the reason, because a slide that
-promises numbers the audience will not see defeats the purpose of committing to
-them in advance.
+**It shows one configuration: the one the demo runs.** Window 10 s, checkpoint
+interval 1 s, 8 partitions. Earlier drafts carried the specified one-minute window
+alongside as a parenthetical, which made every settings line an argument with
+itself — the audience does not need to be told which of two numbers is not in
+force. The pipeline diagram is relabelled for the deck by
+`scripts/render-diagram.py` for the same reason, so slide 2 and slide 4 agree.
+`docs/design/pipeline.svg` still states the specification, because that is what a
+design document is for.
 
 **It does not include a screenshot of Grafana.** The dashboard is the live
 artefact; a picture of it invites the audience to read a still image instead of
