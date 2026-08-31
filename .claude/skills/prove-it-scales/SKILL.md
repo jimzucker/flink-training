@@ -252,6 +252,64 @@ warm-up worked, which is what made it dangerous.
 something is warming up or accumulating between cases and the shape is partly an
 artifact of the order.
 
+## The dashboard is for explaining, not for measuring
+
+A scaling result needs two different things and they are not the same artifact.
+**The harness measures. The dashboard explains.** Keep the boundary sharp: the
+moment a number in your report comes off a dashboard panel, you have inherited
+every sampling and starvation problem the engine's metric pipeline has, at
+exactly the load where it has them.
+
+### Build it, and build it with the stack
+
+A dashboard that exists only in somebody's browser is not part of the system.
+Provision it from a file that ships alongside the compose stack, so `up` produces
+the same dashboard on any machine and a panel someone improves during a demo
+survives the next restart.
+
+### Every panel answers a question someone will ask
+
+Do not add a panel because the metric exists. Add it because you can name the
+question. In practice, three earn their place immediately:
+
+- **Rate per stage**, so the fan-out is visible rather than asserted — one input
+  becoming N outputs shows up as parallel lines with a constant ratio.
+- **Unique keys and totals**, so the cardinality you predicted before the run is
+  visibly the cardinality you got. This is what turns a demo into a verification.
+- **The saturation signal**: busiest task and most back-pressured task, side by
+  side. Busy near 100% with no back-pressure is a system working at its limit and
+  keeping up. Sustained back-pressure is a system that is not. **A throughput
+  graph will never tell you which of those you are looking at**, and it is the one
+  panel worth alerting on.
+
+Group them in the order the talk covers them. A dashboard laid out like the
+narrative is a dashboard the presenter can follow under pressure.
+
+### A panel you cannot explain is a liability
+
+If a number on the screen cannot be explained, it will be asked about, and the
+honest answer costs more than the panel was worth. One project shipped an
+"aborted checkpoints" panel whose count was always 1 — a harmless artifact of the
+first checkpoint firing before every task was running. As labelled, it implied the
+delivery guarantee was being retried, and it would have raised a false alarm
+mid-demo. Either the panel says what the number means, or the panel goes.
+
+### Render images server-side
+
+For anything that ends up in a document, have the dashboard server render it
+rather than screenshotting a browser. A browser extension on the presenting
+machine was enough to stop panels drawing entirely while the dashboard itself was
+perfectly correct — and a rendered image can be regenerated for a past time range,
+so the picture in your write-up can be *the window the number came from* rather
+than one taken at a convenient moment.
+
+### One vocabulary across environments
+
+If the same pipeline runs on a laptop and in the cloud, the metric names will not
+match — different exporters, different labels. Define recording rules that map
+both onto one set of names, and point the dashboard at those. Otherwise you
+maintain two dashboards, and the second one is always the stale one.
+
 ## Generate every artifact that carries a number
 
 Decks, charts and diagrams that quote figures are built by a script that reads
