@@ -157,6 +157,41 @@ producing a table with holes in it and no account of the holes. That is worse th
 no table, because the holes look like data points that happened to be missing
 rather than a rig that was broken the whole time.
 
+## Traps that only appear because you run it many times
+
+A scaling suite restarts the job dozens of times against one cluster. That is not
+how the system runs in production, and it surfaces failures a normal deployment
+never sees. These cost real days here:
+
+**Accumulated transactional state.** An exactly-once sink registers transactional
+IDs with the broker. If the ID prefix is a fixed string, every run leaves its IDs
+behind, and each subsequent startup must fence *all* of them before emitting a
+single record. Ten runs was enough to reach 98,677 IDs and a **470-second** delay
+before first output — which reads exactly like an inherent cold start that grows
+mysteriously as the day goes on. Scope the prefix per run and it drops to 31
+seconds. Symptom to recognise: sinks stuck initialising, first output minutes
+late, zero checkpoints completing, and the delay getting worse the more you
+measure.
+
+**Slot arithmetic that fails silently.** Every job needs its own slots. Two jobs
+at parallelism 4 need eight, not four. Get it wrong and the job does not fail — it
+sits waiting for resources while the harness cheerfully times an empty pipeline.
+Assert the slot count against the case before submitting.
+
+**A cluster that is still busy from the last case.** An orphaned run holds slots
+and starves the next submission. Worse, process-matching to kill it is unreliable
+— a wrapper that `exec`s replaces the command line the pattern was matching. Verify
+the cluster is idle by asking it, not by killing what you think is there.
+
+**Warm-up hiding a defect.** If the first N seconds of every run are unusable,
+the tempting fix is a longer warm-up. Do that only after finding out *why*. A
+240-second warm-up here was hiding the transactional-ID bug for weeks; the
+warm-up worked, which is what made it dangerous.
+
+**Order effects.** Run the cases ascending and descending. If the curve differs,
+something is warming up or accumulating between cases and the shape is partly an
+artifact of the order.
+
 ## Generate every artifact that carries a number
 
 Decks, charts and diagrams that quote figures are built by a script that reads
