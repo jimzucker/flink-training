@@ -135,6 +135,28 @@ one.** Make it stop instead. At minimum, refuse to report when:
 Every guard should exist because it caught something. Add one each time a
 confident wrong answer gets through.
 
+### A refusal stops the suite
+
+Refusing one case is only half of it. **When a case refuses, stop — do not run the
+rest.**
+
+Refusals are almost always systemic. If the resource cap did not apply at one
+core it will not apply at two; if the slot count is wrong, or a previous run still
+holds the cluster, or two vantage points disagree about the rate, then the rig is
+wrong rather than the case. Every later number is suspect even if it prints, and
+running them costs a warm-up each to learn nothing.
+
+Say so and exit: *"stopping here: the remaining cases would fail the same way."*
+
+The one thing worth doing instead of stopping is retrying the same case once, when
+the failure is obviously transient — a submission that did not take, a container
+that had not finished starting. If the retry refuses too, stop.
+
+A suite that logs "REFUSED — continuing" for each guard will spend an hour
+producing a table with holes in it and no account of the holes. That is worse than
+no table, because the holes look like data points that happened to be missing
+rather than a rig that was broken the whole time.
+
 ## Generate every artifact that carries a number
 
 Decks, charts and diagrams that quote figures are built by a script that reads
