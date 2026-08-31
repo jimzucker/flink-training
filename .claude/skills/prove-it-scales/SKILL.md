@@ -290,6 +290,23 @@ for. But the cause stays invisible, and you will spend the time you saved on
 diagnosis instead: one run lost 25 minutes to a probe dying quietly inside a call
 with no timeout, and found it in seconds once stderr went to a file.
 
+## Kill what you started to watch something
+
+A long unattended run spawns watchers — a monitor waiting for a suite to finish,
+a poll waiting for a probe to return, a loop waiting for a backlog to drain.
+
+**When you abandon or supersede the thing being watched, kill the watcher.** A
+case that refuses, a suite that stops, a run you replace with a better one: each
+leaves its monitor behind, still waiting on something that will never happen.
+
+The cost is not just a stray process. Orphaned watchers keep firing completions
+long after the work is done, each one reporting elapsed time measured from the
+*run's* start rather than its own — so a finished job looks like it is still
+going, for hours. One run left four, and the last expired 90 minutes after the
+last real measurement.
+
+Track what you spawn and tear it down on every exit path, not only the happy one.
+
 ## When something is blocked
 
 Try twice, maybe three times. Then stop, say what was tried and why it failed,
