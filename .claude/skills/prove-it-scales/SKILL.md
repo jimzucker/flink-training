@@ -258,6 +258,24 @@ against it exactly.
   a failure the setting is untested and at-least-once looks identical. Kill a
   worker mid-run, let it recover, and assert the totals again.
 
+### The generator has to be deterministic, or none of this works
+
+Everything above assumes you can state the expected answer before the run. That
+requires the input to be reproducible: same seed, same records, same order, in the
+same partitions. Seed it explicitly and derive per-partition seeds from that one
+seed, so parallel generation stays reproducible.
+
+Without it you cannot precompute expectations, cannot compare two runs, and cannot
+tell a regression from a different random draw. It is a precondition, not a nicety
+— check early that two fills with the same seed produce byte-identical output.
+
+### Record which build produced each number
+
+Put the artifact's identity — a jar hash, an image digest — in the result file
+next to the throughput. When a table looks wrong three days later, the first
+question is whether its rows came from the same code, and it is unanswerable
+afterwards unless you wrote it down at the time.
+
 ### Then gate the throughput on it
 
 Run the completeness check first, and **refuse to report any performance number
@@ -307,6 +325,41 @@ A suite that logs "REFUSED — continuing" for each guard will spend an hour
 producing a table with holes in it and no account of the holes. That is worse than
 no table, because the holes look like data points that happened to be missing
 rather than a rig that was broken the whole time.
+
+### A guard that has never fired is a guess
+
+You will write guards for failures you have not seen yet. Some of them will be
+wrong: checking the wrong thing, reading a field that is always null, comparing
+against a threshold no real failure crosses.
+
+**Break something on purpose and confirm the guard catches it.** Set the CPU cap
+to the wrong value and check the run refuses. Point the harness at a stopped
+cluster. Truncate the backlog mid-window. Each takes a minute, and the alternative
+is discovering during a real failure that your safety net has a hole — which is
+the moment it costs the most, because you will trust the number it printed.
+
+Every guard in a mature harness should be traceable to something it caught. Guards
+that have never fired are unverified code in the one component whose whole job is
+to be trustworthy.
+
+## Make the verification a gate, not an event
+
+Verifying once proves the pipeline was correct once. The interesting question is
+whether it is correct *now*, after the change someone made this morning.
+
+**Put the completeness check in CI and let it fail the build.** Stand the stack up
+from nothing, run the generator bounded by record count, assert the expected
+outputs, tear it down. It costs minutes per push and it converts every one of the
+assertions above from a thing you did into a thing that stays true.
+
+Two properties matter more than coverage. It must run **the same script you run
+locally**, or the two drift and the CI one becomes decorative. And it must start
+**from nothing** — a cold start on a clean machine is the path every new person
+takes, and it is the one most likely to be quietly broken by a change that works
+fine on a machine with warm caches and leftover state.
+
+A demo that fails in the room usually fails for something CI could have caught and
+nobody had asked it to.
 
 ## Traps that only appear because you run it many times
 
