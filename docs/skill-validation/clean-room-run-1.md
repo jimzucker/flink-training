@@ -19,21 +19,17 @@ started.
 
 ## What it cost
 
-| | this project | clean room |
-|---|---:|---:|
-| **Human time** | **6.4 h** | **0 h** |
-| Wall clock | 23.8 h | **2.5 h** |
-| Cost, metered-API equivalent | $1,226 | **$167** |
-| Tool calls | — | 863 |
-| Human prompts | 269 | **1** |
+| | |
+|---|---:|
+| Human time | **0 h** |
+| Human prompts | **1** |
+| Wall clock | 2.52 h |
+| Tool calls | 863 |
+| Assistant turns | 1,002 |
+| Tokens | 258,086,945 |
+| Cost, metered-API equivalent | $166.58 |
 
-Not like-for-like, and it would be dishonest to present it as such. This project
-also produced AWS validation, dashboards, CI, a deck, 23 pull requests and the
-documentation — and it is where the knowledge in the skill came from. The clean
-room built only the measurement rig, using method the original paid to learn.
-
-On the narrow question — *reach a defensible scaling number for this pipeline* —
-it went from 6.4 hours of attention to none.
+One prompt, then two and a half hours unattended.
 
 ## What it produced
 
