@@ -111,6 +111,38 @@ it in the results header, and expect someone to ask why the consumer-visible
 latency is far larger than the processing time. The answer is the guarantee, not
 the pipeline.
 
+### To find the ceiling, starve the other component
+
+The obvious way to find where the curve stops is to keep buying units until it
+flattens. That is expensive, and on one machine you may not be able to buy enough.
+
+**Squeeze instead.** Hold the component under test at its largest size and cap
+*the thing beside it* — the broker, the disk, the network — in steps. Watch for
+the handover: the constrained component pins at ~100% while the component under
+test **falls off its own cap**, which is the unambiguous signal that the roles
+have swapped.
+
+A test run found this without being told: at a 2.0-core broker the pipeline ran
+at 269,263/s with the broker at 33% util; halving to 1.0 cost 2%; halving again
+to 0.5 cost 19%, drove the broker to 98%, and pulled the task manager down from
+4.02 to 3.84 of its 4-core cap. That located the ceiling on a laptop in three
+short runs, and it extrapolates: a component idling at a third of its capacity
+tells you roughly how many more units it would take to saturate it.
+
+### Read the numbers from the transport, not the engine
+
+**The engine's own metrics are least trustworthy exactly when you need them.** At
+100% CPU its metric-reporting service is starved along with everything else; one
+measured case had Flink under-reporting its own output by about 3×.
+
+Take throughput from the thing on the other side of the boundary — committed
+broker offsets, rows in the sink table, files closed. And when the delivery
+guarantee is exactly-once, **read those outputs as committed only**: the raw log
+end offset includes records inside open transactions that no consumer can see, so
+it will tell you the pipeline is faster than it is. One harness correctly refused
+a perfectly good case because its own measurement was reading uncommitted
+offsets.
+
 ### Repeat the cheap measurement, not just the expensive one
 
 The natural instinct is to repeat the run that cost money and trust the free one.
@@ -172,6 +204,21 @@ mysteriously as the day goes on. Scope the prefix per run and it drops to 31
 seconds. Symptom to recognise: sinks stuck initialising, first output minutes
 late, zero checkpoints completing, and the delay getting worse the more you
 measure.
+
+**Memory arithmetic under exactly-once.** Transactional sinks allocate a producer
+buffer *per producer*, and the producer count scales with parallelism times the
+number of sinks. Those buffers come out of the same heap as the work. Get the
+split wrong and the case does not fail — it thrashes: one measured run reported
+3,085 records/sec that was pure garbage collection, against ~54,000 once the heap
+split was fixed. A throughput-only harness prints the 3,085 as a fact. The
+resource columns are what expose it.
+
+**Infrastructure commands that quietly destroy the backlog.** Bringing up one
+service brings up its dependency chain, and a changed config file makes the tool
+recreate containers you did not name — one run lost a 15.6 GB backlog to a
+`compose up` of a single service. Use the flag that suppresses dependencies, and
+record a baseline of the backlog so the next case refuses rather than measuring a
+drain against data that is no longer there.
 
 **Slot arithmetic that fails silently.** Every job needs its own slots. Two jobs
 at parallelism 4 need eight, not four. Get it wrong and the job does not fail — it
