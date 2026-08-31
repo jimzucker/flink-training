@@ -233,6 +233,12 @@ recorded manifest immediately after any destructive or recreating infrastructure
 command, not only before a measurement.** The specific commands that will bite
 you are not enumerable in advance; the check after them is.
 
+**Commands that succeed without doing anything.** `docker update --cpus 0` does
+not clear an existing CPU quota — only `--cpu-quota=-1` does — and it returns
+success either way, so the "cap not applied" guard is the only thing standing
+between you and a case measured at the previous case's limit. Assume any
+clear-the-setting command is a no-op until you have read the setting back.
+
 **Slot arithmetic that fails silently.** Every job needs its own slots. Two jobs
 at parallelism 4 need eight, not four. Get it wrong and the job does not fail — it
 sits waiting for resources while the harness cheerfully times an empty pipeline.
@@ -309,6 +315,37 @@ If the same pipeline runs on a laptop and in the cloud, the metric names will no
 match — different exporters, different labels. Define recording rules that map
 both onto one set of names, and point the dashboard at those. Otherwise you
 maintain two dashboards, and the second one is always the stale one.
+
+### What bites when you actually build one
+
+Five things that cost a run real time, none of them guessable from the JSON:
+
+**The renderer is a headless browser with no timezone.** A dashboard set to
+`browser` time renders in UTC and disagrees with the clock the presenter is
+reading off the wall. Pass the timezone explicitly in the render URL.
+
+**Verify the provisioned artifact actually loaded — the success code lies.** A
+reload endpoint returned 200 over a half-written rules file on a bind mount, and
+two panels read "No data" for a run with perfectly good data behind them.
+Provisioning can silently half-apply; check that the rule or dashboard you just
+pushed is really there.
+
+**Engine rate meters are smoothed.** Per-second meters are typically ~60-second
+moving averages, so a stage-rate panel ramps for a minute after start and decays
+for a minute after stop. That shape reads as a slow pipeline to an audience, and
+it is a second concrete reason the harness must never take its numbers off the
+dashboard.
+
+**Layout defects are invisible in the JSON — render and look for two in
+particular.** A legend with more series than rows clips, so a series looks
+missing when it is merely below the fold. And a series on a different scale
+plotted against a percent axis is a dual-axis panel in disguise, which reads as a
+flat line at the top.
+
+**Per-run identifiers pollute the dashboard too.** The transactional-ID trap has
+a twin: consumer groups. After a dozen cases a backlog panel was twenty-two
+frozen step functions, none of them the run being watched. Delete the group at the
+end of each case, the same way you scope the transactional prefix.
 
 ## Generate every artifact that carries a number
 
