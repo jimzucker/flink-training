@@ -57,6 +57,34 @@ Keep a journal: what drove the step, what was decided, how it was verified, what
 its review changed. It costs minutes and it is the only thing that makes a
 six-week-old decision explicable.
 
+## Environment preflight: check these before you build anything
+
+A measured hour of a clean-room run went to three environment traps, all
+deterministic, none of them interesting. Check them first; each is one command.
+
+**Does the JDK the engine needs actually resolve?** A machine can have several,
+and the obvious lookup may not find the one a package manager installed. Resolve
+it explicitly, print the version you resolved, and pin it — do not assume the
+default `java` on PATH is the one the engine supports.
+
+**Will the engine be able to write to its own state directory?** A named container
+volume is created root-owned, and an image whose entrypoint drops to an unprivileged
+user then cannot write to it. Overriding the container's user does not help,
+because the entrypoint drops privileges anyway. The failure arrives as every job
+being rejected for a directory it cannot create, which reads like a code problem
+and is not. Fix the ownership when the volume is created, and confirm by writing a
+file as the runtime user before submitting anything.
+
+**Is the metrics reporter already present?** Recent images often ship the exporter
+as a bundled plugin. The widely-copied instruction to copy the jar out of an
+`opt/` directory into `lib/` then produces a duplicate class and the container
+dies at startup. Look before you copy.
+
+**Then prove the loop end to end on a tiny input before you scale anything.** Fill
+a few thousand records, run one case, assert the outputs, tear it down. A rig that
+cannot measure a thousand records will not measure fifty million, and finding that
+out at the small size costs minutes instead of an hour.
+
 ## The measurement discipline
 
 ### Shrink the thing under test, do not overwhelm everything else
