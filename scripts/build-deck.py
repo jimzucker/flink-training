@@ -353,7 +353,7 @@ def s_flink_graph(slide, handout):
     ]:
         with Image.open(img) as im:
             aspect = im.width / im.height
-        w = Inches(5.76)
+        w = Inches(5.10)
         h = Emu(int(w / aspect))
         cap = _tb(slide, x, top + Inches(0.06), w, Inches(0.34))
         _run(cap.paragraphs[0], label, 15, INK, bold=True)
@@ -362,10 +362,11 @@ def s_flink_graph(slide, handout):
         box.fill.background()
         box.line.color.rgb = RULE; box.line.width = Pt(1)
         box.shadow.inherit = False
-        st = _tb(slide, x, top + Inches(0.56) + h, w, Inches(0.6))
+        # both sub-captions on one baseline, below the taller of the two images
+        st = _tb(slide, x, Inches(6.28), w, Inches(0.5))
         _run(st.paragraphs[0], sub, 12, MUTED)
 
-    statline(slide, Inches(6.10),
+    statline(slide, Inches(6.84),
              "Part 2 reads sinks 3 and 4 back out of Kafka rather than taking the streams "
              "in-process, so it consumes exactly what any other consumer would — which is why "
              "Flink draws two graphs and not one.")
@@ -475,7 +476,9 @@ def s_units_chart(slide, handout):
         d.fill.solid(); d.fill.fore_color.rgb = WARN
         d.line.fill.background(); d.shadow.inherit = False
         x += Inches(0.26)
-    tf = _tb(slide, Inches(5.55), iy - Inches(0.32), Inches(2.4), Inches(0.3))
+    # at the left end of the dashes: the four-unit bar's value label occupies the
+    # right end, and PowerPoint sets it wider than a browser does
+    tf = _tb(slide, Inches(1.30), iy - Inches(0.36), Inches(2.8), Inches(0.3))
     _run(tf.paragraphs[0], "perfect 2x  =  146,794", 11.5, WARN, bold=True)
 
     for units, val, bx in CASES:
@@ -498,9 +501,11 @@ def s_units_chart(slide, handout):
              11.5, MUTED)
 
     # the multiplier, between the two bars
-    m = _tb(slide, Inches(3.10), BASE - h(90000), Inches(1.5), Inches(0.8), PP_ALIGN.CENTER)
+    # the gap between the bars is 0.95in; at 30pt PowerPoint sets "1.99x" wider
+    # than that and the x disappears under the four-unit bar
+    m = _tb(slide, Inches(3.17), BASE - h(90000), Inches(1.4), Inches(0.8), PP_ALIGN.CENTER)
     p1 = m.paragraphs[0]; p1.alignment = PP_ALIGN.CENTER
-    _run(p1, "1.99x", 30, ACCENT, bold=True)
+    _run(p1, "1.99x", 22, ACCENT, bold=True)
     p2 = m.add_paragraph(); p2.alignment = PP_ALIGN.CENTER
     _run(p2, "orders / sec", 11, MUTED)
 
