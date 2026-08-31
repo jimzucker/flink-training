@@ -32,6 +32,17 @@ move on.
    record is a wrong number rather than a harmless duplicate, and the delivery
    guarantee is not optional. Say so now, because it puts a floor under latency
    that gets discovered embarrassingly late otherwise.
+
+**And ask whether the guarantee is actually needed.** "It is a running sum, so a
+replay is a wrong number" is the usual answer, and it is often right. But it turns
+on what you *emit*, not what you compute: if each output row carries the
+**absolute** value for its key rather than a delta, a replay restates the position
+instead of double-counting it, and the sink is idempotent whatever the engine
+does. One run reasoned exactly this way, chose at-least-once deliberately, and
+kept an exactly-once flag available in case the choice was challenged. That is a
+better answer than buying a guarantee reflexively, because exactly-once is not
+free — it puts a floor under visible latency equal to the commit interval.
+
 5. **Who watches the demo, and what do they need to believe at the end?** A
    capacity claim for managers and a correctness claim for engineers produce
    different builds. Ask before writing code, not before writing slides.
@@ -178,6 +189,24 @@ end offset includes records inside open transactions that no consumer can see, s
 it will tell you the pipeline is faster than it is. One harness correctly refused
 a perfectly good case because its own measurement was reading uncommitted
 offsets.
+
+**The metric you need is often not on the documented endpoint.** Engines
+deprecate and empty out APIs faster than their docs and blog posts admit. One run
+lost ten minutes to two back-pressure endpoints that returned empty or
+`deprecated` on a current version, when the usable counters were sitting on a
+different endpoint entirely. Dump the endpoint and read what is actually there
+before trusting a path you found in a search result.
+
+**Every number in the table comes from one build.** If you change the job — a
+metric, a serializer, a key — the earlier cases were measured against different
+code. Re-run them. Two runs did exactly this and said so; a table whose rows come
+from different jars is not a curve, it is a collection.
+
+**Size the backlog for the longest thing you will do with it, not the longest
+measurement.** The window guard stops you measuring silence, but a backlog that
+comfortably outlasts a 60-second case can still drain halfway through the
+five-minute load you wanted for a dashboard image — and half that picture is then
+an idle pipeline. Count every use before you fill.
 
 ### Repeat the cheap measurement, not just the expensive one
 
@@ -365,8 +394,8 @@ it is a second concrete reason the harness must never take its numbers off the
 dashboard.
 
 **Layout defects are invisible in the JSON — render and look for two in
-particular.** A legend with more series than rows clips, so a series looks
-missing when it is merely below the fold. And a series on a different scale
+particular.** A legend with more series than rows **clips** — legend clipping makes a series
+look missing when it is merely below the fold. And a series on a different scale
 plotted against a percent axis is a dual-axis panel in disguise, which reads as a
 flat line at the top.
 
