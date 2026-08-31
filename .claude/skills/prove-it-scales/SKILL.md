@@ -136,7 +136,15 @@ tells you roughly how many more units it would take to saturate it.
 measured case had Flink under-reporting its own output by about 3×.
 
 Take throughput from the thing on the other side of the boundary — committed
-broker offsets, rows in the sink table, files closed. And when the delivery
+broker offsets, rows in the sink table, files closed.
+
+**Anchor the measurement window on commit boundaries, not on wall clock.** These
+two rules interact and the interaction bites: a source commits its offsets *at*
+checkpoints, so reading the input side at an arbitrary wall-clock instant
+quantises it to the last checkpoint, and your two vantage points then disagree by
+up to one checkpoint interval for no real reason. Open and close the window when
+both sides have advanced. One run cut a 25% disagreement between vantage points
+to 0.5% by doing this, and could then tighten its own cross-check guard to 12%. And when the delivery
 guarantee is exactly-once, **read those outputs as committed only**: the raw log
 end offset includes records inside open transactions that no consumer can see, so
 it will tell you the pipeline is faster than it is. One harness correctly refused
@@ -216,9 +224,14 @@ resource columns are what expose it.
 **Infrastructure commands that quietly destroy the backlog.** Bringing up one
 service brings up its dependency chain, and a changed config file makes the tool
 recreate containers you did not name — one run lost a 15.6 GB backlog to a
-`compose up` of a single service. Use the flag that suppresses dependencies, and
-record a baseline of the backlog so the next case refuses rather than measuring a
-drain against data that is no longer there.
+`compose up` of a single service. Another, which had avoided that exact trap
+entirely, then lost a 90-million-record backlog because `--delete --topic a
+--topic b` silently deletes only one of them.
+
+**So take the general rule, not the example: verify the backlog against a
+recorded manifest immediately after any destructive or recreating infrastructure
+command, not only before a measurement.** The specific commands that will bite
+you are not enumerable in advance; the check after them is.
 
 **Slot arithmetic that fails silently.** Every job needs its own slots. Two jobs
 at parallelism 4 need eight, not four. Get it wrong and the job does not fail — it
@@ -266,6 +279,16 @@ silently-failed edits are found by looking, never by reading the code.
   the broad one invites a correction in public.
 - **Say where it stops.** Naming the ceiling makes the rest credible. Volunteering
   it is stronger than being asked.
+
+## Log stderr from the very first version
+
+Anything that runs unattended — a probe, a fill, a case — writes its stderr
+somewhere you can read afterwards. Not `DEVNULL`, not swallowed.
+
+A guard will catch the *consequence* of a silent failure, which is what guards are
+for. But the cause stays invisible, and you will spend the time you saved on
+diagnosis instead: one run lost 25 minutes to a probe dying quietly inside a call
+with no timeout, and found it in seconds once stderr went to a file.
 
 ## When something is blocked
 

@@ -1,5 +1,7 @@
 # Clean-room validation of `prove-it-scales`
 
+*Run 1. See also [run 2](clean-room-run-2.md), against the skill after this run's lessons went into it.*
+
 The skill claims to carry a method. The only way to know is to give it to
 something that does not already know the answer.
 
