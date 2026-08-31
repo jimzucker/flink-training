@@ -217,6 +217,60 @@ varied ~12%, and the laptop number was the one quoted as exact.
 Quote a ratio when the point is that it scales. Quote an absolute only from a run
 you repeated.
 
+## Prove nothing was lost, separately from proving it is fast
+
+A throughput number says how quickly records moved. It says nothing about whether
+they all arrived, or arrived once. **A fast pipeline that drops one record in ten
+thousand is worthless, and every measurement in your table will look fine.**
+
+These are two different runs and you need both.
+
+### The completeness run drains to the end; the measurement run does not
+
+Every rule about windows — hold the backlog, refuse if it drains inside the
+window, sample the middle — exists because a *measurement* looks at a slice of a
+steady state. Completeness cannot be checked on a slice. Take a backlog small
+enough to drain to the last record, let it finish, and then assert against it.
+Small and complete, not large and sampled.
+
+### Derive the expected answer from the input, not from the pipeline
+
+The check is worthless if it asks the pipeline what it produced and then agrees
+with itself. Have the generator write a manifest as it produces — totals per key,
+record count, whatever the aggregation is supposed to sum to — and compare the
+sinks against *that*. One run precomputed every expected output row before it ran
+anything; another had its generator emit a manifest and matched both aggregations
+against it exactly.
+
+### Assert four things, with no tolerances
+
+- **Cardinality.** You predicted the number of distinct keys during the interview.
+  Assert it. A key count that is one too high means a key you did not intend
+  exists; one too low means a key never arrived.
+- **Totals.** Every aggregation sums to what the manifest says it should. Exactly.
+  Fixed reference data is what makes this arithmetic rather than statistics — if
+  the answer needs a tolerance, the test is too vague to catch anything.
+- **The paths agree.** If the same quantity is computed two ways — two
+  aggregations over the same input, or a count from the source and a count from
+  the sink — they must be equal, and a difference is a lost or duplicated record
+  rather than noise.
+- **Idempotence, if you claim it.** Exactly-once is a claim about failure. Without
+  a failure the setting is untested and at-least-once looks identical. Kill a
+  worker mid-run, let it recover, and assert the totals again.
+
+### Then gate the throughput on it
+
+Run the completeness check first, and **refuse to report any performance number
+if it fails**. It belongs in the same harness as the other guards: a case whose
+outputs do not reconcile is not a slow case, it is a broken one, and its
+throughput is meaningless rather than merely disappointing.
+
+Prefer a monotonic quantity for anything you also chart. A signed running total is
+a random walk, so a fraction of a second of scrape skew between two series renders
+as a divergence that is not real — one run built exactly that panel, saw an
+alarming 8% gap between two identical paths, and replaced it with a count where
+the same skew is invisible and a genuinely lost record is not.
+
 ## Build the harness to refuse
 
 **A benchmark that prints a number for every input will eventually print a wrong
