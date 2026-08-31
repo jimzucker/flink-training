@@ -136,7 +136,15 @@ tells you roughly how many more units it would take to saturate it.
 measured case had Flink under-reporting its own output by about 3×.
 
 Take throughput from the thing on the other side of the boundary — committed
-broker offsets, rows in the sink table, files closed. And when the delivery
+broker offsets, rows in the sink table, files closed.
+
+**Anchor the measurement window on commit boundaries, not on wall clock.** These
+two rules interact and the interaction bites: a source commits its offsets *at*
+checkpoints, so reading the input side at an arbitrary wall-clock instant
+quantises it to the last checkpoint, and your two vantage points then disagree by
+up to one checkpoint interval for no real reason. Open and close the window when
+both sides have advanced. One run cut a 25% disagreement between vantage points
+to 0.5% by doing this, and could then tighten its own cross-check guard to 12%. And when the delivery
 guarantee is exactly-once, **read those outputs as committed only**: the raw log
 end offset includes records inside open transactions that no consumer can see, so
 it will tell you the pipeline is faster than it is. One harness correctly refused
@@ -216,9 +224,20 @@ resource columns are what expose it.
 **Infrastructure commands that quietly destroy the backlog.** Bringing up one
 service brings up its dependency chain, and a changed config file makes the tool
 recreate containers you did not name — one run lost a 15.6 GB backlog to a
-`compose up` of a single service. Use the flag that suppresses dependencies, and
-record a baseline of the backlog so the next case refuses rather than measuring a
-drain against data that is no longer there.
+`compose up` of a single service. Another, which had avoided that exact trap
+entirely, then lost a 90-million-record backlog because `--delete --topic a
+--topic b` silently deletes only one of them.
+
+**So take the general rule, not the example: verify the backlog against a
+recorded manifest immediately after any destructive or recreating infrastructure
+command, not only before a measurement.** The specific commands that will bite
+you are not enumerable in advance; the check after them is.
+
+**Commands that succeed without doing anything.** `docker update --cpus 0` does
+not clear an existing CPU quota — only `--cpu-quota=-1` does — and it returns
+success either way, so the "cap not applied" guard is the only thing standing
+between you and a case measured at the previous case's limit. Assume any
+clear-the-setting command is a no-op until you have read the setting back.
 
 **Slot arithmetic that fails silently.** Every job needs its own slots. Two jobs
 at parallelism 4 need eight, not four. Get it wrong and the job does not fail — it
@@ -238,6 +257,95 @@ warm-up worked, which is what made it dangerous.
 **Order effects.** Run the cases ascending and descending. If the curve differs,
 something is warming up or accumulating between cases and the shape is partly an
 artifact of the order.
+
+## The dashboard is for explaining, not for measuring
+
+A scaling result needs two different things and they are not the same artifact.
+**The harness measures. The dashboard explains.** Keep the boundary sharp: the
+moment a number in your report comes off a dashboard panel, you have inherited
+every sampling and starvation problem the engine's metric pipeline has, at
+exactly the load where it has them.
+
+### Build it, and build it with the stack
+
+A dashboard that exists only in somebody's browser is not part of the system.
+Provision it from a file that ships alongside the compose stack, so `up` produces
+the same dashboard on any machine and a panel someone improves during a demo
+survives the next restart.
+
+### Every panel answers a question someone will ask
+
+Do not add a panel because the metric exists. Add it because you can name the
+question. In practice, three earn their place immediately:
+
+- **Rate per stage**, so the fan-out is visible rather than asserted — one input
+  becoming N outputs shows up as parallel lines with a constant ratio.
+- **Unique keys and totals**, so the cardinality you predicted before the run is
+  visibly the cardinality you got. This is what turns a demo into a verification.
+- **The saturation signal**: busiest task and most back-pressured task, side by
+  side. Busy near 100% with no back-pressure is a system working at its limit and
+  keeping up. Sustained back-pressure is a system that is not. **A throughput
+  graph will never tell you which of those you are looking at**, and it is the one
+  panel worth alerting on.
+
+Group them in the order the talk covers them. A dashboard laid out like the
+narrative is a dashboard the presenter can follow under pressure.
+
+### A panel you cannot explain is a liability
+
+If a number on the screen cannot be explained, it will be asked about, and the
+honest answer costs more than the panel was worth. One project shipped an
+"aborted checkpoints" panel whose count was always 1 — a harmless artifact of the
+first checkpoint firing before every task was running. As labelled, it implied the
+delivery guarantee was being retried, and it would have raised a false alarm
+mid-demo. Either the panel says what the number means, or the panel goes.
+
+### Render images server-side
+
+For anything that ends up in a document, have the dashboard server render it
+rather than screenshotting a browser. A browser extension on the presenting
+machine was enough to stop panels drawing entirely while the dashboard itself was
+perfectly correct — and a rendered image can be regenerated for a past time range,
+so the picture in your write-up can be *the window the number came from* rather
+than one taken at a convenient moment.
+
+### One vocabulary across environments
+
+If the same pipeline runs on a laptop and in the cloud, the metric names will not
+match — different exporters, different labels. Define recording rules that map
+both onto one set of names, and point the dashboard at those. Otherwise you
+maintain two dashboards, and the second one is always the stale one.
+
+### What bites when you actually build one
+
+Five things that cost a run real time, none of them guessable from the JSON:
+
+**The renderer is a headless browser with no timezone.** A dashboard set to
+`browser` time renders in UTC and disagrees with the clock the presenter is
+reading off the wall. Pass the timezone explicitly in the render URL.
+
+**Verify the provisioned artifact actually loaded — the success code lies.** A
+reload endpoint returned 200 over a half-written rules file on a bind mount, and
+two panels read "No data" for a run with perfectly good data behind them.
+Provisioning can silently half-apply; check that the rule or dashboard you just
+pushed is really there.
+
+**Engine rate meters are smoothed.** Per-second meters are typically ~60-second
+moving averages, so a stage-rate panel ramps for a minute after start and decays
+for a minute after stop. That shape reads as a slow pipeline to an audience, and
+it is a second concrete reason the harness must never take its numbers off the
+dashboard.
+
+**Layout defects are invisible in the JSON — render and look for two in
+particular.** A legend with more series than rows clips, so a series looks
+missing when it is merely below the fold. And a series on a different scale
+plotted against a percent axis is a dual-axis panel in disguise, which reads as a
+flat line at the top.
+
+**Per-run identifiers pollute the dashboard too.** The transactional-ID trap has
+a twin: consumer groups. After a dozen cases a backlog panel was twenty-two
+frozen step functions, none of them the run being watched. Delete the group at the
+end of each case, the same way you scope the transactional prefix.
 
 ## Generate every artifact that carries a number
 
@@ -266,6 +374,33 @@ silently-failed edits are found by looking, never by reading the code.
   the broad one invites a correction in public.
 - **Say where it stops.** Naming the ceiling makes the rest credible. Volunteering
   it is stronger than being asked.
+
+## Log stderr from the very first version
+
+Anything that runs unattended — a probe, a fill, a case — writes its stderr
+somewhere you can read afterwards. Not `DEVNULL`, not swallowed.
+
+A guard will catch the *consequence* of a silent failure, which is what guards are
+for. But the cause stays invisible, and you will spend the time you saved on
+diagnosis instead: one run lost 25 minutes to a probe dying quietly inside a call
+with no timeout, and found it in seconds once stderr went to a file.
+
+## Kill what you started to watch something
+
+A long unattended run spawns watchers — a monitor waiting for a suite to finish,
+a poll waiting for a probe to return, a loop waiting for a backlog to drain.
+
+**When you abandon or supersede the thing being watched, kill the watcher.** A
+case that refuses, a suite that stops, a run you replace with a better one: each
+leaves its monitor behind, still waiting on something that will never happen.
+
+The cost is not just a stray process. Orphaned watchers keep firing completions
+long after the work is done, each one reporting elapsed time measured from the
+*run's* start rather than its own — so a finished job looks like it is still
+going, for hours. One run left four, and the last expired 90 minutes after the
+last real measurement.
+
+Track what you spawn and tear it down on every exit path, not only the happy one.
 
 ## When something is blocked
 

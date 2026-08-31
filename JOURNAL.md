@@ -37,6 +37,22 @@ Grafana exists, so observability (step 06) has to precede it either way.
 CI lands at step 03: after the first module with tests exists, and before the
 Flink jobs it needs to guard.
 
+## What built this
+
+Every step was written by **Claude Opus 5** in Claude Code, directed and reviewed
+by a human. The model is recorded on every commit as a `Co-authored-by` trailer,
+which is the authoritative per-step record — a step's model is whatever its
+commit says, not whatever this paragraph says later.
+
+Across the whole project: 269 human prompts, 23 pull requests, and about 23.8
+hours of active session time, of which roughly 6.4 were human. The rest was the
+model working unattended.
+
+The method that produced the scaling result was extracted into
+[`.claude/skills/prove-it-scales`](.claude/skills/prove-it-scales/SKILL.md) and
+then validated against a fresh agent that rebuilt the measurement from nothing —
+see [`docs/skill-validation/`](docs/skill-validation/clean-room-run-1.md).
+
 ---
 
 ## Step 00 — Scaffold
