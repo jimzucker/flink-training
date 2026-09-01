@@ -411,6 +411,45 @@ one.** Make it stop instead. At minimum, refuse to report when:
 Every guard should exist because it caught something. Add one each time a
 confident wrong answer gets through.
 
+### The mandatory guard set
+
+An audit of this skill found eighty rules and seven guards. The gap is where the
+runs kept failing, so the rules below are no longer prose: **a harness that does
+not implement and self-test every one of these is not finished.** Each cites the
+run that paid for it.
+
+| the harness refuses when | how it checks |
+|---|---|
+| the resource cap was not applied | read it back from the container, never from the environment variable |
+| the component under test is not the constraint | ≥98% of cap at baseline, ≥95% per case, back-pressure not material |
+| no job is actually running | the engine reports a RUNNING job with the expected parallelism |
+| slots ≠ parallelism | compare the allocated slot count against the degree you asked for |
+| the backlog ran out inside the window | a full checkpoint interval of records remains at close, at the measured rate |
+| the window is not anchored on commit boundaries | at least three boundaries inside the window |
+| two vantage points disagree | the transport and the manifest agree within a stated tolerance |
+| a rate came from the engine, not the transport | the rate source is the transport's committed offsets |
+| the cluster is still busy from the last case | assert idle before starting, not just "not erroring" |
+| rows came from different builds | one build hash across every row of the table |
+| observed cardinality ≠ predicted | count distinct keys and compare to the interview's answer |
+| completeness has not passed for this build | no table is published until the drain-to-end assertions pass with no tolerances |
+| free disk is below what the next case will write | host free space, checked before the case |
+| a monitor outlived the thing it watched | at teardown, no child process the run started survives |
+
+Two general principles sit behind most of that list.
+
+**Assert the effect, never the exit code.** `docker update --cpus 0` reports
+success and does nothing. A metrics reload returned 200 over a half-written rules
+file. A topic delete removed the wrong topics and said nothing. Every command
+that changes state gets a read-back that proves the state changed, and the
+read-back is the guard — not the return value.
+
+**Check at the cheapest point that can catch it.** The cost of a violation scales
+with how late it is found: a wrong image architecture voids the whole study, a
+contaminated baseline voids the suite, a bad window voids one case. Anything
+checkable before the run is a preflight assertion that prints PASS or FAIL;
+anything checkable at small scale goes in the tiny proof; only what genuinely
+needs the full rig belongs in a guard that fires forty minutes in.
+
 ### Every rule that can be a guard must be a guard
 
 Across five clean-room runs, **every rule written as a guard was obeyed and
