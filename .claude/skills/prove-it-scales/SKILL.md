@@ -86,6 +86,15 @@ six-week-old decision explicable.
 A measured hour of a clean-room run went to three environment traps, all
 deterministic, none of them interesting. Check them first; each is one command.
 
+**Is every image native to the host architecture?** This is the one that can
+silently invalidate the whole study. Some projects publish only `amd64`; on an
+`arm64` host those run under emulation with no crash, no warning and no error —
+just CPU numbers that mean nothing, because you are measuring a translation
+layer. One run caught it on a `docker pull` platform warning and switched to a
+multi-arch image. **For a CPU-scaling study, check the architecture of every image
+against the host before you measure anything**, and prefer the multi-arch
+publication where one exists.
+
 **Does the JDK the engine needs actually resolve?** A machine can have several,
 and the obvious lookup may not find the one a package manager installed. Resolve
 it explicitly, print the version you resolved, and pin it — do not assume the
@@ -339,6 +348,14 @@ producing a table with holes in it and no account of the holes. That is worse th
 no table, because the holes look like data points that happened to be missing
 rather than a rig that was broken the whole time.
 
+**"The backlog did not run out" is not the guard you want.** A case that consumed
+39,852,303 of 40,000,000 records passed a `remaining > 0` check while the source
+was starved for the tail of the window — the component under test fell off its cap
+and the harness reported the resulting number as a fact. **Require headroom, not
+non-emptiness**: at the rate you just measured, at least a full checkpoint
+interval of records must remain at window close. Not-quite-empty and
+never-the-constraint are different things.
+
 ### A guard that has never fired is a guess
 
 You will write guards for failures you have not seen yet. Some of them will be
@@ -411,9 +428,16 @@ command, not only before a measurement.** The specific commands that will bite
 you are not enumerable in advance; the check after them is.
 
 **Commands that succeed without doing anything.** `docker update --cpus 0` does
-not clear an existing CPU quota — only `--cpu-quota=-1` does — and it returns
-success either way, so the "cap not applied" guard is the only thing standing
-between you and a case measured at the previous case's limit. Assume any
+not clear an existing CPU quota, and it returns success either way, so the "cap
+not applied" guard is the only thing standing between you and a case measured at
+the previous case's limit.
+
+**And the documented fix has its own trap.** Clearing it with `--cpu-quota=-1`
+sets a CPU *period* on the container, after which the daemon rejects every later
+`--cpus` with *"Nano CPUs cannot be updated as CPU Period has already been set"*.
+**Pick one mechanism and use it exclusively** — `--cpus` throughout, or
+quota/period throughout. Mixing them fails on the second case rather than the
+first, which is exactly late enough to have cost you a fill. Assume any
 clear-the-setting command is a no-op until you have read the setting back.
 
 **Slot arithmetic that fails silently.** Every job needs its own slots. Two jobs
@@ -464,6 +488,23 @@ question. In practice, three earn their place immediately:
   keeping up. Sustained back-pressure is a system that is not. **A throughput
   graph will never tell you which of those you are looking at**, and it is the one
   panel worth alerting on.
+
+**Back-pressure does not detect starvation, and the pair has three shapes, not
+two.** Busy near 100% with no back-pressure is a component at its limit and
+keeping up. Sustained back-pressure is one that cannot keep up. But a component
+whose *input* is starved shows **busy falling while back-pressure stays at zero**
+— it is not overwhelmed, it is waiting. One run squeezed its transport to the
+point of handover and saw busy drop to 76.5% with back-pressure at 0.2%: the
+broker was starving the source, not back-pressuring the sink. A panel that names
+only the first two shapes reads that as "everything is fine".
+
+**A ratio between two counters that advance on different clocks cannot be fixed by
+widening the window.** If one side advances only at commit boundaries and the
+other continuously, their ratio lags, and averaging over longer changes the number
+without removing the lag. One run measured a true 5.00 fan-out as 5.98 at one
+minute, 5.83 at three, 5.90 at five and 6.12 cumulative — then deleted the panel
+rather than pick the flattering window. Chart both quantities and let the reader
+see the constant factor; state the ratio only where you can compute it exactly.
 
 Group them in the order the talk covers them. A dashboard laid out like the
 narrative is a dashboard the presenter can follow under pressure.
