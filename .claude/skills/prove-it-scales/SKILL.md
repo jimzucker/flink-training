@@ -623,6 +623,37 @@ last real measurement.
 
 Track what you spawn and tear it down on every exit path, not only the happy one.
 
+## Apply the rule to your own process, not only to the system
+
+The central rule here — **you can only show that something scales when it is the
+thing that is constrained** — is about the pipeline. It applies just as well to
+how you are working, and it is easy to forget in that direction.
+
+A worked example, from these runs. One run lost about 50 minutes to environment
+traps, so those traps were written down and the next run lost only 19. Thirty-one
+minutes genuinely removed — and the total run time fell by eight.
+
+The rest went nowhere, because environment setup was never on the critical path.
+Fills, warm-ups and measurement windows are **waiting**, and an agent writes the
+dashboard while it waits. Roughly 64 minutes of that run's measurement overlapped
+with other work. Removing 31 minutes of setup removed 31 minutes of something
+that was already partly hidden behind the waiting.
+
+Two things follow.
+
+**Before optimising your own loop, find what actually gates it.** Time spent is
+not the same as time on the critical path. The expensive-looking phase is often
+slack, and the real gate is usually the thing you cannot parallelise — here, the
+measurement floor, which is fills plus warm-ups plus windows and no skill text can
+shorten it.
+
+**Expect new work to generate new friction.** The same run that saved 31 minutes
+on known traps hit four unknown ones — an image architecture mismatch, a
+clear-the-setting command that created a second trap, a client library's silent
+metadata-refresh delay, and a reserved word in a dialect. Writing down yesterday's
+traps does not prevent tomorrow's, and a process improvement that assumes it will
+is measuring the wrong thing.
+
 ## When something is blocked
 
 Try twice, maybe three times. Then stop, say what was tried and why it failed,
