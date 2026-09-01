@@ -172,6 +172,38 @@ core it can use spreads the same work over more threads and measures nothing.
 parallelism per step. That is also what a cloud vendor sells (a KPU, a vCPU-unit),
 so the number means something when someone goes to price it.
 
+**This rule is a guard, not advice.** It was prose for five runs and a run broke
+it anyway, while obeying every rule next to it that had been written as code. The
+harness must own it:
+
+- **At the baseline case**, the component under test must consume at least ~98%
+  of its cap and show no material back-pressure. If it does not, **refuse the
+  whole suite** — the rig is measuring something downstream, and every later row
+  inherits the contamination.
+- **At every case**, if it falls below ~95% of its cap, that row is **the
+  ceiling, not a data point.** Report it as the ceiling and stop.
+
+The run that forced this had the evidence in its own output and reported the
+ratio anyway:
+
+| case | cap | used | % of cap | ratio | back-pressure |
+|---|---:|---:|---:|---:|---:|
+| p1 | 1 | 1.00 | 100% | 1.00× | **37.6%** |
+| p2 | 2 | 2.00 | 100% | 1.95× | 36.5% |
+| p3 | 3 | 2.91 | 97% | 2.35× | 46.5% |
+| p4 | 4 | 3.78 | **94%** | 2.82× | 43.6% |
+
+The honest result is *1.95× at two cores, and this rig cannot demonstrate scaling
+past that.* What got reported was 2.82×, which is a measurement of the sink path
+wearing a scaling label. The baseline guard would have refused at p1 on
+back-pressure alone, before forty minutes went into a table that had to be
+withdrawn.
+
+**Prove constraint ownership at the tiny scale, not at the expensive one.** The
+tiny end-to-end proof should run two cases, not one — one unit and two — and
+assert both cap consumption and a plausible ratio. It costs two minutes. Finding
+out at full scale costs the whole suite.
+
 ### Put the resource columns next to the throughput
 
 Throughput alone cannot be attributed. Record, for every case:
@@ -373,9 +405,47 @@ one.** Make it stop instead. At minimum, refuse to report when:
 - a previous run still owns the cluster
 - the measured rate is zero or negative
 - free disk on the host has fallen below what the next case will write
+- the component under test is not the constraint — under ~98% of its cap at the
+  baseline, or under ~95% at any case
 
 Every guard should exist because it caught something. Add one each time a
 confident wrong answer gets through.
+
+### Every rule that can be a guard must be a guard
+
+Across five clean-room runs, **every rule written as a guard was obeyed and
+several rules written as prose were broken** — sometimes by the same run, in the
+same hour, with the violating number printed in its own results table. Guards
+held under time pressure; sentences did not.
+
+So the skill carries a promotion rule about itself:
+
+> **When a run breaks a rule, that rule becomes a guard with a self-test, or it
+> gets deleted.** A rule that cannot be enforced is a suggestion, and a
+> suggestion in a document this long will be read once and then out-voted by the
+> next inconvenient measurement.
+
+Deletion is a real option. A rule nobody can mechanise and nobody follows is
+costing you attention on every read for nothing.
+
+Sort every rule you are about to write into three piles:
+
+| pile | what to do |
+|---|---|
+| **checkable while running** | a guard that refuses — cap applied, constraint owned, backlog headroom, disk floor, vantage points agreeing, rate sane |
+| **checkable before running** | a preflight assertion the run executes and prints — architecture, JDK, state-directory ownership, reporter present, disk budget, generator determinism |
+| **judgment** | leave as prose, and keep this pile small enough to actually read |
+
+The middle pile matters more than it looks. A preflight assertion that prints
+`PASS`/`FAIL` is nearly free and catches things hours before a guard would, and
+the cost of a rule violation scales with how late you find it: a wrong
+architecture costs the whole study, a wrong baseline costs the suite, a wrong
+window costs one case.
+
+And check the harness against its own rules at exit. *"Kill what you started to
+watch something"* was written into this skill after one run left a monitor
+running, and a later run left one anyway — that is one assertion at teardown (no
+child processes survive the run), not a sentence.
 
 **Disk is the one guard that has to fire early, because it takes the harness down
 with it.** Every other refusal leaves you a working shell to diagnose from; a full
