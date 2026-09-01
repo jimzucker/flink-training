@@ -154,6 +154,24 @@ Throughput alone cannot be attributed. Record, for every case:
 Without these, "it got slower" is not a diagnosis and the flat step at the end of
 the curve is unexplainable.
 
+### Start the longest-running thing first
+
+Nothing except the cases depends on the backlog, so fill it the moment the tiny
+end-to-end proof passes, and build the harness and the dashboard while it fills.
+Runs that discovered this by accident overlapped roughly an hour of measurement
+with other work; runs that filled late waited for it twice.
+
+The same applies within the suite. A case is warm-up plus window plus the
+recreate-and-submit around it, and the agent has nothing to do during all of it —
+that is the time to write the next thing, not to watch a progress bar.
+
+**Choose the checkpoint interval partly for what it costs you to measure.** The
+window guard needs at least three commit boundaries inside it, so a 30-second
+interval forces a 90-second window and a 10-second interval allows about 40. Over
+a dozen cases that is a quarter of an hour. The interval still has to be constant
+across cases and reported in the header — pick it deliberately, then leave it
+alone.
+
 ### Measure a drain, not a live generator
 
 Fill a backlog larger than the machine's page cache, **stop the producer**, then
@@ -533,6 +551,35 @@ If the same pipeline runs on a laptop and in the cloud, the metric names will no
 match — different exporters, different labels. Define recording rules that map
 both onto one set of names, and point the dashboard at those. Otherwise you
 maintain two dashboards, and the second one is always the stale one.
+
+### A starting panel set, and what to check on the first render
+
+Independent runs converge on roughly the same panels, so start here rather than
+discovering it:
+
+| panel | the question |
+|---|---|
+| Rate per stage | is the fan-out real? Lines a constant factor apart |
+| Distinct keys per aggregation | is the cardinality you predicted the one you got? |
+| The two paths, overlaid | do two independent aggregations of the same input agree? |
+| Busiest vs most back-pressured task | at the limit, falling behind, or **starved**? |
+| CPU per component | which one is actually in the way — including the idle one |
+| Backlog remaining | is this a drain, and did it run out? |
+| Checkpoint duration | what does the guarantee cost? |
+
+**Then render once and check these five before iterating**, because each has cost
+a run a whole render cycle:
+
+1. **Does the legend fit?** More series than rows clips, and a series below the
+   fold looks missing.
+2. **Is anything secretly on a second scale?** A count plotted against a percent
+   axis reads as a flat line at the top.
+3. **Is the timezone right?** The renderer is a headless browser with no timezone;
+   an unset one comes back in UTC.
+4. **Does every panel have data?** A "No data" panel usually means the
+   provisioning half-applied, not that the metric is missing.
+5. **Is any panel a ratio or a signed sum?** Both are unstable for reasons that
+   have nothing to do with your pipeline. Prefer two lines and a monotonic count.
 
 ### What bites when you actually build one
 
