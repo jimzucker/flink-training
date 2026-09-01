@@ -113,6 +113,38 @@ as a bundled plugin. The widely-copied instruction to copy the jar out of an
 `opt/` directory into `lib/` then produces a duplicate class and the container
 dies at startup. Look before you copy.
 
+**How much disk will the whole suite write?** Not the backlog — the backlog plus
+everything the pipeline makes from it, times every case that does not drain. One
+run pre-loaded 13 GB of input and filled a 100 GB host, because the two output
+topics carried ten times the input rate and nothing set retention on them: at
+1.58M records/s that is about 200 MB/s, and four cases wrote 47 GB. **The fan-out
+that makes the demonstration interesting is the same fan-out that fills the
+disk.** Do the arithmetic before you fill anything:
+
+    backlog + (backlog × fan-out × cases you will not drain) + checkpoint state
+
+**Set retention on any topic the harness writes but never reads to the end.** The
+input you replay has to be kept. The outputs you only count can expire behind
+you — a size cap on each sink topic turns an unbounded write into a bounded one
+and costs nothing, because no measurement reads those records twice.
+
+**Check free space on the host, not inside the container.** A container-local
+`df` reports the virtual disk, which is usually provisioned far larger than the
+space actually backing it. And on a VM-backed engine — Docker Desktop on macOS or
+Windows — **deleting data inside the VM does not give the space back to the
+host.** The disk image grows and does not shrink on its own. In one recovery,
+removing the containers and volumes freed 85 GB inside the VM while the host
+still showed the image at its full 108 GB; the blocks returned only after an
+explicit trim *inside* the VM, which took the image to 30 GB in seconds:
+
+```
+docker run --rm --privileged --pid=host alpine \
+  nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker
+```
+
+Budget against the host number, and know that command before you need it rather
+than after.
+
 **Then prove the loop end to end on a tiny input before you scale anything.** Fill
 a few thousand records, run one case, assert the outputs, tear it down. A rig that
 cannot measure a thousand records will not measure fifty million, and finding that
@@ -340,9 +372,19 @@ one.** Make it stop instead. At minimum, refuse to report when:
 - the backlog ran out inside the measurement window
 - a previous run still owns the cluster
 - the measured rate is zero or negative
+- free disk on the host has fallen below what the next case will write
 
 Every guard should exist because it caught something. Add one each time a
 confident wrong answer gets through.
+
+**Disk is the one guard that has to fire early, because it takes the harness down
+with it.** Every other refusal leaves you a working shell to diagnose from; a full
+volume does not. In one incident the suite refused correctly and wrote its good
+rows out first — and then nothing could run at all, because the tooling could no
+longer create its own output files, and the cleanup that would have freed the
+space needed the shell that the missing space had killed. Check free space
+*before* each case rather than after, and refuse while there is still room to
+stop cleanly.
 
 ### A refusal stops the suite
 
