@@ -52,8 +52,21 @@ free — it puts a floor under visible latency equal to the commit interval.
    Every measurement decision afterwards is judged against whether it supports
    that sentence.
 
+8. **Which API or abstraction level?** Most engines offer more than one — a
+   declarative or SQL layer, and a lower-level one you write operators against.
+   Ask, and record the answer, because it changes what your measurement means. A
+   declarative layer plans the job for you: the operator graph, the state layout
+   and the serialization are chosen by an optimiser and can change between
+   versions. That is often the better engineering choice, and it makes "I added a
+   core and throughput scaled" a claim about *the plan the optimiser produced
+   today*. With hand-written operators you know what the graph is because you
+   wrote it, and you own the state layout that goes with it. Neither is more
+   valid. But someone who knows the difference will ask which you used, and "I did
+   not think about it" is a poor answer to a question about your own measurement.
+   Default to whichever the audience actually runs in production.
+
 **Stop when you can state the claim and the fan-out.** That is usually four to
-six questions, not all seven — skip any the user has already answered. If you are
+six questions, not all eight — skip any the user has already answered. If you are
 past eight you are gathering rather than deciding, and the user has stopped
 reading. Anything still unknown becomes a stated assumption in the plan, not
 another question.
@@ -536,6 +549,9 @@ silently-failed edits are found by looking, never by reading the code.
   scales linearly" is a claim about the engine; one pipeline supports "this
   pipeline scaled linearly". The narrow claim survives contact with an expert;
   the broad one invites a correction in public.
+- **Say which API or abstraction level you used**, next to the numbers rather
+  than in a footnote. A curve from a declarative engine and a curve from
+  hand-written operators are both real and are not the same claim.
 - **Say where it stops.** Naming the ceiling makes the rest credible. Volunteering
   it is stronger than being asked.
 
