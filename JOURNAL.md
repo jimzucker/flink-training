@@ -7,6 +7,11 @@ Steps follow the deliverable order the assignment lists. Each is developed on it
 own branch, reviewed, reworked if the review calls for it, then squash-merged to
 `main`. Branches are kept so the working history stays inspectable.
 
+Every step also carries a **full transcript** — every prompt and every response,
+verbatim, at `docs/steps/step-NN/transcript.md`. This journal is written and can
+flatter its author; the transcripts are generated and cannot. See
+[`docs/steps/README.md`](docs/steps/README.md).
+
 | Step | Deliverable | Local stack after this step | Branch | Status |
 |---|---|---|---|---|
 | 00 | Scaffold | — | `step-00-scaffold` | done |
