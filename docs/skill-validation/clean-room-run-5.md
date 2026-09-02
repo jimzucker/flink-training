@@ -116,9 +116,21 @@ key extractors, two `ValueState` descriptors, a Kafka record serializer.
 
 What it bought: custom metrics *inside* its own operators, which is what makes a
 live cardinality panel possible at all; and emitting the **absolute** position per
-key rather than an increment, which makes replay idempotent and is what let it
+key rather than an increment, which it argued makes replay idempotent and used to
 decline exactly-once as unnecessary. Its own verdict on the measurement: neither
 easier nor harder — *"the broker doesn't know which API wrote the records."*
+
+> **Correction, from [run 6](clean-room-run-6.md).** That idempotence argument is
+> half wrong, and this run never tested it. Absolute emission does make the
+> *sink* idempotent. It says nothing about the keyed state the value is computed
+> from: at-least-once *checkpointing* does not align barriers on recovery, so
+> records already folded into a snapshot are replayed into it and the sum itself
+> is wrong. Run 6 built the same design, killed the task manager mid-drain, and
+> got 1,604,176 and 1,605,242 against an expected 1,600,000 with the two
+> aggregations disagreeing. The fix is to split the settings — exactly-once
+> checkpointing, at-least-once sink — after which the same kill replayed 455,888
+> rows with every per-key value still exactly right. The skill carried this run's
+> reasoning as an exemplar until run 6 disproved it.
 
 **The DS-versus-SQL comparison this run existed to make is still unmade.** Run 4
 used a 5× fan-out against this run's 10×, so the two did different amounts of
