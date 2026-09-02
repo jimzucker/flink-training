@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Seven runs of the same problem, each by a fresh agent in an empty directory, barred
+Eight runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -20,6 +20,7 @@ way to tell them apart.
 | [5](clean-room-run-5.md) | DataStream | 1.47 h | $30.24 | 84 | 71,278 | 201,033 | ~~2.82×~~ | **94%** |
 | [6](clean-room-run-6.md) | DataStream | 1.94 h | $38.20 | 120 | 81,651 | 318,868 | **3.91×** | **100%** |
 | [7](clean-room-run-7.md) | DataStream | **0.92 h** | **$22.63** | 98 | 82,530 | 267,734 | 3.24× | **101%** |
+| [8](clean-room-run-8.md) | DataStream | 1.59 h | $26.39 | 92 | 140,308 | **457,264** | 3.26× | **99%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -80,8 +81,9 @@ result.
 | 5 | a full host disk, then a table that had to be withdrawn | a disk budget, retention, and constraint ownership as a guard |
 | 6 | its own idempotence claim disproved by killing a worker | the sink guarantee and the checkpointing guarantee are two settings |
 | 7 | its own baseline refused by a guard written the day before | measure back-pressure at the **external boundary**; the baseline is a case, not a reference point |
+| 8 | the skill's own baseline mechanism was wrong, and `docker stats` refused a valid case | find the baseline asymmetry **in your own stack**; read CPU from a cumulative counter; **one sample is not a measurement** |
 
-**Runs 4, 5, 6 and 7 each corrected the skill's own text.** Run 4 found that the
+**Runs 4, 5, 6, 7 and 8 each corrected the skill's own text.** Run 4 found that the
 documented fix for a no-op CPU command creates a second trap. Run 5 found that
 `retention.bytes` is a periodic sweep rather than a bound. Run 6 disproved an
 idempotence argument the skill was carrying as an exemplar. That is the strongest
@@ -120,6 +122,26 @@ rows from two builds are a collection rather than a curve.
 
 It produced the first table in six runs where the component under test owned the
 constraint in every single case.
+
+## What comparability costs, measured
+
+Run 8 settled a question the earlier runs could only be compared *about*. On one
+machine and one build, changing only the ship strategy on two keyed edges:
+
+| baseline | blocks/s | 1→4 ratio |
+|---|---:|---:|
+| chained, no shuffle | 211,533 | 2.16× |
+| **same graph as every case above** | **140,308** | **3.26×** |
+
+**Comparability cost the baseline 33.7% and raised the headline by 1.10×.** The
+more honest baseline reports the better-looking number, and neither figure is a
+lie — which is why the skill now says to lead with the step ratio.
+
+Two hypotheses in this record died there. Runs 6 and 7 both landed near 2.6M
+output records/s at four cores, which looked like a shared machine ceiling; run 8
+reaches 4.55M, **1.70× that**, with the broker at 13× headroom. And run 8's
+repeated passes found a **10–17% spread on the same case** — so every table in
+runs 1 through 7 is a single sample, and should be read as one.
 
 ## What is still unmade
 
