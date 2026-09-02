@@ -231,10 +231,35 @@ withdrawn.
 
 ### The baseline has to do the same work as the cases above it
 
-**At parallelism 1 there is no shuffle.** A `keyBy` at parallelism 1 repartitions
-nothing: no network hop, no serialization between subtasks. Every case from 2
-upward pays that cost and the baseline does not, so the first step is comparing
-two structurally different programs.
+**The baseline is where you are most likely to run a different program without
+noticing.** At parallelism 1 the same source can be expressed as a job that
+collapses into a single chained vertex — no shuffle, no serialization between
+subtasks — while every case above runs several vertices with keyed edges between
+them. Nobody does this dishonestly; it is what a reasonable person writes when
+parallelism is 1 and the partitioning is provably a no-op.
+
+Be careful about the mechanism, because the obvious version of this claim is
+wrong. In Flink, a `keyBy` at parallelism 1 **still** produces a `HASH` edge that
+is not chained and does serialize — so "force a rebalance at parallelism 1"
+changes nothing. The asymmetry appears only when the baseline is written to
+*avoid* the keyed edge (`reinterpretAsKeyedStream` and a forward edge, so the
+whole job chains into one vertex). Whatever your engine, **find the version of
+this in your own stack rather than trusting the general statement.**
+
+One run measured both, on one machine and one build, changing only the ship
+strategy on two keyed edges:
+
+| baseline | blocks/s | 1→4 ratio |
+|---|---:|---:|
+| chained, no shuffle | 211,533 | 2.16× |
+| **same graph as every other case** | **140,308** | **3.26×** |
+
+**Comparability cost the baseline 33.7% of its throughput and raised the headline
+ratio by 1.10×.** That is the whole problem in one table: the more honest
+baseline reports the better-looking number, and neither figure is a lie.
+
+Make it a guard rather than a comment — **read the job graph back off the running
+plan and refuse any row whose shape differs from the others.**
 
 It shows up in both directions, and neither is the truth:
 
@@ -380,8 +405,12 @@ So count cases like money:
 - **The window is a floor set by the checkpoint interval**, not a comfort
   setting. Three commit boundaries is the requirement; four is prudent. At a
   10-second interval that is 40 seconds, not 60.
-- **Warm-up is until the rate is steady, not a round number.** Assert it — two
-  consecutive checkpoints within a few percent — rather than sleeping.
+- **Warm-up is until the rate is steady, not a round number.** Assert it rather
+  than sleeping — but assert a *trend*, not two samples. A drain's interval rate
+  oscillates around a flat mean, so "two consecutive checkpoints within a few
+  percent" is a coin flip against ±10% noise: one run burned 69 seconds and six
+  intervals waiting for two neighbours to agree. Fit four intervals and require
+  the slope to be flat.
 - **The descending pass detects order effects; it is not a second table.** The
   endpoints are where drift shows. Running every case twice buys confirmation at
   full price.
@@ -434,6 +463,23 @@ to 0.5 cost 19%, drove the broker to 98%, and pulled the task manager down from
 short runs, and it extrapolates: a component idling at a third of its capacity
 tells you roughly how many more units it would take to saturate it.
 
+### Read CPU from a cumulative counter, not a sampled percentage
+
+The rule about distrusting the engine's own metrics applies to the container
+runtime too, and that is easier to forget because the runtime looks like ground
+truth.
+
+**`docker stats` samples; a cgroup counter accumulates.** One run was refused at
+94.4% of its cap by `docker stats` while the container's own
+`cpu.stat` said **97.8%** — a valid case discarded, and a debugging cycle spent
+before the guard was believed. Read the cumulative counter at the start and end
+of the window and divide by the elapsed time.
+
+The same file gives you `nr_throttled` and `throttled_usec` for nothing, and
+those are direct evidence that the cap is what binds — a case at 99% of cap with
+80 seconds of throttling inside a 50-second window is not merely near its limit,
+it is being held there.
+
 ### Read the numbers from the transport, not the engine
 
 **The engine's own metrics are least trustworthy exactly when you need them.** At
@@ -442,6 +488,14 @@ measured case had Flink under-reporting its own output by about 3×.
 
 Take throughput from the thing on the other side of the boundary — committed
 broker offsets, rows in the sink table, files closed.
+
+**Anchor on the committed offset advancing, not on the checkpoint completing.**
+These are not the same event: the source commits its offsets asynchronously
+*after* the checkpoint completes, so a window anchored on completion opens before
+the number it is about to read has moved. Two runs lost cycles to this, one of
+them twice, and the symptom is vantage points disagreeing by a few percent for no
+visible reason. Watch the committed offset itself and open the window on the tick
+where it changes.
 
 **Anchor the measurement window on commit boundaries, not on wall clock.** These
 two rules interact and the interaction bites: a source commits its offsets *at*
@@ -473,6 +527,19 @@ measurement.** The window guard stops you measuring silence, but a backlog that
 comfortably outlasts a 60-second case can still drain halfway through the
 five-minute load you wanted for a dashboard image — and half that picture is then
 an idle pipeline. Count every use before you fill.
+
+### One sample is not a measurement
+
+A single pass reads like a table and behaves like an anecdote. One run measured
+the **same case three times and saw a 10–17% spread** — wide enough that a step
+ratio computed from single samples can be off by more than the effect being
+measured.
+
+**Run every case at least twice, and report the spread.** If a difference between
+two cases is smaller than the spread within one case, you have not measured it,
+and no amount of resource-column discipline rescues that. This is also the
+cheapest defence against a reader who suspects you picked a good run: you did not
+have one to pick.
 
 ### Repeat the cheap measurement, not just the expensive one
 
@@ -613,6 +680,12 @@ checkable before the run is a preflight assertion that prints PASS or FAIL;
 anything checkable at small scale goes in the tiny proof; only what genuinely
 needs the full rig belongs in a guard that fires forty minutes in.
 
+**Assert that anything you launch unattended is alive before you wait on it.**
+One run lost eight minutes waiting on a background process that had died
+instantly on an argument-parsing error. Logging stderr from the first version
+tells you *why* it died; it does not stop you waiting an hour for a corpse. Check
+the process, then start waiting.
+
 **And run the whole case path once with a deliberately tiny window before the real
 suite.** The tiny proof exercises the *pipeline*; it does not exercise the
 harness, and the harness is where the defects are. One run passed its drain-to-end
@@ -620,6 +693,13 @@ proof and then lost eight minutes to three defects that only execute *after* a
 window closes — a sanitised metric label, a slot-count race, and a cleanup path
 that never ran. None were reachable from a drain. A single case at a 10–15 second
 window costs forty-five seconds and executes every line the suite will.
+
+**Make sure the dry run exercises the harness's own plumbing, including a
+refusal.** One run's dry run revealed that its `Refusal` exception existed as two
+distinct classes — the module was imported once as `__main__` and once by name —
+so **every refusal escaped its own handler as an unhandled traceback.** A harness
+whose refusals do not refuse is the worst failure available to you, and it is
+invisible until a guard actually fires. Fire one on purpose in the dry run.
 
 ### Every rule that can be a guard must be a guard
 
