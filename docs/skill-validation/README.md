@@ -143,6 +143,22 @@ reaches 4.55M, **1.70× that**, with the broker at 13× headroom. And run 8's
 repeated passes found a **10–17% spread on the same case** — so every table in
 runs 1 through 7 is a single sample, and should be read as one.
 
+## Which axis these runs measured
+
+Checked after run 8, against the preserved harness output: **every run scaled the
+CPU cap on a single task manager**, one container going 1→2→3→4 cores with
+parallelism following it. No run varied the *number* of task managers.
+
+That matters for how the tables read. Fixed per-worker cost — JVM, heap, GC
+threads, network stack — is **amortised** when you raise one container's cap and
+**replicated** when you add containers, so the two axes disagree in a predictable
+direction. The runs report 88–97% efficiency from two to four cores; this
+project's own demo, which scales *units*, reports 98%.
+
+Not a controlled comparison, but the sign is what the arithmetic predicts, and a
+cloud vendor sells units rather than cap. The skill now requires the axis to be
+stated in the header.
+
 ## What is still unmade
 
 **The DataStream-versus-SQL comparison.** Run 4 remains the only SQL run and is

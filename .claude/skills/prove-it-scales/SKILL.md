@@ -192,6 +192,27 @@ core it can use spreads the same work over more threads and measures nothing.
 parallelism per step. That is also what a cloud vendor sells (a KPU, a vCPU-unit),
 so the number means something when someone goes to price it.
 
+**And say which axis you scaled, because there are two and they do not give the
+same number.** You can raise the CPU cap on one worker container, or you can add
+worker containers. Both are "four cores"; they are not the same experiment:
+
+| | one container, bigger cap | more containers |
+|---|---|---|
+| fixed per-worker cost — JVM, heap, GC threads, network stack | **amortised** over more cores | **replicated** per unit |
+| what a vendor sells you | no | yes |
+| what your demo shows | probably not | probably |
+
+Amortising a fixed cost flatters the wider cases, so the two axes disagree in a
+predictable direction. Eight clean-room runs of one problem all scaled a single
+container's cap and reported 88–97% efficiency from two to four cores; the same
+pipeline scaled by *units* reported 98%. Not a controlled comparison, but the sign
+is what the arithmetic predicts.
+
+Neither axis is wrong. **Answering the wrong one is.** If the claim is "we can
+serve more load by buying more units", measure units — and if you measure the cap
+because it is easier on a laptop, say so in the header rather than letting a
+reader assume.
+
 **This rule is a guard, not advice.** It was prose for five runs and a run broke
 it anyway, while obeying every rule next to it that had been written as code. The
 harness must own it:
@@ -734,8 +755,24 @@ window costs one case.
 
 And check the harness against its own rules at exit. *"Kill what you started to
 watch something"* was written into this skill after one run left a monitor
-running, and a later run left one anyway — that is one assertion at teardown (no
-child processes survive the run), not a sentence.
+running, and **four consecutive runs after it left one anyway** — with the rule in
+front of them, and a teardown assertion implemented and passing.
+
+That is the one rule prose never fixed, and the reason is structural: every
+offender was a sampler started on the **host**, outside the harness, so an
+assertion the harness owns cannot see it. The teardown check passed honestly and
+the process survived.
+
+**So anything that watches the stack runs as part of the stack.** Put the sampler
+in the compose file as a container, next to the exporter and the renderer. Then
+`compose down` reaps it whether or not anyone remembered, the teardown assertion
+has something it can actually observe, and — not incidentally — the dashboard
+genuinely "comes up with the stack" as this skill already requires, rather than
+depending on a process someone started by hand.
+
+The general form is worth more than the instance: **when a rule fails repeatedly
+despite being followed, stop rewriting the rule and change what makes it possible
+to break.**
 
 **Disk is the one guard that has to fire early, because it takes the harness down
 with it.** Every other refusal leaves you a working shell to diagnose from; a full
