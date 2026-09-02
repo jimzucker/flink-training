@@ -197,9 +197,19 @@ it anyway, while obeying every rule next to it that had been written as code. Th
 harness must own it:
 
 - **At the baseline case**, the component under test must consume at least ~98%
-  of its cap and show no material back-pressure. If it does not, **refuse the
-  whole suite** — the rig is measuring something downstream, and every later row
-  inherits the contamination.
+  of its cap and show no material back-pressure **at the boundary to the external
+  component**. If it does not, **refuse the whole suite** — the rig is measuring
+  something downstream, and every later row inherits the contamination.
+
+**Measure back-pressure at the sink tasks, not as a maximum over all tasks.** This
+rule was written as "no material back-pressure" and that reading is wrong: it
+refuses exactly the situation a valid baseline requires. Inside a CPU-capped
+single-slot task manager the source always waits on the aggregation threads
+sharing that core, so internal back-pressure is *supposed* to be high. One run
+measured **25–46% internal back-pressure in every one of its six good cases**
+while sink back-pressure stayed at **0.0%**, and the guard as written discarded a
+correct baseline. Gate on the external boundary; report the internal figure in a
+column and gate nothing on it.
 - **At every case**, if it falls below ~95% of its cap, that row is **the
   ceiling, not a data point.** Report it as the ceiling and stop.
 
@@ -219,10 +229,70 @@ wearing a scaling label. The baseline guard would have refused at p1 on
 back-pressure alone, before forty minutes went into a table that had to be
 withdrawn.
 
+### The baseline has to do the same work as the cases above it
+
+**At parallelism 1 there is no shuffle.** A `keyBy` at parallelism 1 repartitions
+nothing: no network hop, no serialization between subtasks. Every case from 2
+upward pays that cost and the baseline does not, so the first step is comparing
+two structurally different programs.
+
+It shows up in both directions, and neither is the truth:
+
+| run | p1 → p2 | p2 → p4 |
+|---|---:|---:|
+| one | 2.23× — superlinear | 1.75× (87% efficiency) |
+| the other | 1.68× (84%) | **1.94× (97%)** |
+
+The second run scales almost perfectly from two cores up, and its headline ratio
+is dragged down by a baseline that skipped the shuffle. The first has the
+opposite distortion, from fixed per-JVM cost dominating a single capped core.
+**Both reported the 1→4 ratio as the result, and in both cases the honest number
+was the one measured from two cores up.**
+
+So do one of two things, and say which:
+
+- **quote ratios from two cores up**, stating that the one-core case is not
+  structurally comparable, or
+- **make the baseline pay the same costs** — force a rebalance at parallelism 1 so
+  the shuffle exists in every case.
+
+The general rule underneath: **the baseline is a case, not a reference point.**
+Anything true of the other cases and not of it — a shuffle, a network hop, a
+second JVM — is a difference you are attributing to scaling.
+
 **Prove constraint ownership at the tiny scale, not at the expensive one.** The
 tiny end-to-end proof should run two cases, not one — one unit and two — and
-assert both cap consumption and a plausible ratio. It costs two minutes. Finding
-out at full scale costs the whole suite.
+assert cap consumption *and* bound the ratio between them. It costs two minutes.
+Finding out at full scale costs the whole suite.
+
+**Bound the ratio; do not eyeball it.** One unit to two should land near 2×.
+Refuse the proof outside roughly **1.5×–2.5×**, and treat the high side as the
+more serious failure: **superlinear scaling is a defect report.** Every run that
+produced one was wrong about something, and the something is almost always a
+baseline that was constrained by an artefact rather than by the resource under
+test.
+
+This is a separate check from cap consumption, because cap consumption does not
+catch it. A run added `disableOperatorChaining()` to get per-stage dashboard
+rates, which made six tasks time-share a one-core cap. Its proof reported 35,207
+blocks/s at one core against 131,301 at two — **a 3.73× speedup, with the task
+manager at 99.9% of cap in both cases.** The constraint guard passed it happily.
+Only the implausible ratio gave it away, and it was caught two minutes into a
+proof rather than an hour into a suite that would have looked spectacular.
+
+**Kill a worker during that same tiny proof.** A delivery guarantee is a claim
+about failure, and until something has failed the claim is untested — at-least-
+once and exactly-once look identical while nothing goes wrong. A run reasoned its
+way to a guarantee, ran a full scaling suite, killed a task manager *afterwards*,
+discovered the guarantee was wrong, and had to discard every row and re-measure
+on the new build: **37 of its 116 minutes went to a suite that was thrown away.**
+The same kill, on 400,000 records during the tiny proof, costs about three
+minutes and catches it at minute twenty.
+
+The rule generalises past the guarantee. **Anything that can invalidate the whole
+table should be tested before the table exists** — the guarantee, constraint
+ownership, cardinality against the prediction, and the two paths agreeing. Sort
+those checks by what they void, not by what is convenient to write last.
 
 ### Put the resource columns next to the throughput
 
@@ -254,7 +324,39 @@ window guard needs at least three commit boundaries inside it, so a 30-second
 interval forces a 90-second window and a 10-second interval allows about 40. Over
 a dozen cases that is a quarter of an hour. The interval still has to be constant
 across cases and reported in the header — pick it deliberately, then leave it
-alone.
+alone. **Do not shorten it to save time once cases have run**: it changes the
+throughput you measure, so it trades a comparable number for a faster one.
+
+### Budget the suite before you run it
+
+A case costs warm-up plus window plus the submit-and-settle around it, and that
+last part is not small. Measured across one full suite: **eleven cases, 11.5
+minutes inside windows and 11.1 minutes between them** — a 67-second gap before
+every case. Half the suite is overhead that no one budgets for because it is
+invisible in the config.
+
+So count cases like money:
+
+- **The window is a floor set by the checkpoint interval**, not a comfort
+  setting. Three commit boundaries is the requirement; four is prudent. At a
+  10-second interval that is 40 seconds, not 60.
+- **Warm-up is until the rate is steady, not a round number.** Assert it — two
+  consecutive checkpoints within a few percent — rather than sleeping.
+- **The descending pass detects order effects; it is not a second table.** The
+  endpoints are where drift shows. Running every case twice buys confirmation at
+  full price.
+- **Size the backlog for the longest single case plus headroom**, not for the
+  suite. One run finished its first case with 1,122 seconds of backlog to spare,
+  which is fill time it paid for and never used.
+
+**And record four timestamps per case** — submit, steady, window open, window
+close — so the next run's budget comes from measurement rather than from a
+guess. Without them the overhead is one undifferentiated number and nobody can
+tell whether it is the submit, the settle, or the teardown.
+
+One caution about trimming the fill: the backlog is also what the harness and
+dashboard get written *during*. Shrink it below the time that work takes and the
+work moves onto the critical path, where it costs full price.
 
 ### Measure a drain, not a live generator
 
@@ -441,7 +543,8 @@ run that paid for it.
 | the harness refuses when | how it checks |
 |---|---|
 | the resource cap was not applied | read it back from the container, never from the environment variable |
-| the component under test is not the constraint | ≥98% of cap at baseline, ≥95% per case, back-pressure not material |
+| the component under test is not the constraint | ≥98% of cap at baseline, ≥95% per case, back-pressure at the **external boundary** not material |
+| a refused case still owns the cluster | tear the job down on **every** exit path, not only the happy one |
 | no job is actually running | the engine reports a RUNNING job with the expected parallelism |
 | slots ≠ parallelism | compare the allocated slot count against the degree you asked for |
 | the backlog ran out inside the window | a full checkpoint interval of records remains at close, at the measured rate |
@@ -469,6 +572,14 @@ contaminated baseline voids the suite, a bad window voids one case. Anything
 checkable before the run is a preflight assertion that prints PASS or FAIL;
 anything checkable at small scale goes in the tiny proof; only what genuinely
 needs the full rig belongs in a guard that fires forty minutes in.
+
+**And run the whole case path once with a deliberately tiny window before the real
+suite.** The tiny proof exercises the *pipeline*; it does not exercise the
+harness, and the harness is where the defects are. One run passed its drain-to-end
+proof and then lost eight minutes to three defects that only execute *after* a
+window closes — a sanitised metric label, a slot-count race, and a cleanup path
+that never ran. None were reachable from a drain. A single case at a 10–15 second
+window costs forty-five seconds and executes every line the suite will.
 
 ### Every rule that can be a guard must be a guard
 
