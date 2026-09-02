@@ -33,15 +33,35 @@ move on.
    guarantee is not optional. Say so now, because it puts a floor under latency
    that gets discovered embarrassingly late otherwise.
 
-**And ask whether the guarantee is actually needed.** "It is a running sum, so a
-replay is a wrong number" is the usual answer, and it is often right. But it turns
-on what you *emit*, not what you compute: if each output row carries the
-**absolute** value for its key rather than a delta, a replay restates the position
-instead of double-counting it, and the sink is idempotent whatever the engine
-does. One run reasoned exactly this way, chose at-least-once deliberately, and
-kept an exactly-once flag available in case the choice was challenged. That is a
-better answer than buying a guarantee reflexively, because exactly-once is not
-free — it puts a floor under visible latency equal to the commit interval.
+**And ask whether the guarantee is actually needed — but answer it as two
+questions, not one.** The sink guarantee and the checkpointing guarantee are
+separate settings, and conflating them produces a wrong number that survives
+every test except the one that matters.
+
+Emitting the **absolute** value for a key rather than a delta does make the
+**sink** idempotent: a replayed row restates the position instead of adding to
+it, so the sink needs no transactions and you avoid the latency floor that a
+transactional commit puts under every visible record.
+
+**It says nothing about the state the value was computed from.** If the position
+is a running sum held in keyed state, at-least-once *checkpointing* does not
+align barriers on recovery, so records already folded into the snapshot are
+replayed into it. The state is then wrong, which means the absolute values are
+wrong — correctly delivered, exactly once, and wrong.
+
+A run reasoned its way to absolute emission, declined exactly-once entirely, and
+reported that as a deliberate design decision. It was half right, and the half it
+got wrong was invisible until something was killed: update counts came back
+1,604,176 and 1,605,242 against an expected 1,600,000, and the two aggregations
+disagreed with each other. Split the settings — **exactly-once checkpointing,
+at-least-once sink** — and the same kill replayed 455,888 rows with every
+per-key value still exactly right.
+
+So the answer to "is the guarantee needed" is usually *yes for the engine, no for
+the sink*, and that combination is better than either reflex. **Name both
+settings separately in the report**, because "at-least-once" alone does not say
+which one you meant. And note that no amount of reasoning establishes this — it
+took killing a worker, which is why that is its own rule below.
 
 5. **Who watches the demo, and what do they need to believe at the end?** A
    capacity claim for managers and a correctness claim for engineers produce
