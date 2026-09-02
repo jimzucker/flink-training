@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Six runs of the same problem, each by a fresh agent in an empty directory, barred
+Seven runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -19,6 +19,7 @@ way to tell them apart.
 | [4](clean-room-run-4.md) | **SQL** | 1.61 h | $35.65 | 141 | 43,437 | 164,393 | 3.78× | 104% |
 | [5](clean-room-run-5.md) | DataStream | 1.47 h | $30.24 | 84 | 71,278 | 201,033 | ~~2.82×~~ | **94%** |
 | [6](clean-room-run-6.md) | DataStream | 1.94 h | $38.20 | 120 | 81,651 | 318,868 | **3.91×** | **100%** |
+| [7](clean-room-run-7.md) | DataStream | **0.92 h** | **$22.63** | 98 | 82,530 | 267,734 | 3.24× | **101%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -33,6 +34,20 @@ From run 1 to run 5: **2.52 h → 1.47 h, $166.58 → $30.24, 863 tool calls →
 An 82% reduction in both time and cost, with the problem unchanged and only the
 skill text between them. The later runs are not thinking less; they are thrashing
 less.
+
+**Run 7 is the fastest and cheapest of the seven** — 55 minutes and $22.63 — after
+two changes aimed squarely at wall clock: kill a worker during the tiny proof
+rather than after the suite, and budget the suite before running it. Per-case
+overhead fell from 67 seconds to 14, because it asserted warm-up to steady instead
+of sleeping a fixed interval.
+
+**Read the step ratios, not the ratios against the baseline.** Run 7 scales at
+**97% efficiency from two cores up**; its headline 3.24× is dragged down by a
+baseline that did structurally less work, because at parallelism 1 a `keyBy`
+repartitions nothing. Run 6 has the mirror distortion in the other direction.
+Both reported the 1→4 ratio as the result, and in both the honest number was
+measured from two cores up. That is now a rule: **the baseline is a case, not a
+reference point.**
 
 **Run 6 breaks that trend deliberately** — slower and dearer than run 5, and the
 only recent table that survives scrutiny. Run 5's 2.82× is struck through above
@@ -64,8 +79,9 @@ result.
 | 4 | **`apache/flink` publishes amd64 only; the host is arm64** | check every image's architecture — the silent invalidator |
 | 5 | a full host disk, then a table that had to be withdrawn | a disk budget, retention, and constraint ownership as a guard |
 | 6 | its own idempotence claim disproved by killing a worker | the sink guarantee and the checkpointing guarantee are two settings |
+| 7 | its own baseline refused by a guard written the day before | measure back-pressure at the **external boundary**; the baseline is a case, not a reference point |
 
-**Runs 4, 5 and 6 each corrected the skill's own text.** Run 4 found that the
+**Runs 4, 5, 6 and 7 each corrected the skill's own text.** Run 4 found that the
 documented fix for a no-op CPU command creates a second trap. Run 5 found that
 `retention.bytes` is a periodic sweep rather than a bound. Run 6 disproved an
 idempotence argument the skill was carrying as an exemplar. That is the strongest
@@ -84,6 +100,16 @@ a promotion rule attached to the skill itself:
 
 > When a run breaks a rule, that rule becomes a guard with a self-test, or it gets
 > deleted. A rule that cannot be enforced is a suggestion.
+
+Run 7 then corrected the guard set itself. Its constraint-ownership guard refused
+a valid baseline, because "no material back-pressure" never said *where* to
+measure it — and inside a CPU-capped single-slot task manager the source always
+waits on threads sharing that core. It diagnosed the guard rather than relaxing
+the threshold. Its own verdict:
+
+> All four of my real refusals were guards, and the one rule I had implemented
+> from prose rather than thought through — where to measure back-pressure — is
+> the one that misfired.
 
 Run 6 was the test of that. It implemented all fourteen, self-tested every one at
 **56/56** — each broken on purpose *and* confirmed silent on good input — added
