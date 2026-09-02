@@ -260,6 +260,46 @@ The general rule underneath: **the baseline is a case, not a reference point.**
 Anything true of the other cases and not of it — a shuffle, a network hop, a
 second JVM — is a difference you are attributing to scaling.
 
+### A ratio against a baseline rewards a slow baseline
+
+Structural comparability is the fixable half. The other half is not fixable, and
+it is worth knowing about before you quote a number.
+
+**A faster implementation produces a worse-looking scaling ratio.** Two runs built
+the same pipeline. Normalised on output records per second, so the different
+fan-outs are accounted for:
+
+| case | slower run | faster run | |
+|---|---:|---:|---|
+| 1 core | 653,208 | **825,300** | **+26%** |
+| 4 cores | 2,550,944 | **2,677,340** | **+5%** |
+| **headline ratio** | **3.91×** | **3.24×** | |
+
+The second run is faster at every case that matters and reports the worse number,
+because it spent its effort on the hot path — hoisting allocations out of a
+parser, checking it had the fast serializer rather than a silent fallback. Those
+are single-thread wins, so they help most at one core and least at four, where
+something else binds. **It optimised its baseline and was punished for it.**
+
+No rule can fix this, because you cannot require two runs to write equally good
+code. What you can do is stop quoting the number that has the flaw:
+
+**Report the step ratios, not the ratios against the baseline.**
+
+| | 1→2 | 2→4 |
+|---|---:|---:|
+| slower run | 2.23× | 1.75× — 87% |
+| faster run | 1.68× | **1.94× — 97%** |
+
+On the steps, the faster run is plainly the better result, which matches every
+other measurement of it. On the baseline ratio it looks worse. **A step ratio has
+no privileged case in it**, so nothing about the baseline can flatter or damage
+it — and it is also the number an audience cares about, because nobody deploys
+one core and then asks what four would do.
+
+Quote the baseline ratio if you like, but quote it second, and say what it is
+measured against.
+
 **Prove constraint ownership at the tiny scale, not at the expensive one.** The
 tiny end-to-end proof should run two cases, not one — one unit and two — and
 assert cap consumption *and* bound the ratio between them. It costs two minutes.
@@ -907,7 +947,12 @@ silently-failed edits are found by looking, never by reading the code.
 
 ## Reporting: you are not writing a thesis
 
-- **Lead with the outcome, not the road to it.** The story of how the measurement
+- **Lead with the step ratio.** The headline is the step someone will actually
+buy — two units to four, not one to four — and a step ratio cannot be flattered
+by a weak baseline. Quote the ratio against the baseline second, and say what it
+is measured against.
+
+**Lead with the outcome, not the road to it.** The story of how the measurement
   went wrong before it went right makes the work sound hard instead of the result
   sound cheap.
 - **Stop after the evidence.** A section that explains a result to someone who has
