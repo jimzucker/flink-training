@@ -202,11 +202,16 @@ worker containers. Both are "four cores"; they are not the same experiment:
 | what a vendor sells you | no | yes |
 | what your demo shows | probably not | probably |
 
-Amortising a fixed cost flatters the wider cases, so the two axes disagree in a
-predictable direction. Eight clean-room runs of one problem all scaled a single
-container's cap and reported 88–97% efficiency from two to four cores; the same
-pipeline scaled by *units* reported 98%. Not a controlled comparison, but the sign
-is what the arithmetic predicts.
+Amortising a fixed cost flatters the wider cases, so **the cap axis should read
+slightly superlinear** — the fixed cost is paid once and spread over more cores,
+while on the unit axis it is paid again per unit and the ratio comes out linear.
+
+Be careful what you conclude from that. It predicts the cap axis reporting *more*
+than the unit axis, so it **cannot** explain a sub-linear result on either. Eight
+runs of one problem all scaled a single container's cap and reported 88–97%
+efficiency from two to four cores — below what both models predict. Whatever costs
+them that, it is something that grows with parallelism rather than a fixed cost
+being amortised, and the axis is not it.
 
 Neither axis is wrong. **Answering the wrong one is.** If the claim is "we can
 serve more load by buying more units", measure units — and if you measure the cap

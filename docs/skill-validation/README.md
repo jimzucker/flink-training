@@ -149,15 +149,16 @@ Checked after run 8, against the preserved harness output: **every run scaled th
 CPU cap on a single task manager**, one container going 1→2→3→4 cores with
 parallelism following it. No run varied the *number* of task managers.
 
-That matters for how the tables read. Fixed per-worker cost — JVM, heap, GC
-threads, network stack — is **amortised** when you raise one container's cap and
-**replicated** when you add containers, so the two axes disagree in a predictable
-direction. The runs report 88–97% efficiency from two to four cores; this
-project's own demo, which scales *units*, reports 98%.
+That matters because a cloud vendor sells units rather than cap, so the two are
+different claims. The skill now requires the axis to be stated in the header.
 
-Not a controlled comparison, but the sign is what the arithmetic predicts, and a
-cloud vendor sells units rather than cap. The skill now requires the axis to be
-stated in the header.
+**It does not explain why the runs fall short of linear**, and an earlier version
+of this page said it did. Fixed per-worker cost is amortised on the cap axis and
+replicated on the unit axis, which means the cap axis should read *higher* than
+the unit axis — slightly superlinear rather than sub-linear. The runs report
+88–97% from two to four cores, below what either model predicts. **Whatever costs
+them that grows with parallelism**; it is not a fixed cost being spread thinner,
+and the shortfall remains unexplained.
 
 ## What is still unmade
 
