@@ -224,6 +224,20 @@ tiny end-to-end proof should run two cases, not one — one unit and two — and
 assert both cap consumption and a plausible ratio. It costs two minutes. Finding
 out at full scale costs the whole suite.
 
+**Kill a worker during that same tiny proof.** A delivery guarantee is a claim
+about failure, and until something has failed the claim is untested — at-least-
+once and exactly-once look identical while nothing goes wrong. A run reasoned its
+way to a guarantee, ran a full scaling suite, killed a task manager *afterwards*,
+discovered the guarantee was wrong, and had to discard every row and re-measure
+on the new build: **37 of its 116 minutes went to a suite that was thrown away.**
+The same kill, on 400,000 records during the tiny proof, costs about three
+minutes and catches it at minute twenty.
+
+The rule generalises past the guarantee. **Anything that can invalidate the whole
+table should be tested before the table exists** — the guarantee, constraint
+ownership, cardinality against the prediction, and the two paths agreeing. Sort
+those checks by what they void, not by what is convenient to write last.
+
 ### Put the resource columns next to the throughput
 
 Throughput alone cannot be attributed. Record, for every case:
@@ -254,7 +268,39 @@ window guard needs at least three commit boundaries inside it, so a 30-second
 interval forces a 90-second window and a 10-second interval allows about 40. Over
 a dozen cases that is a quarter of an hour. The interval still has to be constant
 across cases and reported in the header — pick it deliberately, then leave it
-alone.
+alone. **Do not shorten it to save time once cases have run**: it changes the
+throughput you measure, so it trades a comparable number for a faster one.
+
+### Budget the suite before you run it
+
+A case costs warm-up plus window plus the submit-and-settle around it, and that
+last part is not small. Measured across one full suite: **eleven cases, 11.5
+minutes inside windows and 11.1 minutes between them** — a 67-second gap before
+every case. Half the suite is overhead that no one budgets for because it is
+invisible in the config.
+
+So count cases like money:
+
+- **The window is a floor set by the checkpoint interval**, not a comfort
+  setting. Three commit boundaries is the requirement; four is prudent. At a
+  10-second interval that is 40 seconds, not 60.
+- **Warm-up is until the rate is steady, not a round number.** Assert it — two
+  consecutive checkpoints within a few percent — rather than sleeping.
+- **The descending pass detects order effects; it is not a second table.** The
+  endpoints are where drift shows. Running every case twice buys confirmation at
+  full price.
+- **Size the backlog for the longest single case plus headroom**, not for the
+  suite. One run finished its first case with 1,122 seconds of backlog to spare,
+  which is fill time it paid for and never used.
+
+**And record four timestamps per case** — submit, steady, window open, window
+close — so the next run's budget comes from measurement rather than from a
+guess. Without them the overhead is one undifferentiated number and nobody can
+tell whether it is the submit, the settle, or the teardown.
+
+One caution about trimming the fill: the backlog is also what the harness and
+dashboard get written *during*. Shrink it below the time that work takes and the
+work moves onto the critical path, where it costs full price.
 
 ### Measure a drain, not a live generator
 
