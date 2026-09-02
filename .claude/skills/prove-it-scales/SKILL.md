@@ -192,26 +192,21 @@ core it can use spreads the same work over more threads and measures nothing.
 parallelism per step. That is also what a cloud vendor sells (a KPU, a vCPU-unit),
 so the number means something when someone goes to price it.
 
-**And say which axis you scaled, because there are two and they do not give the
-same number.** You can raise the CPU cap on one worker container, or you can add
-worker containers. Both are "four cores"; they are not the same experiment:
+**Say how you bought the capacity, because capping a container is a proxy for
+buying a unit and not the same thing.** A vendor sells you a worker: its own JVM,
+heap, GC threads and network stack. On a laptop you approximate that by raising
+one container's CPU cap and its parallelism together, which is the practical
+choice and the right one — but the fixed per-worker cost is paid **once and spread
+thinner** as the cap grows, where a real second unit pays it **again**.
 
-| | one container, bigger cap | more containers |
-|---|---|---|
-| fixed per-worker cost — JVM, heap, GC threads, network stack | **amortised** over more cores | **replicated** per unit |
-| what a vendor sells you | no | yes |
-| what your demo shows | probably not | probably |
+That difference flatters the cap: on paper it should read slightly superlinear
+where buying units reads exactly linear. So it cannot explain a result that comes
+in *below* linear — if your ratio is short, the cause is something that grows with
+parallelism, not a fixed cost being amortised.
 
-Amortising a fixed cost flatters the wider cases, so the two axes disagree in a
-predictable direction. Eight clean-room runs of one problem all scaled a single
-container's cap and reported 88–97% efficiency from two to four cores; the same
-pipeline scaled by *units* reported 98%. Not a controlled comparison, but the sign
-is what the arithmetic predicts.
-
-Neither axis is wrong. **Answering the wrong one is.** If the claim is "we can
-serve more load by buying more units", measure units — and if you measure the cap
-because it is easier on a laptop, say so in the header rather than letting a
-reader assume.
+Say which you did in the header. A reader pricing the result is buying units, and
+"we capped one container harder" is a proxy for that claim rather than the claim
+itself.
 
 **This rule is a guard, not advice.** It was prose for five runs and a run broke
 it anyway, while obeying every rule next to it that had been written as code. The
