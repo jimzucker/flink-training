@@ -32,6 +32,37 @@ move on.
    record is a wrong number rather than a harmless duplicate, and the delivery
    guarantee is not optional. Say so now, because it puts a floor under latency
    that gets discovered embarrassingly late otherwise.
+
+**And ask whether the guarantee is actually needed — but answer it as two
+questions, not one.** The sink guarantee and the checkpointing guarantee are
+separate settings, and conflating them produces a wrong number that survives
+every test except the one that matters.
+
+Emitting the **absolute** value for a key rather than a delta does make the
+**sink** idempotent: a replayed row restates the position instead of adding to
+it, so the sink needs no transactions and you avoid the latency floor that a
+transactional commit puts under every visible record.
+
+**It says nothing about the state the value was computed from.** If the position
+is a running sum held in keyed state, at-least-once *checkpointing* does not
+align barriers on recovery, so records already folded into the snapshot are
+replayed into it. The state is then wrong, which means the absolute values are
+wrong — correctly delivered, exactly once, and wrong.
+
+A run reasoned its way to absolute emission, declined exactly-once entirely, and
+reported that as a deliberate design decision. It was half right, and the half it
+got wrong was invisible until something was killed: update counts came back
+1,604,176 and 1,605,242 against an expected 1,600,000, and the two aggregations
+disagreed with each other. Split the settings — **exactly-once checkpointing,
+at-least-once sink** — and the same kill replayed 455,888 rows with every
+per-key value still exactly right.
+
+So the answer to "is the guarantee needed" is usually *yes for the engine, no for
+the sink*, and that combination is better than either reflex. **Name both
+settings separately in the report**, because "at-least-once" alone does not say
+which one you meant. And note that no amount of reasoning establishes this — it
+took killing a worker, which is why that is its own rule below.
+
 5. **Who watches the demo, and what do they need to believe at the end?** A
    capacity claim for managers and a correctness claim for engineers produce
    different builds. Ask before writing code, not before writing slides.
@@ -41,8 +72,21 @@ move on.
    Every measurement decision afterwards is judged against whether it supports
    that sentence.
 
+8. **Which API or abstraction level?** Most engines offer more than one — a
+   declarative or SQL layer, and a lower-level one you write operators against.
+   Ask, and record the answer, because it changes what your measurement means. A
+   declarative layer plans the job for you: the operator graph, the state layout
+   and the serialization are chosen by an optimiser and can change between
+   versions. That is often the better engineering choice, and it makes "I added a
+   core and throughput scaled" a claim about *the plan the optimiser produced
+   today*. With hand-written operators you know what the graph is because you
+   wrote it, and you own the state layout that goes with it. Neither is more
+   valid. But someone who knows the difference will ask which you used, and "I did
+   not think about it" is a poor answer to a question about your own measurement.
+   Default to whichever the audience actually runs in production.
+
 **Stop when you can state the claim and the fan-out.** That is usually four to
-six questions, not all seven — skip any the user has already answered. If you are
+six questions, not all eight — skip any the user has already answered. If you are
 past eight you are gathering rather than deciding, and the user has stopped
 reading. Anything still unknown becomes a stated assumption in the plan, not
 another question.
@@ -56,6 +100,75 @@ Pause for review between steps; run without prompting inside one.
 Keep a journal: what drove the step, what was decided, how it was verified, what
 its review changed. It costs minutes and it is the only thing that makes a
 six-week-old decision explicable.
+
+## Environment preflight: check these before you build anything
+
+A measured hour of a clean-room run went to three environment traps, all
+deterministic, none of them interesting. Check them first; each is one command.
+
+**Is every image native to the host architecture?** This is the one that can
+silently invalidate the whole study. Some projects publish only `amd64`; on an
+`arm64` host those run under emulation with no crash, no warning and no error —
+just CPU numbers that mean nothing, because you are measuring a translation
+layer. One run caught it on a `docker pull` platform warning and switched to a
+multi-arch image. **For a CPU-scaling study, check the architecture of every image
+against the host before you measure anything**, and prefer the multi-arch
+publication where one exists.
+
+**Does the JDK the engine needs actually resolve?** A machine can have several,
+and the obvious lookup may not find the one a package manager installed. Resolve
+it explicitly, print the version you resolved, and pin it — do not assume the
+default `java` on PATH is the one the engine supports.
+
+**Will the engine be able to write to its own state directory?** A named container
+volume is created root-owned, and an image whose entrypoint drops to an unprivileged
+user then cannot write to it. Overriding the container's user does not help,
+because the entrypoint drops privileges anyway. The failure arrives as every job
+being rejected for a directory it cannot create, which reads like a code problem
+and is not. Fix the ownership when the volume is created, and confirm by writing a
+file as the runtime user before submitting anything.
+
+**Is the metrics reporter already present?** Recent images often ship the exporter
+as a bundled plugin. The widely-copied instruction to copy the jar out of an
+`opt/` directory into `lib/` then produces a duplicate class and the container
+dies at startup. Look before you copy.
+
+**How much disk will the whole suite write?** Not the backlog — the backlog plus
+everything the pipeline makes from it, times every case that does not drain. One
+run pre-loaded 13 GB of input and filled a 100 GB host, because the two output
+topics carried ten times the input rate and nothing set retention on them: at
+1.58M records/s that is about 200 MB/s, and four cases wrote 47 GB. **The fan-out
+that makes the demonstration interesting is the same fan-out that fills the
+disk.** Do the arithmetic before you fill anything:
+
+    backlog + (backlog × fan-out × cases you will not drain) + checkpoint state
+
+**Set retention on any topic the harness writes but never reads to the end.** The
+input you replay has to be kept. The outputs you only count can expire behind
+you — a size cap on each sink topic turns an unbounded write into a bounded one
+and costs nothing, because no measurement reads those records twice.
+
+**Check free space on the host, not inside the container.** A container-local
+`df` reports the virtual disk, which is usually provisioned far larger than the
+space actually backing it. And on a VM-backed engine — Docker Desktop on macOS or
+Windows — **deleting data inside the VM does not give the space back to the
+host.** The disk image grows and does not shrink on its own. In one recovery,
+removing the containers and volumes freed 85 GB inside the VM while the host
+still showed the image at its full 108 GB; the blocks returned only after an
+explicit trim *inside* the VM, which took the image to 30 GB in seconds:
+
+```
+docker run --rm --privileged --pid=host alpine \
+  nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker
+```
+
+Budget against the host number, and know that command before you need it rather
+than after.
+
+**Then prove the loop end to end on a tiny input before you scale anything.** Fill
+a few thousand records, run one case, assert the outputs, tear it down. A rig that
+cannot measure a thousand records will not measure fifty million, and finding that
+out at the small size costs minutes instead of an hour.
 
 ## The measurement discipline
 
@@ -79,6 +192,38 @@ core it can use spreads the same work over more threads and measures nothing.
 parallelism per step. That is also what a cloud vendor sells (a KPU, a vCPU-unit),
 so the number means something when someone goes to price it.
 
+**This rule is a guard, not advice.** It was prose for five runs and a run broke
+it anyway, while obeying every rule next to it that had been written as code. The
+harness must own it:
+
+- **At the baseline case**, the component under test must consume at least ~98%
+  of its cap and show no material back-pressure. If it does not, **refuse the
+  whole suite** — the rig is measuring something downstream, and every later row
+  inherits the contamination.
+- **At every case**, if it falls below ~95% of its cap, that row is **the
+  ceiling, not a data point.** Report it as the ceiling and stop.
+
+The run that forced this had the evidence in its own output and reported the
+ratio anyway:
+
+| case | cap | used | % of cap | ratio | back-pressure |
+|---|---:|---:|---:|---:|---:|
+| p1 | 1 | 1.00 | 100% | 1.00× | **37.6%** |
+| p2 | 2 | 2.00 | 100% | 1.95× | 36.5% |
+| p3 | 3 | 2.91 | 97% | 2.35× | 46.5% |
+| p4 | 4 | 3.78 | **94%** | 2.82× | 43.6% |
+
+The honest result is *1.95× at two cores, and this rig cannot demonstrate scaling
+past that.* What got reported was 2.82×, which is a measurement of the sink path
+wearing a scaling label. The baseline guard would have refused at p1 on
+back-pressure alone, before forty minutes went into a table that had to be
+withdrawn.
+
+**Prove constraint ownership at the tiny scale, not at the expensive one.** The
+tiny end-to-end proof should run two cases, not one — one unit and two — and
+assert both cap consumption and a plausible ratio. It costs two minutes. Finding
+out at full scale costs the whole suite.
+
 ### Put the resource columns next to the throughput
 
 Throughput alone cannot be attributed. Record, for every case:
@@ -92,6 +237,24 @@ Throughput alone cannot be attributed. Record, for every case:
 
 Without these, "it got slower" is not a diagnosis and the flat step at the end of
 the curve is unexplainable.
+
+### Start the longest-running thing first
+
+Nothing except the cases depends on the backlog, so fill it the moment the tiny
+end-to-end proof passes, and build the harness and the dashboard while it fills.
+Runs that discovered this by accident overlapped roughly an hour of measurement
+with other work; runs that filled late waited for it twice.
+
+The same applies within the suite. A case is warm-up plus window plus the
+recreate-and-submit around it, and the agent has nothing to do during all of it —
+that is the time to write the next thing, not to watch a progress bar.
+
+**Choose the checkpoint interval partly for what it costs you to measure.** The
+window guard needs at least three commit boundaries inside it, so a 30-second
+interval forces a 90-second window and a 10-second interval allows about 40. Over
+a dozen cases that is a quarter of an hour. The interval still has to be constant
+across cases and reported in the header — pick it deliberately, then leave it
+alone.
 
 ### Measure a drain, not a live generator
 
@@ -151,6 +314,24 @@ it will tell you the pipeline is faster than it is. One harness correctly refuse
 a perfectly good case because its own measurement was reading uncommitted
 offsets.
 
+**The metric you need is often not on the documented endpoint.** Engines
+deprecate and empty out APIs faster than their docs and blog posts admit. One run
+lost ten minutes to two back-pressure endpoints that returned empty or
+`deprecated` on a current version, when the usable counters were sitting on a
+different endpoint entirely. Dump the endpoint and read what is actually there
+before trusting a path you found in a search result.
+
+**Every number in the table comes from one build.** If you change the job — a
+metric, a serializer, a key — the earlier cases were measured against different
+code. Re-run them. Two runs did exactly this and said so; a table whose rows come
+from different jars is not a curve, it is a collection.
+
+**Size the backlog for the longest thing you will do with it, not the longest
+measurement.** The window guard stops you measuring silence, but a backlog that
+comfortably outlasts a 60-second case can still drain halfway through the
+five-minute load you wanted for a dashboard image — and half that picture is then
+an idle pipeline. Count every use before you fill.
+
 ### Repeat the cheap measurement, not just the expensive one
 
 The natural instinct is to repeat the run that cost money and trust the free one.
@@ -159,6 +340,78 @@ varied ~12%, and the laptop number was the one quoted as exact.
 
 Quote a ratio when the point is that it scales. Quote an absolute only from a run
 you repeated.
+
+## Prove nothing was lost, separately from proving it is fast
+
+A throughput number says how quickly records moved. It says nothing about whether
+they all arrived, or arrived once. **A fast pipeline that drops one record in ten
+thousand is worthless, and every measurement in your table will look fine.**
+
+These are two different runs and you need both.
+
+### The completeness run drains to the end; the measurement run does not
+
+Every rule about windows — hold the backlog, refuse if it drains inside the
+window, sample the middle — exists because a *measurement* looks at a slice of a
+steady state. Completeness cannot be checked on a slice. Take a backlog small
+enough to drain to the last record, let it finish, and then assert against it.
+Small and complete, not large and sampled.
+
+### Derive the expected answer from the input, not from the pipeline
+
+The check is worthless if it asks the pipeline what it produced and then agrees
+with itself. Have the generator write a manifest as it produces — totals per key,
+record count, whatever the aggregation is supposed to sum to — and compare the
+sinks against *that*. One run precomputed every expected output row before it ran
+anything; another had its generator emit a manifest and matched both aggregations
+against it exactly.
+
+### Assert four things, with no tolerances
+
+- **Cardinality.** You predicted the number of distinct keys during the interview.
+  Assert it. A key count that is one too high means a key you did not intend
+  exists; one too low means a key never arrived.
+- **Totals.** Every aggregation sums to what the manifest says it should. Exactly.
+  Fixed reference data is what makes this arithmetic rather than statistics — if
+  the answer needs a tolerance, the test is too vague to catch anything.
+- **The paths agree.** If the same quantity is computed two ways — two
+  aggregations over the same input, or a count from the source and a count from
+  the sink — they must be equal, and a difference is a lost or duplicated record
+  rather than noise.
+- **Idempotence, if you claim it.** Exactly-once is a claim about failure. Without
+  a failure the setting is untested and at-least-once looks identical. Kill a
+  worker mid-run, let it recover, and assert the totals again.
+
+### The generator has to be deterministic, or none of this works
+
+Everything above assumes you can state the expected answer before the run. That
+requires the input to be reproducible: same seed, same records, same order, in the
+same partitions. Seed it explicitly and derive per-partition seeds from that one
+seed, so parallel generation stays reproducible.
+
+Without it you cannot precompute expectations, cannot compare two runs, and cannot
+tell a regression from a different random draw. It is a precondition, not a nicety
+— check early that two fills with the same seed produce byte-identical output.
+
+### Record which build produced each number
+
+Put the artifact's identity — a jar hash, an image digest — in the result file
+next to the throughput. When a table looks wrong three days later, the first
+question is whether its rows came from the same code, and it is unanswerable
+afterwards unless you wrote it down at the time.
+
+### Then gate the throughput on it
+
+Run the completeness check first, and **refuse to report any performance number
+if it fails**. It belongs in the same harness as the other guards: a case whose
+outputs do not reconcile is not a slow case, it is a broken one, and its
+throughput is meaningless rather than merely disappointing.
+
+Prefer a monotonic quantity for anything you also chart. A signed running total is
+a random walk, so a fraction of a second of scrape skew between two series renders
+as a divergence that is not real — one run built exactly that panel, saw an
+alarming 8% gap between two identical paths, and replaced it with a count where
+the same skew is invisible and a genuinely lost record is not.
 
 ## Build the harness to refuse
 
@@ -171,9 +424,96 @@ one.** Make it stop instead. At minimum, refuse to report when:
 - the backlog ran out inside the measurement window
 - a previous run still owns the cluster
 - the measured rate is zero or negative
+- free disk on the host has fallen below what the next case will write
+- the component under test is not the constraint — under ~98% of its cap at the
+  baseline, or under ~95% at any case
 
 Every guard should exist because it caught something. Add one each time a
 confident wrong answer gets through.
+
+### The mandatory guard set
+
+An audit of this skill found eighty rules and seven guards. The gap is where the
+runs kept failing, so the rules below are no longer prose: **a harness that does
+not implement and self-test every one of these is not finished.** Each cites the
+run that paid for it.
+
+| the harness refuses when | how it checks |
+|---|---|
+| the resource cap was not applied | read it back from the container, never from the environment variable |
+| the component under test is not the constraint | ≥98% of cap at baseline, ≥95% per case, back-pressure not material |
+| no job is actually running | the engine reports a RUNNING job with the expected parallelism |
+| slots ≠ parallelism | compare the allocated slot count against the degree you asked for |
+| the backlog ran out inside the window | a full checkpoint interval of records remains at close, at the measured rate |
+| the window is not anchored on commit boundaries | at least three boundaries inside the window |
+| two vantage points disagree | the transport and the manifest agree within a stated tolerance |
+| a rate came from the engine, not the transport | the rate source is the transport's committed offsets |
+| the cluster is still busy from the last case | assert idle before starting, not just "not erroring" |
+| rows came from different builds | one build hash across every row of the table |
+| observed cardinality ≠ predicted | count distinct keys and compare to the interview's answer |
+| completeness has not passed for this build | no table is published until the drain-to-end assertions pass with no tolerances |
+| free disk is below what the next case will write | host free space, checked before the case |
+| a monitor outlived the thing it watched | at teardown, no child process the run started survives |
+
+Two general principles sit behind most of that list.
+
+**Assert the effect, never the exit code.** `docker update --cpus 0` reports
+success and does nothing. A metrics reload returned 200 over a half-written rules
+file. A topic delete removed the wrong topics and said nothing. Every command
+that changes state gets a read-back that proves the state changed, and the
+read-back is the guard — not the return value.
+
+**Check at the cheapest point that can catch it.** The cost of a violation scales
+with how late it is found: a wrong image architecture voids the whole study, a
+contaminated baseline voids the suite, a bad window voids one case. Anything
+checkable before the run is a preflight assertion that prints PASS or FAIL;
+anything checkable at small scale goes in the tiny proof; only what genuinely
+needs the full rig belongs in a guard that fires forty minutes in.
+
+### Every rule that can be a guard must be a guard
+
+Across five clean-room runs, **every rule written as a guard was obeyed and
+several rules written as prose were broken** — sometimes by the same run, in the
+same hour, with the violating number printed in its own results table. Guards
+held under time pressure; sentences did not.
+
+So the skill carries a promotion rule about itself:
+
+> **When a run breaks a rule, that rule becomes a guard with a self-test, or it
+> gets deleted.** A rule that cannot be enforced is a suggestion, and a
+> suggestion in a document this long will be read once and then out-voted by the
+> next inconvenient measurement.
+
+Deletion is a real option. A rule nobody can mechanise and nobody follows is
+costing you attention on every read for nothing.
+
+Sort every rule you are about to write into three piles:
+
+| pile | what to do |
+|---|---|
+| **checkable while running** | a guard that refuses — cap applied, constraint owned, backlog headroom, disk floor, vantage points agreeing, rate sane |
+| **checkable before running** | a preflight assertion the run executes and prints — architecture, JDK, state-directory ownership, reporter present, disk budget, generator determinism |
+| **judgment** | leave as prose, and keep this pile small enough to actually read |
+
+The middle pile matters more than it looks. A preflight assertion that prints
+`PASS`/`FAIL` is nearly free and catches things hours before a guard would, and
+the cost of a rule violation scales with how late you find it: a wrong
+architecture costs the whole study, a wrong baseline costs the suite, a wrong
+window costs one case.
+
+And check the harness against its own rules at exit. *"Kill what you started to
+watch something"* was written into this skill after one run left a monitor
+running, and a later run left one anyway — that is one assertion at teardown (no
+child processes survive the run), not a sentence.
+
+**Disk is the one guard that has to fire early, because it takes the harness down
+with it.** Every other refusal leaves you a working shell to diagnose from; a full
+volume does not. In one incident the suite refused correctly and wrote its good
+rows out first — and then nothing could run at all, because the tooling could no
+longer create its own output files, and the cleanup that would have freed the
+space needed the shell that the missing space had killed. Check free space
+*before* each case rather than after, and refuse while there is still room to
+stop cleanly.
 
 ### A refusal stops the suite
 
@@ -196,6 +536,49 @@ A suite that logs "REFUSED — continuing" for each guard will spend an hour
 producing a table with holes in it and no account of the holes. That is worse than
 no table, because the holes look like data points that happened to be missing
 rather than a rig that was broken the whole time.
+
+**"The backlog did not run out" is not the guard you want.** A case that consumed
+39,852,303 of 40,000,000 records passed a `remaining > 0` check while the source
+was starved for the tail of the window — the component under test fell off its cap
+and the harness reported the resulting number as a fact. **Require headroom, not
+non-emptiness**: at the rate you just measured, at least a full checkpoint
+interval of records must remain at window close. Not-quite-empty and
+never-the-constraint are different things.
+
+### A guard that has never fired is a guess
+
+You will write guards for failures you have not seen yet. Some of them will be
+wrong: checking the wrong thing, reading a field that is always null, comparing
+against a threshold no real failure crosses.
+
+**Break something on purpose and confirm the guard catches it.** Set the CPU cap
+to the wrong value and check the run refuses. Point the harness at a stopped
+cluster. Truncate the backlog mid-window. Each takes a minute, and the alternative
+is discovering during a real failure that your safety net has a hole — which is
+the moment it costs the most, because you will trust the number it printed.
+
+Every guard in a mature harness should be traceable to something it caught. Guards
+that have never fired are unverified code in the one component whose whole job is
+to be trustworthy.
+
+## Make the verification a gate, not an event
+
+Verifying once proves the pipeline was correct once. The interesting question is
+whether it is correct *now*, after the change someone made this morning.
+
+**Put the completeness check in CI and let it fail the build.** Stand the stack up
+from nothing, run the generator bounded by record count, assert the expected
+outputs, tear it down. It costs minutes per push and it converts every one of the
+assertions above from a thing you did into a thing that stays true.
+
+Two properties matter more than coverage. It must run **the same script you run
+locally**, or the two drift and the CI one becomes decorative. And it must start
+**from nothing** — a cold start on a clean machine is the path every new person
+takes, and it is the one most likely to be quietly broken by a change that works
+fine on a machine with warm caches and leftover state.
+
+A demo that fails in the room usually fails for something CI could have caught and
+nobody had asked it to.
 
 ## Traps that only appear because you run it many times
 
@@ -234,9 +617,16 @@ command, not only before a measurement.** The specific commands that will bite
 you are not enumerable in advance; the check after them is.
 
 **Commands that succeed without doing anything.** `docker update --cpus 0` does
-not clear an existing CPU quota — only `--cpu-quota=-1` does — and it returns
-success either way, so the "cap not applied" guard is the only thing standing
-between you and a case measured at the previous case's limit. Assume any
+not clear an existing CPU quota, and it returns success either way, so the "cap
+not applied" guard is the only thing standing between you and a case measured at
+the previous case's limit.
+
+**And the documented fix has its own trap.** Clearing it with `--cpu-quota=-1`
+sets a CPU *period* on the container, after which the daemon rejects every later
+`--cpus` with *"Nano CPUs cannot be updated as CPU Period has already been set"*.
+**Pick one mechanism and use it exclusively** — `--cpus` throughout, or
+quota/period throughout. Mixing them fails on the second case rather than the
+first, which is exactly late enough to have cost you a fill. Assume any
 clear-the-setting command is a no-op until you have read the setting back.
 
 **Slot arithmetic that fails silently.** Every job needs its own slots. Two jobs
@@ -288,6 +678,23 @@ question. In practice, three earn their place immediately:
   graph will never tell you which of those you are looking at**, and it is the one
   panel worth alerting on.
 
+**Back-pressure does not detect starvation, and the pair has three shapes, not
+two.** Busy near 100% with no back-pressure is a component at its limit and
+keeping up. Sustained back-pressure is one that cannot keep up. But a component
+whose *input* is starved shows **busy falling while back-pressure stays at zero**
+— it is not overwhelmed, it is waiting. One run squeezed its transport to the
+point of handover and saw busy drop to 76.5% with back-pressure at 0.2%: the
+broker was starving the source, not back-pressuring the sink. A panel that names
+only the first two shapes reads that as "everything is fine".
+
+**A ratio between two counters that advance on different clocks cannot be fixed by
+widening the window.** If one side advances only at commit boundaries and the
+other continuously, their ratio lags, and averaging over longer changes the number
+without removing the lag. One run measured a true 5.00 fan-out as 5.98 at one
+minute, 5.83 at three, 5.90 at five and 6.12 cumulative — then deleted the panel
+rather than pick the flattering window. Chart both quantities and let the reader
+see the constant factor; state the ratio only where you can compute it exactly.
+
 Group them in the order the talk covers them. A dashboard laid out like the
 narrative is a dashboard the presenter can follow under pressure.
 
@@ -316,6 +723,35 @@ match — different exporters, different labels. Define recording rules that map
 both onto one set of names, and point the dashboard at those. Otherwise you
 maintain two dashboards, and the second one is always the stale one.
 
+### A starting panel set, and what to check on the first render
+
+Independent runs converge on roughly the same panels, so start here rather than
+discovering it:
+
+| panel | the question |
+|---|---|
+| Rate per stage | is the fan-out real? Lines a constant factor apart |
+| Distinct keys per aggregation | is the cardinality you predicted the one you got? |
+| The two paths, overlaid | do two independent aggregations of the same input agree? |
+| Busiest vs most back-pressured task | at the limit, falling behind, or **starved**? |
+| CPU per component | which one is actually in the way — including the idle one |
+| Backlog remaining | is this a drain, and did it run out? |
+| Checkpoint duration | what does the guarantee cost? |
+
+**Then render once and check these five before iterating**, because each has cost
+a run a whole render cycle:
+
+1. **Does the legend fit?** More series than rows clips, and a series below the
+   fold looks missing.
+2. **Is anything secretly on a second scale?** A count plotted against a percent
+   axis reads as a flat line at the top.
+3. **Is the timezone right?** The renderer is a headless browser with no timezone;
+   an unset one comes back in UTC.
+4. **Does every panel have data?** A "No data" panel usually means the
+   provisioning half-applied, not that the metric is missing.
+5. **Is any panel a ratio or a signed sum?** Both are unstable for reasons that
+   have nothing to do with your pipeline. Prefer two lines and a monotonic count.
+
 ### What bites when you actually build one
 
 Five things that cost a run real time, none of them guessable from the JSON:
@@ -337,8 +773,8 @@ it is a second concrete reason the harness must never take its numbers off the
 dashboard.
 
 **Layout defects are invisible in the JSON — render and look for two in
-particular.** A legend with more series than rows clips, so a series looks
-missing when it is merely below the fold. And a series on a different scale
+particular.** A legend with more series than rows **clips** — legend clipping makes a series
+look missing when it is merely below the fold. And a series on a different scale
 plotted against a percent axis is a dual-axis panel in disguise, which reads as a
 flat line at the top.
 
@@ -372,6 +808,9 @@ silently-failed edits are found by looking, never by reading the code.
   scales linearly" is a claim about the engine; one pipeline supports "this
   pipeline scaled linearly". The narrow claim survives contact with an expert;
   the broad one invites a correction in public.
+- **Say which API or abstraction level you used**, next to the numbers rather
+  than in a footnote. A curve from a declarative engine and a curve from
+  hand-written operators are both real and are not the same claim.
 - **Say where it stops.** Naming the ceiling makes the rest credible. Volunteering
   it is stronger than being asked.
 
@@ -401,6 +840,37 @@ going, for hours. One run left four, and the last expired 90 minutes after the
 last real measurement.
 
 Track what you spawn and tear it down on every exit path, not only the happy one.
+
+## Apply the rule to your own process, not only to the system
+
+The central rule here — **you can only show that something scales when it is the
+thing that is constrained** — is about the pipeline. It applies just as well to
+how you are working, and it is easy to forget in that direction.
+
+A worked example, from these runs. One run lost about 50 minutes to environment
+traps, so those traps were written down and the next run lost only 19. Thirty-one
+minutes genuinely removed — and the total run time fell by eight.
+
+The rest went nowhere, because environment setup was never on the critical path.
+Fills, warm-ups and measurement windows are **waiting**, and an agent writes the
+dashboard while it waits. Roughly 64 minutes of that run's measurement overlapped
+with other work. Removing 31 minutes of setup removed 31 minutes of something
+that was already partly hidden behind the waiting.
+
+Two things follow.
+
+**Before optimising your own loop, find what actually gates it.** Time spent is
+not the same as time on the critical path. The expensive-looking phase is often
+slack, and the real gate is usually the thing you cannot parallelise — here, the
+measurement floor, which is fills plus warm-ups plus windows and no skill text can
+shorten it.
+
+**Expect new work to generate new friction.** The same run that saved 31 minutes
+on known traps hit four unknown ones — an image architecture mismatch, a
+clear-the-setting command that created a second trap, a client library's silent
+metadata-refresh delay, and a reserved word in a dialect. Writing down yesterday's
+traps does not prevent tomorrow's, and a process improvement that assumes it will
+is measuring the wrong thing.
 
 ## When something is blocked
 
