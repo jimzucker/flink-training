@@ -197,9 +197,19 @@ it anyway, while obeying every rule next to it that had been written as code. Th
 harness must own it:
 
 - **At the baseline case**, the component under test must consume at least ~98%
-  of its cap and show no material back-pressure. If it does not, **refuse the
-  whole suite** — the rig is measuring something downstream, and every later row
-  inherits the contamination.
+  of its cap and show no material back-pressure **at the boundary to the external
+  component**. If it does not, **refuse the whole suite** — the rig is measuring
+  something downstream, and every later row inherits the contamination.
+
+**Measure back-pressure at the sink tasks, not as a maximum over all tasks.** This
+rule was written as "no material back-pressure" and that reading is wrong: it
+refuses exactly the situation a valid baseline requires. Inside a CPU-capped
+single-slot task manager the source always waits on the aggregation threads
+sharing that core, so internal back-pressure is *supposed* to be high. One run
+measured **25–46% internal back-pressure in every one of its six good cases**
+while sink back-pressure stayed at **0.0%**, and the guard as written discarded a
+correct baseline. Gate on the external boundary; report the internal figure in a
+column and gate nothing on it.
 - **At every case**, if it falls below ~95% of its cap, that row is **the
   ceiling, not a data point.** Report it as the ceiling and stop.
 
@@ -218,6 +228,37 @@ past that.* What got reported was 2.82×, which is a measurement of the sink pat
 wearing a scaling label. The baseline guard would have refused at p1 on
 back-pressure alone, before forty minutes went into a table that had to be
 withdrawn.
+
+### The baseline has to do the same work as the cases above it
+
+**At parallelism 1 there is no shuffle.** A `keyBy` at parallelism 1 repartitions
+nothing: no network hop, no serialization between subtasks. Every case from 2
+upward pays that cost and the baseline does not, so the first step is comparing
+two structurally different programs.
+
+It shows up in both directions, and neither is the truth:
+
+| run | p1 → p2 | p2 → p4 |
+|---|---:|---:|
+| one | 2.23× — superlinear | 1.75× (87% efficiency) |
+| the other | 1.68× (84%) | **1.94× (97%)** |
+
+The second run scales almost perfectly from two cores up, and its headline ratio
+is dragged down by a baseline that skipped the shuffle. The first has the
+opposite distortion, from fixed per-JVM cost dominating a single capped core.
+**Both reported the 1→4 ratio as the result, and in both cases the honest number
+was the one measured from two cores up.**
+
+So do one of two things, and say which:
+
+- **quote ratios from two cores up**, stating that the one-core case is not
+  structurally comparable, or
+- **make the baseline pay the same costs** — force a rebalance at parallelism 1 so
+  the shuffle exists in every case.
+
+The general rule underneath: **the baseline is a case, not a reference point.**
+Anything true of the other cases and not of it — a shuffle, a network hop, a
+second JVM — is a difference you are attributing to scaling.
 
 **Prove constraint ownership at the tiny scale, not at the expensive one.** The
 tiny end-to-end proof should run two cases, not one — one unit and two — and
@@ -502,7 +543,8 @@ run that paid for it.
 | the harness refuses when | how it checks |
 |---|---|
 | the resource cap was not applied | read it back from the container, never from the environment variable |
-| the component under test is not the constraint | ≥98% of cap at baseline, ≥95% per case, back-pressure not material |
+| the component under test is not the constraint | ≥98% of cap at baseline, ≥95% per case, back-pressure at the **external boundary** not material |
+| a refused case still owns the cluster | tear the job down on **every** exit path, not only the happy one |
 | no job is actually running | the engine reports a RUNNING job with the expected parallelism |
 | slots ≠ parallelism | compare the allocated slot count against the degree you asked for |
 | the backlog ran out inside the window | a full checkpoint interval of records remains at close, at the measured rate |
@@ -530,6 +572,14 @@ contaminated baseline voids the suite, a bad window voids one case. Anything
 checkable before the run is a preflight assertion that prints PASS or FAIL;
 anything checkable at small scale goes in the tiny proof; only what genuinely
 needs the full rig belongs in a guard that fires forty minutes in.
+
+**And run the whole case path once with a deliberately tiny window before the real
+suite.** The tiny proof exercises the *pipeline*; it does not exercise the
+harness, and the harness is where the defects are. One run passed its drain-to-end
+proof and then lost eight minutes to three defects that only execute *after* a
+window closes — a sanitised metric label, a slot-count race, and a cleanup path
+that never ran. None were reachable from a drain. A single case at a 10–15 second
+window costs forty-five seconds and executes every line the suite will.
 
 ### Every rule that can be a guard must be a guard
 
