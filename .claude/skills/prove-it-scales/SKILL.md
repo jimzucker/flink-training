@@ -221,8 +221,23 @@ withdrawn.
 
 **Prove constraint ownership at the tiny scale, not at the expensive one.** The
 tiny end-to-end proof should run two cases, not one — one unit and two — and
-assert both cap consumption and a plausible ratio. It costs two minutes. Finding
-out at full scale costs the whole suite.
+assert cap consumption *and* bound the ratio between them. It costs two minutes.
+Finding out at full scale costs the whole suite.
+
+**Bound the ratio; do not eyeball it.** One unit to two should land near 2×.
+Refuse the proof outside roughly **1.5×–2.5×**, and treat the high side as the
+more serious failure: **superlinear scaling is a defect report.** Every run that
+produced one was wrong about something, and the something is almost always a
+baseline that was constrained by an artefact rather than by the resource under
+test.
+
+This is a separate check from cap consumption, because cap consumption does not
+catch it. A run added `disableOperatorChaining()` to get per-stage dashboard
+rates, which made six tasks time-share a one-core cap. Its proof reported 35,207
+blocks/s at one core against 131,301 at two — **a 3.73× speedup, with the task
+manager at 99.9% of cap in both cases.** The constraint guard passed it happily.
+Only the implausible ratio gave it away, and it was caught two minutes into a
+proof rather than an hour into a suite that would have looked spectacular.
 
 **Kill a worker during that same tiny proof.** A delivery guarantee is a claim
 about failure, and until something has failed the claim is untested — at-least-
