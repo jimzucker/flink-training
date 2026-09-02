@@ -143,22 +143,27 @@ reaches 4.55M, **1.70× that**, with the broker at 13× headroom. And run 8's
 repeated passes found a **10–17% spread on the same case** — so every table in
 runs 1 through 7 is a single sample, and should be read as one.
 
-## Which axis these runs measured
+## How these runs bought capacity
 
-Checked after run 8, against the preserved harness output: **every run scaled the
-CPU cap on a single task manager**, one container going 1→2→3→4 cores with
-parallelism following it. No run varied the *number* of task managers.
+Checked against the preserved harness output: **every run raised the CPU cap on a
+single task manager**, one container going 1→2→3→4 cores with parallelism
+following. That is also what this project's own demo does — `scale-units.sh`
+exports `TASKMANAGER_CPUS` and `PARALLELISM` together against one container — so
+the runs and the demo are measuring the same thing the same way, and their numbers
+are directly comparable.
 
-That matters because a cloud vendor sells units rather than cap, so the two are
-different claims. The skill now requires the axis to be stated in the header.
+Capping one container is a **proxy** for buying a unit from a vendor, which the
+demo's own comment says plainly: a unit models a KPU. The proxy is reasonable and
+it is what a laptop allows, but a real second unit brings its own JVM, heap and GC
+threads, where a bigger cap spreads one set of those thinner. The skill now asks
+for this to be stated rather than assumed.
 
-**It does not explain why the runs fall short of linear**, and an earlier version
-of this page said it did. Fixed per-worker cost is amortised on the cap axis and
-replicated on the unit axis, which means the cap axis should read *higher* than
-the unit axis — slightly superlinear rather than sub-linear. The runs report
-88–97% from two to four cores, below what either model predicts. **Whatever costs
-them that grows with parallelism**; it is not a fixed cost being spread thinner,
-and the shortfall remains unexplained.
+**It does not explain why the runs fall short of linear.** An earlier version of
+this page claimed it did, and had the arithmetic backwards: spreading a fixed cost
+over more cores flatters the wider cases, so the cap approach should read *above*
+linear, not below. The runs report 88–97% from two to four cores. Whatever costs
+them that grows with parallelism — the shuffle's channel count and host core
+contention are both candidates — and it remains unexplained.
 
 ## What is still unmade
 
