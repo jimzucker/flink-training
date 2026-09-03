@@ -149,7 +149,11 @@ shape differs from the others**, and **lead with step ratios** — 2→4, not 1�
 A step ratio has no privileged case in it, a faster single-thread
 implementation cannot be punished by it, and it is the step someone will
 actually buy. Quote the baseline ratio second, and say what it is measured
-against.
+against. **If the claim is a step from two units up, do not run the one-unit
+case at all** — it is the structurally weakest case and the noisiest in every
+run that repeated it, and every case you run is time and a guard that can
+fire. Run the cases the claim needs, plus one above if the ceiling is in
+scope.
 
 **Measure a drain, not a live generator.** Fill a backlog larger than the page
 cache, stop the producer, measure the drain. Hold partitions, checkpoint
