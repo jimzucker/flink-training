@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Eight runs of the same problem, each by a fresh agent in an empty directory, barred
+Nine runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -21,8 +21,11 @@ way to tell them apart.
 | [6](clean-room-run-6.md) | DataStream | 1.94 h | $38.20 | 120 | 81,651 | 318,868 | **3.91×** | **100%** |
 | [7](clean-room-run-7.md) | DataStream | **0.92 h** | **$22.63** | 98 | 82,530 | 267,734 | 3.24× | **101%** |
 | [8](clean-room-run-8.md) | DataStream | 1.59 h | $26.39 | 92 | 140,308 | **457,264** | 3.26× | **99%** |
+| [9](clean-room-run-9.md) | DataStream | 2.75 h† | — | — | 69,132 | **267,708** | 3.87× | **99%** |
 
 Human time was **0 h** and human prompts **1** in every row.
+
+† Run 9 ran against the skill cut to 3,546 words; its harness counted input legs (4 per block order), shown here divided by 4. Its **2→4 step ratio was 2.10× pooled over 17 passes** (1.96–2.25× across seven suites). Most of its wall clock went to re-running suites a mis-scoped spread guard had refused; the agent was then killed by API overload before writing its report or recording its cost.
 
 **Do not read the throughput columns across rows.** Each agent chose its own
 fan-out, key cardinality, checkpoint mode, record shape and partition count, so
