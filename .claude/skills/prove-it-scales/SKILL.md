@@ -182,9 +182,12 @@ not CPU), and back-pressure, so waiting is distinguishable from working.
 **Warm up to a flat trend, not a round number.** Fit four intervals and require
 a flat slope; two neighbours agreeing is a coin flip against ±10% noise.
 
-**Every case at least twice; refuse if the spread exceeds 10%.** The same case
-measured three times spread 10–17% — wider than a step ratio's effect. A
-difference smaller than the spread has not been measured.
+**Every case at least twice, and report the spread.** The same case measured
+three times spread 10–17% — wider than a step ratio's effect. A case whose
+spread exceeds 10% is **unreportable on its own and voids every ratio it is
+part of**; it does not void the suite. One run's 1-core case spread 14–42% in
+seven consecutive suites while its 2- and 4-core cases held under 6%, and a
+suite-wide refusal threw away six valid 2→4 measurements.
 
 **Ascending then descending.** If the curve differs, something warms or
 accumulates between cases and the shape is partly the order.
@@ -232,15 +235,17 @@ is not finished. Each one exists because a run paid for it.
 | two vantage points disagree | transport and manifest agree within a stated tolerance |
 | a rate came from the engine | the rate source is the transport's committed offsets |
 | the measured rate is zero or negative | — |
-| two passes of one case spread >10% | every case run ≥2×; spread reported |
+| a case's passes spread >10% | every case run ≥2×; that case and every ratio it is part of are marked unreportable — the other cases still report |
 | rows came from different builds | one build hash across the table |
 | observed cardinality ≠ predicted | distinct keys vs the interview's answer |
 | completeness has not passed for this build | §4, with no tolerances |
 | host free disk is below the next case's write | checked **before** the case — a full disk takes the shell down with it |
 | a monitor outlived the thing it watched | at teardown, no child the run started survives |
 
-**A refusal stops the suite.** Refusals are systemic: a cap that did not apply
-at one core will not apply at two. Retry the same case once if the failure is
+**A refusal stops the suite — when it is about the rig.** A cap that did not
+apply at one core will not apply at two; a busy cluster, a bad window anchor,
+disagreeing vantage points are the same at every case. A guard about one
+case's *data* — spread, headroom at close — marks that case and moves on. Retry the same case once if the failure is
 plainly transient; if it refuses again, say *"stopping here: the remaining
 cases would fail the same way"* and exit. "REFUSED — continuing" produces a
 table with holes that look like data.
