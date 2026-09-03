@@ -1057,6 +1057,37 @@ guarantees the copies agree with each other, not that they agree with the repo.
 **Render the image and look at it.** Layout collisions, overflowing text and
 silently-failed edits are found by looking, never by reading the code.
 
+## An explanation is a measurement, not a story
+
+A number that falls short of expectation invites a reason, and a plausible reason
+is cheap to produce and expensive to be wrong about. **Do not publish a mechanism
+you have not measured.**
+
+The discipline is the same one this skill applies to throughput. A mechanism is a
+claim about cause, so it needs a controlled comparison: **one rig, one build, one
+variable changed, both arms measured.** Anything less is a hypothesis, and it must
+be labelled as one or left out.
+
+Two failures are worth naming because they are easy and expensive:
+
+**Do not explain your number using someone else's run.** This skill already says
+absolute throughput is not comparable across runs, because each one chose its own
+fan-out, cardinality and record shape. That applies to *explanations* too. One
+investigation spent hours accounting for a ten-percent shortfall that turned out
+to belong to a different implementation entirely; measured in its own rig, the
+pipeline scaled at 105% and there had never been anything to explain.
+
+**Arithmetic is not evidence, and it runs backwards easily.** The same
+investigation argued that fixed per-worker cost explained a sub-linear result.
+Fixed cost spread over more cores *flatters* the wider cases — the argument
+predicted the opposite of the thing it was offered to explain, and nobody noticed
+until the numbers were put in a table.
+
+So when a result is short of what you expected, the honest sequence is: say what
+you measured, say what you have ruled out **and with what evidence**, and say the
+cause is unknown. *"I do not know yet"* costs one line. A wrong mechanism gets
+written down, repeated, and acted on.
+
 ## Reporting: you are not writing a thesis
 
 - **Lead with the step ratio.** The headline is the step someone will actually
