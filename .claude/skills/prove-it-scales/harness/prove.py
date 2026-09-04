@@ -132,6 +132,30 @@ def cmd_selftest(live=True, topic=None):
         raise Refusal("case", t["cases"][2]["unreportableReason"])
     expect("a case measured only once", one_pass, "pass")
 
+    def sentinel_drift():
+        runs = [{"cores": 2, "pass": "p1-asc", "recordsPerSec": 400.0},
+                {"cores": 4, "pass": "p1-asc", "recordsPerSec": 800.0},
+                {"cores": 4, "pass": "p2-desc", "recordsPerSec": 790.0},
+                {"cores": 2, "pass": "p2-desc", "recordsPerSec": 395.0},
+                {"cores": 2, "pass": "sentinel", "recordsPerSec": 300.0}]
+        t = build_table(runs)
+        sd = t["sentinel"]
+        if sd is None or abs(sd["drift"] - (300.0 - 400.0) / 350.0) > 1e-3:
+            raise Exception(f"sentinel drift not computed: {sd}")
+        if t["cases"][2]["reportable"]:
+            raise Exception("a 25% first-to-last drift left the baseline reportable")
+        raise Refusal("case", f"sentinel drift {sd['drift']:.1%}: " + t["cases"][2]["unreportableReason"])
+    expect("sentinel: rig drifted across the suite", sentinel_drift, "spread")
+
+    def sentinel_ok():
+        runs = [{"cores": 2, "pass": "p1-asc", "recordsPerSec": 400.0},
+                {"cores": 4, "pass": "p1-asc", "recordsPerSec": 800.0},
+                {"cores": 2, "pass": "sentinel", "recordsPerSec": 370.0}]
+        t = build_table(runs)
+        if not t["cases"][2]["reportable"] or t["sentinel"]["drift"] > 0:
+            raise Exception(f"an 8% drift (inside the 10% noise floor) was refused: {t['sentinel']}")
+    expect("sentinel: drift inside the noise floor (must not fire)", sentinel_ok, "", should_fire=False)
+
     def warm():
         ok, d = L.warmup_verdict([325e3, 259e3, 241e3, 340e3], 120)
         if ok:
@@ -482,11 +506,18 @@ def cmd_completeness():
 
 # ----------------------------------------------------------------------- suite
 
-def passes_plan(cases, n):
+def passes_plan(cases, n, baseline=None):
+    """Alternating order, then the sentinel: the baseline case once more at the
+    very end, so the suite's first and last measurements are the same case. A
+    rig that drifts across the suite shows up as baseline spread instead of
+    hiding inside the alternation (plan 12: 4c read 688k-776k across a suite
+    and 801k ten minutes later)."""
     plan = []
     for i in range(n):
         asc = (i % 2 == 0)
         plan.append((f"p{i+1}-{'asc' if asc else 'desc'}", list(cases) if asc else list(reversed(cases))))
+    if baseline is not None:
+        plan.append(("sentinel", [baseline]))
     return plan
 
 
@@ -502,7 +533,7 @@ def cmd_suite():
     tp = load_json("tinyproof.json") if os.path.exists(os.path.join(c.results, "tinyproof.json")) else {}
     if tp.get("result") != "PASS" or tp.get("selftest") != "PASS":
         raise Refusal("rig", "the tiny proof (with guard self-test) has not passed; run `prove.py tinyproof`")
-    plan = passes_plan(c.cases, c.passes)
+    plan = passes_plan(c.cases, c.passes, c.baseline)
     out = {"axis": c.axis, "apiLevel": c.api_level, "guarantee": c.guarantee,
            "checkpointIntervalMs": c.ckpt_ms, "buildHash": bh, "completenessBuild": comp.get("build"),
            "passesPerCase": c.passes, "cases": c.cases, "baseline": c.baseline,

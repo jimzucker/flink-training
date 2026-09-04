@@ -1074,7 +1074,20 @@ def build_table(runs, cases_order=None):
         if asc and desc:
             o["descOverAsc"] = round((sum(desc) / len(desc)) / (sum(asc) / len(asc)), 4)
         order[cores] = o
-    return {"cases": cases, "stepRatios": ratios, "orderEffect": order}
+    # sentinel: the baseline measured first and last. No threshold of its own —
+    # a drift shows up as baseline spread against the 20% ceiling, which the
+    # record has replayed; plan 12 phase 1 measured a 10% spread with no drift.
+    sentinel = None
+    sent = [r for r in runs if r.get("pass") == "sentinel" and r.get("status", "OK") == "OK"]
+    if sent:
+        last = sent[-1]
+        first = next((r for r in runs if int(r["cores"]) == int(last["cores"]) and r is not last
+                      and r.get("status", "OK") == "OK"), None)
+        if first:
+            f, l = first["recordsPerSec"], last["recordsPerSec"]
+            sentinel = {"cores": int(last["cores"]), "firstPass": first.get("pass"), "firstRecordsPerSec": f,
+                        "lastRecordsPerSec": l, "drift": round((l - f) / ((f + l) / 2), 4)}
+    return {"cases": cases, "stepRatios": ratios, "orderEffect": order, "sentinel": sentinel}
 
 
 def render_table(out):
@@ -1126,6 +1139,10 @@ def render_table(out):
             L.append(f"STEP {r['step']} cores: NOT REPORTED — {r['reason']}")
     L.append("order effect (descending / ascending): " +
              str({k: v.get("descOverAsc") for k, v in t["orderEffect"].items()}))
+    sd = t.get("sentinel")
+    if sd:
+        L.append(f"sentinel: {sd['cores']}c first {sd['firstRecordsPerSec']:,.0f} -> last {sd['lastRecordsPerSec']:,.0f} "
+                 f"rec/s, drift {sd['drift']:+.1%} across the suite (counted in the {sd['cores']}c spread)")
     if out.get("stoppedEarly"):
         L.append(f"STOPPED EARLY: {out['stoppedEarly']['reason']} — {out['stoppedEarly']['message']}")
     L.append("=" * 118)
@@ -1163,4 +1180,9 @@ def render_markdown(out):
     for cs in t["cases"].values():
         L.append(f"| {cs['cores']} | {cs['passes']} | {cs['meanRecordsPerSec']:,.0f} | {cs['spread']:.1%} | "
                  f"{'yes' if cs['reportable'] else 'no — ' + cs['unreportableReason']} |")
+    sd = t.get("sentinel")
+    if sd:
+        L += ["", f"Sentinel: the {sd['cores']}-core case first ({sd['firstRecordsPerSec']:,.0f} rec/s) and last "
+                  f"({sd['lastRecordsPerSec']:,.0f} rec/s), drift {sd['drift']:+.1%} across the suite; "
+                  f"counted in that case's spread."]
     return "\n".join(L) + "\n"
