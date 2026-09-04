@@ -51,18 +51,25 @@ public final class OffsetSampler {
         while (true) {
             long ts = System.currentTimeMillis();
             long committed = 0;
+            // per partition too: the subtasks commit independently on notifyCheckpointComplete,
+            // so one tick can read a sum that is part this checkpoint, part the last
+            long[] parts = new long[in.size()];
             try {
                 Map<TopicPartition, OffsetAndMetadata> m =
                         admin.listConsumerGroupOffsets(group).partitionsToOffsetAndMetadata().get();
                 for (Map.Entry<TopicPartition, OffsetAndMetadata> e : m.entrySet())
-                    if (e.getKey().topic().equals(inTopic) && e.getValue() != null)
+                    if (e.getKey().topic().equals(inTopic) && e.getValue() != null) {
                         committed += e.getValue().offset();
+                        if (e.getKey().partition() < parts.length) parts[e.getKey().partition()] = e.getValue().offset();
+                    }
             } catch (Exception e) {
                 committed = -1;
             }
             StringBuilder sb = new StringBuilder();
             sb.append("{\"ts\":").append(ts).append(",\"committed\":").append(committed)
-              .append(",\"endIn\":").append(sum(c.endOffsets(in)));
+              .append(",\"committedParts\":[");
+            for (int i = 0; i < parts.length; i++) sb.append(i > 0 ? "," : "").append(parts[i]);
+            sb.append("],\"endIn\":").append(sum(c.endOffsets(in)));
             for (Map.Entry<String, List<TopicPartition>> e : outs.entrySet())
                 sb.append(",\"end_").append(e.getKey()).append("\":").append(sum(c.endOffsets(e.getValue())));
             sb.append('}');

@@ -111,7 +111,7 @@ def cmd_selftest(live=True, topic=None):
     expect("too few reporter samples in the window", case(bpSamples=2), "samples")
     expect("worker is not the constraint (baseline)", case(tmCapFrac=0.97, _baseline=True), "not the constraint")
     expect("worker is not the constraint (other)", case(tmCapFrac=0.90), "not the constraint")
-    expect("source idle: broker is the constraint", case(sourceIdle=0.4), "broker")
+    expect("source idle past the ceiling", case(sourceIdle=0.4), "waited on input")
     expect("job graph differs across cases",
            lambda: L.check_shape({"vertexCount": 3, "signature": [["a", ["HASH"]]]},
                                  {"vertexCount": 3, "signature": [["a", ["REBALANCE"]]]}), "shape")
