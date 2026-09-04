@@ -1,0 +1,169 @@
+{
+  "build": "d14782d8399359b0",
+  "results": [
+    {
+      "guard": "window has < 3 commit boundaries",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "only 2 commit boundaries inside the window"
+    },
+    {
+      "guard": "measured rate is zero",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "measured rate is not positive: 0 records in 60.0s"
+    },
+    {
+      "guard": "rate came from the engine",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "rate came from the engine, not the transport"
+    },
+    {
+      "guard": "two vantage points disagree",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "vantage points disagree by 12.0% (source committed 10000000, sinks imply 10010000) > tolerance 5%"
+    },
+    {
+      "guard": "backlog lacks headroom at close",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "backlog headroom at close is 1000 records (0.0s) < one checkpoint interval at the measured rate"
+    },
+    {
+      "guard": "external-boundary samples missing",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "6 source back-pressure samples inside the window (< 3): the external-boundary guard would not have been evaluated"
+    },
+    {
+      "guard": "too few reporter samples in the window",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "2 source back-pressure samples inside the window (< 3): the external-boundary guard would not have been evaluated"
+    },
+    {
+      "guard": "worker is not the constraint (baseline)",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "task manager used 97.0% of its 4-core cap (floor 98%) \u2014 it is not the constraint"
+    },
+    {
+      "guard": "worker is not the constraint (other)",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "task manager used 90.0% of its 4-core cap (floor 95%) \u2014 it is not the constraint"
+    },
+    {
+      "guard": "source idle past the ceiling",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "source idle 40.0% > 20%: the source waited on input for more of the window than any at-cap case on record"
+    },
+    {
+      "guard": "job graph differs across cases",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "job graph shape differs from the other cases:\n{'vertexCount': 3, 'signature': [['a', ['HASH']]]}\nvs\n{'vertexCount': 3, 'signature': [['a', ['REBALANCE']]]}"
+    },
+    {
+      "guard": "a case's passes spread past the ceiling",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "spread 26.1% > 20% ceiling"
+    },
+    {
+      "guard": "a case measured only once",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "1 pass(es) < 2"
+    },
+    {
+      "guard": "sentinel: rig drifted across the suite",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "sentinel drift -28.6%: spread 27.4% > 20% ceiling"
+    },
+    {
+      "guard": "sentinel: drift inside the noise floor (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a host-side watcher outlives the run",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "host processes watching this run were found and killed: [35867, 35868, 35870]"
+    },
+    {
+      "guard": "disk: run 11's build A fitted (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: the suite would not fit",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "the suite would not fit on disk: input 42.1 GB + sinks 34.4 GB (retention-capped at 34.4 GB) + checkpoints 1.0 GB + floor 20 GB = 97.5 GB against 60.0 GB free once the tiny proof's topics are gone \u2014 s"
+    },
+    {
+      "guard": "all: the chain stops at the first failing step",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "chain stopped at c, d never ran, DONE says 'FAIL at c 0.0 min'"
+    },
+    {
+      "guard": "warm-up accepts a noisy ramp",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "scatter 34%"
+    },
+    {
+      "guard": "warm-up accepts a flat plateau (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a valid case record passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "resource cap was not applied",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "cpu cap did not apply on st12-tm: NanoCpus=2000000000, wanted 4000000000"
+    },
+    {
+      "guard": "cluster still busy from the last case",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "a task manager from the last case is still registered: {'taskmanagers': 1, 'slots-total': 2, 'slots-available': 2, 'jobs-running': 0, 'jobs-finished': 0, 'jobs-cancelled': 41, 'jobs-failed': 0, 'flink"
+    },
+    {
+      "guard": "backlog does not match its manifest",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "backlog on block-trades-tiny is 70000000 records, manifest says 69999999"
+    },
+    {
+      "guard": "disk: broker and volume sizes read (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "monitor launched unattended is dead",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "offset sampler died at startup:\nnope\n"
+    },
+    {
+      "guard": "no job is actually running",
+      "ok": true,
+      "result": "REFUSED",
+      "message": "job never reached RUNNING"
+    }
+  ],
+  "at": "2026-09-04 13:41:54"
+}

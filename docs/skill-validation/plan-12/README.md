@@ -308,3 +308,44 @@ Criteria, written before launch:
 - 1→2 and 2→4 each inside 2.0 ± the 1A floor (the band comes from 1A, not
   from a guess)
 - sentinel drift under the floor; the host-quiet guard never fires
+
+### Phase 4 response
+
+Run 12 launched 10:14:36 on the merged #43 harness, one prompt (run 11's with
+the headline changed to "1→2 and 2→4, each with its spread"), Opus, no human
+input. Record: [clean-room-run-12.md](../clean-room-run-12.md), raw results
+under [run-12/](../run-12/).
+
+| criterion | result |
+|---|---|
+| harness verbatim; one suite | **PASS** — `lib.py 4b6cd053d02fcfc3` / `prove.py 1a18bf2aefbf665a`, byte-identical to #43; one `suite` phase of ten cases; 0 forbidden-path reads in 106 tool calls |
+| ≤ 1.25 h | **FAIL** — 4 h 32 m. The chain: 64.4 min (`phases.log`), inside Phase 3's 75; the other 3 h 28 m was the agent's build, its diagnosis of a first build at 90–96% of the 4-core cap, an optional ceiling run and the report |
+| 1→2 in 1.85–2.15× | **PASS** — 2.013× (1.94–2.08×), 1c spread 2.1%, 2c 4.8% |
+| 2→4 in 1.85–2.15× | **FAIL by 0.004** — 2.154× (2.04–2.27×), 4c spread 6.0%; pass 1 alone reads 2.039× |
+| sentinel drift under the floor | **not measured** — the sentinel was the 1-core case and was refused at 97.4% of cap; the host-quiet guard was dropped by 1B |
+
+**Phase 4 does not pass.** The measurement the plan was written to get was
+produced — both steps, one suite, a harness that refused nothing valid and
+was not argued with — and the numbers are 2.01× and 2.15×, the second
+0.4% past the band with its passes drifting +6.2% / −4.7% across the suite
+and no sentinel to say so. The time was lost where run 11 lost it, before
+the chain, in the agent's own pipeline.
+
+Found on the way and fixed in this PR: the `all` self-test's fake chain
+still wrote its `phase=a … FAIL at c` lines into `harness.log` (not
+`phases.log`, which #43 fixed); it no longer logs when it is not the live
+chain.
+
+### Plan 12 verdict
+
+| goal | outcome |
+|---|---|
+| unstable runs | the rig's noise floor measured (10.2%); every guard replayed against the record before a run; three rules corrected by measurement (watcher scope, reclaimable disk, idle ceiling); one suite per run in runs 11 and 12 |
+| 2× for 1→2 and 2→4 | 1→2 = **2.013×** (run 12); 2→4 = 1.934× (rig, Phase 3), 2.154× (run 12) — one inside the band, one 0.004 outside, in opposite directions |
+| all issues in the script | 2.1, 2.2, 2.4, 2.6, 2.7 shipped; 2.3 and 2.5 dropped by measurement; two self-test defects found live and fixed; the unexplained 33.9% vantage event has its ticks recorded for a recurrence |
+| run time | the chain: 118 min (run 11) → 50.6 min (rig) → 64.4 min (run 12, three cases); the run: 1.97 h → 4.53 h, all of the growth before the chain |
+
+What the record leaves open is written at the end of
+[clean-room-run-12.md](../clean-room-run-12.md): a criterion that separates
+the chain's clock from the agent's; whether the 98% baseline floor is set
+from measured noise; a sentinel that the floor cannot refuse.

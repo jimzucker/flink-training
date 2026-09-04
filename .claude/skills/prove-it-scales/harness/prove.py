@@ -771,7 +771,8 @@ def cmd_all(steps=None, results=None):
     def mark(line):
         with open(phases, "a") as f:
             f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + line + "\n")
-        log(line)
+        if results == c.results:  # the self-test's fake chain stays out of harness.log too (run 12)
+            log(line)
 
     def save_all():
         with open(os.path.join(results, "all.json"), "w") as f:
