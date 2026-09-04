@@ -29,7 +29,7 @@ self-test) and `completeness` have passed **for the same build hash**.
 
 | field | what |
 |---|---|
-| `project` | short lowercase token; every container, volume and network is prefixed with it, and `down` asserts nothing with the prefix survives — nor any host process holding a file under `results/` open or naming `results/` or `prove.py` on its command line (those are killed and listed; a survivor is a refusal) |
+| `project` | short lowercase token; every container, volume and network is prefixed with it, and `down` asserts nothing with the prefix survives — nor any host process holding a file under `results/` open, naming the project directory on its command line, or naming `prove.py` while running from inside the project (those are killed and listed; a survivor is a refusal — another project's harness, or a shell merely sitting in the directory, is left alone) |
 | `topics.in`, `topics.out[]` | the input topic the job consumes and every topic it writes. The harness sets retention on the outputs and recreates them per case |
 | `outputsPerInput` | records written to all outputs per input record. The two-vantage guard divides sink growth by this and compares to committed source offsets |
 | `job.jar`, `job.mainClass`, `job.args` | the job. `args` is a template: `{bootstrap}` `{in}` `{out0}` `{out1}`… `{group}` `{par}` `{ckptMs}`. The job **must** consume `{in}` with consumer group `{group}`, commit offsets on checkpoint, and run at parallelism `{par}` |

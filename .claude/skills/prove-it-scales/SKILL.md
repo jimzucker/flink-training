@@ -264,7 +264,7 @@ for it.
 | observed cardinality ≠ predicted | distinct keys vs the interview's answer |
 | completeness has not passed for this build | §4, with no tolerances |
 | host free disk is below the next case's write | checked **before** the case — a full disk takes the shell down with it |
-| a monitor outlived the thing it watched | at teardown, no child the run started survives, and no host process watching `results/` or `prove.py` either |
+| a monitor outlived the thing it watched | at teardown, no child the run started survives, and no host process watching `results/`, naming the project, or running `prove.py`-shaped loops from inside it either |
 
 **A refusal stops the suite — when it is about the rig.** A cap that did not
 apply at one core will not apply at two; a busy cluster, a bad window anchor,
@@ -293,9 +293,12 @@ consecutive runs left a host-side sampler running with the teardown assertion
 passing honestly, because the harness cannot see a process it did not start.
 Put samplers in the compose file; `compose down` reaps them. The rule was
 prose for five runs and broken on every one of them, so `down` now also looks
-for strangers: any host process holding a file under `results/` open, or
-whose command line names `results/` or `prove.py`, is killed and listed, and
-`down` refuses if one survives. A watcher you start on the host will be
+for strangers: any host process holding a file under `results/` open, naming
+the project directory on its command line, or naming `prove.py` on its
+command line while running from inside the project, is killed and listed, and
+`down` refuses if one survives. Another project's harness and a shell that
+merely sits in the directory are left alone — an earlier, wider rule killed a
+live tiny proof in another directory. A watcher you start on the host will be
 killed by the teardown it was waiting for — start none.
 
 **The promotion rule:** when a run breaks a rule, that rule becomes a guard

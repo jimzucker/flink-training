@@ -436,12 +436,18 @@ def stack_down(trim=True):
 
 def host_watchers(ignore_children=False):
     """Host processes the harness did not start but that watch this run: anything
-    holding a file open under results/, or whose command line names results/ or
-    prove.py. Run 11 left two `until ! pgrep -f "prove.py suite"` shells alive,
-    each matching its own command line and so waiting on itself; the assertion
-    on containers, volumes and networks could not see them. Own process, its
-    ancestors and its children are excluded."""
+    holding a file open under results/, naming the project directory on its
+    command line, or naming prove.py on its command line *and* running from
+    inside the project. Run 11 left two `until ! pgrep -f "prove.py suite"`
+    shells alive, each matching its own command line and so waiting on itself;
+    the assertion on containers, volumes and networks could not see them. Own
+    process, its ancestors and its children are excluded. Scoped this tightly
+    on purpose: a first version matched any command line naming prove.py and
+    its self-test killed a live tiny proof in another directory; a second
+    matched any process whose working directory was the project and killed
+    the `tail` its own shell was piping into."""
     c = cfg()
+    root = os.path.realpath(c.root)
     me = os.getpid()
     ps = sh("ps -axo pid=,ppid=,command=", check=False).stdout.splitlines()
     parent, cmd = {}, {}
@@ -467,11 +473,22 @@ def host_watchers(ignore_children=False):
     for tok in r.stdout.split():
         if tok.isdigit():
             holders.add(int(tok))
+    # working directories inside the project: `lsof -d cwd` prints one 'n<path>' per process
+    inside = set()
+    r = sh("lsof -a -d cwd -F pn", check=False)
+    pid = None
+    for line in r.stdout.splitlines():
+        if line.startswith("p"):
+            pid = int(line[1:])
+        elif line.startswith("n") and pid is not None:
+            path = line[1:]
+            if path == root or path.startswith(root + os.sep):
+                inside.add(pid)
     found = []
     for pid, line in cmd.items():
         if pid in skip or (descends(pid) and not ignore_children):
             continue
-        if pid in holders or c.results in line or "prove.py" in line:
+        if pid in holders or root in line or c.root in line or ("prove.py" in line and pid in inside):
             found.append((pid, line))
     return sorted(found)
 
