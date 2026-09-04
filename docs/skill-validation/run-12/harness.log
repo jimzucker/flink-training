@@ -1,0 +1,103 @@
+[2026-09-04 10:25:16] stack up: st12-kafka (cap 2.5), st12-jm (cap 0.5); task manager is started per case
+[2026-09-04 10:25:42] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=6000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:25:43] fill done: mode=produce count=6000000 seed=999 symbols=64 accounts=128 netQty=-6633100 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:26:47] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=8000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:27:00] fill done: mode=produce count=8000000 seed=999 symbols=64 accounts=128 netQty=-11296100 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:27:01] backlog block-trades-smoke: 8,000,000 records read back over 8 partitions
+[2026-09-04 10:30:47] stack up: st12-kafka (cap 3.0), st12-jm (cap 0.5); task manager is started per case
+[2026-09-04 10:30:55] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=60000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:32:33] fill done: mode=produce count=60000000 seed=999 symbols=64 accounts=128 netQty=93885700 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:32:34] backlog block-trades-smoke: 60,000,000 records read back over 8 partitions
+[2026-09-04 10:47:35] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=60000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:48:15] fill done: mode=produce count=60000000 seed=999 symbols=64 accounts=128 netQty=93885700 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 10:48:17] backlog block-trades-smoke: 60,000,000 records read back over 8 partitions
+[2026-09-04 11:10:06] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=130000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:11:43] fill done: mode=produce count=130000000 seed=999 symbols=64 accounts=128 netQty=2218500 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:11:44] backlog block-trades-smoke: 130,000,000 records read back over 8 partitions
+[2026-09-04 11:26:02] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=130000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:27:38] fill done: mode=produce count=130000000 seed=999 symbols=512 accounts=4096 netQty=2218500 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:27:39] backlog block-trades-smoke: 130,000,000 records read back over 8 partitions
+[2026-09-04 11:40:08] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=130000000 --seed=999 --partitions=4 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:41:48] fill done: mode=produce count=130000000 seed=999 symbols=512 accounts=4096 netQty=2218500 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:41:50] backlog block-trades-smoke: 130,000,000 records read back over 4 partitions
+[2026-09-04 11:45:51] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=130000000 --seed=999 --partitions=16 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:47:29] fill done: mode=produce count=130000000 seed=999 symbols=512 accounts=4096 netQty=2218500 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:47:30] backlog block-trades-smoke: 130,000,000 records read back over 16 partitions
+[2026-09-04 11:51:53] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=130000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:53:29] fill done: mode=produce count=130000000 seed=999 symbols=512 accounts=4096 netQty=2218500 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 11:53:30] backlog block-trades-smoke: 130,000,000 records read back over 8 partitions
+[2026-09-04 12:54:18] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=90000000 --seed=999 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 12:57:44] fill done: mode=produce count=90000000 seed=999 symbols=512 accounts=4096 netQty=24390900 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-smoke.json
+[2026-09-04 12:57:45] backlog block-trades-smoke: 90,000,000 records read back over 8 partitions
+[2026-09-04 13:23:26] phase=all start
+[2026-09-04 13:23:26] phase=up start
+[2026-09-04 13:23:28] stack up: st12-kafka (cap 3.0), st12-jm (cap 0.5); task manager is started per case
+[2026-09-04 13:23:28] phase=up end rc=0 2s
+[2026-09-04 13:23:28] phase=preflight start
+[2026-09-04 13:24:07] phase=preflight end rc=0 39s
+[2026-09-04 13:24:07] phase=completeness start
+[2026-09-04 13:24:10] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=8000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-small.json
+[2026-09-04 13:24:26] fill done: mode=produce count=8000000 seed=20260906 symbols=512 accounts=4096 netQty=31875300 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-small.json
+[2026-09-04 13:24:27] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-04 13:27:27] drained to the last record in 146.7s
+[2026-09-04 13:30:07] KILL: committed=3433811, killing the task manager mid-drain
+[2026-09-04 13:30:40] KILL: job RUNNING again on the replacement worker
+[2026-09-04 13:32:19] drained to the last record in 188.9s (worker killed mid-drain)
+[2026-09-04 13:33:26] phase=completeness end rc=0 560s
+[2026-09-04 13:33:26] phase=tinyproof start
+[2026-09-04 13:33:30] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=70000000 --seed=20260905 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-12/results/manifest-tiny.json
+[2026-09-04 13:35:50] fill done: mode=produce count=70000000 seed=20260905 symbols=512 accounts=4096 netQty=-25946800 manifest=~/code/GitHub/flink-skill-test-12/results/manifest-tiny.json
+[2026-09-04 13:35:51] backlog block-trades-tiny: 70,000,000 records read back over 8 partitions
+[2026-09-04 13:35:51] ---- tiny case 1 cores ----
+[2026-09-04 13:38:52]   1c: 71,181 rec/s, tm 99.7% of cap, vantage 0.31%
+[2026-09-04 13:38:52] ---- tiny case 4 cores ----
+[2026-09-04 13:41:17]   4c: 249,525 rec/s, tm 99.8% of cap, vantage 0.76%
+[2026-09-04 13:41:18]   disk: input 134 B/record x 130,000,000 = 17.4 GB; sinks 104 B/input -> 13.5 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 50.9 GB incl. the 20 GB floor, 125.4 GB free now + 11.4 GB the tiny proof gives back = 136.7 GB: FITS
+[2026-09-04 13:41:22] phase=all start
+[2026-09-04 13:41:22] phase=a start
+[2026-09-04 13:41:22] phase=a end rc=0 0s
+[2026-09-04 13:41:22] phase=b start
+[2026-09-04 13:41:22] phase=b end rc=0 0s
+[2026-09-04 13:41:22] phase=c start
+[2026-09-04 13:41:22] phase=c end rc=1 0s
+[2026-09-04 13:41:22] phase=all end FAIL at c 0.0 min
+[2026-09-04 13:41:58] phase=tinyproof end rc=0 512s
+[2026-09-04 13:41:58] phase=fill start
+[2026-09-04 13:42:01] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-12/job/target/positions-1.0.jar blockpos.GenerateBacklog --mode=produce --count=130000000 --seed=20260904 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-12/results/manifest.json
+[2026-09-04 13:47:11] fill done: mode=produce count=130000000 seed=20260904 symbols=512 accounts=4096 netQty=115955600 manifest=~/code/GitHub/flink-skill-test-12/results/manifest.json
+[2026-09-04 13:47:12] backlog block-trades: 130,000,000 records read back over 8 partitions
+[2026-09-04 13:47:12] phase=fill end rc=0 314s
+[2026-09-04 13:47:12] phase=suite start
+[2026-09-04 13:47:12] ---- case 1 cores, pass p1-asc ----
+[2026-09-04 13:51:18]   1c p1-asc: 74,902 rec/s  tm 1.00/1 (99.9%)  kafka 0.14/3  srcIdle 0.1%  srcBP 22.7%  headroom 1599s  vantage 0.11%
+[2026-09-04 13:51:18] ---- case 2 cores, pass p1-asc ----
+[2026-09-04 13:55:20]   2c p1-asc: 152,543 rec/s  tm 2.00/2 (100.3%)  kafka 0.31/3  srcIdle 6.1%  srcBP 17.2%  headroom 697s  vantage 0.28%
+[2026-09-04 13:55:20] ---- case 4 cores, pass p1-asc ----
+[2026-09-04 13:59:22]   4c p1-asc: 311,070 rec/s  tm 4.01/4 (100.2%)  kafka 0.78/3  srcIdle 1.9%  srcBP 9.7%  headroom 266s  vantage 0.25%
+[2026-09-04 13:59:22] ---- case 4 cores, pass p2-desc ----
+[2026-09-04 14:04:01]   4c p2-desc: 322,823 rec/s  tm 4.01/4 (100.2%)  kafka 0.75/3  srcIdle 2.1%  srcBP 12.1%  headroom 222s  vantage 0.48%
+[2026-09-04 14:04:01] ---- case 2 cores, pass p2-desc ----
+[2026-09-04 14:07:51]   2c p2-desc: 149,812 rec/s  tm 2.00/2 (99.9%)  kafka 0.30/3  srcIdle 5.5%  srcBP 14.8%  headroom 721s  vantage 0.09%
+[2026-09-04 14:07:51] ---- case 1 cores, pass p2-desc ----
+[2026-09-04 14:11:51]   1c p2-desc: 73,349 rec/s  tm 0.99/1 (99.4%)  kafka 0.14/3  srcIdle 0.1%  srcBP 23.4%  headroom 1630s  vantage 0.51%
+[2026-09-04 14:11:51] ---- case 1 cores, pass p3-asc ----
+[2026-09-04 14:15:28]   REFUSED (case): task manager used 95.9% of its 1-core cap (floor 98%) — it is not the constraint
+[2026-09-04 14:15:28] ---- case 2 cores, pass p3-asc ----
+[2026-09-04 14:19:38]   2c p3-asc: 145,325 rec/s  tm 2.00/2 (99.8%)  kafka 0.30/3  srcIdle 4.4%  srcBP 14.6%  headroom 748s  vantage 0.26%
+[2026-09-04 14:19:38] ---- case 4 cores, pass p3-asc ----
+[2026-09-04 14:23:43]   4c p3-asc: 330,331 rec/s  tm 4.01/4 (100.3%)  kafka 0.75/3  srcIdle 2.6%  srcBP 9.1%  headroom 235s  vantage 0.28%
+[2026-09-04 14:23:43] ---- case 1 cores, pass sentinel ----
+[2026-09-04 14:27:52]   REFUSED (case): task manager used 97.4% of its 1-core cap (floor 98%) — it is not the constraint
+[2026-09-04 14:27:52] phase=suite end rc=0 2440s
+[2026-09-04 14:27:52] phase=report start
+[2026-09-04 14:27:52] phase=report end rc=0 0s
+[2026-09-04 14:27:52] phase=all end PASS 64.4 min
+[2026-09-04 14:28:46] ---- ceiling: broker capped at 3.0 cores, worker at 4 ----
+[2026-09-04 14:32:29]   broker 0.74/3 (25%)  worker 100.2%  335,966 rec/s  srcIdle 2.3%
+[2026-09-04 14:32:29] ---- ceiling: broker capped at 1.0 cores, worker at 4 ----
+[2026-09-04 14:36:42]   broker 0.71/1 (72%)  worker 100.1%  316,700 rec/s  srcIdle 2.2%
+[2026-09-04 14:36:43] ---- ceiling: broker capped at 0.5 cores, worker at 4 ----
+[2026-09-04 14:41:43]   broker 0.50/0.5 (100%)  worker 100.0%  298,137 rec/s  srcIdle 1.9%
+[2026-09-04 14:43:29] removed 2 anonymous volume(s) left by containers removed without -v
+[2026-09-04 14:43:31] fstrim: /var/lib/docker: 33.5 GiB (35974848512 bytes) trimmed
+[2026-09-04 14:43:31] stack down; nothing with prefix st12 survives

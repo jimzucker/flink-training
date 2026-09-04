@@ -1,0 +1,8 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[14:28:46] ---- ceiling: broker capped at 3.0 cores, worker at 4 ----
+[14:32:29]   broker 0.74/3 (25%)  worker 100.2%  335,966 rec/s  srcIdle 2.3%
+[14:32:29] ---- ceiling: broker capped at 1.0 cores, worker at 4 ----
+[14:36:42]   broker 0.71/1 (72%)  worker 100.1%  316,700 rec/s  srcIdle 2.2%
+[14:36:43] ---- ceiling: broker capped at 0.5 cores, worker at 4 ----
+[14:41:43]   broker 0.50/0.5 (100%)  worker 100.0%  298,137 rec/s  srcIdle 1.9%

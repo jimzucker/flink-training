@@ -1,0 +1,32 @@
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent by emitting the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : d14782d8399359b0  (completeness passed for d14782d8399359b0)
+passes per case      : 3
+backlog              : 130,000,000 records, 8 partitions, 4 outputs per input
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc      74,902     299,606   1.00/1   99.9%   100   0.14/3      0.1%  22.7%  1599s  0.1%       OK
+    2   p1-asc     152,543     610,173   2.00/2   100.3%   100   0.31/3      6.1%  17.2%   697s  0.3%       OK
+    4   p1-asc     311,070   1,244,280   4.01/4   100.2%   100   0.78/3      1.9%   9.7%   266s  0.2%       OK
+    4  p2-desc     322,823   1,291,292   4.01/4   100.2%   100   0.75/3      2.1%  12.1%   222s  0.5%       OK
+    2  p2-desc     149,812     599,247   2.00/2   99.9%   100   0.30/3      5.5%  14.8%   721s  0.1%       OK
+    1  p2-desc      73,349     293,397   0.99/1   99.4%   100   0.14/3      0.1%  23.4%  1630s  0.5%       OK
+    1   p3-asc           —           —          —      —     —          —        —       —      —      —  REFUSED
+        refusal (case): task manager used 95.9% of its 1-core cap (floor 98%) — it is not the constraint
+    2   p3-asc     145,325     581,300   2.00/2   99.8%   100   0.30/3      4.4%  14.6%   748s  0.3%       OK
+    4   p3-asc     330,331   1,321,325   4.01/4   100.3%    99   0.75/3      2.6%   9.1%   235s  0.3%       OK
+    1 sentinel           —           —          —      —     —          —        —       —      —      —  REFUSED
+        refusal (case): task manager used 97.4% of its 1-core cap (floor 98%) — it is not the constraint
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN      74,126     296,502   1.00/1   99.7%   100   0.14/3      0.1%  23.0%  1614s  0.5%   spread 2.1%
+    2     MEAN     149,227     596,906   2.00/2   100.0%   100   0.31/3      5.3%  15.6%   722s  0.3%   spread 4.8%
+    4     MEAN     321,408   1,285,632   4.01/4   100.2%   100   0.76/3      2.2%  10.3%   241s  0.5%   spread 6.0%
+======================================================================================================================
+STEP 1->2 cores: 2.013x  (ideal 2x, efficiency 100.7%, range across passes 1.940x-2.080x)
+STEP 2->4 cores: 2.154x  (ideal 2x, efficiency 107.7%, range across passes 2.039x-2.273x)
+order effect (descending / ascending): {1: 0.9793, 2: 1.0059, 4: 1.0066}
+======================================================================================================================

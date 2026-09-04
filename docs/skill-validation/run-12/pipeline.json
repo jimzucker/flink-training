@@ -1,0 +1,64 @@
+{
+  "project": "st12",
+  "topics": {
+    "in": "block-trades",
+    "out": [
+      "positions-by-symbol",
+      "positions-by-account"
+    ]
+  },
+  "partitions": 8,
+  "outputsPerInput": 4,
+  "checkpointMs": 10000,
+  "job": {
+    "jar": "job/target/positions-1.0.jar",
+    "mainClass": "blockpos.PositionsJob",
+    "args": "--bootstrap={bootstrap} --topicIn={in} --topicSym={out0} --topicAcct={out1} --group={group} --parallelism={par} --checkpointMs={ckptMs}",
+    "sourceVertexMatch": "kafka-source"
+  },
+  "generator": {
+    "cmd": "{java} -cp {jar} blockpos.GenerateBacklog --mode=produce --count={count} --seed={seed} --partitions={partitions} --bootstrap={bootstrapExt} --topic={topic} --manifest={manifest}",
+    "manifestCmd": "{java} -cp {jar} blockpos.GenerateBacklog --mode=manifest --count={count} --seed={seed} --manifest={manifest}",
+    "manifestCountField": "tradeCount"
+  },
+  "verifier": {
+    "cmd": "{java} -cp {jar} blockpos.VerifyCompleteness --bootstrap={bootstrapExt} --topicSym={out0} --topicAcct={out1} --manifest={manifest}"
+  },
+  "cases": [
+    1,
+    2,
+    4
+  ],
+  "baseline": 1,
+  "passes": 3,
+  "backlog": {
+    "count": 130000000,
+    "seed": 20260904,
+    "smallCount": 8000000,
+    "tinyCount": 70000000,
+    "killAtFraction": 0.35
+  },
+  "caps": {
+    "kafka": 3.0,
+    "jobmanager": 0.5,
+    "tmMemory": "2560m",
+    "tmMemoryLimit": "3g",
+    "kafkaMemory": "2560m",
+    "kafkaHeap": "1600M"
+  },
+  "images": {
+    "flink": "flink:1.20.1-scala_2.12-java17",
+    "kafka": "apache/kafka:3.9.0"
+  },
+  "ports": {
+    "kafka": 19092,
+    "rest": 18081
+  },
+  "jdk": "/opt/homebrew/opt/openjdk@17",
+  "axis": "one worker growing: one task manager container capped at N cores, parallelism N, N slots",
+  "apiLevel": "Flink DataStream API, hand-written operators (no SQL, no Table API)",
+  "guarantee": {
+    "state": "exactly-once checkpointing",
+    "sink": "at-least-once, idempotent by emitting the absolute position per key"
+  }
+}
