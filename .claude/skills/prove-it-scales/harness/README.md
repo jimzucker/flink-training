@@ -18,6 +18,10 @@ nohup python3 $H all > results/all.log 2>&1 &        # the whole chain below, on
 stopping at the first step that does not pass; `results/DONE` holds the
 verdict and the wall time, `results/phases.log` the timestamps the harness
 wrote (run 11 wrote its own by hand and spent 20 minutes between commands).
+Wait with `until [ -f results/DONE ]; do sleep 30; done` and nothing more: a
+shell whose command line names `prove.py` from inside the project is a
+watcher by the reaper's rule and is killed with the rest (it took the
+author's own `pgrep -f 'prove.py all'` loop).
 Type the steps yourself only when one of them needs re-running:
 
 ```
