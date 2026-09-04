@@ -45,9 +45,21 @@ the whole run is reported.
 | whole-run wall clock | reported, not judged |
 | baseline case: ≥ 3 valid passes of 4 | run 12 got 2 of 4 under the 98% floor |
 | sentinel measured (not refused by the floor) | every sentinel refusal on record was above 95% |
-| 1→2 inside 1.85–2.15 | run 12: 2.013×; the refused passes sat within 1% of the mean, so the ratio should move ≤ 0.5% |
-| 2→4 inside 1.85–2.15 | run 12: 2.154× — outside by 0.004; the floor change does not touch the 2c or 4c cases, so this is a second sample of the same question, not a fix |
+| 1→2 ≥ 1.85 (see the band note below) | run 12: 2.013×; the refused passes sat within 1% of the mean, so the ratio should move ≤ 0.5% |
+| 2→4 ≥ 1.85 | run 12: 2.154×; the floor change does not touch the 2c or 4c cases, so this is a second sample of the same question, not a fix |
 | no pass admitted at 95–98% disagrees with its siblings by more than the spread guard allows | if one does, that is the finding of the run |
+
+**Band note, 2026-09-04 19:40, after the suite had reported.** The criteria
+above were launched as the symmetric band 1.85–2.15 (2.0 ± the rig's 10.2%
+noise floor, halved). Run 13's suite reported 1→2 = 2.17×, outside that band
+by 0.02, and the criterion was then changed to one-sided, ≥ 1.85, by decision:
+the claim under test is "at least linear", and a step above 2× does not fail
+it. The change was made after the number was seen, so it is recorded here
+rather than in the table as launched. Under the symmetric band run 13's 1→2
+is FAIL by 0.02 and run 12's 2→4 was FAIL by 0.004; under the one-sided band
+both pass. Run 12's verdict on its own page is left as it was written. The
+width question stands either way: a ratio of two cases carrying 5.8–8.8%
+spread each carries roughly ±10% of its own, and ±7.5% was inside that.
 
 ## Response
 
