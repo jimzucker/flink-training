@@ -1,0 +1,20 @@
+{
+ "run": 10,
+ "suite": "suiteA-retention400MB",
+ "unit": "block trades/s",
+ "rates": {
+  "2": [
+   123939,
+   146243,
+   53243
+  ],
+  "4": [
+   327824,
+   333242,
+   275038
+  ]
+ },
+ "validSteps": {
+  "2->4": false
+ }
+}

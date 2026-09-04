@@ -1,0 +1,23 @@
+{
+  "build": "57be5902a9228120",
+  "records": 20000000,
+  "cores": 2,
+  "arms": [
+    {
+      "group": "hx-complete-clean",
+      "killed": false,
+      "drainS": 121.3,
+      "killedAtCommitted": null,
+      "verify": "drained positions-by-symbol: 80000000 records (log end 80000000)\ndrained positions-by-account: 80000000 records (log end 80000000)\nmanifest: trades=20000000 allocs=80000000 totalQty=40040416861 symKeys=64 acctKeys=4096\nobserved: symKeys=64 acctKeys=4096 symTotal=40040416861 acctTotal=40040416861 (expected 40040416861/40040416861)\nCOMPLETENESS: PASS (no tolerances)\n"
+    },
+    {
+      "group": "hx-complete-kill",
+      "killed": true,
+      "drainS": 186.8,
+      "killedAtCommitted": 7486278,
+      "verify": "drained positions-by-symbol: 80754399 records (log end 80754399)\ndrained positions-by-account: 80751123 records (log end 80751123)\nmanifest: trades=20000000 allocs=80000000 totalQty=40040416861 symKeys=64 acctKeys=4096\nobserved: symKeys=64 acctKeys=4096 symTotal=40040416861 acctTotal=40040416861 (expected 40040416861/40040416861)\nCOMPLETENESS: PASS (no tolerances)\n"
+    }
+  ],
+  "at": "2026-09-03 21:56:32",
+  "result": "PASS"
+}
