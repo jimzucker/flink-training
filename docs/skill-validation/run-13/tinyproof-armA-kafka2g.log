@@ -1,0 +1,10 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[18:05:20] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-13/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=75000000 --seed=20260905 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-13/results/manifest-tiny.json
+[18:06:13] fill done: produced 75000000 records to block-trades-tiny over 8 partitions in 51.191s (1465101 rec/s)
+[18:06:14] backlog block-trades-tiny: 75,000,000 records read back over 8 partitions
+[18:06:14] ---- tiny case 1 cores ----
+[18:09:06]   1c: 138,304 rec/s, tm 99.0% of cap, vantage 0.47%
+[18:09:06] ---- tiny case 4 cores ----
+[18:12:58]   REFUSED (case): task manager used 87.0% of its 4-core cap (floor 95%) — it is not the constraint
+TINY PROOF FAILED

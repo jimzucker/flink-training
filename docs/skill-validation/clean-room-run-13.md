@@ -63,4 +63,58 @@ spread each carries roughly ±10% of its own, and ±7.5% was inside that.
 
 ## Response
 
-*(written after the run)*
+**Model: Claude Opus 5.** Harness `lib.py` at #45 (`capFloorBaseline` 0.95),
+run from the skill directory, no copy made, no harness written. 74 tool
+calls, 0 forbidden-path reads. 17:41:33 → 19:46 local; raw results in
+[run-13/](run-13/).
+
+| criterion | result |
+|---|---|
+| uses the harness verbatim; one suite; 0 forbidden-path reads | **PASS** — one `suite` phase, ten cases; 0 of 74 tool inputs touched a forbidden path |
+| chain `preflight` → `report` ≤ 1.25 h | **PASS** — 57.7 min, one attempt (up 2 s, preflight 67, completeness 464, tinyproof + self-test 403, fill 106, suite 2419) |
+| whole-run wall clock (reported) | **2 h 05 m** — 12 min build, 36 min calibration (19 of them on two tiny-proof refusals), 58 min chain, 13 min ceiling probe |
+| baseline ≥ 3 valid passes of 4 | **PASS** — 4 of 4 (99.7–100.4% of cap) |
+| sentinel measured | **PASS** — drift −2.5% |
+| 1→2 ≥ 1.85 | **PASS** — 2.17× (2.02–2.33×); FAIL by 0.02 under the symmetric band it was launched with |
+| 2→4 ≥ 1.85 | **PASS, on the edge** — 1.85× (1.75–1.97×) |
+| no admitted 95–98% pass disagrees with its siblings | **PASS, vacuously** — no baseline pass landed in that band; the two 4c passes at 95.1% and 95.8% sat within the case's 6.1% spread |
+
+Build `6381961fd22c52ef`, 230M-record backlog, 8 partitions, 10 s
+checkpoints, five outputs per input:
+
+| cores | passes | mean records/s | spread | per core |
+|---:|---:|---:|---:|---:|
+| 1 | 4 | 147,795 | 8.8% | 147,795 |
+| 2 | 3 | 320,812 | 5.8% | 160,406 |
+| 4 | 3 | 593,531 | 6.1% | 148,383 |
+
+Before the chain the agent's own tiny proof was refused twice, and both
+refusals were resolved the way the skill asks: arm A, 4c at **87.0% of cap**
+with the rate decaying 599k → 356k through the drain — the agent read the
+broker cgroup (71,717 memory-limit hits, 1.21M refaults, page cache at
+412 MB under a 2 GB container limit), changed that one variable to 4 GB and
+re-measured 99.7% with no decay; arm B, **vantage 20.2%** from a closing tick
+that landed on a half-committed checkpoint (1 boundary in 21 splits across
+two ticks 0.5 s apart; none at parallelism 1) — left alone, and the suite
+disagreed by ≤ 0.40%. The published suite refused nothing. No Flink
+restarts, no rebuild. The two "worker killed mid-drain" lines in
+`harness.log` are the completeness test's deliberate kill.
+
+Measured and not explained, by the agent and by this page:
+
+- the 2-core case is the per-core outlier (160k against 148k at 1 and 4
+  cores), which is why one step reads high and the other low off the same
+  number; the agent's only candidate, GC at 9.6% of the 1-core case against
+  5.9% / 5.5%, is a correlation across three cases and it said so
+- 4c at 95.1 / 95.8 / 99.9% of cap, the two lower passes carrying the
+  *higher* rates (593k, 612k against 575k)
+- source idle rising 0.0 → 1.3 → 5.4% with core count; the agent's ceiling
+  probe (broker 2.5 → 1.0 → 0.5 cores, worker held at 4) never pinned the
+  broker and never moved the worker off its cap, so the ceiling was not
+  located and none is named
+
+One host event to keep beside the record: the author's push of #46 at
+~19:35 ran the repository's pre-push precheck, a ~10 s Kafka test
+container on the same host. The chain had reported at 19:26; the agent's
+ceiling probe (19:30–19:43) shared the host with it.
+
