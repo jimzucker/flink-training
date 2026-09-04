@@ -1,0 +1,262 @@
+{
+ "build": "6381961fd22c52ef",
+ "records": 75000000,
+ "cases": [
+  {
+   "cores": 1,
+   "pass": "tiny",
+   "group": "st13-tiny-c1-tiny",
+   "hostFreeGB": 124.6,
+   "nanoCpus": 1000000000,
+   "reporterS": 2,
+   "parallelism": 1,
+   "slotsTotal": 1,
+   "tSubmit": 1788560356.729995,
+   "jobId": "c123c0011551d4e20da0fc21845eaf81",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- parse-trade<br/>   +- allocate<br/>",
+      []
+     ],
+     [
+      "account-position<br/>+- sink-account: Writer<br/>   +- sink-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "symbol-position<br/>+- sink-symbol: Writer<br/>   +- sink-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     147667.56245645465,
+     150812.41466232538,
+     141024.3578807696,
+     157318.0816455032
+    ],
+    "mean": 149205.6041612632,
+    "drift": 0.0385,
+    "scatter": 0.1092,
+    "warmupS": 81.3
+   },
+   "tSteady": 1788560450.608341,
+   "tOpen": 1788560450.80618,
+   "open": {
+    "ts": 1788560450442,
+    "committed": 10322939,
+    "committedParts": [
+     1315297,
+     1342037,
+     1151108,
+     1150706,
+     1339468,
+     1342419,
+     1339716,
+     1342188
+    ],
+    "endIn": 75000000,
+    "end_positions-by-symbol": 10328263,
+    "end_positions-by-account": 41314965
+   },
+   "tClose": 1788560481.0135958,
+   "close": {
+    "ts": 1788560480552,
+    "committed": 14626773,
+    "committedParts": [
+     1722970,
+     1914782,
+     1618161,
+     1723922,
+     1906574,
+     1915051,
+     1909999,
+     1915314
+    ],
+    "endIn": 75000000,
+    "end_positions-by-symbol": 14648048,
+    "end_positions-by-account": 58591408
+   },
+   "boundaries": 3,
+   "elapsedS": 30.11,
+   "recordsConsumed": 4303834,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 142937.0,
+   "outputRecsPerSec": 714685.2,
+   "vantageSinkRecords": 4319245.6,
+   "vantageDisagreement": 0.0036,
+   "backlogRemaining": 60373227,
+   "headroomS": 422.4,
+   "tmCores": 1.002,
+   "tmCapFrac": 1.0021,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.116,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0464,
+   "gcMsInWindow": 3804.0,
+   "gcFracOfCapacity": 0.1263,
+   "sourceIdle": 0.0,
+   "sourceBusy": 0.5861,
+   "sourceBackpressured": 0.4139,
+   "bpSamples": 15,
+   "backpressure": {
+    "account-position -> sink-account: Writer -> sink-account: Committer": {
+     "idle": 0.0274,
+     "backPressured": 0.0,
+     "busy": 0.9726,
+     "samples": 15
+    },
+    "Source: kafka-source -> parse-trade -> allocate": {
+     "backPressured": 0.4139,
+     "idle": 0.0,
+     "busy": 0.5861,
+     "samples": 15
+    },
+    "symbol-position -> sink-symbol: Writer -> sink-symbol: Committer": {
+     "backPressured": 0.0,
+     "busy": 0.3896,
+     "idle": 0.6104,
+     "samples": 15
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 107
+  },
+  {
+   "cores": 4,
+   "pass": "tiny",
+   "group": "st13-tiny-c4-tiny",
+   "hostFreeGB": 129.7,
+   "nanoCpus": 4000000000,
+   "reporterS": 2,
+   "parallelism": 4,
+   "slotsTotal": 4,
+   "tSubmit": 1788560534.773233,
+   "jobId": "87da03ae0ef29b3ac21d0e736ed0ebb7",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- parse-trade<br/>   +- allocate<br/>",
+      []
+     ],
+     [
+      "account-position<br/>+- sink-account: Writer<br/>   +- sink-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "symbol-position<br/>+- sink-symbol: Writer<br/>   +- sink-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     614919.9201198203,
+     647081.4845967827,
+     600009.5913677689,
+     607191.355559992
+    ],
+    "mean": 617300.587911091,
+    "drift": 0.0341,
+    "scatter": 0.0763,
+    "warmupS": 55.3
+   },
+   "tSteady": 1788560603.1876302,
+   "tOpen": 1788560603.392592,
+   "open": {
+    "ts": 1788560602826,
+    "committed": 31885645,
+    "committedParts": [
+     3991325,
+     3940129,
+     3979252,
+     3970085,
+     3990566,
+     4005561,
+     4004298,
+     4004429
+    ],
+    "endIn": 75000000,
+    "end_positions-by-symbol": 31915085,
+    "end_positions-by-account": 127661441
+   },
+   "tClose": 1788560633.410558,
+   "close": {
+    "ts": 1788560632903,
+    "committed": 46707297,
+    "committedParts": [
+     6168782,
+     5372823,
+     6184963,
+     5422301,
+     6261561,
+     5530505,
+     6242368,
+     5523994
+    ],
+    "endIn": 75000000,
+    "end_positions-by-symbol": 49762851,
+    "end_positions-by-account": 198880822
+   },
+   "boundaries": 3,
+   "elapsedS": 30.08,
+   "recordsConsumed": 14821652,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 492790.2,
+   "outputRecsPerSec": 2463951.2,
+   "vantageSinkRecords": 17813429.4,
+   "vantageDisagreement": 0.2019,
+   "backlogRemaining": 28292703,
+   "headroomS": 57.4,
+   "tmCores": 3.988,
+   "tmCapFrac": 0.9969,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.364,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.1456,
+   "gcMsInWindow": 8320.0,
+   "gcFracOfCapacity": 0.0692,
+   "sourceIdle": 0.0571,
+   "sourceBusy": 0.7608,
+   "sourceBackpressured": 0.1821,
+   "bpSamples": 60,
+   "backpressure": {
+    "Source: kafka-source -> parse-trade -> allocate": {
+     "backPressured": 0.1821,
+     "busy": 0.7608,
+     "idle": 0.0571,
+     "samples": 60
+    },
+    "account-position -> sink-account: Writer -> sink-account: Committer": {
+     "backPressured": 0.0,
+     "idle": 0.0514,
+     "busy": 0.9483,
+     "samples": 59
+    },
+    "symbol-position -> sink-symbol: Writer -> sink-symbol: Committer": {
+     "busy": 0.6143,
+     "backPressured": 0.0,
+     "idle": 0.3857,
+     "samples": 59
+    }
+   },
+   "status": "REFUSED",
+   "refusalScope": "case",
+   "refusal": "vantage points disagree by 20.2% (source committed 14821652, sinks imply 17813429) > tolerance 5%",
+   "ticksRecorded": 108
+  }
+ ],
+ "at": "2026-09-04 18:18:53",
+ "result": "FAIL"
+}

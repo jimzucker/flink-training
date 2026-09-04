@@ -1,0 +1,24 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[17:55:10] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-13/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-13/results/manifest-small.json
+[17:55:18] fill done: produced 8000000 records to block-trades-small over 8 partitions in 7.349s (1088583 rec/s)
+[17:55:19] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[17:57:35] drained to the last record in 97.0s
+read 8000000 records from positions-by-symbol -> 200 distinct keys
+read 32000000 records from positions-by-account -> 2000 distinct keys
+manifest    : 8000000 trades, 200 symbols, 2000 accounts, 32000000 allocations, net qty 113658400
+symbol sink : 200 keys, 8000000 trades, net qty 113658400
+account sink: 2000 keys, 32000000 allocations, net qty 113658400
+COMPLETENESS OK — every assertion holds exactly, no tolerances
+
+[17:59:50] KILL: committed=3558001, killing the task manager mid-drain
+[18:00:47] KILL: job RUNNING again on the replacement worker
+[18:01:50] drained to the last record in 152.8s (worker killed mid-drain)
+read 8076185 records from positions-by-symbol -> 200 distinct keys
+read 32298554 records from positions-by-account -> 2000 distinct keys
+manifest    : 8000000 trades, 200 symbols, 2000 accounts, 32000000 allocations, net qty 113658400
+symbol sink : 200 keys, 8000000 trades, net qty 113658400
+account sink: 2000 keys, 32000000 allocations, net qty 113658400
+COMPLETENESS OK — every assertion holds exactly, no tolerances
+
+COMPLETENESS PASSED FOR BUILD 6381961fd22c52ef (clean drain, and a worker killed at 35%)

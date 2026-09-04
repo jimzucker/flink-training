@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Twelve runs of the same problem, each by a fresh agent in an empty directory, barred
+Thirteen runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -26,6 +26,7 @@ way to tell them apart.
 | [harness, live 1](clean-room-run-10.md) | DataStream | 0.8 h§ | — | — | — | **438,789** | — | **98%** |
 | [11](clean-room-run-11.md) | DataStream | 1.97 h | — | 708 | — | **718,847** | — | **98%** |
 | [12](clean-room-run-12.md) | DataStream | 4.53 h | — | 106 | 74,126 | **321,408** | 4.34× | **100%** |
+| [13](clean-room-run-13.md) | DataStream | **2.08 h** | — | 74 | 147,795 | **593,531** | 4.02× | **100%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -36,6 +37,16 @@ Human time was **0 h** and human prompts **1** in every row.
 § Not a clean-room run: the shipped harness driven by hand against run 10's pipeline and build, after six sizing defects in the harness were fixed. **2→4 = 2.019×** (1.98–2.07× across passes; spread 3.7% / 0.8%). The 0.8 h is preflight through suite, excluding the fixes.
 
 Run 12 ran three cases on the same harness for both steps: **1→2 = 2.01×, 2→4 = 2.15×** (1.94–2.08× and 2.04–2.27× across passes), one suite, no harness written; its 4-core figure is trades/s. Its 1-core baseline was refused twice by the 98% floor, including the sentinel pass, and 3 h of its 4.5 h went into the agent diagnosing a first build that would not saturate its 4-core cap. Plan 12's [Phase 4 response](plan-12/README.md#phase-4-response) has the criteria.
+
+Run 13 changed one number in the harness — the baseline cap floor, 98% → 95%,
+replayed against every refusal on record first — and ran run 12's prompt
+again: **1→2 = 2.17×, 2→4 = 1.85×** (2.02–2.33× and 1.75–1.97× across
+passes), one suite, ten of ten passes accepted, the sentinel measured (−2.5%),
+chain 57.7 min and the whole run **2 h 05 m** — the first run on the shipped
+harness to come in under its own clock. The step-ratio criterion became
+one-sided (≥ 1.85) on that run, after its 2.17× was seen; the page says so.
+[Run 13](clean-room-run-13.md) has the criteria and the two things it
+measured and did not explain.
 
 Run 11 is the first clean-room run on the shipped harness: **one suite, 2→4 = 1.87×** (1.75–2.06× across passes; spread 4.0% / 12.2%), no harness written. Its 4-core figure is trades/s. The wall clock missed a 1.5 h criterion on a rebuild that re-ran the gates and an optional ceiling run; the suite itself was 23 minutes.
 

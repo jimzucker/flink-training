@@ -1,0 +1,67 @@
+[
+ {
+  "check": "every image is native to the host arch",
+  "result": "PASS",
+  "detail": "host=arm64 apache/kafka=arm64 flink=arm64"
+ },
+ {
+  "check": "the JDK the engine needs resolves, pinned",
+  "result": "PASS",
+  "detail": "host openjdk version \"17.0.20\" 2026-07-21 | image openjdk version \"17.0.15\" 2025-04-15"
+ },
+ {
+  "check": "the engine can write its state directory",
+  "result": "PASS",
+  "detail": "uid 9999 (flink) can mkdir under /ckpt"
+ },
+ {
+  "check": "the metrics reporter is not duplicated",
+  "result": "PASS",
+  "detail": "no reporter jar copied into lib/; slf4j reporter used from plugins/"
+ },
+ {
+  "check": "disk budget on the HOST, not the container",
+  "result": "PASS",
+  "detail": "host free 129.0 GB >= budget 74.8 GB (backlog 27.6 + sinks at retention 34.4 + ckpt 2 + slack 10)"
+ },
+ {
+  "check": "retention on every topic written but never drained",
+  "result": "PASS",
+  "detail": "retention.bytes=2147483648 set and read back on ['positions-by-symbol', 'positions-by-account'] (a periodic sweep, not a bound)"
+ },
+ {
+  "check": "the generator is deterministic",
+  "result": "PASS",
+  "detail": "identical sha256=8e99459e4c94 for 200,000 records at seed 20260904"
+ },
+ {
+  "check": "CPU cap mechanism chosen once",
+  "result": "PASS",
+  "detail": "--cpus throughout; read back NanoCpus=2000000000 and cgroup cpu.max = 2.0 cores"
+ },
+ {
+  "check": "slots >= parallelism x jobs",
+  "result": "PASS",
+  "detail": "slots-total=4 >= parallelism 4 x 1 job"
+ },
+ {
+  "check": "group / txn-id prefix scoped per run",
+  "result": "PASS",
+  "detail": "consumer group = st13-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)"
+ },
+ {
+  "check": "back-pressure counters exist on the endpoint read",
+  "result": "PASS",
+  "detail": "Flink 1.20.1: busy/idle/backPressured read from the worker's slf4j reporter; REST path deprecated"
+ },
+ {
+  "check": "the VM trim command is known",
+  "result": "PASS",
+  "detail": "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker"
+ },
+ {
+  "check": "the job jar exists and hashes",
+  "result": "PASS",
+  "detail": "build 6381961fd22c52ef"
+ }
+]

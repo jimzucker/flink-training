@@ -1,0 +1,9013 @@
+{
+ "tradeCount": 200000,
+ "seed": 20260904,
+ "allocationsPerTrade": 4,
+ "symbolCount": 200,
+ "accountCount": 2000,
+ "totalAllocations": 800000,
+ "totalSignedQty": -13009800,
+ "symbols": {
+  "SYM000": {
+   "netQty": 2265200,
+   "tradeCount": 968,
+   "notionalCents": 1036460076600
+  },
+  "SYM001": {
+   "netQty": 1181400,
+   "tradeCount": 993,
+   "notionalCents": 850767348000
+  },
+  "SYM002": {
+   "netQty": -3139900,
+   "tradeCount": 1035,
+   "notionalCents": -1445572895000
+  },
+  "SYM003": {
+   "netQty": -849600,
+   "tradeCount": 1046,
+   "notionalCents": -246914316600
+  },
+  "SYM004": {
+   "netQty": -1630200,
+   "tradeCount": 999,
+   "notionalCents": -1165138947600
+  },
+  "SYM005": {
+   "netQty": 390200,
+   "tradeCount": 955,
+   "notionalCents": -374309272500
+  },
+  "SYM006": {
+   "netQty": -380400,
+   "tradeCount": 1049,
+   "notionalCents": -161742372800
+  },
+  "SYM007": {
+   "netQty": 116000,
+   "tradeCount": 958,
+   "notionalCents": 577563164400
+  },
+  "SYM008": {
+   "netQty": -824100,
+   "tradeCount": 1000,
+   "notionalCents": -222227650500
+  },
+  "SYM009": {
+   "netQty": -1941800,
+   "tradeCount": 989,
+   "notionalCents": -1035956949800
+  },
+  "SYM010": {
+   "netQty": 1090600,
+   "tradeCount": 989,
+   "notionalCents": 208891268100
+  },
+  "SYM011": {
+   "netQty": -3517800,
+   "tradeCount": 977,
+   "notionalCents": -1755143461500
+  },
+  "SYM012": {
+   "netQty": -1066400,
+   "tradeCount": 952,
+   "notionalCents": -1088097803600
+  },
+  "SYM013": {
+   "netQty": -1423200,
+   "tradeCount": 981,
+   "notionalCents": -787145555300
+  },
+  "SYM014": {
+   "netQty": 2805700,
+   "tradeCount": 1027,
+   "notionalCents": 1369685780600
+  },
+  "SYM015": {
+   "netQty": -48500,
+   "tradeCount": 1019,
+   "notionalCents": -836833477200
+  },
+  "SYM016": {
+   "netQty": -3909900,
+   "tradeCount": 1049,
+   "notionalCents": -935855157500
+  },
+  "SYM017": {
+   "netQty": 1445300,
+   "tradeCount": 1053,
+   "notionalCents": 697342633300
+  },
+  "SYM018": {
+   "netQty": 1958200,
+   "tradeCount": 998,
+   "notionalCents": 183256044300
+  },
+  "SYM019": {
+   "netQty": 2871600,
+   "tradeCount": 1012,
+   "notionalCents": 772196464500
+  },
+  "SYM020": {
+   "netQty": -1508000,
+   "tradeCount": 955,
+   "notionalCents": -392151360500
+  },
+  "SYM021": {
+   "netQty": -2751900,
+   "tradeCount": 1005,
+   "notionalCents": -532611483400
+  },
+  "SYM022": {
+   "netQty": 2104700,
+   "tradeCount": 965,
+   "notionalCents": 985150519000
+  },
+  "SYM023": {
+   "netQty": 1254100,
+   "tradeCount": 986,
+   "notionalCents": 583091410700
+  },
+  "SYM024": {
+   "netQty": -4420400,
+   "tradeCount": 1011,
+   "notionalCents": -1257642082000
+  },
+  "SYM025": {
+   "netQty": -105400,
+   "tradeCount": 926,
+   "notionalCents": 62643452200
+  },
+  "SYM026": {
+   "netQty": -2580400,
+   "tradeCount": 975,
+   "notionalCents": -1004609198100
+  },
+  "SYM027": {
+   "netQty": 504400,
+   "tradeCount": 1055,
+   "notionalCents": 550133214600
+  },
+  "SYM028": {
+   "netQty": 883000,
+   "tradeCount": 1009,
+   "notionalCents": 627785678000
+  },
+  "SYM029": {
+   "netQty": 1441100,
+   "tradeCount": 998,
+   "notionalCents": 1303837657200
+  },
+  "SYM030": {
+   "netQty": -177700,
+   "tradeCount": 968,
+   "notionalCents": -382090736100
+  },
+  "SYM031": {
+   "netQty": -925100,
+   "tradeCount": 997,
+   "notionalCents": 124486667400
+  },
+  "SYM032": {
+   "netQty": 4261400,
+   "tradeCount": 984,
+   "notionalCents": 782691399000
+  },
+  "SYM033": {
+   "netQty": 226600,
+   "tradeCount": 978,
+   "notionalCents": 652223270200
+  },
+  "SYM034": {
+   "netQty": -34400,
+   "tradeCount": 1020,
+   "notionalCents": 512275559200
+  },
+  "SYM035": {
+   "netQty": -1347500,
+   "tradeCount": 983,
+   "notionalCents": 161814022200
+  },
+  "SYM036": {
+   "netQty": 2777700,
+   "tradeCount": 963,
+   "notionalCents": 1663219086300
+  },
+  "SYM037": {
+   "netQty": 178700,
+   "tradeCount": 939,
+   "notionalCents": -259200728600
+  },
+  "SYM038": {
+   "netQty": 4065300,
+   "tradeCount": 964,
+   "notionalCents": 2293029281800
+  },
+  "SYM039": {
+   "netQty": -655000,
+   "tradeCount": 968,
+   "notionalCents": -186201468100
+  },
+  "SYM040": {
+   "netQty": -1400000,
+   "tradeCount": 973,
+   "notionalCents": -81010029900
+  },
+  "SYM041": {
+   "netQty": -3394100,
+   "tradeCount": 1063,
+   "notionalCents": -1699621326600
+  },
+  "SYM042": {
+   "netQty": 1314400,
+   "tradeCount": 1005,
+   "notionalCents": 838800013600
+  },
+  "SYM043": {
+   "netQty": -29800,
+   "tradeCount": 1024,
+   "notionalCents": -584250995700
+  },
+  "SYM044": {
+   "netQty": -2654700,
+   "tradeCount": 1045,
+   "notionalCents": -1079723866800
+  },
+  "SYM045": {
+   "netQty": 4185000,
+   "tradeCount": 1023,
+   "notionalCents": 2123923005500
+  },
+  "SYM046": {
+   "netQty": 1410200,
+   "tradeCount": 1039,
+   "notionalCents": 491363166600
+  },
+  "SYM047": {
+   "netQty": -596400,
+   "tradeCount": 984,
+   "notionalCents": 67814673700
+  },
+  "SYM048": {
+   "netQty": -2062300,
+   "tradeCount": 999,
+   "notionalCents": -1135756934600
+  },
+  "SYM049": {
+   "netQty": 2995200,
+   "tradeCount": 1041,
+   "notionalCents": 1156444942600
+  },
+  "SYM050": {
+   "netQty": -1299500,
+   "tradeCount": 1023,
+   "notionalCents": -688718578700
+  },
+  "SYM051": {
+   "netQty": -12500,
+   "tradeCount": 965,
+   "notionalCents": -225976091600
+  },
+  "SYM052": {
+   "netQty": 2100,
+   "tradeCount": 968,
+   "notionalCents": 306574141700
+  },
+  "SYM053": {
+   "netQty": 275900,
+   "tradeCount": 997,
+   "notionalCents": -435959495900
+  },
+  "SYM054": {
+   "netQty": -2687500,
+   "tradeCount": 1030,
+   "notionalCents": -1180897719500
+  },
+  "SYM055": {
+   "netQty": -4086600,
+   "tradeCount": 995,
+   "notionalCents": -2008482324300
+  },
+  "SYM056": {
+   "netQty": -2011500,
+   "tradeCount": 975,
+   "notionalCents": -698723920100
+  },
+  "SYM057": {
+   "netQty": 843600,
+   "tradeCount": 982,
+   "notionalCents": 1019949660100
+  },
+  "SYM058": {
+   "netQty": -371200,
+   "tradeCount": 1004,
+   "notionalCents": -119703670000
+  },
+  "SYM059": {
+   "netQty": -556100,
+   "tradeCount": 1007,
+   "notionalCents": 654657747400
+  },
+  "SYM060": {
+   "netQty": -591000,
+   "tradeCount": 1003,
+   "notionalCents": -393069640200
+  },
+  "SYM061": {
+   "netQty": -1589700,
+   "tradeCount": 979,
+   "notionalCents": -880948735600
+  },
+  "SYM062": {
+   "netQty": 1359500,
+   "tradeCount": 1004,
+   "notionalCents": 798883714800
+  },
+  "SYM063": {
+   "netQty": -380500,
+   "tradeCount": 1058,
+   "notionalCents": -237319723800
+  },
+  "SYM064": {
+   "netQty": -884000,
+   "tradeCount": 988,
+   "notionalCents": -963800775900
+  },
+  "SYM065": {
+   "netQty": 755700,
+   "tradeCount": 1012,
+   "notionalCents": 742874102700
+  },
+  "SYM066": {
+   "netQty": -655700,
+   "tradeCount": 1038,
+   "notionalCents": 8572969800
+  },
+  "SYM067": {
+   "netQty": -3469800,
+   "tradeCount": 1019,
+   "notionalCents": -2265742680500
+  },
+  "SYM068": {
+   "netQty": -549500,
+   "tradeCount": 1014,
+   "notionalCents": -454605997400
+  },
+  "SYM069": {
+   "netQty": 10400,
+   "tradeCount": 957,
+   "notionalCents": 320557497200
+  },
+  "SYM070": {
+   "netQty": -2393000,
+   "tradeCount": 981,
+   "notionalCents": -1611081942800
+  },
+  "SYM071": {
+   "netQty": 528900,
+   "tradeCount": 950,
+   "notionalCents": 986828292500
+  },
+  "SYM072": {
+   "netQty": -2082700,
+   "tradeCount": 978,
+   "notionalCents": -719458447100
+  },
+  "SYM073": {
+   "netQty": 426800,
+   "tradeCount": 1011,
+   "notionalCents": 1092349622400
+  },
+  "SYM074": {
+   "netQty": 1834500,
+   "tradeCount": 1026,
+   "notionalCents": 1258873566900
+  },
+  "SYM075": {
+   "netQty": -71400,
+   "tradeCount": 1054,
+   "notionalCents": -124662753500
+  },
+  "SYM076": {
+   "netQty": 484900,
+   "tradeCount": 945,
+   "notionalCents": 131245603900
+  },
+  "SYM077": {
+   "netQty": 1005700,
+   "tradeCount": 1016,
+   "notionalCents": 508615193700
+  },
+  "SYM078": {
+   "netQty": 425900,
+   "tradeCount": 959,
+   "notionalCents": -210791540300
+  },
+  "SYM079": {
+   "netQty": -1101500,
+   "tradeCount": 1022,
+   "notionalCents": -846915494300
+  },
+  "SYM080": {
+   "netQty": -1074500,
+   "tradeCount": 1056,
+   "notionalCents": -181807412700
+  },
+  "SYM081": {
+   "netQty": 459000,
+   "tradeCount": 1021,
+   "notionalCents": -587303689400
+  },
+  "SYM082": {
+   "netQty": 1521100,
+   "tradeCount": 1022,
+   "notionalCents": 187012999400
+  },
+  "SYM083": {
+   "netQty": -4667600,
+   "tradeCount": 1060,
+   "notionalCents": -2360278761400
+  },
+  "SYM084": {
+   "netQty": -835800,
+   "tradeCount": 1043,
+   "notionalCents": -795048653400
+  },
+  "SYM085": {
+   "netQty": 155500,
+   "tradeCount": 972,
+   "notionalCents": 76152316600
+  },
+  "SYM086": {
+   "netQty": -1305500,
+   "tradeCount": 924,
+   "notionalCents": -747458904000
+  },
+  "SYM087": {
+   "netQty": 291500,
+   "tradeCount": 980,
+   "notionalCents": -547075715400
+  },
+  "SYM088": {
+   "netQty": -57600,
+   "tradeCount": 974,
+   "notionalCents": 235590837900
+  },
+  "SYM089": {
+   "netQty": -1791100,
+   "tradeCount": 982,
+   "notionalCents": -657214930800
+  },
+  "SYM090": {
+   "netQty": 77400,
+   "tradeCount": 957,
+   "notionalCents": 851363235900
+  },
+  "SYM091": {
+   "netQty": -1519800,
+   "tradeCount": 928,
+   "notionalCents": -358100481700
+  },
+  "SYM092": {
+   "netQty": 1184700,
+   "tradeCount": 1051,
+   "notionalCents": 606286361900
+  },
+  "SYM093": {
+   "netQty": 2079100,
+   "tradeCount": 999,
+   "notionalCents": -218364084200
+  },
+  "SYM094": {
+   "netQty": -875300,
+   "tradeCount": 1011,
+   "notionalCents": 612087240600
+  },
+  "SYM095": {
+   "netQty": 1897400,
+   "tradeCount": 970,
+   "notionalCents": 1283222127200
+  },
+  "SYM096": {
+   "netQty": 153300,
+   "tradeCount": 952,
+   "notionalCents": -491294761100
+  },
+  "SYM097": {
+   "netQty": -1536900,
+   "tradeCount": 1018,
+   "notionalCents": -1413735198200
+  },
+  "SYM098": {
+   "netQty": -596100,
+   "tradeCount": 1027,
+   "notionalCents": -420503131900
+  },
+  "SYM099": {
+   "netQty": -1100400,
+   "tradeCount": 1045,
+   "notionalCents": -606435890800
+  },
+  "SYM100": {
+   "netQty": -494500,
+   "tradeCount": 1027,
+   "notionalCents": -566508578500
+  },
+  "SYM101": {
+   "netQty": 1610600,
+   "tradeCount": 926,
+   "notionalCents": 502234872600
+  },
+  "SYM102": {
+   "netQty": 2491200,
+   "tradeCount": 1021,
+   "notionalCents": 764887110700
+  },
+  "SYM103": {
+   "netQty": -554000,
+   "tradeCount": 1072,
+   "notionalCents": 23817560800
+  },
+  "SYM104": {
+   "netQty": -718400,
+   "tradeCount": 1018,
+   "notionalCents": -767756035100
+  },
+  "SYM105": {
+   "netQty": -740500,
+   "tradeCount": 1034,
+   "notionalCents": 116649678800
+  },
+  "SYM106": {
+   "netQty": 614500,
+   "tradeCount": 1064,
+   "notionalCents": 948669450200
+  },
+  "SYM107": {
+   "netQty": -1138300,
+   "tradeCount": 933,
+   "notionalCents": -157678576500
+  },
+  "SYM108": {
+   "netQty": 286300,
+   "tradeCount": 1038,
+   "notionalCents": 102205577800
+  },
+  "SYM109": {
+   "netQty": -727000,
+   "tradeCount": 1027,
+   "notionalCents": -342462976600
+  },
+  "SYM110": {
+   "netQty": -434500,
+   "tradeCount": 974,
+   "notionalCents": -41415479000
+  },
+  "SYM111": {
+   "netQty": 795000,
+   "tradeCount": 1018,
+   "notionalCents": -390825480400
+  },
+  "SYM112": {
+   "netQty": 1241000,
+   "tradeCount": 1056,
+   "notionalCents": 342198712200
+  },
+  "SYM113": {
+   "netQty": -1468500,
+   "tradeCount": 1010,
+   "notionalCents": -627811379000
+  },
+  "SYM114": {
+   "netQty": 422000,
+   "tradeCount": 989,
+   "notionalCents": 212269168000
+  },
+  "SYM115": {
+   "netQty": 2358400,
+   "tradeCount": 971,
+   "notionalCents": 1465506090600
+  },
+  "SYM116": {
+   "netQty": -2453900,
+   "tradeCount": 976,
+   "notionalCents": -1104758197900
+  },
+  "SYM117": {
+   "netQty": 2370900,
+   "tradeCount": 1025,
+   "notionalCents": 1095933639800
+  },
+  "SYM118": {
+   "netQty": 1737700,
+   "tradeCount": 1002,
+   "notionalCents": 584303519200
+  },
+  "SYM119": {
+   "netQty": -1834000,
+   "tradeCount": 989,
+   "notionalCents": -1487957426300
+  },
+  "SYM120": {
+   "netQty": -996000,
+   "tradeCount": 1001,
+   "notionalCents": -464011773400
+  },
+  "SYM121": {
+   "netQty": -967500,
+   "tradeCount": 1024,
+   "notionalCents": 162724651900
+  },
+  "SYM122": {
+   "netQty": -1641700,
+   "tradeCount": 987,
+   "notionalCents": -193596104300
+  },
+  "SYM123": {
+   "netQty": 1357200,
+   "tradeCount": 1019,
+   "notionalCents": 468660162900
+  },
+  "SYM124": {
+   "netQty": -3063700,
+   "tradeCount": 982,
+   "notionalCents": -1886240920000
+  },
+  "SYM125": {
+   "netQty": -1334900,
+   "tradeCount": 1005,
+   "notionalCents": -231393445000
+  },
+  "SYM126": {
+   "netQty": -2766500,
+   "tradeCount": 968,
+   "notionalCents": -1546057501000
+  },
+  "SYM127": {
+   "netQty": -2467900,
+   "tradeCount": 996,
+   "notionalCents": -335960144400
+  },
+  "SYM128": {
+   "netQty": 849600,
+   "tradeCount": 996,
+   "notionalCents": -565836179300
+  },
+  "SYM129": {
+   "netQty": 1081300,
+   "tradeCount": 1017,
+   "notionalCents": 382316032000
+  },
+  "SYM130": {
+   "netQty": -360900,
+   "tradeCount": 1003,
+   "notionalCents": -341267695800
+  },
+  "SYM131": {
+   "netQty": 577700,
+   "tradeCount": 992,
+   "notionalCents": -558538009600
+  },
+  "SYM132": {
+   "netQty": 717500,
+   "tradeCount": 1024,
+   "notionalCents": -545190701600
+  },
+  "SYM133": {
+   "netQty": -934500,
+   "tradeCount": 948,
+   "notionalCents": -457747490000
+  },
+  "SYM134": {
+   "netQty": 1786700,
+   "tradeCount": 1083,
+   "notionalCents": 749142795900
+  },
+  "SYM135": {
+   "netQty": -2505900,
+   "tradeCount": 1046,
+   "notionalCents": -1259951353000
+  },
+  "SYM136": {
+   "netQty": 2171400,
+   "tradeCount": 1007,
+   "notionalCents": 623038820700
+  },
+  "SYM137": {
+   "netQty": -709100,
+   "tradeCount": 1000,
+   "notionalCents": 334492601900
+  },
+  "SYM138": {
+   "netQty": 2277500,
+   "tradeCount": 997,
+   "notionalCents": 1268062262300
+  },
+  "SYM139": {
+   "netQty": 2090400,
+   "tradeCount": 995,
+   "notionalCents": 893054035500
+  },
+  "SYM140": {
+   "netQty": -2496600,
+   "tradeCount": 1025,
+   "notionalCents": -1390457297800
+  },
+  "SYM141": {
+   "netQty": 2420300,
+   "tradeCount": 1052,
+   "notionalCents": 1246388853900
+  },
+  "SYM142": {
+   "netQty": 3866700,
+   "tradeCount": 942,
+   "notionalCents": 1937415621400
+  },
+  "SYM143": {
+   "netQty": -2685700,
+   "tradeCount": 951,
+   "notionalCents": -1120071810700
+  },
+  "SYM144": {
+   "netQty": 2837900,
+   "tradeCount": 1008,
+   "notionalCents": 1174430563900
+  },
+  "SYM145": {
+   "netQty": 1370900,
+   "tradeCount": 973,
+   "notionalCents": 307172446400
+  },
+  "SYM146": {
+   "netQty": 1595800,
+   "tradeCount": 1010,
+   "notionalCents": 1166693420500
+  },
+  "SYM147": {
+   "netQty": -668700,
+   "tradeCount": 963,
+   "notionalCents": 205722021000
+  },
+  "SYM148": {
+   "netQty": -286100,
+   "tradeCount": 1013,
+   "notionalCents": -63095103100
+  },
+  "SYM149": {
+   "netQty": 2279000,
+   "tradeCount": 1020,
+   "notionalCents": 1313664890100
+  },
+  "SYM150": {
+   "netQty": -2451800,
+   "tradeCount": 1012,
+   "notionalCents": -1735771505500
+  },
+  "SYM151": {
+   "netQty": -982900,
+   "tradeCount": 957,
+   "notionalCents": -1147120857200
+  },
+  "SYM152": {
+   "netQty": 3425700,
+   "tradeCount": 1006,
+   "notionalCents": 1312646297700
+  },
+  "SYM153": {
+   "netQty": 169200,
+   "tradeCount": 993,
+   "notionalCents": 251486527100
+  },
+  "SYM154": {
+   "netQty": -143600,
+   "tradeCount": 1009,
+   "notionalCents": -839692614300
+  },
+  "SYM155": {
+   "netQty": 992200,
+   "tradeCount": 948,
+   "notionalCents": 1512353983800
+  },
+  "SYM156": {
+   "netQty": 2035200,
+   "tradeCount": 991,
+   "notionalCents": 1118968756200
+  },
+  "SYM157": {
+   "netQty": 393900,
+   "tradeCount": 949,
+   "notionalCents": -326153727100
+  },
+  "SYM158": {
+   "netQty": 2130600,
+   "tradeCount": 983,
+   "notionalCents": 883608704400
+  },
+  "SYM159": {
+   "netQty": 1781900,
+   "tradeCount": 987,
+   "notionalCents": 1002589059500
+  },
+  "SYM160": {
+   "netQty": 156500,
+   "tradeCount": 1037,
+   "notionalCents": -236195756500
+  },
+  "SYM161": {
+   "netQty": 1645700,
+   "tradeCount": 986,
+   "notionalCents": -155566975400
+  },
+  "SYM162": {
+   "netQty": 599200,
+   "tradeCount": 977,
+   "notionalCents": -149198047000
+  },
+  "SYM163": {
+   "netQty": 1148400,
+   "tradeCount": 962,
+   "notionalCents": 648492691700
+  },
+  "SYM164": {
+   "netQty": -653500,
+   "tradeCount": 1017,
+   "notionalCents": -559683599600
+  },
+  "SYM165": {
+   "netQty": 306100,
+   "tradeCount": 978,
+   "notionalCents": 649980620600
+  },
+  "SYM166": {
+   "netQty": -1219900,
+   "tradeCount": 998,
+   "notionalCents": -251351602100
+  },
+  "SYM167": {
+   "netQty": 2211600,
+   "tradeCount": 1026,
+   "notionalCents": 689516479800
+  },
+  "SYM168": {
+   "netQty": 903100,
+   "tradeCount": 989,
+   "notionalCents": 253221230800
+  },
+  "SYM169": {
+   "netQty": -3375400,
+   "tradeCount": 977,
+   "notionalCents": -1433301722200
+  },
+  "SYM170": {
+   "netQty": -356000,
+   "tradeCount": 1019,
+   "notionalCents": 586486216200
+  },
+  "SYM171": {
+   "netQty": -846500,
+   "tradeCount": 1014,
+   "notionalCents": -509588614100
+  },
+  "SYM172": {
+   "netQty": 1156300,
+   "tradeCount": 993,
+   "notionalCents": 1271040129600
+  },
+  "SYM173": {
+   "netQty": 591300,
+   "tradeCount": 1005,
+   "notionalCents": -50851254900
+  },
+  "SYM174": {
+   "netQty": 894000,
+   "tradeCount": 1017,
+   "notionalCents": 377255016500
+  },
+  "SYM175": {
+   "netQty": 388900,
+   "tradeCount": 966,
+   "notionalCents": 299234772000
+  },
+  "SYM176": {
+   "netQty": -1348500,
+   "tradeCount": 967,
+   "notionalCents": -92403226400
+  },
+  "SYM177": {
+   "netQty": 415600,
+   "tradeCount": 1017,
+   "notionalCents": 1015594616600
+  },
+  "SYM178": {
+   "netQty": -479900,
+   "tradeCount": 1011,
+   "notionalCents": -828931832900
+  },
+  "SYM179": {
+   "netQty": -1962800,
+   "tradeCount": 1000,
+   "notionalCents": -527770514600
+  },
+  "SYM180": {
+   "netQty": -1372200,
+   "tradeCount": 1007,
+   "notionalCents": -452589065800
+  },
+  "SYM181": {
+   "netQty": 1530900,
+   "tradeCount": 1064,
+   "notionalCents": 569602043500
+  },
+  "SYM182": {
+   "netQty": -1250300,
+   "tradeCount": 978,
+   "notionalCents": -383279789400
+  },
+  "SYM183": {
+   "netQty": 346800,
+   "tradeCount": 987,
+   "notionalCents": 833640342200
+  },
+  "SYM184": {
+   "netQty": -742100,
+   "tradeCount": 1037,
+   "notionalCents": -148375459700
+  },
+  "SYM185": {
+   "netQty": 1811400,
+   "tradeCount": 1006,
+   "notionalCents": 1145253083900
+  },
+  "SYM186": {
+   "netQty": -969500,
+   "tradeCount": 1049,
+   "notionalCents": -412913616700
+  },
+  "SYM187": {
+   "netQty": 617200,
+   "tradeCount": 1014,
+   "notionalCents": 474285852900
+  },
+  "SYM188": {
+   "netQty": 1200500,
+   "tradeCount": 976,
+   "notionalCents": 356071201000
+  },
+  "SYM189": {
+   "netQty": 160400,
+   "tradeCount": 979,
+   "notionalCents": -408564825600
+  },
+  "SYM190": {
+   "netQty": -4874000,
+   "tradeCount": 990,
+   "notionalCents": -2232108635400
+  },
+  "SYM191": {
+   "netQty": 1811300,
+   "tradeCount": 992,
+   "notionalCents": 1571128780100
+  },
+  "SYM192": {
+   "netQty": -1321300,
+   "tradeCount": 981,
+   "notionalCents": -546123069800
+  },
+  "SYM193": {
+   "netQty": -1000800,
+   "tradeCount": 1011,
+   "notionalCents": -162885292400
+  },
+  "SYM194": {
+   "netQty": 701900,
+   "tradeCount": 1041,
+   "notionalCents": -67743628400
+  },
+  "SYM195": {
+   "netQty": 3155100,
+   "tradeCount": 1006,
+   "notionalCents": 59103958900
+  },
+  "SYM196": {
+   "netQty": -664900,
+   "tradeCount": 1015,
+   "notionalCents": -655840711700
+  },
+  "SYM197": {
+   "netQty": -30200,
+   "tradeCount": 984,
+   "notionalCents": -237376220700
+  },
+  "SYM198": {
+   "netQty": 723700,
+   "tradeCount": 997,
+   "notionalCents": 113112639000
+  },
+  "SYM199": {
+   "netQty": -1096200,
+   "tradeCount": 1032,
+   "notionalCents": -953220456000
+  }
+ },
+ "accounts": {
+  "ACC0000": {
+   "netQty": -104670,
+   "allocCount": 400
+  },
+  "ACC0001": {
+   "netQty": 169500,
+   "allocCount": 400
+  },
+  "ACC0002": {
+   "netQty": -336470,
+   "allocCount": 400
+  },
+  "ACC0003": {
+   "netQty": -114270,
+   "allocCount": 400
+  },
+  "ACC0004": {
+   "netQty": 153380,
+   "allocCount": 400
+  },
+  "ACC0005": {
+   "netQty": 80180,
+   "allocCount": 400
+  },
+  "ACC0006": {
+   "netQty": 39740,
+   "allocCount": 400
+  },
+  "ACC0007": {
+   "netQty": -38630,
+   "allocCount": 400
+  },
+  "ACC0008": {
+   "netQty": 803360,
+   "allocCount": 400
+  },
+  "ACC0009": {
+   "netQty": -98180,
+   "allocCount": 400
+  },
+  "ACC0010": {
+   "netQty": 394340,
+   "allocCount": 400
+  },
+  "ACC0011": {
+   "netQty": -110310,
+   "allocCount": 400
+  },
+  "ACC0012": {
+   "netQty": 542350,
+   "allocCount": 400
+  },
+  "ACC0013": {
+   "netQty": 476040,
+   "allocCount": 400
+  },
+  "ACC0014": {
+   "netQty": -48770,
+   "allocCount": 400
+  },
+  "ACC0015": {
+   "netQty": 252330,
+   "allocCount": 400
+  },
+  "ACC0016": {
+   "netQty": 27450,
+   "allocCount": 400
+  },
+  "ACC0017": {
+   "netQty": -70450,
+   "allocCount": 400
+  },
+  "ACC0018": {
+   "netQty": -411530,
+   "allocCount": 400
+  },
+  "ACC0019": {
+   "netQty": 313550,
+   "allocCount": 400
+  },
+  "ACC0020": {
+   "netQty": -592650,
+   "allocCount": 400
+  },
+  "ACC0021": {
+   "netQty": -470280,
+   "allocCount": 400
+  },
+  "ACC0022": {
+   "netQty": 501890,
+   "allocCount": 400
+  },
+  "ACC0023": {
+   "netQty": 145690,
+   "allocCount": 400
+  },
+  "ACC0024": {
+   "netQty": -224240,
+   "allocCount": 400
+  },
+  "ACC0025": {
+   "netQty": -57670,
+   "allocCount": 400
+  },
+  "ACC0026": {
+   "netQty": -352230,
+   "allocCount": 400
+  },
+  "ACC0027": {
+   "netQty": 296270,
+   "allocCount": 400
+  },
+  "ACC0028": {
+   "netQty": -291440,
+   "allocCount": 400
+  },
+  "ACC0029": {
+   "netQty": -297400,
+   "allocCount": 400
+  },
+  "ACC0030": {
+   "netQty": 222740,
+   "allocCount": 400
+  },
+  "ACC0031": {
+   "netQty": 761840,
+   "allocCount": 400
+  },
+  "ACC0032": {
+   "netQty": -101380,
+   "allocCount": 400
+  },
+  "ACC0033": {
+   "netQty": -522740,
+   "allocCount": 400
+  },
+  "ACC0034": {
+   "netQty": 230520,
+   "allocCount": 400
+  },
+  "ACC0035": {
+   "netQty": -57790,
+   "allocCount": 400
+  },
+  "ACC0036": {
+   "netQty": 117280,
+   "allocCount": 400
+  },
+  "ACC0037": {
+   "netQty": -218730,
+   "allocCount": 400
+  },
+  "ACC0038": {
+   "netQty": 167990,
+   "allocCount": 400
+  },
+  "ACC0039": {
+   "netQty": -26410,
+   "allocCount": 400
+  },
+  "ACC0040": {
+   "netQty": -417630,
+   "allocCount": 400
+  },
+  "ACC0041": {
+   "netQty": -150190,
+   "allocCount": 400
+  },
+  "ACC0042": {
+   "netQty": 112340,
+   "allocCount": 400
+  },
+  "ACC0043": {
+   "netQty": 395030,
+   "allocCount": 400
+  },
+  "ACC0044": {
+   "netQty": -67570,
+   "allocCount": 400
+  },
+  "ACC0045": {
+   "netQty": 53090,
+   "allocCount": 400
+  },
+  "ACC0046": {
+   "netQty": -427900,
+   "allocCount": 400
+  },
+  "ACC0047": {
+   "netQty": 395570,
+   "allocCount": 400
+  },
+  "ACC0048": {
+   "netQty": -196430,
+   "allocCount": 400
+  },
+  "ACC0049": {
+   "netQty": 315590,
+   "allocCount": 400
+  },
+  "ACC0050": {
+   "netQty": 350260,
+   "allocCount": 400
+  },
+  "ACC0051": {
+   "netQty": -488140,
+   "allocCount": 400
+  },
+  "ACC0052": {
+   "netQty": 692210,
+   "allocCount": 400
+  },
+  "ACC0053": {
+   "netQty": -481720,
+   "allocCount": 400
+  },
+  "ACC0054": {
+   "netQty": 166220,
+   "allocCount": 400
+  },
+  "ACC0055": {
+   "netQty": -788580,
+   "allocCount": 400
+  },
+  "ACC0056": {
+   "netQty": -270820,
+   "allocCount": 400
+  },
+  "ACC0057": {
+   "netQty": 354570,
+   "allocCount": 400
+  },
+  "ACC0058": {
+   "netQty": -54590,
+   "allocCount": 400
+  },
+  "ACC0059": {
+   "netQty": -77810,
+   "allocCount": 400
+  },
+  "ACC0060": {
+   "netQty": -145470,
+   "allocCount": 400
+  },
+  "ACC0061": {
+   "netQty": 408650,
+   "allocCount": 400
+  },
+  "ACC0062": {
+   "netQty": -489050,
+   "allocCount": 400
+  },
+  "ACC0063": {
+   "netQty": -609540,
+   "allocCount": 400
+  },
+  "ACC0064": {
+   "netQty": 19710,
+   "allocCount": 400
+  },
+  "ACC0065": {
+   "netQty": -36250,
+   "allocCount": 400
+  },
+  "ACC0066": {
+   "netQty": -356030,
+   "allocCount": 400
+  },
+  "ACC0067": {
+   "netQty": -701180,
+   "allocCount": 400
+  },
+  "ACC0068": {
+   "netQty": 56050,
+   "allocCount": 400
+  },
+  "ACC0069": {
+   "netQty": -80400,
+   "allocCount": 400
+  },
+  "ACC0070": {
+   "netQty": 127210,
+   "allocCount": 400
+  },
+  "ACC0071": {
+   "netQty": -529380,
+   "allocCount": 400
+  },
+  "ACC0072": {
+   "netQty": -113920,
+   "allocCount": 400
+  },
+  "ACC0073": {
+   "netQty": -384190,
+   "allocCount": 400
+  },
+  "ACC0074": {
+   "netQty": -192630,
+   "allocCount": 400
+  },
+  "ACC0075": {
+   "netQty": -131620,
+   "allocCount": 400
+  },
+  "ACC0076": {
+   "netQty": 73980,
+   "allocCount": 400
+  },
+  "ACC0077": {
+   "netQty": -164020,
+   "allocCount": 400
+  },
+  "ACC0078": {
+   "netQty": -165430,
+   "allocCount": 400
+  },
+  "ACC0079": {
+   "netQty": 205540,
+   "allocCount": 400
+  },
+  "ACC0080": {
+   "netQty": -222300,
+   "allocCount": 400
+  },
+  "ACC0081": {
+   "netQty": -252690,
+   "allocCount": 400
+  },
+  "ACC0082": {
+   "netQty": -78170,
+   "allocCount": 400
+  },
+  "ACC0083": {
+   "netQty": -431460,
+   "allocCount": 400
+  },
+  "ACC0084": {
+   "netQty": -404280,
+   "allocCount": 400
+  },
+  "ACC0085": {
+   "netQty": -9060,
+   "allocCount": 400
+  },
+  "ACC0086": {
+   "netQty": -228680,
+   "allocCount": 400
+  },
+  "ACC0087": {
+   "netQty": -258030,
+   "allocCount": 400
+  },
+  "ACC0088": {
+   "netQty": 338500,
+   "allocCount": 400
+  },
+  "ACC0089": {
+   "netQty": 281790,
+   "allocCount": 400
+  },
+  "ACC0090": {
+   "netQty": 161830,
+   "allocCount": 400
+  },
+  "ACC0091": {
+   "netQty": -101660,
+   "allocCount": 400
+  },
+  "ACC0092": {
+   "netQty": 151320,
+   "allocCount": 400
+  },
+  "ACC0093": {
+   "netQty": 191020,
+   "allocCount": 400
+  },
+  "ACC0094": {
+   "netQty": -415090,
+   "allocCount": 400
+  },
+  "ACC0095": {
+   "netQty": 66040,
+   "allocCount": 400
+  },
+  "ACC0096": {
+   "netQty": -228130,
+   "allocCount": 400
+  },
+  "ACC0097": {
+   "netQty": 335360,
+   "allocCount": 400
+  },
+  "ACC0098": {
+   "netQty": -648670,
+   "allocCount": 400
+  },
+  "ACC0099": {
+   "netQty": 53580,
+   "allocCount": 400
+  },
+  "ACC0100": {
+   "netQty": -282100,
+   "allocCount": 400
+  },
+  "ACC0101": {
+   "netQty": 139700,
+   "allocCount": 400
+  },
+  "ACC0102": {
+   "netQty": 379390,
+   "allocCount": 400
+  },
+  "ACC0103": {
+   "netQty": 242230,
+   "allocCount": 400
+  },
+  "ACC0104": {
+   "netQty": -47420,
+   "allocCount": 400
+  },
+  "ACC0105": {
+   "netQty": -453040,
+   "allocCount": 400
+  },
+  "ACC0106": {
+   "netQty": 126730,
+   "allocCount": 400
+  },
+  "ACC0107": {
+   "netQty": 328030,
+   "allocCount": 400
+  },
+  "ACC0108": {
+   "netQty": 279240,
+   "allocCount": 400
+  },
+  "ACC0109": {
+   "netQty": -217810,
+   "allocCount": 400
+  },
+  "ACC0110": {
+   "netQty": 95130,
+   "allocCount": 400
+  },
+  "ACC0111": {
+   "netQty": 4190,
+   "allocCount": 400
+  },
+  "ACC0112": {
+   "netQty": -615700,
+   "allocCount": 400
+  },
+  "ACC0113": {
+   "netQty": -423820,
+   "allocCount": 400
+  },
+  "ACC0114": {
+   "netQty": 404760,
+   "allocCount": 400
+  },
+  "ACC0115": {
+   "netQty": -102420,
+   "allocCount": 400
+  },
+  "ACC0116": {
+   "netQty": -183500,
+   "allocCount": 400
+  },
+  "ACC0117": {
+   "netQty": 257730,
+   "allocCount": 400
+  },
+  "ACC0118": {
+   "netQty": 274400,
+   "allocCount": 400
+  },
+  "ACC0119": {
+   "netQty": -300840,
+   "allocCount": 400
+  },
+  "ACC0120": {
+   "netQty": -304460,
+   "allocCount": 400
+  },
+  "ACC0121": {
+   "netQty": -295180,
+   "allocCount": 400
+  },
+  "ACC0122": {
+   "netQty": -236730,
+   "allocCount": 400
+  },
+  "ACC0123": {
+   "netQty": -293910,
+   "allocCount": 400
+  },
+  "ACC0124": {
+   "netQty": -146300,
+   "allocCount": 400
+  },
+  "ACC0125": {
+   "netQty": -148940,
+   "allocCount": 400
+  },
+  "ACC0126": {
+   "netQty": 339260,
+   "allocCount": 400
+  },
+  "ACC0127": {
+   "netQty": 19370,
+   "allocCount": 400
+  },
+  "ACC0128": {
+   "netQty": -501830,
+   "allocCount": 400
+  },
+  "ACC0129": {
+   "netQty": 508820,
+   "allocCount": 400
+  },
+  "ACC0130": {
+   "netQty": 288850,
+   "allocCount": 400
+  },
+  "ACC0131": {
+   "netQty": -15500,
+   "allocCount": 400
+  },
+  "ACC0132": {
+   "netQty": 45650,
+   "allocCount": 400
+  },
+  "ACC0133": {
+   "netQty": -30330,
+   "allocCount": 400
+  },
+  "ACC0134": {
+   "netQty": 327650,
+   "allocCount": 400
+  },
+  "ACC0135": {
+   "netQty": -295740,
+   "allocCount": 400
+  },
+  "ACC0136": {
+   "netQty": 348200,
+   "allocCount": 400
+  },
+  "ACC0137": {
+   "netQty": -232370,
+   "allocCount": 400
+  },
+  "ACC0138": {
+   "netQty": 92080,
+   "allocCount": 400
+  },
+  "ACC0139": {
+   "netQty": -81520,
+   "allocCount": 400
+  },
+  "ACC0140": {
+   "netQty": -529830,
+   "allocCount": 400
+  },
+  "ACC0141": {
+   "netQty": -131730,
+   "allocCount": 400
+  },
+  "ACC0142": {
+   "netQty": 374720,
+   "allocCount": 400
+  },
+  "ACC0143": {
+   "netQty": -408040,
+   "allocCount": 400
+  },
+  "ACC0144": {
+   "netQty": -22920,
+   "allocCount": 400
+  },
+  "ACC0145": {
+   "netQty": -67710,
+   "allocCount": 400
+  },
+  "ACC0146": {
+   "netQty": -60060,
+   "allocCount": 400
+  },
+  "ACC0147": {
+   "netQty": 117830,
+   "allocCount": 400
+  },
+  "ACC0148": {
+   "netQty": -349360,
+   "allocCount": 400
+  },
+  "ACC0149": {
+   "netQty": -52990,
+   "allocCount": 400
+  },
+  "ACC0150": {
+   "netQty": 472830,
+   "allocCount": 400
+  },
+  "ACC0151": {
+   "netQty": 57000,
+   "allocCount": 400
+  },
+  "ACC0152": {
+   "netQty": -523080,
+   "allocCount": 400
+  },
+  "ACC0153": {
+   "netQty": 629930,
+   "allocCount": 400
+  },
+  "ACC0154": {
+   "netQty": 279020,
+   "allocCount": 400
+  },
+  "ACC0155": {
+   "netQty": 157070,
+   "allocCount": 400
+  },
+  "ACC0156": {
+   "netQty": -625440,
+   "allocCount": 400
+  },
+  "ACC0157": {
+   "netQty": 43310,
+   "allocCount": 400
+  },
+  "ACC0158": {
+   "netQty": -342200,
+   "allocCount": 400
+  },
+  "ACC0159": {
+   "netQty": 26640,
+   "allocCount": 400
+  },
+  "ACC0160": {
+   "netQty": 591110,
+   "allocCount": 400
+  },
+  "ACC0161": {
+   "netQty": 207490,
+   "allocCount": 400
+  },
+  "ACC0162": {
+   "netQty": -95810,
+   "allocCount": 400
+  },
+  "ACC0163": {
+   "netQty": 647740,
+   "allocCount": 400
+  },
+  "ACC0164": {
+   "netQty": 68730,
+   "allocCount": 400
+  },
+  "ACC0165": {
+   "netQty": -66210,
+   "allocCount": 400
+  },
+  "ACC0166": {
+   "netQty": -213560,
+   "allocCount": 400
+  },
+  "ACC0167": {
+   "netQty": -243550,
+   "allocCount": 400
+  },
+  "ACC0168": {
+   "netQty": 413670,
+   "allocCount": 400
+  },
+  "ACC0169": {
+   "netQty": -226510,
+   "allocCount": 400
+  },
+  "ACC0170": {
+   "netQty": -556940,
+   "allocCount": 400
+  },
+  "ACC0171": {
+   "netQty": -236790,
+   "allocCount": 400
+  },
+  "ACC0172": {
+   "netQty": -16060,
+   "allocCount": 400
+  },
+  "ACC0173": {
+   "netQty": -361930,
+   "allocCount": 400
+  },
+  "ACC0174": {
+   "netQty": -164440,
+   "allocCount": 400
+  },
+  "ACC0175": {
+   "netQty": 153340,
+   "allocCount": 400
+  },
+  "ACC0176": {
+   "netQty": 17150,
+   "allocCount": 400
+  },
+  "ACC0177": {
+   "netQty": -427250,
+   "allocCount": 400
+  },
+  "ACC0178": {
+   "netQty": 195420,
+   "allocCount": 400
+  },
+  "ACC0179": {
+   "netQty": -436650,
+   "allocCount": 400
+  },
+  "ACC0180": {
+   "netQty": 24680,
+   "allocCount": 400
+  },
+  "ACC0181": {
+   "netQty": 290960,
+   "allocCount": 400
+  },
+  "ACC0182": {
+   "netQty": -55270,
+   "allocCount": 400
+  },
+  "ACC0183": {
+   "netQty": 218870,
+   "allocCount": 400
+  },
+  "ACC0184": {
+   "netQty": -378590,
+   "allocCount": 400
+  },
+  "ACC0185": {
+   "netQty": -117410,
+   "allocCount": 400
+  },
+  "ACC0186": {
+   "netQty": -337870,
+   "allocCount": 400
+  },
+  "ACC0187": {
+   "netQty": 148230,
+   "allocCount": 400
+  },
+  "ACC0188": {
+   "netQty": 395100,
+   "allocCount": 400
+  },
+  "ACC0189": {
+   "netQty": 440040,
+   "allocCount": 400
+  },
+  "ACC0190": {
+   "netQty": -281960,
+   "allocCount": 400
+  },
+  "ACC0191": {
+   "netQty": -76590,
+   "allocCount": 400
+  },
+  "ACC0192": {
+   "netQty": 449510,
+   "allocCount": 400
+  },
+  "ACC0193": {
+   "netQty": 414850,
+   "allocCount": 400
+  },
+  "ACC0194": {
+   "netQty": 232250,
+   "allocCount": 400
+  },
+  "ACC0195": {
+   "netQty": 18690,
+   "allocCount": 400
+  },
+  "ACC0196": {
+   "netQty": -37570,
+   "allocCount": 400
+  },
+  "ACC0197": {
+   "netQty": -356090,
+   "allocCount": 400
+  },
+  "ACC0198": {
+   "netQty": -508330,
+   "allocCount": 400
+  },
+  "ACC0199": {
+   "netQty": -136340,
+   "allocCount": 400
+  },
+  "ACC0200": {
+   "netQty": 54860,
+   "allocCount": 400
+  },
+  "ACC0201": {
+   "netQty": 133820,
+   "allocCount": 400
+  },
+  "ACC0202": {
+   "netQty": 208320,
+   "allocCount": 400
+  },
+  "ACC0203": {
+   "netQty": 537990,
+   "allocCount": 400
+  },
+  "ACC0204": {
+   "netQty": 315620,
+   "allocCount": 400
+  },
+  "ACC0205": {
+   "netQty": -2550,
+   "allocCount": 400
+  },
+  "ACC0206": {
+   "netQty": -261690,
+   "allocCount": 400
+  },
+  "ACC0207": {
+   "netQty": -323240,
+   "allocCount": 400
+  },
+  "ACC0208": {
+   "netQty": 675500,
+   "allocCount": 400
+  },
+  "ACC0209": {
+   "netQty": -201160,
+   "allocCount": 400
+  },
+  "ACC0210": {
+   "netQty": -300290,
+   "allocCount": 400
+  },
+  "ACC0211": {
+   "netQty": -92990,
+   "allocCount": 400
+  },
+  "ACC0212": {
+   "netQty": -294210,
+   "allocCount": 400
+  },
+  "ACC0213": {
+   "netQty": -377640,
+   "allocCount": 400
+  },
+  "ACC0214": {
+   "netQty": -682800,
+   "allocCount": 400
+  },
+  "ACC0215": {
+   "netQty": 272950,
+   "allocCount": 400
+  },
+  "ACC0216": {
+   "netQty": 28440,
+   "allocCount": 400
+  },
+  "ACC0217": {
+   "netQty": 413550,
+   "allocCount": 400
+  },
+  "ACC0218": {
+   "netQty": 57000,
+   "allocCount": 400
+  },
+  "ACC0219": {
+   "netQty": -70980,
+   "allocCount": 400
+  },
+  "ACC0220": {
+   "netQty": 93110,
+   "allocCount": 400
+  },
+  "ACC0221": {
+   "netQty": 253450,
+   "allocCount": 400
+  },
+  "ACC0222": {
+   "netQty": 162020,
+   "allocCount": 400
+  },
+  "ACC0223": {
+   "netQty": 159430,
+   "allocCount": 400
+  },
+  "ACC0224": {
+   "netQty": -326240,
+   "allocCount": 400
+  },
+  "ACC0225": {
+   "netQty": -437550,
+   "allocCount": 400
+  },
+  "ACC0226": {
+   "netQty": 350970,
+   "allocCount": 400
+  },
+  "ACC0227": {
+   "netQty": -571970,
+   "allocCount": 400
+  },
+  "ACC0228": {
+   "netQty": 561660,
+   "allocCount": 400
+  },
+  "ACC0229": {
+   "netQty": -590,
+   "allocCount": 400
+  },
+  "ACC0230": {
+   "netQty": -373430,
+   "allocCount": 400
+  },
+  "ACC0231": {
+   "netQty": -83400,
+   "allocCount": 400
+  },
+  "ACC0232": {
+   "netQty": 60780,
+   "allocCount": 400
+  },
+  "ACC0233": {
+   "netQty": -221030,
+   "allocCount": 400
+  },
+  "ACC0234": {
+   "netQty": 192220,
+   "allocCount": 400
+  },
+  "ACC0235": {
+   "netQty": 392800,
+   "allocCount": 400
+  },
+  "ACC0236": {
+   "netQty": -206880,
+   "allocCount": 400
+  },
+  "ACC0237": {
+   "netQty": 332000,
+   "allocCount": 400
+  },
+  "ACC0238": {
+   "netQty": -378320,
+   "allocCount": 400
+  },
+  "ACC0239": {
+   "netQty": -190080,
+   "allocCount": 400
+  },
+  "ACC0240": {
+   "netQty": -300680,
+   "allocCount": 400
+  },
+  "ACC0241": {
+   "netQty": 19000,
+   "allocCount": 400
+  },
+  "ACC0242": {
+   "netQty": -72770,
+   "allocCount": 400
+  },
+  "ACC0243": {
+   "netQty": -321140,
+   "allocCount": 400
+  },
+  "ACC0244": {
+   "netQty": 321540,
+   "allocCount": 400
+  },
+  "ACC0245": {
+   "netQty": 693160,
+   "allocCount": 400
+  },
+  "ACC0246": {
+   "netQty": 434440,
+   "allocCount": 400
+  },
+  "ACC0247": {
+   "netQty": -199370,
+   "allocCount": 400
+  },
+  "ACC0248": {
+   "netQty": -125040,
+   "allocCount": 400
+  },
+  "ACC0249": {
+   "netQty": 950870,
+   "allocCount": 400
+  },
+  "ACC0250": {
+   "netQty": -337640,
+   "allocCount": 400
+  },
+  "ACC0251": {
+   "netQty": 246110,
+   "allocCount": 400
+  },
+  "ACC0252": {
+   "netQty": -74450,
+   "allocCount": 400
+  },
+  "ACC0253": {
+   "netQty": -314190,
+   "allocCount": 400
+  },
+  "ACC0254": {
+   "netQty": -47140,
+   "allocCount": 400
+  },
+  "ACC0255": {
+   "netQty": -322270,
+   "allocCount": 400
+  },
+  "ACC0256": {
+   "netQty": -108330,
+   "allocCount": 400
+  },
+  "ACC0257": {
+   "netQty": -15060,
+   "allocCount": 400
+  },
+  "ACC0258": {
+   "netQty": 228070,
+   "allocCount": 400
+  },
+  "ACC0259": {
+   "netQty": 98090,
+   "allocCount": 400
+  },
+  "ACC0260": {
+   "netQty": -42610,
+   "allocCount": 400
+  },
+  "ACC0261": {
+   "netQty": -15820,
+   "allocCount": 400
+  },
+  "ACC0262": {
+   "netQty": -345920,
+   "allocCount": 400
+  },
+  "ACC0263": {
+   "netQty": 2020,
+   "allocCount": 400
+  },
+  "ACC0264": {
+   "netQty": -569750,
+   "allocCount": 400
+  },
+  "ACC0265": {
+   "netQty": 485670,
+   "allocCount": 400
+  },
+  "ACC0266": {
+   "netQty": -184860,
+   "allocCount": 400
+  },
+  "ACC0267": {
+   "netQty": -53130,
+   "allocCount": 400
+  },
+  "ACC0268": {
+   "netQty": -404120,
+   "allocCount": 400
+  },
+  "ACC0269": {
+   "netQty": 182820,
+   "allocCount": 400
+  },
+  "ACC0270": {
+   "netQty": -401570,
+   "allocCount": 400
+  },
+  "ACC0271": {
+   "netQty": 770860,
+   "allocCount": 400
+  },
+  "ACC0272": {
+   "netQty": -791880,
+   "allocCount": 400
+  },
+  "ACC0273": {
+   "netQty": -243640,
+   "allocCount": 400
+  },
+  "ACC0274": {
+   "netQty": -417880,
+   "allocCount": 400
+  },
+  "ACC0275": {
+   "netQty": -485220,
+   "allocCount": 400
+  },
+  "ACC0276": {
+   "netQty": -262320,
+   "allocCount": 400
+  },
+  "ACC0277": {
+   "netQty": 298270,
+   "allocCount": 400
+  },
+  "ACC0278": {
+   "netQty": 635820,
+   "allocCount": 400
+  },
+  "ACC0279": {
+   "netQty": -325720,
+   "allocCount": 400
+  },
+  "ACC0280": {
+   "netQty": 257460,
+   "allocCount": 400
+  },
+  "ACC0281": {
+   "netQty": -391490,
+   "allocCount": 400
+  },
+  "ACC0282": {
+   "netQty": 241290,
+   "allocCount": 400
+  },
+  "ACC0283": {
+   "netQty": 402640,
+   "allocCount": 400
+  },
+  "ACC0284": {
+   "netQty": 53270,
+   "allocCount": 400
+  },
+  "ACC0285": {
+   "netQty": 426730,
+   "allocCount": 400
+  },
+  "ACC0286": {
+   "netQty": 73930,
+   "allocCount": 400
+  },
+  "ACC0287": {
+   "netQty": -160650,
+   "allocCount": 400
+  },
+  "ACC0288": {
+   "netQty": -435990,
+   "allocCount": 400
+  },
+  "ACC0289": {
+   "netQty": 143870,
+   "allocCount": 400
+  },
+  "ACC0290": {
+   "netQty": -81140,
+   "allocCount": 400
+  },
+  "ACC0291": {
+   "netQty": 505600,
+   "allocCount": 400
+  },
+  "ACC0292": {
+   "netQty": -278370,
+   "allocCount": 400
+  },
+  "ACC0293": {
+   "netQty": -141570,
+   "allocCount": 400
+  },
+  "ACC0294": {
+   "netQty": -60790,
+   "allocCount": 400
+  },
+  "ACC0295": {
+   "netQty": 316380,
+   "allocCount": 400
+  },
+  "ACC0296": {
+   "netQty": -274940,
+   "allocCount": 400
+  },
+  "ACC0297": {
+   "netQty": -261420,
+   "allocCount": 400
+  },
+  "ACC0298": {
+   "netQty": 183020,
+   "allocCount": 400
+  },
+  "ACC0299": {
+   "netQty": 107200,
+   "allocCount": 400
+  },
+  "ACC0300": {
+   "netQty": 128690,
+   "allocCount": 400
+  },
+  "ACC0301": {
+   "netQty": 118420,
+   "allocCount": 400
+  },
+  "ACC0302": {
+   "netQty": 150160,
+   "allocCount": 400
+  },
+  "ACC0303": {
+   "netQty": -415500,
+   "allocCount": 400
+  },
+  "ACC0304": {
+   "netQty": 237060,
+   "allocCount": 400
+  },
+  "ACC0305": {
+   "netQty": 363970,
+   "allocCount": 400
+  },
+  "ACC0306": {
+   "netQty": 163470,
+   "allocCount": 400
+  },
+  "ACC0307": {
+   "netQty": -322760,
+   "allocCount": 400
+  },
+  "ACC0308": {
+   "netQty": -367250,
+   "allocCount": 400
+  },
+  "ACC0309": {
+   "netQty": -118390,
+   "allocCount": 400
+  },
+  "ACC0310": {
+   "netQty": 41330,
+   "allocCount": 400
+  },
+  "ACC0311": {
+   "netQty": -361390,
+   "allocCount": 400
+  },
+  "ACC0312": {
+   "netQty": -305940,
+   "allocCount": 400
+  },
+  "ACC0313": {
+   "netQty": 112530,
+   "allocCount": 400
+  },
+  "ACC0314": {
+   "netQty": -138650,
+   "allocCount": 400
+  },
+  "ACC0315": {
+   "netQty": -129350,
+   "allocCount": 400
+  },
+  "ACC0316": {
+   "netQty": 418330,
+   "allocCount": 400
+  },
+  "ACC0317": {
+   "netQty": -648920,
+   "allocCount": 400
+  },
+  "ACC0318": {
+   "netQty": -203270,
+   "allocCount": 400
+  },
+  "ACC0319": {
+   "netQty": 182720,
+   "allocCount": 400
+  },
+  "ACC0320": {
+   "netQty": 138110,
+   "allocCount": 400
+  },
+  "ACC0321": {
+   "netQty": -255500,
+   "allocCount": 400
+  },
+  "ACC0322": {
+   "netQty": -93120,
+   "allocCount": 400
+  },
+  "ACC0323": {
+   "netQty": 192290,
+   "allocCount": 400
+  },
+  "ACC0324": {
+   "netQty": -352770,
+   "allocCount": 400
+  },
+  "ACC0325": {
+   "netQty": 76780,
+   "allocCount": 400
+  },
+  "ACC0326": {
+   "netQty": -194610,
+   "allocCount": 400
+  },
+  "ACC0327": {
+   "netQty": -64070,
+   "allocCount": 400
+  },
+  "ACC0328": {
+   "netQty": 278540,
+   "allocCount": 400
+  },
+  "ACC0329": {
+   "netQty": -47780,
+   "allocCount": 400
+  },
+  "ACC0330": {
+   "netQty": -179480,
+   "allocCount": 400
+  },
+  "ACC0331": {
+   "netQty": 474400,
+   "allocCount": 400
+  },
+  "ACC0332": {
+   "netQty": -276440,
+   "allocCount": 400
+  },
+  "ACC0333": {
+   "netQty": -255910,
+   "allocCount": 400
+  },
+  "ACC0334": {
+   "netQty": -202750,
+   "allocCount": 400
+  },
+  "ACC0335": {
+   "netQty": -19880,
+   "allocCount": 400
+  },
+  "ACC0336": {
+   "netQty": 185830,
+   "allocCount": 400
+  },
+  "ACC0337": {
+   "netQty": -192300,
+   "allocCount": 400
+  },
+  "ACC0338": {
+   "netQty": 83460,
+   "allocCount": 400
+  },
+  "ACC0339": {
+   "netQty": 315790,
+   "allocCount": 400
+  },
+  "ACC0340": {
+   "netQty": 116590,
+   "allocCount": 400
+  },
+  "ACC0341": {
+   "netQty": -360700,
+   "allocCount": 400
+  },
+  "ACC0342": {
+   "netQty": 190960,
+   "allocCount": 400
+  },
+  "ACC0343": {
+   "netQty": 41470,
+   "allocCount": 400
+  },
+  "ACC0344": {
+   "netQty": -171200,
+   "allocCount": 400
+  },
+  "ACC0345": {
+   "netQty": 308970,
+   "allocCount": 400
+  },
+  "ACC0346": {
+   "netQty": -217790,
+   "allocCount": 400
+  },
+  "ACC0347": {
+   "netQty": -472670,
+   "allocCount": 400
+  },
+  "ACC0348": {
+   "netQty": 157630,
+   "allocCount": 400
+  },
+  "ACC0349": {
+   "netQty": -146710,
+   "allocCount": 400
+  },
+  "ACC0350": {
+   "netQty": 135680,
+   "allocCount": 400
+  },
+  "ACC0351": {
+   "netQty": -380840,
+   "allocCount": 400
+  },
+  "ACC0352": {
+   "netQty": -274100,
+   "allocCount": 400
+  },
+  "ACC0353": {
+   "netQty": 592890,
+   "allocCount": 400
+  },
+  "ACC0354": {
+   "netQty": 6170,
+   "allocCount": 400
+  },
+  "ACC0355": {
+   "netQty": -62610,
+   "allocCount": 400
+  },
+  "ACC0356": {
+   "netQty": -206520,
+   "allocCount": 400
+  },
+  "ACC0357": {
+   "netQty": -115730,
+   "allocCount": 400
+  },
+  "ACC0358": {
+   "netQty": -85170,
+   "allocCount": 400
+  },
+  "ACC0359": {
+   "netQty": 102040,
+   "allocCount": 400
+  },
+  "ACC0360": {
+   "netQty": 194500,
+   "allocCount": 400
+  },
+  "ACC0361": {
+   "netQty": 496000,
+   "allocCount": 400
+  },
+  "ACC0362": {
+   "netQty": 34750,
+   "allocCount": 400
+  },
+  "ACC0363": {
+   "netQty": -273220,
+   "allocCount": 400
+  },
+  "ACC0364": {
+   "netQty": -489720,
+   "allocCount": 400
+  },
+  "ACC0365": {
+   "netQty": 358130,
+   "allocCount": 400
+  },
+  "ACC0366": {
+   "netQty": 219670,
+   "allocCount": 400
+  },
+  "ACC0367": {
+   "netQty": -236140,
+   "allocCount": 400
+  },
+  "ACC0368": {
+   "netQty": 105480,
+   "allocCount": 400
+  },
+  "ACC0369": {
+   "netQty": 294460,
+   "allocCount": 400
+  },
+  "ACC0370": {
+   "netQty": 307100,
+   "allocCount": 400
+  },
+  "ACC0371": {
+   "netQty": 142120,
+   "allocCount": 400
+  },
+  "ACC0372": {
+   "netQty": 162930,
+   "allocCount": 400
+  },
+  "ACC0373": {
+   "netQty": -34670,
+   "allocCount": 400
+  },
+  "ACC0374": {
+   "netQty": 211730,
+   "allocCount": 400
+  },
+  "ACC0375": {
+   "netQty": -229130,
+   "allocCount": 400
+  },
+  "ACC0376": {
+   "netQty": 277680,
+   "allocCount": 400
+  },
+  "ACC0377": {
+   "netQty": 241060,
+   "allocCount": 400
+  },
+  "ACC0378": {
+   "netQty": 105030,
+   "allocCount": 400
+  },
+  "ACC0379": {
+   "netQty": 39480,
+   "allocCount": 400
+  },
+  "ACC0380": {
+   "netQty": 439990,
+   "allocCount": 400
+  },
+  "ACC0381": {
+   "netQty": -1160,
+   "allocCount": 400
+  },
+  "ACC0382": {
+   "netQty": -634100,
+   "allocCount": 400
+  },
+  "ACC0383": {
+   "netQty": 91450,
+   "allocCount": 400
+  },
+  "ACC0384": {
+   "netQty": 30780,
+   "allocCount": 400
+  },
+  "ACC0385": {
+   "netQty": -64810,
+   "allocCount": 400
+  },
+  "ACC0386": {
+   "netQty": -72170,
+   "allocCount": 400
+  },
+  "ACC0387": {
+   "netQty": 114170,
+   "allocCount": 400
+  },
+  "ACC0388": {
+   "netQty": -147070,
+   "allocCount": 400
+  },
+  "ACC0389": {
+   "netQty": 72470,
+   "allocCount": 400
+  },
+  "ACC0390": {
+   "netQty": -132130,
+   "allocCount": 400
+  },
+  "ACC0391": {
+   "netQty": -295250,
+   "allocCount": 400
+  },
+  "ACC0392": {
+   "netQty": 257010,
+   "allocCount": 400
+  },
+  "ACC0393": {
+   "netQty": 340030,
+   "allocCount": 400
+  },
+  "ACC0394": {
+   "netQty": 42000,
+   "allocCount": 400
+  },
+  "ACC0395": {
+   "netQty": -147560,
+   "allocCount": 400
+  },
+  "ACC0396": {
+   "netQty": 88820,
+   "allocCount": 400
+  },
+  "ACC0397": {
+   "netQty": 195990,
+   "allocCount": 400
+  },
+  "ACC0398": {
+   "netQty": -6850,
+   "allocCount": 400
+  },
+  "ACC0399": {
+   "netQty": 267250,
+   "allocCount": 400
+  },
+  "ACC0400": {
+   "netQty": 74140,
+   "allocCount": 400
+  },
+  "ACC0401": {
+   "netQty": -101560,
+   "allocCount": 400
+  },
+  "ACC0402": {
+   "netQty": -35590,
+   "allocCount": 400
+  },
+  "ACC0403": {
+   "netQty": 375170,
+   "allocCount": 400
+  },
+  "ACC0404": {
+   "netQty": 415300,
+   "allocCount": 400
+  },
+  "ACC0405": {
+   "netQty": 659120,
+   "allocCount": 400
+  },
+  "ACC0406": {
+   "netQty": 92170,
+   "allocCount": 400
+  },
+  "ACC0407": {
+   "netQty": 5220,
+   "allocCount": 400
+  },
+  "ACC0408": {
+   "netQty": 441970,
+   "allocCount": 400
+  },
+  "ACC0409": {
+   "netQty": 99510,
+   "allocCount": 400
+  },
+  "ACC0410": {
+   "netQty": 332990,
+   "allocCount": 400
+  },
+  "ACC0411": {
+   "netQty": 231160,
+   "allocCount": 400
+  },
+  "ACC0412": {
+   "netQty": 127980,
+   "allocCount": 400
+  },
+  "ACC0413": {
+   "netQty": 395470,
+   "allocCount": 400
+  },
+  "ACC0414": {
+   "netQty": -142280,
+   "allocCount": 400
+  },
+  "ACC0415": {
+   "netQty": 484690,
+   "allocCount": 400
+  },
+  "ACC0416": {
+   "netQty": 419100,
+   "allocCount": 400
+  },
+  "ACC0417": {
+   "netQty": -469360,
+   "allocCount": 400
+  },
+  "ACC0418": {
+   "netQty": 26680,
+   "allocCount": 400
+  },
+  "ACC0419": {
+   "netQty": 18740,
+   "allocCount": 400
+  },
+  "ACC0420": {
+   "netQty": -98440,
+   "allocCount": 400
+  },
+  "ACC0421": {
+   "netQty": 58340,
+   "allocCount": 400
+  },
+  "ACC0422": {
+   "netQty": -319490,
+   "allocCount": 400
+  },
+  "ACC0423": {
+   "netQty": 370680,
+   "allocCount": 400
+  },
+  "ACC0424": {
+   "netQty": 52150,
+   "allocCount": 400
+  },
+  "ACC0425": {
+   "netQty": -55050,
+   "allocCount": 400
+  },
+  "ACC0426": {
+   "netQty": -232480,
+   "allocCount": 400
+  },
+  "ACC0427": {
+   "netQty": -57900,
+   "allocCount": 400
+  },
+  "ACC0428": {
+   "netQty": 265610,
+   "allocCount": 400
+  },
+  "ACC0429": {
+   "netQty": -253030,
+   "allocCount": 400
+  },
+  "ACC0430": {
+   "netQty": -88310,
+   "allocCount": 400
+  },
+  "ACC0431": {
+   "netQty": -783780,
+   "allocCount": 400
+  },
+  "ACC0432": {
+   "netQty": -79840,
+   "allocCount": 400
+  },
+  "ACC0433": {
+   "netQty": 697720,
+   "allocCount": 400
+  },
+  "ACC0434": {
+   "netQty": -240770,
+   "allocCount": 400
+  },
+  "ACC0435": {
+   "netQty": 322090,
+   "allocCount": 400
+  },
+  "ACC0436": {
+   "netQty": 457000,
+   "allocCount": 400
+  },
+  "ACC0437": {
+   "netQty": -604060,
+   "allocCount": 400
+  },
+  "ACC0438": {
+   "netQty": 418300,
+   "allocCount": 400
+  },
+  "ACC0439": {
+   "netQty": -144260,
+   "allocCount": 400
+  },
+  "ACC0440": {
+   "netQty": 268540,
+   "allocCount": 400
+  },
+  "ACC0441": {
+   "netQty": -485430,
+   "allocCount": 400
+  },
+  "ACC0442": {
+   "netQty": -195490,
+   "allocCount": 400
+  },
+  "ACC0443": {
+   "netQty": 18750,
+   "allocCount": 400
+  },
+  "ACC0444": {
+   "netQty": -85460,
+   "allocCount": 400
+  },
+  "ACC0445": {
+   "netQty": -370170,
+   "allocCount": 400
+  },
+  "ACC0446": {
+   "netQty": 234400,
+   "allocCount": 400
+  },
+  "ACC0447": {
+   "netQty": 553060,
+   "allocCount": 400
+  },
+  "ACC0448": {
+   "netQty": 7810,
+   "allocCount": 400
+  },
+  "ACC0449": {
+   "netQty": -236860,
+   "allocCount": 400
+  },
+  "ACC0450": {
+   "netQty": -504250,
+   "allocCount": 400
+  },
+  "ACC0451": {
+   "netQty": 204880,
+   "allocCount": 400
+  },
+  "ACC0452": {
+   "netQty": -59450,
+   "allocCount": 400
+  },
+  "ACC0453": {
+   "netQty": -342250,
+   "allocCount": 400
+  },
+  "ACC0454": {
+   "netQty": 283700,
+   "allocCount": 400
+  },
+  "ACC0455": {
+   "netQty": -359710,
+   "allocCount": 400
+  },
+  "ACC0456": {
+   "netQty": 613210,
+   "allocCount": 400
+  },
+  "ACC0457": {
+   "netQty": 265980,
+   "allocCount": 400
+  },
+  "ACC0458": {
+   "netQty": -565100,
+   "allocCount": 400
+  },
+  "ACC0459": {
+   "netQty": -609740,
+   "allocCount": 400
+  },
+  "ACC0460": {
+   "netQty": -296900,
+   "allocCount": 400
+  },
+  "ACC0461": {
+   "netQty": 164030,
+   "allocCount": 400
+  },
+  "ACC0462": {
+   "netQty": -44330,
+   "allocCount": 400
+  },
+  "ACC0463": {
+   "netQty": 326130,
+   "allocCount": 400
+  },
+  "ACC0464": {
+   "netQty": 574300,
+   "allocCount": 400
+  },
+  "ACC0465": {
+   "netQty": 374740,
+   "allocCount": 400
+  },
+  "ACC0466": {
+   "netQty": -327770,
+   "allocCount": 400
+  },
+  "ACC0467": {
+   "netQty": 123220,
+   "allocCount": 400
+  },
+  "ACC0468": {
+   "netQty": -179960,
+   "allocCount": 400
+  },
+  "ACC0469": {
+   "netQty": -184730,
+   "allocCount": 400
+  },
+  "ACC0470": {
+   "netQty": -147740,
+   "allocCount": 400
+  },
+  "ACC0471": {
+   "netQty": -244360,
+   "allocCount": 400
+  },
+  "ACC0472": {
+   "netQty": -56480,
+   "allocCount": 400
+  },
+  "ACC0473": {
+   "netQty": -139260,
+   "allocCount": 400
+  },
+  "ACC0474": {
+   "netQty": -631500,
+   "allocCount": 400
+  },
+  "ACC0475": {
+   "netQty": 243270,
+   "allocCount": 400
+  },
+  "ACC0476": {
+   "netQty": 168340,
+   "allocCount": 400
+  },
+  "ACC0477": {
+   "netQty": -195450,
+   "allocCount": 400
+  },
+  "ACC0478": {
+   "netQty": 297850,
+   "allocCount": 400
+  },
+  "ACC0479": {
+   "netQty": 229170,
+   "allocCount": 400
+  },
+  "ACC0480": {
+   "netQty": 105690,
+   "allocCount": 400
+  },
+  "ACC0481": {
+   "netQty": -369790,
+   "allocCount": 400
+  },
+  "ACC0482": {
+   "netQty": -197560,
+   "allocCount": 400
+  },
+  "ACC0483": {
+   "netQty": -41200,
+   "allocCount": 400
+  },
+  "ACC0484": {
+   "netQty": -551290,
+   "allocCount": 400
+  },
+  "ACC0485": {
+   "netQty": -170620,
+   "allocCount": 400
+  },
+  "ACC0486": {
+   "netQty": -242790,
+   "allocCount": 400
+  },
+  "ACC0487": {
+   "netQty": 115300,
+   "allocCount": 400
+  },
+  "ACC0488": {
+   "netQty": -163230,
+   "allocCount": 400
+  },
+  "ACC0489": {
+   "netQty": 382610,
+   "allocCount": 400
+  },
+  "ACC0490": {
+   "netQty": -531340,
+   "allocCount": 400
+  },
+  "ACC0491": {
+   "netQty": 28990,
+   "allocCount": 400
+  },
+  "ACC0492": {
+   "netQty": -344930,
+   "allocCount": 400
+  },
+  "ACC0493": {
+   "netQty": -15040,
+   "allocCount": 400
+  },
+  "ACC0494": {
+   "netQty": 283300,
+   "allocCount": 400
+  },
+  "ACC0495": {
+   "netQty": -76290,
+   "allocCount": 400
+  },
+  "ACC0496": {
+   "netQty": 333490,
+   "allocCount": 400
+  },
+  "ACC0497": {
+   "netQty": 594460,
+   "allocCount": 400
+  },
+  "ACC0498": {
+   "netQty": 897090,
+   "allocCount": 400
+  },
+  "ACC0499": {
+   "netQty": 193720,
+   "allocCount": 400
+  },
+  "ACC0500": {
+   "netQty": 407560,
+   "allocCount": 400
+  },
+  "ACC0501": {
+   "netQty": -337570,
+   "allocCount": 400
+  },
+  "ACC0502": {
+   "netQty": -54800,
+   "allocCount": 400
+  },
+  "ACC0503": {
+   "netQty": 273490,
+   "allocCount": 400
+  },
+  "ACC0504": {
+   "netQty": -139630,
+   "allocCount": 400
+  },
+  "ACC0505": {
+   "netQty": 482630,
+   "allocCount": 400
+  },
+  "ACC0506": {
+   "netQty": -175780,
+   "allocCount": 400
+  },
+  "ACC0507": {
+   "netQty": 63870,
+   "allocCount": 400
+  },
+  "ACC0508": {
+   "netQty": -122300,
+   "allocCount": 400
+  },
+  "ACC0509": {
+   "netQty": 13690,
+   "allocCount": 400
+  },
+  "ACC0510": {
+   "netQty": 167970,
+   "allocCount": 400
+  },
+  "ACC0511": {
+   "netQty": 555970,
+   "allocCount": 400
+  },
+  "ACC0512": {
+   "netQty": 475450,
+   "allocCount": 400
+  },
+  "ACC0513": {
+   "netQty": 67880,
+   "allocCount": 400
+  },
+  "ACC0514": {
+   "netQty": 32490,
+   "allocCount": 400
+  },
+  "ACC0515": {
+   "netQty": 396210,
+   "allocCount": 400
+  },
+  "ACC0516": {
+   "netQty": -166160,
+   "allocCount": 400
+  },
+  "ACC0517": {
+   "netQty": -361310,
+   "allocCount": 400
+  },
+  "ACC0518": {
+   "netQty": 166150,
+   "allocCount": 400
+  },
+  "ACC0519": {
+   "netQty": -321390,
+   "allocCount": 400
+  },
+  "ACC0520": {
+   "netQty": -335750,
+   "allocCount": 400
+  },
+  "ACC0521": {
+   "netQty": -81930,
+   "allocCount": 400
+  },
+  "ACC0522": {
+   "netQty": 286240,
+   "allocCount": 400
+  },
+  "ACC0523": {
+   "netQty": -167160,
+   "allocCount": 400
+  },
+  "ACC0524": {
+   "netQty": 269620,
+   "allocCount": 400
+  },
+  "ACC0525": {
+   "netQty": -354340,
+   "allocCount": 400
+  },
+  "ACC0526": {
+   "netQty": 342350,
+   "allocCount": 400
+  },
+  "ACC0527": {
+   "netQty": -426990,
+   "allocCount": 400
+  },
+  "ACC0528": {
+   "netQty": -214390,
+   "allocCount": 400
+  },
+  "ACC0529": {
+   "netQty": -75760,
+   "allocCount": 400
+  },
+  "ACC0530": {
+   "netQty": 554290,
+   "allocCount": 400
+  },
+  "ACC0531": {
+   "netQty": -191130,
+   "allocCount": 400
+  },
+  "ACC0532": {
+   "netQty": -685210,
+   "allocCount": 400
+  },
+  "ACC0533": {
+   "netQty": 226890,
+   "allocCount": 400
+  },
+  "ACC0534": {
+   "netQty": 125690,
+   "allocCount": 400
+  },
+  "ACC0535": {
+   "netQty": 338600,
+   "allocCount": 400
+  },
+  "ACC0536": {
+   "netQty": 358010,
+   "allocCount": 400
+  },
+  "ACC0537": {
+   "netQty": 325550,
+   "allocCount": 400
+  },
+  "ACC0538": {
+   "netQty": -80880,
+   "allocCount": 400
+  },
+  "ACC0539": {
+   "netQty": -55470,
+   "allocCount": 400
+  },
+  "ACC0540": {
+   "netQty": -744870,
+   "allocCount": 400
+  },
+  "ACC0541": {
+   "netQty": 257660,
+   "allocCount": 400
+  },
+  "ACC0542": {
+   "netQty": 366160,
+   "allocCount": 400
+  },
+  "ACC0543": {
+   "netQty": 260670,
+   "allocCount": 400
+  },
+  "ACC0544": {
+   "netQty": 106960,
+   "allocCount": 400
+  },
+  "ACC0545": {
+   "netQty": -759850,
+   "allocCount": 400
+  },
+  "ACC0546": {
+   "netQty": 152030,
+   "allocCount": 400
+  },
+  "ACC0547": {
+   "netQty": -65520,
+   "allocCount": 400
+  },
+  "ACC0548": {
+   "netQty": 532490,
+   "allocCount": 400
+  },
+  "ACC0549": {
+   "netQty": 129690,
+   "allocCount": 400
+  },
+  "ACC0550": {
+   "netQty": 46990,
+   "allocCount": 400
+  },
+  "ACC0551": {
+   "netQty": 636770,
+   "allocCount": 400
+  },
+  "ACC0552": {
+   "netQty": -189850,
+   "allocCount": 400
+  },
+  "ACC0553": {
+   "netQty": 84340,
+   "allocCount": 400
+  },
+  "ACC0554": {
+   "netQty": -1147420,
+   "allocCount": 400
+  },
+  "ACC0555": {
+   "netQty": 211250,
+   "allocCount": 400
+  },
+  "ACC0556": {
+   "netQty": 353420,
+   "allocCount": 400
+  },
+  "ACC0557": {
+   "netQty": 361330,
+   "allocCount": 400
+  },
+  "ACC0558": {
+   "netQty": 111220,
+   "allocCount": 400
+  },
+  "ACC0559": {
+   "netQty": -352600,
+   "allocCount": 400
+  },
+  "ACC0560": {
+   "netQty": 104880,
+   "allocCount": 400
+  },
+  "ACC0561": {
+   "netQty": -341430,
+   "allocCount": 400
+  },
+  "ACC0562": {
+   "netQty": -436830,
+   "allocCount": 400
+  },
+  "ACC0563": {
+   "netQty": -77910,
+   "allocCount": 400
+  },
+  "ACC0564": {
+   "netQty": -253360,
+   "allocCount": 400
+  },
+  "ACC0565": {
+   "netQty": -267920,
+   "allocCount": 400
+  },
+  "ACC0566": {
+   "netQty": -630090,
+   "allocCount": 400
+  },
+  "ACC0567": {
+   "netQty": 222880,
+   "allocCount": 400
+  },
+  "ACC0568": {
+   "netQty": 113350,
+   "allocCount": 400
+  },
+  "ACC0569": {
+   "netQty": -262480,
+   "allocCount": 400
+  },
+  "ACC0570": {
+   "netQty": -733030,
+   "allocCount": 400
+  },
+  "ACC0571": {
+   "netQty": -152030,
+   "allocCount": 400
+  },
+  "ACC0572": {
+   "netQty": -140700,
+   "allocCount": 400
+  },
+  "ACC0573": {
+   "netQty": -29660,
+   "allocCount": 400
+  },
+  "ACC0574": {
+   "netQty": 229750,
+   "allocCount": 400
+  },
+  "ACC0575": {
+   "netQty": 93920,
+   "allocCount": 400
+  },
+  "ACC0576": {
+   "netQty": -125230,
+   "allocCount": 400
+  },
+  "ACC0577": {
+   "netQty": -580030,
+   "allocCount": 400
+  },
+  "ACC0578": {
+   "netQty": -327410,
+   "allocCount": 400
+  },
+  "ACC0579": {
+   "netQty": -368580,
+   "allocCount": 400
+  },
+  "ACC0580": {
+   "netQty": -128160,
+   "allocCount": 400
+  },
+  "ACC0581": {
+   "netQty": -48250,
+   "allocCount": 400
+  },
+  "ACC0582": {
+   "netQty": -371620,
+   "allocCount": 400
+  },
+  "ACC0583": {
+   "netQty": -38600,
+   "allocCount": 400
+  },
+  "ACC0584": {
+   "netQty": -227420,
+   "allocCount": 400
+  },
+  "ACC0585": {
+   "netQty": -156710,
+   "allocCount": 400
+  },
+  "ACC0586": {
+   "netQty": -638490,
+   "allocCount": 400
+  },
+  "ACC0587": {
+   "netQty": -61820,
+   "allocCount": 400
+  },
+  "ACC0588": {
+   "netQty": 558960,
+   "allocCount": 400
+  },
+  "ACC0589": {
+   "netQty": 312480,
+   "allocCount": 400
+  },
+  "ACC0590": {
+   "netQty": -31970,
+   "allocCount": 400
+  },
+  "ACC0591": {
+   "netQty": 70340,
+   "allocCount": 400
+  },
+  "ACC0592": {
+   "netQty": -12480,
+   "allocCount": 400
+  },
+  "ACC0593": {
+   "netQty": -7890,
+   "allocCount": 400
+  },
+  "ACC0594": {
+   "netQty": -237900,
+   "allocCount": 400
+  },
+  "ACC0595": {
+   "netQty": -326180,
+   "allocCount": 400
+  },
+  "ACC0596": {
+   "netQty": 475160,
+   "allocCount": 400
+  },
+  "ACC0597": {
+   "netQty": -490710,
+   "allocCount": 400
+  },
+  "ACC0598": {
+   "netQty": 293640,
+   "allocCount": 400
+  },
+  "ACC0599": {
+   "netQty": -397130,
+   "allocCount": 400
+  },
+  "ACC0600": {
+   "netQty": 235870,
+   "allocCount": 400
+  },
+  "ACC0601": {
+   "netQty": 22030,
+   "allocCount": 400
+  },
+  "ACC0602": {
+   "netQty": -121450,
+   "allocCount": 400
+  },
+  "ACC0603": {
+   "netQty": 32090,
+   "allocCount": 400
+  },
+  "ACC0604": {
+   "netQty": -375220,
+   "allocCount": 400
+  },
+  "ACC0605": {
+   "netQty": -30870,
+   "allocCount": 400
+  },
+  "ACC0606": {
+   "netQty": 142540,
+   "allocCount": 400
+  },
+  "ACC0607": {
+   "netQty": -32260,
+   "allocCount": 400
+  },
+  "ACC0608": {
+   "netQty": 31150,
+   "allocCount": 400
+  },
+  "ACC0609": {
+   "netQty": 251900,
+   "allocCount": 400
+  },
+  "ACC0610": {
+   "netQty": 182520,
+   "allocCount": 400
+  },
+  "ACC0611": {
+   "netQty": -818240,
+   "allocCount": 400
+  },
+  "ACC0612": {
+   "netQty": -608890,
+   "allocCount": 400
+  },
+  "ACC0613": {
+   "netQty": 82310,
+   "allocCount": 400
+  },
+  "ACC0614": {
+   "netQty": -398070,
+   "allocCount": 400
+  },
+  "ACC0615": {
+   "netQty": -236460,
+   "allocCount": 400
+  },
+  "ACC0616": {
+   "netQty": 288580,
+   "allocCount": 400
+  },
+  "ACC0617": {
+   "netQty": 106740,
+   "allocCount": 400
+  },
+  "ACC0618": {
+   "netQty": -283040,
+   "allocCount": 400
+  },
+  "ACC0619": {
+   "netQty": -204830,
+   "allocCount": 400
+  },
+  "ACC0620": {
+   "netQty": -185170,
+   "allocCount": 400
+  },
+  "ACC0621": {
+   "netQty": -56010,
+   "allocCount": 400
+  },
+  "ACC0622": {
+   "netQty": -62600,
+   "allocCount": 400
+  },
+  "ACC0623": {
+   "netQty": -505170,
+   "allocCount": 400
+  },
+  "ACC0624": {
+   "netQty": 323240,
+   "allocCount": 400
+  },
+  "ACC0625": {
+   "netQty": -6580,
+   "allocCount": 400
+  },
+  "ACC0626": {
+   "netQty": -497840,
+   "allocCount": 400
+  },
+  "ACC0627": {
+   "netQty": -514950,
+   "allocCount": 400
+  },
+  "ACC0628": {
+   "netQty": 174800,
+   "allocCount": 400
+  },
+  "ACC0629": {
+   "netQty": 577360,
+   "allocCount": 400
+  },
+  "ACC0630": {
+   "netQty": -184800,
+   "allocCount": 400
+  },
+  "ACC0631": {
+   "netQty": -396790,
+   "allocCount": 400
+  },
+  "ACC0632": {
+   "netQty": 26050,
+   "allocCount": 400
+  },
+  "ACC0633": {
+   "netQty": -196710,
+   "allocCount": 400
+  },
+  "ACC0634": {
+   "netQty": -19460,
+   "allocCount": 400
+  },
+  "ACC0635": {
+   "netQty": 607760,
+   "allocCount": 400
+  },
+  "ACC0636": {
+   "netQty": -485070,
+   "allocCount": 400
+  },
+  "ACC0637": {
+   "netQty": -114060,
+   "allocCount": 400
+  },
+  "ACC0638": {
+   "netQty": 40470,
+   "allocCount": 400
+  },
+  "ACC0639": {
+   "netQty": -675790,
+   "allocCount": 400
+  },
+  "ACC0640": {
+   "netQty": 83820,
+   "allocCount": 400
+  },
+  "ACC0641": {
+   "netQty": 253390,
+   "allocCount": 400
+  },
+  "ACC0642": {
+   "netQty": -683230,
+   "allocCount": 400
+  },
+  "ACC0643": {
+   "netQty": 237450,
+   "allocCount": 400
+  },
+  "ACC0644": {
+   "netQty": -251110,
+   "allocCount": 400
+  },
+  "ACC0645": {
+   "netQty": -119190,
+   "allocCount": 400
+  },
+  "ACC0646": {
+   "netQty": -208600,
+   "allocCount": 400
+  },
+  "ACC0647": {
+   "netQty": 165620,
+   "allocCount": 400
+  },
+  "ACC0648": {
+   "netQty": 74780,
+   "allocCount": 400
+  },
+  "ACC0649": {
+   "netQty": 534800,
+   "allocCount": 400
+  },
+  "ACC0650": {
+   "netQty": 147200,
+   "allocCount": 400
+  },
+  "ACC0651": {
+   "netQty": -409110,
+   "allocCount": 400
+  },
+  "ACC0652": {
+   "netQty": 206660,
+   "allocCount": 400
+  },
+  "ACC0653": {
+   "netQty": 145840,
+   "allocCount": 400
+  },
+  "ACC0654": {
+   "netQty": -79880,
+   "allocCount": 400
+  },
+  "ACC0655": {
+   "netQty": -716650,
+   "allocCount": 400
+  },
+  "ACC0656": {
+   "netQty": 223900,
+   "allocCount": 400
+  },
+  "ACC0657": {
+   "netQty": -273350,
+   "allocCount": 400
+  },
+  "ACC0658": {
+   "netQty": -103210,
+   "allocCount": 400
+  },
+  "ACC0659": {
+   "netQty": 604130,
+   "allocCount": 400
+  },
+  "ACC0660": {
+   "netQty": 376010,
+   "allocCount": 400
+  },
+  "ACC0661": {
+   "netQty": -17640,
+   "allocCount": 400
+  },
+  "ACC0662": {
+   "netQty": 669940,
+   "allocCount": 400
+  },
+  "ACC0663": {
+   "netQty": -188270,
+   "allocCount": 400
+  },
+  "ACC0664": {
+   "netQty": -553580,
+   "allocCount": 400
+  },
+  "ACC0665": {
+   "netQty": -550900,
+   "allocCount": 400
+  },
+  "ACC0666": {
+   "netQty": -317660,
+   "allocCount": 400
+  },
+  "ACC0667": {
+   "netQty": 294280,
+   "allocCount": 400
+  },
+  "ACC0668": {
+   "netQty": 398950,
+   "allocCount": 400
+  },
+  "ACC0669": {
+   "netQty": -179230,
+   "allocCount": 400
+  },
+  "ACC0670": {
+   "netQty": -319250,
+   "allocCount": 400
+  },
+  "ACC0671": {
+   "netQty": -60070,
+   "allocCount": 400
+  },
+  "ACC0672": {
+   "netQty": -242090,
+   "allocCount": 400
+  },
+  "ACC0673": {
+   "netQty": -202820,
+   "allocCount": 400
+  },
+  "ACC0674": {
+   "netQty": 24530,
+   "allocCount": 400
+  },
+  "ACC0675": {
+   "netQty": 288420,
+   "allocCount": 400
+  },
+  "ACC0676": {
+   "netQty": -469120,
+   "allocCount": 400
+  },
+  "ACC0677": {
+   "netQty": 152970,
+   "allocCount": 400
+  },
+  "ACC0678": {
+   "netQty": -169550,
+   "allocCount": 400
+  },
+  "ACC0679": {
+   "netQty": 266050,
+   "allocCount": 400
+  },
+  "ACC0680": {
+   "netQty": 154140,
+   "allocCount": 400
+  },
+  "ACC0681": {
+   "netQty": 486940,
+   "allocCount": 400
+  },
+  "ACC0682": {
+   "netQty": 303790,
+   "allocCount": 400
+  },
+  "ACC0683": {
+   "netQty": -318160,
+   "allocCount": 400
+  },
+  "ACC0684": {
+   "netQty": 221000,
+   "allocCount": 400
+  },
+  "ACC0685": {
+   "netQty": -366690,
+   "allocCount": 400
+  },
+  "ACC0686": {
+   "netQty": -257640,
+   "allocCount": 400
+  },
+  "ACC0687": {
+   "netQty": 405400,
+   "allocCount": 400
+  },
+  "ACC0688": {
+   "netQty": -68110,
+   "allocCount": 400
+  },
+  "ACC0689": {
+   "netQty": -202740,
+   "allocCount": 400
+  },
+  "ACC0690": {
+   "netQty": -281370,
+   "allocCount": 400
+  },
+  "ACC0691": {
+   "netQty": 299500,
+   "allocCount": 400
+  },
+  "ACC0692": {
+   "netQty": 128350,
+   "allocCount": 400
+  },
+  "ACC0693": {
+   "netQty": 243590,
+   "allocCount": 400
+  },
+  "ACC0694": {
+   "netQty": 91140,
+   "allocCount": 400
+  },
+  "ACC0695": {
+   "netQty": -26970,
+   "allocCount": 400
+  },
+  "ACC0696": {
+   "netQty": 20570,
+   "allocCount": 400
+  },
+  "ACC0697": {
+   "netQty": -467140,
+   "allocCount": 400
+  },
+  "ACC0698": {
+   "netQty": 4260,
+   "allocCount": 400
+  },
+  "ACC0699": {
+   "netQty": 127180,
+   "allocCount": 400
+  },
+  "ACC0700": {
+   "netQty": 442260,
+   "allocCount": 400
+  },
+  "ACC0701": {
+   "netQty": 111310,
+   "allocCount": 400
+  },
+  "ACC0702": {
+   "netQty": 51530,
+   "allocCount": 400
+  },
+  "ACC0703": {
+   "netQty": 258920,
+   "allocCount": 400
+  },
+  "ACC0704": {
+   "netQty": -424780,
+   "allocCount": 400
+  },
+  "ACC0705": {
+   "netQty": -293380,
+   "allocCount": 400
+  },
+  "ACC0706": {
+   "netQty": -339100,
+   "allocCount": 400
+  },
+  "ACC0707": {
+   "netQty": 590530,
+   "allocCount": 400
+  },
+  "ACC0708": {
+   "netQty": -26990,
+   "allocCount": 400
+  },
+  "ACC0709": {
+   "netQty": -139740,
+   "allocCount": 400
+  },
+  "ACC0710": {
+   "netQty": -70560,
+   "allocCount": 400
+  },
+  "ACC0711": {
+   "netQty": -349020,
+   "allocCount": 400
+  },
+  "ACC0712": {
+   "netQty": 145500,
+   "allocCount": 400
+  },
+  "ACC0713": {
+   "netQty": -258910,
+   "allocCount": 400
+  },
+  "ACC0714": {
+   "netQty": 646650,
+   "allocCount": 400
+  },
+  "ACC0715": {
+   "netQty": 41400,
+   "allocCount": 400
+  },
+  "ACC0716": {
+   "netQty": 193210,
+   "allocCount": 400
+  },
+  "ACC0717": {
+   "netQty": -134990,
+   "allocCount": 400
+  },
+  "ACC0718": {
+   "netQty": -463160,
+   "allocCount": 400
+  },
+  "ACC0719": {
+   "netQty": 319670,
+   "allocCount": 400
+  },
+  "ACC0720": {
+   "netQty": -208870,
+   "allocCount": 400
+  },
+  "ACC0721": {
+   "netQty": 258740,
+   "allocCount": 400
+  },
+  "ACC0722": {
+   "netQty": -138990,
+   "allocCount": 400
+  },
+  "ACC0723": {
+   "netQty": 88990,
+   "allocCount": 400
+  },
+  "ACC0724": {
+   "netQty": -319890,
+   "allocCount": 400
+  },
+  "ACC0725": {
+   "netQty": 446850,
+   "allocCount": 400
+  },
+  "ACC0726": {
+   "netQty": -235200,
+   "allocCount": 400
+  },
+  "ACC0727": {
+   "netQty": 224440,
+   "allocCount": 400
+  },
+  "ACC0728": {
+   "netQty": -511680,
+   "allocCount": 400
+  },
+  "ACC0729": {
+   "netQty": -541860,
+   "allocCount": 400
+  },
+  "ACC0730": {
+   "netQty": -310060,
+   "allocCount": 400
+  },
+  "ACC0731": {
+   "netQty": -295110,
+   "allocCount": 400
+  },
+  "ACC0732": {
+   "netQty": 70650,
+   "allocCount": 400
+  },
+  "ACC0733": {
+   "netQty": 406100,
+   "allocCount": 400
+  },
+  "ACC0734": {
+   "netQty": 171210,
+   "allocCount": 400
+  },
+  "ACC0735": {
+   "netQty": -95320,
+   "allocCount": 400
+  },
+  "ACC0736": {
+   "netQty": 514380,
+   "allocCount": 400
+  },
+  "ACC0737": {
+   "netQty": -357790,
+   "allocCount": 400
+  },
+  "ACC0738": {
+   "netQty": -331950,
+   "allocCount": 400
+  },
+  "ACC0739": {
+   "netQty": -58740,
+   "allocCount": 400
+  },
+  "ACC0740": {
+   "netQty": 122020,
+   "allocCount": 400
+  },
+  "ACC0741": {
+   "netQty": -11840,
+   "allocCount": 400
+  },
+  "ACC0742": {
+   "netQty": 20040,
+   "allocCount": 400
+  },
+  "ACC0743": {
+   "netQty": 237810,
+   "allocCount": 400
+  },
+  "ACC0744": {
+   "netQty": 745420,
+   "allocCount": 400
+  },
+  "ACC0745": {
+   "netQty": 559960,
+   "allocCount": 400
+  },
+  "ACC0746": {
+   "netQty": -244500,
+   "allocCount": 400
+  },
+  "ACC0747": {
+   "netQty": -205640,
+   "allocCount": 400
+  },
+  "ACC0748": {
+   "netQty": 726360,
+   "allocCount": 400
+  },
+  "ACC0749": {
+   "netQty": -300880,
+   "allocCount": 400
+  },
+  "ACC0750": {
+   "netQty": 335030,
+   "allocCount": 400
+  },
+  "ACC0751": {
+   "netQty": -391490,
+   "allocCount": 400
+  },
+  "ACC0752": {
+   "netQty": -193760,
+   "allocCount": 400
+  },
+  "ACC0753": {
+   "netQty": -357280,
+   "allocCount": 400
+  },
+  "ACC0754": {
+   "netQty": -224700,
+   "allocCount": 400
+  },
+  "ACC0755": {
+   "netQty": 180990,
+   "allocCount": 400
+  },
+  "ACC0756": {
+   "netQty": -190250,
+   "allocCount": 400
+  },
+  "ACC0757": {
+   "netQty": 140480,
+   "allocCount": 400
+  },
+  "ACC0758": {
+   "netQty": -116740,
+   "allocCount": 400
+  },
+  "ACC0759": {
+   "netQty": 153840,
+   "allocCount": 400
+  },
+  "ACC0760": {
+   "netQty": 155360,
+   "allocCount": 400
+  },
+  "ACC0761": {
+   "netQty": 109420,
+   "allocCount": 400
+  },
+  "ACC0762": {
+   "netQty": -74170,
+   "allocCount": 400
+  },
+  "ACC0763": {
+   "netQty": -667260,
+   "allocCount": 400
+  },
+  "ACC0764": {
+   "netQty": 679980,
+   "allocCount": 400
+  },
+  "ACC0765": {
+   "netQty": 196240,
+   "allocCount": 400
+  },
+  "ACC0766": {
+   "netQty": 142770,
+   "allocCount": 400
+  },
+  "ACC0767": {
+   "netQty": -79660,
+   "allocCount": 400
+  },
+  "ACC0768": {
+   "netQty": 156690,
+   "allocCount": 400
+  },
+  "ACC0769": {
+   "netQty": -119770,
+   "allocCount": 400
+  },
+  "ACC0770": {
+   "netQty": 453190,
+   "allocCount": 400
+  },
+  "ACC0771": {
+   "netQty": -658580,
+   "allocCount": 400
+  },
+  "ACC0772": {
+   "netQty": -194420,
+   "allocCount": 400
+  },
+  "ACC0773": {
+   "netQty": -116020,
+   "allocCount": 400
+  },
+  "ACC0774": {
+   "netQty": -49990,
+   "allocCount": 400
+  },
+  "ACC0775": {
+   "netQty": -454720,
+   "allocCount": 400
+  },
+  "ACC0776": {
+   "netQty": 38290,
+   "allocCount": 400
+  },
+  "ACC0777": {
+   "netQty": 740010,
+   "allocCount": 400
+  },
+  "ACC0778": {
+   "netQty": -247490,
+   "allocCount": 400
+  },
+  "ACC0779": {
+   "netQty": 139440,
+   "allocCount": 400
+  },
+  "ACC0780": {
+   "netQty": -101140,
+   "allocCount": 400
+  },
+  "ACC0781": {
+   "netQty": 146120,
+   "allocCount": 400
+  },
+  "ACC0782": {
+   "netQty": -176830,
+   "allocCount": 400
+  },
+  "ACC0783": {
+   "netQty": 462240,
+   "allocCount": 400
+  },
+  "ACC0784": {
+   "netQty": 364490,
+   "allocCount": 400
+  },
+  "ACC0785": {
+   "netQty": 114330,
+   "allocCount": 400
+  },
+  "ACC0786": {
+   "netQty": -398370,
+   "allocCount": 400
+  },
+  "ACC0787": {
+   "netQty": -694390,
+   "allocCount": 400
+  },
+  "ACC0788": {
+   "netQty": 189280,
+   "allocCount": 400
+  },
+  "ACC0789": {
+   "netQty": 187340,
+   "allocCount": 400
+  },
+  "ACC0790": {
+   "netQty": 295890,
+   "allocCount": 400
+  },
+  "ACC0791": {
+   "netQty": -103930,
+   "allocCount": 400
+  },
+  "ACC0792": {
+   "netQty": -54940,
+   "allocCount": 400
+  },
+  "ACC0793": {
+   "netQty": -155470,
+   "allocCount": 400
+  },
+  "ACC0794": {
+   "netQty": 326660,
+   "allocCount": 400
+  },
+  "ACC0795": {
+   "netQty": 96950,
+   "allocCount": 400
+  },
+  "ACC0796": {
+   "netQty": -31090,
+   "allocCount": 400
+  },
+  "ACC0797": {
+   "netQty": 361590,
+   "allocCount": 400
+  },
+  "ACC0798": {
+   "netQty": 602440,
+   "allocCount": 400
+  },
+  "ACC0799": {
+   "netQty": 211260,
+   "allocCount": 400
+  },
+  "ACC0800": {
+   "netQty": 23950,
+   "allocCount": 400
+  },
+  "ACC0801": {
+   "netQty": 57680,
+   "allocCount": 400
+  },
+  "ACC0802": {
+   "netQty": -81090,
+   "allocCount": 400
+  },
+  "ACC0803": {
+   "netQty": 256400,
+   "allocCount": 400
+  },
+  "ACC0804": {
+   "netQty": 94090,
+   "allocCount": 400
+  },
+  "ACC0805": {
+   "netQty": 87500,
+   "allocCount": 400
+  },
+  "ACC0806": {
+   "netQty": -951450,
+   "allocCount": 400
+  },
+  "ACC0807": {
+   "netQty": -318790,
+   "allocCount": 400
+  },
+  "ACC0808": {
+   "netQty": 55660,
+   "allocCount": 400
+  },
+  "ACC0809": {
+   "netQty": -411400,
+   "allocCount": 400
+  },
+  "ACC0810": {
+   "netQty": 101890,
+   "allocCount": 400
+  },
+  "ACC0811": {
+   "netQty": -702750,
+   "allocCount": 400
+  },
+  "ACC0812": {
+   "netQty": 202370,
+   "allocCount": 400
+  },
+  "ACC0813": {
+   "netQty": 611360,
+   "allocCount": 400
+  },
+  "ACC0814": {
+   "netQty": -445000,
+   "allocCount": 400
+  },
+  "ACC0815": {
+   "netQty": 201250,
+   "allocCount": 400
+  },
+  "ACC0816": {
+   "netQty": -219520,
+   "allocCount": 400
+  },
+  "ACC0817": {
+   "netQty": 44790,
+   "allocCount": 400
+  },
+  "ACC0818": {
+   "netQty": 376870,
+   "allocCount": 400
+  },
+  "ACC0819": {
+   "netQty": -110590,
+   "allocCount": 400
+  },
+  "ACC0820": {
+   "netQty": -103170,
+   "allocCount": 400
+  },
+  "ACC0821": {
+   "netQty": -530180,
+   "allocCount": 400
+  },
+  "ACC0822": {
+   "netQty": -59330,
+   "allocCount": 400
+  },
+  "ACC0823": {
+   "netQty": 627400,
+   "allocCount": 400
+  },
+  "ACC0824": {
+   "netQty": -280780,
+   "allocCount": 400
+  },
+  "ACC0825": {
+   "netQty": 2790,
+   "allocCount": 400
+  },
+  "ACC0826": {
+   "netQty": -421960,
+   "allocCount": 400
+  },
+  "ACC0827": {
+   "netQty": -70400,
+   "allocCount": 400
+  },
+  "ACC0828": {
+   "netQty": 181810,
+   "allocCount": 400
+  },
+  "ACC0829": {
+   "netQty": -12430,
+   "allocCount": 400
+  },
+  "ACC0830": {
+   "netQty": 152780,
+   "allocCount": 400
+  },
+  "ACC0831": {
+   "netQty": 84530,
+   "allocCount": 400
+  },
+  "ACC0832": {
+   "netQty": -44170,
+   "allocCount": 400
+  },
+  "ACC0833": {
+   "netQty": -386890,
+   "allocCount": 400
+  },
+  "ACC0834": {
+   "netQty": -100540,
+   "allocCount": 400
+  },
+  "ACC0835": {
+   "netQty": -498380,
+   "allocCount": 400
+  },
+  "ACC0836": {
+   "netQty": -317980,
+   "allocCount": 400
+  },
+  "ACC0837": {
+   "netQty": -303970,
+   "allocCount": 400
+  },
+  "ACC0838": {
+   "netQty": 156130,
+   "allocCount": 400
+  },
+  "ACC0839": {
+   "netQty": -67850,
+   "allocCount": 400
+  },
+  "ACC0840": {
+   "netQty": -135940,
+   "allocCount": 400
+  },
+  "ACC0841": {
+   "netQty": 513540,
+   "allocCount": 400
+  },
+  "ACC0842": {
+   "netQty": -189800,
+   "allocCount": 400
+  },
+  "ACC0843": {
+   "netQty": -52610,
+   "allocCount": 400
+  },
+  "ACC0844": {
+   "netQty": -73270,
+   "allocCount": 400
+  },
+  "ACC0845": {
+   "netQty": -562810,
+   "allocCount": 400
+  },
+  "ACC0846": {
+   "netQty": -619750,
+   "allocCount": 400
+  },
+  "ACC0847": {
+   "netQty": 171760,
+   "allocCount": 400
+  },
+  "ACC0848": {
+   "netQty": 155430,
+   "allocCount": 400
+  },
+  "ACC0849": {
+   "netQty": 102890,
+   "allocCount": 400
+  },
+  "ACC0850": {
+   "netQty": -289130,
+   "allocCount": 400
+  },
+  "ACC0851": {
+   "netQty": -362880,
+   "allocCount": 400
+  },
+  "ACC0852": {
+   "netQty": 443800,
+   "allocCount": 400
+  },
+  "ACC0853": {
+   "netQty": 106790,
+   "allocCount": 400
+  },
+  "ACC0854": {
+   "netQty": 227460,
+   "allocCount": 400
+  },
+  "ACC0855": {
+   "netQty": -311500,
+   "allocCount": 400
+  },
+  "ACC0856": {
+   "netQty": -477940,
+   "allocCount": 400
+  },
+  "ACC0857": {
+   "netQty": -13660,
+   "allocCount": 400
+  },
+  "ACC0858": {
+   "netQty": -306280,
+   "allocCount": 400
+  },
+  "ACC0859": {
+   "netQty": -75310,
+   "allocCount": 400
+  },
+  "ACC0860": {
+   "netQty": 57880,
+   "allocCount": 400
+  },
+  "ACC0861": {
+   "netQty": -133150,
+   "allocCount": 400
+  },
+  "ACC0862": {
+   "netQty": 299250,
+   "allocCount": 400
+  },
+  "ACC0863": {
+   "netQty": -418890,
+   "allocCount": 400
+  },
+  "ACC0864": {
+   "netQty": 281050,
+   "allocCount": 400
+  },
+  "ACC0865": {
+   "netQty": -236430,
+   "allocCount": 400
+  },
+  "ACC0866": {
+   "netQty": -245700,
+   "allocCount": 400
+  },
+  "ACC0867": {
+   "netQty": -44630,
+   "allocCount": 400
+  },
+  "ACC0868": {
+   "netQty": 630290,
+   "allocCount": 400
+  },
+  "ACC0869": {
+   "netQty": 133990,
+   "allocCount": 400
+  },
+  "ACC0870": {
+   "netQty": 106560,
+   "allocCount": 400
+  },
+  "ACC0871": {
+   "netQty": 347640,
+   "allocCount": 400
+  },
+  "ACC0872": {
+   "netQty": -121330,
+   "allocCount": 400
+  },
+  "ACC0873": {
+   "netQty": 264060,
+   "allocCount": 400
+  },
+  "ACC0874": {
+   "netQty": -442550,
+   "allocCount": 400
+  },
+  "ACC0875": {
+   "netQty": 33530,
+   "allocCount": 400
+  },
+  "ACC0876": {
+   "netQty": 495650,
+   "allocCount": 400
+  },
+  "ACC0877": {
+   "netQty": -513110,
+   "allocCount": 400
+  },
+  "ACC0878": {
+   "netQty": 181630,
+   "allocCount": 400
+  },
+  "ACC0879": {
+   "netQty": 1139820,
+   "allocCount": 400
+  },
+  "ACC0880": {
+   "netQty": 65750,
+   "allocCount": 400
+  },
+  "ACC0881": {
+   "netQty": -294310,
+   "allocCount": 400
+  },
+  "ACC0882": {
+   "netQty": 251620,
+   "allocCount": 400
+  },
+  "ACC0883": {
+   "netQty": -531750,
+   "allocCount": 400
+  },
+  "ACC0884": {
+   "netQty": -231080,
+   "allocCount": 400
+  },
+  "ACC0885": {
+   "netQty": -246890,
+   "allocCount": 400
+  },
+  "ACC0886": {
+   "netQty": -337230,
+   "allocCount": 400
+  },
+  "ACC0887": {
+   "netQty": 155220,
+   "allocCount": 400
+  },
+  "ACC0888": {
+   "netQty": 315980,
+   "allocCount": 400
+  },
+  "ACC0889": {
+   "netQty": -236380,
+   "allocCount": 400
+  },
+  "ACC0890": {
+   "netQty": -232640,
+   "allocCount": 400
+  },
+  "ACC0891": {
+   "netQty": 161530,
+   "allocCount": 400
+  },
+  "ACC0892": {
+   "netQty": 368090,
+   "allocCount": 400
+  },
+  "ACC0893": {
+   "netQty": 115140,
+   "allocCount": 400
+  },
+  "ACC0894": {
+   "netQty": -132570,
+   "allocCount": 400
+  },
+  "ACC0895": {
+   "netQty": 59240,
+   "allocCount": 400
+  },
+  "ACC0896": {
+   "netQty": 235670,
+   "allocCount": 400
+  },
+  "ACC0897": {
+   "netQty": 215370,
+   "allocCount": 400
+  },
+  "ACC0898": {
+   "netQty": 177890,
+   "allocCount": 400
+  },
+  "ACC0899": {
+   "netQty": 14680,
+   "allocCount": 400
+  },
+  "ACC0900": {
+   "netQty": -156730,
+   "allocCount": 400
+  },
+  "ACC0901": {
+   "netQty": -20080,
+   "allocCount": 400
+  },
+  "ACC0902": {
+   "netQty": 414150,
+   "allocCount": 400
+  },
+  "ACC0903": {
+   "netQty": 282600,
+   "allocCount": 400
+  },
+  "ACC0904": {
+   "netQty": 594210,
+   "allocCount": 400
+  },
+  "ACC0905": {
+   "netQty": -188640,
+   "allocCount": 400
+  },
+  "ACC0906": {
+   "netQty": -137350,
+   "allocCount": 400
+  },
+  "ACC0907": {
+   "netQty": 223000,
+   "allocCount": 400
+  },
+  "ACC0908": {
+   "netQty": 340350,
+   "allocCount": 400
+  },
+  "ACC0909": {
+   "netQty": 216540,
+   "allocCount": 400
+  },
+  "ACC0910": {
+   "netQty": -116660,
+   "allocCount": 400
+  },
+  "ACC0911": {
+   "netQty": 51290,
+   "allocCount": 400
+  },
+  "ACC0912": {
+   "netQty": 624300,
+   "allocCount": 400
+  },
+  "ACC0913": {
+   "netQty": -303670,
+   "allocCount": 400
+  },
+  "ACC0914": {
+   "netQty": 494270,
+   "allocCount": 400
+  },
+  "ACC0915": {
+   "netQty": 433730,
+   "allocCount": 400
+  },
+  "ACC0916": {
+   "netQty": -158910,
+   "allocCount": 400
+  },
+  "ACC0917": {
+   "netQty": -154880,
+   "allocCount": 400
+  },
+  "ACC0918": {
+   "netQty": 196110,
+   "allocCount": 400
+  },
+  "ACC0919": {
+   "netQty": 214300,
+   "allocCount": 400
+  },
+  "ACC0920": {
+   "netQty": -81500,
+   "allocCount": 400
+  },
+  "ACC0921": {
+   "netQty": -376930,
+   "allocCount": 400
+  },
+  "ACC0922": {
+   "netQty": 191950,
+   "allocCount": 400
+  },
+  "ACC0923": {
+   "netQty": 144990,
+   "allocCount": 400
+  },
+  "ACC0924": {
+   "netQty": 124580,
+   "allocCount": 400
+  },
+  "ACC0925": {
+   "netQty": 24720,
+   "allocCount": 400
+  },
+  "ACC0926": {
+   "netQty": -113450,
+   "allocCount": 400
+  },
+  "ACC0927": {
+   "netQty": 230870,
+   "allocCount": 400
+  },
+  "ACC0928": {
+   "netQty": -183850,
+   "allocCount": 400
+  },
+  "ACC0929": {
+   "netQty": 274320,
+   "allocCount": 400
+  },
+  "ACC0930": {
+   "netQty": -694830,
+   "allocCount": 400
+  },
+  "ACC0931": {
+   "netQty": 42080,
+   "allocCount": 400
+  },
+  "ACC0932": {
+   "netQty": 257910,
+   "allocCount": 400
+  },
+  "ACC0933": {
+   "netQty": -293920,
+   "allocCount": 400
+  },
+  "ACC0934": {
+   "netQty": -86570,
+   "allocCount": 400
+  },
+  "ACC0935": {
+   "netQty": 126670,
+   "allocCount": 400
+  },
+  "ACC0936": {
+   "netQty": -544360,
+   "allocCount": 400
+  },
+  "ACC0937": {
+   "netQty": 428160,
+   "allocCount": 400
+  },
+  "ACC0938": {
+   "netQty": 20180,
+   "allocCount": 400
+  },
+  "ACC0939": {
+   "netQty": -64960,
+   "allocCount": 400
+  },
+  "ACC0940": {
+   "netQty": -376560,
+   "allocCount": 400
+  },
+  "ACC0941": {
+   "netQty": -64120,
+   "allocCount": 400
+  },
+  "ACC0942": {
+   "netQty": 326900,
+   "allocCount": 400
+  },
+  "ACC0943": {
+   "netQty": -235790,
+   "allocCount": 400
+  },
+  "ACC0944": {
+   "netQty": -520140,
+   "allocCount": 400
+  },
+  "ACC0945": {
+   "netQty": 67920,
+   "allocCount": 400
+  },
+  "ACC0946": {
+   "netQty": 373690,
+   "allocCount": 400
+  },
+  "ACC0947": {
+   "netQty": 180580,
+   "allocCount": 400
+  },
+  "ACC0948": {
+   "netQty": -131990,
+   "allocCount": 400
+  },
+  "ACC0949": {
+   "netQty": -146380,
+   "allocCount": 400
+  },
+  "ACC0950": {
+   "netQty": 470180,
+   "allocCount": 400
+  },
+  "ACC0951": {
+   "netQty": 454640,
+   "allocCount": 400
+  },
+  "ACC0952": {
+   "netQty": -280810,
+   "allocCount": 400
+  },
+  "ACC0953": {
+   "netQty": 336040,
+   "allocCount": 400
+  },
+  "ACC0954": {
+   "netQty": -158640,
+   "allocCount": 400
+  },
+  "ACC0955": {
+   "netQty": 711550,
+   "allocCount": 400
+  },
+  "ACC0956": {
+   "netQty": -125440,
+   "allocCount": 400
+  },
+  "ACC0957": {
+   "netQty": -558200,
+   "allocCount": 400
+  },
+  "ACC0958": {
+   "netQty": -220810,
+   "allocCount": 400
+  },
+  "ACC0959": {
+   "netQty": -371190,
+   "allocCount": 400
+  },
+  "ACC0960": {
+   "netQty": 455040,
+   "allocCount": 400
+  },
+  "ACC0961": {
+   "netQty": -16560,
+   "allocCount": 400
+  },
+  "ACC0962": {
+   "netQty": 171230,
+   "allocCount": 400
+  },
+  "ACC0963": {
+   "netQty": 772190,
+   "allocCount": 400
+  },
+  "ACC0964": {
+   "netQty": -117500,
+   "allocCount": 400
+  },
+  "ACC0965": {
+   "netQty": -530610,
+   "allocCount": 400
+  },
+  "ACC0966": {
+   "netQty": -219710,
+   "allocCount": 400
+  },
+  "ACC0967": {
+   "netQty": 165930,
+   "allocCount": 400
+  },
+  "ACC0968": {
+   "netQty": 233580,
+   "allocCount": 400
+  },
+  "ACC0969": {
+   "netQty": -359990,
+   "allocCount": 400
+  },
+  "ACC0970": {
+   "netQty": -163560,
+   "allocCount": 400
+  },
+  "ACC0971": {
+   "netQty": -311180,
+   "allocCount": 400
+  },
+  "ACC0972": {
+   "netQty": 332150,
+   "allocCount": 400
+  },
+  "ACC0973": {
+   "netQty": -612790,
+   "allocCount": 400
+  },
+  "ACC0974": {
+   "netQty": 476630,
+   "allocCount": 400
+  },
+  "ACC0975": {
+   "netQty": 25230,
+   "allocCount": 400
+  },
+  "ACC0976": {
+   "netQty": -434240,
+   "allocCount": 400
+  },
+  "ACC0977": {
+   "netQty": 314530,
+   "allocCount": 400
+  },
+  "ACC0978": {
+   "netQty": 308450,
+   "allocCount": 400
+  },
+  "ACC0979": {
+   "netQty": 175550,
+   "allocCount": 400
+  },
+  "ACC0980": {
+   "netQty": -878110,
+   "allocCount": 400
+  },
+  "ACC0981": {
+   "netQty": -329500,
+   "allocCount": 400
+  },
+  "ACC0982": {
+   "netQty": 197920,
+   "allocCount": 400
+  },
+  "ACC0983": {
+   "netQty": -493970,
+   "allocCount": 400
+  },
+  "ACC0984": {
+   "netQty": -36830,
+   "allocCount": 400
+  },
+  "ACC0985": {
+   "netQty": -47650,
+   "allocCount": 400
+  },
+  "ACC0986": {
+   "netQty": -142270,
+   "allocCount": 400
+  },
+  "ACC0987": {
+   "netQty": 333230,
+   "allocCount": 400
+  },
+  "ACC0988": {
+   "netQty": 87620,
+   "allocCount": 400
+  },
+  "ACC0989": {
+   "netQty": 53770,
+   "allocCount": 400
+  },
+  "ACC0990": {
+   "netQty": 204180,
+   "allocCount": 400
+  },
+  "ACC0991": {
+   "netQty": -463150,
+   "allocCount": 400
+  },
+  "ACC0992": {
+   "netQty": -229990,
+   "allocCount": 400
+  },
+  "ACC0993": {
+   "netQty": -44540,
+   "allocCount": 400
+  },
+  "ACC0994": {
+   "netQty": -59260,
+   "allocCount": 400
+  },
+  "ACC0995": {
+   "netQty": 168280,
+   "allocCount": 400
+  },
+  "ACC0996": {
+   "netQty": 758700,
+   "allocCount": 400
+  },
+  "ACC0997": {
+   "netQty": 832300,
+   "allocCount": 400
+  },
+  "ACC0998": {
+   "netQty": 428350,
+   "allocCount": 400
+  },
+  "ACC0999": {
+   "netQty": 327130,
+   "allocCount": 400
+  },
+  "ACC1000": {
+   "netQty": 124690,
+   "allocCount": 400
+  },
+  "ACC1001": {
+   "netQty": -89220,
+   "allocCount": 400
+  },
+  "ACC1002": {
+   "netQty": 190160,
+   "allocCount": 400
+  },
+  "ACC1003": {
+   "netQty": 16800,
+   "allocCount": 400
+  },
+  "ACC1004": {
+   "netQty": 250210,
+   "allocCount": 400
+  },
+  "ACC1005": {
+   "netQty": 20460,
+   "allocCount": 400
+  },
+  "ACC1006": {
+   "netQty": -74550,
+   "allocCount": 400
+  },
+  "ACC1007": {
+   "netQty": -238020,
+   "allocCount": 400
+  },
+  "ACC1008": {
+   "netQty": -485670,
+   "allocCount": 400
+  },
+  "ACC1009": {
+   "netQty": 341030,
+   "allocCount": 400
+  },
+  "ACC1010": {
+   "netQty": 652910,
+   "allocCount": 400
+  },
+  "ACC1011": {
+   "netQty": -2910,
+   "allocCount": 400
+  },
+  "ACC1012": {
+   "netQty": 299530,
+   "allocCount": 400
+  },
+  "ACC1013": {
+   "netQty": 105160,
+   "allocCount": 400
+  },
+  "ACC1014": {
+   "netQty": 112630,
+   "allocCount": 400
+  },
+  "ACC1015": {
+   "netQty": -126530,
+   "allocCount": 400
+  },
+  "ACC1016": {
+   "netQty": -116850,
+   "allocCount": 400
+  },
+  "ACC1017": {
+   "netQty": -108630,
+   "allocCount": 400
+  },
+  "ACC1018": {
+   "netQty": 322210,
+   "allocCount": 400
+  },
+  "ACC1019": {
+   "netQty": -10240,
+   "allocCount": 400
+  },
+  "ACC1020": {
+   "netQty": 11950,
+   "allocCount": 400
+  },
+  "ACC1021": {
+   "netQty": 466420,
+   "allocCount": 400
+  },
+  "ACC1022": {
+   "netQty": -513040,
+   "allocCount": 400
+  },
+  "ACC1023": {
+   "netQty": 311540,
+   "allocCount": 400
+  },
+  "ACC1024": {
+   "netQty": -206530,
+   "allocCount": 400
+  },
+  "ACC1025": {
+   "netQty": 362350,
+   "allocCount": 400
+  },
+  "ACC1026": {
+   "netQty": -938740,
+   "allocCount": 400
+  },
+  "ACC1027": {
+   "netQty": -178420,
+   "allocCount": 400
+  },
+  "ACC1028": {
+   "netQty": 82040,
+   "allocCount": 400
+  },
+  "ACC1029": {
+   "netQty": 404030,
+   "allocCount": 400
+  },
+  "ACC1030": {
+   "netQty": -3160,
+   "allocCount": 400
+  },
+  "ACC1031": {
+   "netQty": -779350,
+   "allocCount": 400
+  },
+  "ACC1032": {
+   "netQty": -96600,
+   "allocCount": 400
+  },
+  "ACC1033": {
+   "netQty": 378700,
+   "allocCount": 400
+  },
+  "ACC1034": {
+   "netQty": 532780,
+   "allocCount": 400
+  },
+  "ACC1035": {
+   "netQty": -132270,
+   "allocCount": 400
+  },
+  "ACC1036": {
+   "netQty": 210050,
+   "allocCount": 400
+  },
+  "ACC1037": {
+   "netQty": 6470,
+   "allocCount": 400
+  },
+  "ACC1038": {
+   "netQty": -491380,
+   "allocCount": 400
+  },
+  "ACC1039": {
+   "netQty": -339530,
+   "allocCount": 400
+  },
+  "ACC1040": {
+   "netQty": -298370,
+   "allocCount": 400
+  },
+  "ACC1041": {
+   "netQty": 57170,
+   "allocCount": 400
+  },
+  "ACC1042": {
+   "netQty": 192500,
+   "allocCount": 400
+  },
+  "ACC1043": {
+   "netQty": -77440,
+   "allocCount": 400
+  },
+  "ACC1044": {
+   "netQty": -151990,
+   "allocCount": 400
+  },
+  "ACC1045": {
+   "netQty": 190020,
+   "allocCount": 400
+  },
+  "ACC1046": {
+   "netQty": 136460,
+   "allocCount": 400
+  },
+  "ACC1047": {
+   "netQty": 442850,
+   "allocCount": 400
+  },
+  "ACC1048": {
+   "netQty": -133550,
+   "allocCount": 400
+  },
+  "ACC1049": {
+   "netQty": 265320,
+   "allocCount": 400
+  },
+  "ACC1050": {
+   "netQty": 197110,
+   "allocCount": 400
+  },
+  "ACC1051": {
+   "netQty": 297220,
+   "allocCount": 400
+  },
+  "ACC1052": {
+   "netQty": 456140,
+   "allocCount": 400
+  },
+  "ACC1053": {
+   "netQty": -578000,
+   "allocCount": 400
+  },
+  "ACC1054": {
+   "netQty": 585150,
+   "allocCount": 400
+  },
+  "ACC1055": {
+   "netQty": -233280,
+   "allocCount": 400
+  },
+  "ACC1056": {
+   "netQty": 292100,
+   "allocCount": 400
+  },
+  "ACC1057": {
+   "netQty": 46260,
+   "allocCount": 400
+  },
+  "ACC1058": {
+   "netQty": -153570,
+   "allocCount": 400
+  },
+  "ACC1059": {
+   "netQty": -195360,
+   "allocCount": 400
+  },
+  "ACC1060": {
+   "netQty": -335220,
+   "allocCount": 400
+  },
+  "ACC1061": {
+   "netQty": -80350,
+   "allocCount": 400
+  },
+  "ACC1062": {
+   "netQty": 52870,
+   "allocCount": 400
+  },
+  "ACC1063": {
+   "netQty": -100760,
+   "allocCount": 400
+  },
+  "ACC1064": {
+   "netQty": -294040,
+   "allocCount": 400
+  },
+  "ACC1065": {
+   "netQty": -1015040,
+   "allocCount": 400
+  },
+  "ACC1066": {
+   "netQty": 418700,
+   "allocCount": 400
+  },
+  "ACC1067": {
+   "netQty": 615160,
+   "allocCount": 400
+  },
+  "ACC1068": {
+   "netQty": -434600,
+   "allocCount": 400
+  },
+  "ACC1069": {
+   "netQty": -210690,
+   "allocCount": 400
+  },
+  "ACC1070": {
+   "netQty": 112070,
+   "allocCount": 400
+  },
+  "ACC1071": {
+   "netQty": 244030,
+   "allocCount": 400
+  },
+  "ACC1072": {
+   "netQty": -73580,
+   "allocCount": 400
+  },
+  "ACC1073": {
+   "netQty": 280970,
+   "allocCount": 400
+  },
+  "ACC1074": {
+   "netQty": -231810,
+   "allocCount": 400
+  },
+  "ACC1075": {
+   "netQty": -295710,
+   "allocCount": 400
+  },
+  "ACC1076": {
+   "netQty": -142800,
+   "allocCount": 400
+  },
+  "ACC1077": {
+   "netQty": -435970,
+   "allocCount": 400
+  },
+  "ACC1078": {
+   "netQty": -269030,
+   "allocCount": 400
+  },
+  "ACC1079": {
+   "netQty": -369610,
+   "allocCount": 400
+  },
+  "ACC1080": {
+   "netQty": -352110,
+   "allocCount": 400
+  },
+  "ACC1081": {
+   "netQty": -168650,
+   "allocCount": 400
+  },
+  "ACC1082": {
+   "netQty": 197060,
+   "allocCount": 400
+  },
+  "ACC1083": {
+   "netQty": -496360,
+   "allocCount": 400
+  },
+  "ACC1084": {
+   "netQty": -350440,
+   "allocCount": 400
+  },
+  "ACC1085": {
+   "netQty": -773170,
+   "allocCount": 400
+  },
+  "ACC1086": {
+   "netQty": -358870,
+   "allocCount": 400
+  },
+  "ACC1087": {
+   "netQty": 616220,
+   "allocCount": 400
+  },
+  "ACC1088": {
+   "netQty": 318360,
+   "allocCount": 400
+  },
+  "ACC1089": {
+   "netQty": -49420,
+   "allocCount": 400
+  },
+  "ACC1090": {
+   "netQty": 235730,
+   "allocCount": 400
+  },
+  "ACC1091": {
+   "netQty": 60750,
+   "allocCount": 400
+  },
+  "ACC1092": {
+   "netQty": -28420,
+   "allocCount": 400
+  },
+  "ACC1093": {
+   "netQty": -100780,
+   "allocCount": 400
+  },
+  "ACC1094": {
+   "netQty": 271240,
+   "allocCount": 400
+  },
+  "ACC1095": {
+   "netQty": 133080,
+   "allocCount": 400
+  },
+  "ACC1096": {
+   "netQty": -386250,
+   "allocCount": 400
+  },
+  "ACC1097": {
+   "netQty": 60110,
+   "allocCount": 400
+  },
+  "ACC1098": {
+   "netQty": -467680,
+   "allocCount": 400
+  },
+  "ACC1099": {
+   "netQty": 522050,
+   "allocCount": 400
+  },
+  "ACC1100": {
+   "netQty": 185380,
+   "allocCount": 400
+  },
+  "ACC1101": {
+   "netQty": -410880,
+   "allocCount": 400
+  },
+  "ACC1102": {
+   "netQty": -85340,
+   "allocCount": 400
+  },
+  "ACC1103": {
+   "netQty": -99330,
+   "allocCount": 400
+  },
+  "ACC1104": {
+   "netQty": -185230,
+   "allocCount": 400
+  },
+  "ACC1105": {
+   "netQty": 490550,
+   "allocCount": 400
+  },
+  "ACC1106": {
+   "netQty": 415980,
+   "allocCount": 400
+  },
+  "ACC1107": {
+   "netQty": -2350,
+   "allocCount": 400
+  },
+  "ACC1108": {
+   "netQty": 306160,
+   "allocCount": 400
+  },
+  "ACC1109": {
+   "netQty": -11650,
+   "allocCount": 400
+  },
+  "ACC1110": {
+   "netQty": -409950,
+   "allocCount": 400
+  },
+  "ACC1111": {
+   "netQty": -635580,
+   "allocCount": 400
+  },
+  "ACC1112": {
+   "netQty": -43170,
+   "allocCount": 400
+  },
+  "ACC1113": {
+   "netQty": -10260,
+   "allocCount": 400
+  },
+  "ACC1114": {
+   "netQty": -543470,
+   "allocCount": 400
+  },
+  "ACC1115": {
+   "netQty": 174380,
+   "allocCount": 400
+  },
+  "ACC1116": {
+   "netQty": 49280,
+   "allocCount": 400
+  },
+  "ACC1117": {
+   "netQty": -383640,
+   "allocCount": 400
+  },
+  "ACC1118": {
+   "netQty": 209970,
+   "allocCount": 400
+  },
+  "ACC1119": {
+   "netQty": 18450,
+   "allocCount": 400
+  },
+  "ACC1120": {
+   "netQty": 292950,
+   "allocCount": 400
+  },
+  "ACC1121": {
+   "netQty": -236650,
+   "allocCount": 400
+  },
+  "ACC1122": {
+   "netQty": -337960,
+   "allocCount": 400
+  },
+  "ACC1123": {
+   "netQty": 460580,
+   "allocCount": 400
+  },
+  "ACC1124": {
+   "netQty": 67660,
+   "allocCount": 400
+  },
+  "ACC1125": {
+   "netQty": -251990,
+   "allocCount": 400
+  },
+  "ACC1126": {
+   "netQty": -555630,
+   "allocCount": 400
+  },
+  "ACC1127": {
+   "netQty": 116350,
+   "allocCount": 400
+  },
+  "ACC1128": {
+   "netQty": 590220,
+   "allocCount": 400
+  },
+  "ACC1129": {
+   "netQty": -535350,
+   "allocCount": 400
+  },
+  "ACC1130": {
+   "netQty": -523050,
+   "allocCount": 400
+  },
+  "ACC1131": {
+   "netQty": 7770,
+   "allocCount": 400
+  },
+  "ACC1132": {
+   "netQty": 122190,
+   "allocCount": 400
+  },
+  "ACC1133": {
+   "netQty": -49980,
+   "allocCount": 400
+  },
+  "ACC1134": {
+   "netQty": 414890,
+   "allocCount": 400
+  },
+  "ACC1135": {
+   "netQty": -406300,
+   "allocCount": 400
+  },
+  "ACC1136": {
+   "netQty": -67670,
+   "allocCount": 400
+  },
+  "ACC1137": {
+   "netQty": -126700,
+   "allocCount": 400
+  },
+  "ACC1138": {
+   "netQty": -528890,
+   "allocCount": 400
+  },
+  "ACC1139": {
+   "netQty": 100610,
+   "allocCount": 400
+  },
+  "ACC1140": {
+   "netQty": 582970,
+   "allocCount": 400
+  },
+  "ACC1141": {
+   "netQty": -391200,
+   "allocCount": 400
+  },
+  "ACC1142": {
+   "netQty": 308950,
+   "allocCount": 400
+  },
+  "ACC1143": {
+   "netQty": -531140,
+   "allocCount": 400
+  },
+  "ACC1144": {
+   "netQty": 104220,
+   "allocCount": 400
+  },
+  "ACC1145": {
+   "netQty": -204780,
+   "allocCount": 400
+  },
+  "ACC1146": {
+   "netQty": 195670,
+   "allocCount": 400
+  },
+  "ACC1147": {
+   "netQty": -6340,
+   "allocCount": 400
+  },
+  "ACC1148": {
+   "netQty": 419950,
+   "allocCount": 400
+  },
+  "ACC1149": {
+   "netQty": 390360,
+   "allocCount": 400
+  },
+  "ACC1150": {
+   "netQty": -364250,
+   "allocCount": 400
+  },
+  "ACC1151": {
+   "netQty": 73650,
+   "allocCount": 400
+  },
+  "ACC1152": {
+   "netQty": 218580,
+   "allocCount": 400
+  },
+  "ACC1153": {
+   "netQty": -77220,
+   "allocCount": 400
+  },
+  "ACC1154": {
+   "netQty": -766970,
+   "allocCount": 400
+  },
+  "ACC1155": {
+   "netQty": 112820,
+   "allocCount": 400
+  },
+  "ACC1156": {
+   "netQty": -249160,
+   "allocCount": 400
+  },
+  "ACC1157": {
+   "netQty": -151200,
+   "allocCount": 400
+  },
+  "ACC1158": {
+   "netQty": 292890,
+   "allocCount": 400
+  },
+  "ACC1159": {
+   "netQty": -127580,
+   "allocCount": 400
+  },
+  "ACC1160": {
+   "netQty": -10860,
+   "allocCount": 400
+  },
+  "ACC1161": {
+   "netQty": 779140,
+   "allocCount": 400
+  },
+  "ACC1162": {
+   "netQty": -320880,
+   "allocCount": 400
+  },
+  "ACC1163": {
+   "netQty": -508660,
+   "allocCount": 400
+  },
+  "ACC1164": {
+   "netQty": -488080,
+   "allocCount": 400
+  },
+  "ACC1165": {
+   "netQty": 267490,
+   "allocCount": 400
+  },
+  "ACC1166": {
+   "netQty": 514000,
+   "allocCount": 400
+  },
+  "ACC1167": {
+   "netQty": 423980,
+   "allocCount": 400
+  },
+  "ACC1168": {
+   "netQty": 84440,
+   "allocCount": 400
+  },
+  "ACC1169": {
+   "netQty": -67040,
+   "allocCount": 400
+  },
+  "ACC1170": {
+   "netQty": 6970,
+   "allocCount": 400
+  },
+  "ACC1171": {
+   "netQty": -196680,
+   "allocCount": 400
+  },
+  "ACC1172": {
+   "netQty": -155220,
+   "allocCount": 400
+  },
+  "ACC1173": {
+   "netQty": 34350,
+   "allocCount": 400
+  },
+  "ACC1174": {
+   "netQty": -39860,
+   "allocCount": 400
+  },
+  "ACC1175": {
+   "netQty": -2680,
+   "allocCount": 400
+  },
+  "ACC1176": {
+   "netQty": 261750,
+   "allocCount": 400
+  },
+  "ACC1177": {
+   "netQty": 62100,
+   "allocCount": 400
+  },
+  "ACC1178": {
+   "netQty": 308290,
+   "allocCount": 400
+  },
+  "ACC1179": {
+   "netQty": -257040,
+   "allocCount": 400
+  },
+  "ACC1180": {
+   "netQty": 170360,
+   "allocCount": 400
+  },
+  "ACC1181": {
+   "netQty": 190980,
+   "allocCount": 400
+  },
+  "ACC1182": {
+   "netQty": 24180,
+   "allocCount": 400
+  },
+  "ACC1183": {
+   "netQty": 8550,
+   "allocCount": 400
+  },
+  "ACC1184": {
+   "netQty": -520190,
+   "allocCount": 400
+  },
+  "ACC1185": {
+   "netQty": -687500,
+   "allocCount": 400
+  },
+  "ACC1186": {
+   "netQty": -384840,
+   "allocCount": 400
+  },
+  "ACC1187": {
+   "netQty": 139330,
+   "allocCount": 400
+  },
+  "ACC1188": {
+   "netQty": -68830,
+   "allocCount": 400
+  },
+  "ACC1189": {
+   "netQty": 137940,
+   "allocCount": 400
+  },
+  "ACC1190": {
+   "netQty": 229710,
+   "allocCount": 400
+  },
+  "ACC1191": {
+   "netQty": 154610,
+   "allocCount": 400
+  },
+  "ACC1192": {
+   "netQty": 471600,
+   "allocCount": 400
+  },
+  "ACC1193": {
+   "netQty": -68970,
+   "allocCount": 400
+  },
+  "ACC1194": {
+   "netQty": 385530,
+   "allocCount": 400
+  },
+  "ACC1195": {
+   "netQty": 2600,
+   "allocCount": 400
+  },
+  "ACC1196": {
+   "netQty": -554150,
+   "allocCount": 400
+  },
+  "ACC1197": {
+   "netQty": -44550,
+   "allocCount": 400
+  },
+  "ACC1198": {
+   "netQty": 83260,
+   "allocCount": 400
+  },
+  "ACC1199": {
+   "netQty": 3340,
+   "allocCount": 400
+  },
+  "ACC1200": {
+   "netQty": -178120,
+   "allocCount": 400
+  },
+  "ACC1201": {
+   "netQty": -181260,
+   "allocCount": 400
+  },
+  "ACC1202": {
+   "netQty": 554950,
+   "allocCount": 400
+  },
+  "ACC1203": {
+   "netQty": -406230,
+   "allocCount": 400
+  },
+  "ACC1204": {
+   "netQty": -109070,
+   "allocCount": 400
+  },
+  "ACC1205": {
+   "netQty": 194150,
+   "allocCount": 400
+  },
+  "ACC1206": {
+   "netQty": 278920,
+   "allocCount": 400
+  },
+  "ACC1207": {
+   "netQty": 22730,
+   "allocCount": 400
+  },
+  "ACC1208": {
+   "netQty": 102700,
+   "allocCount": 400
+  },
+  "ACC1209": {
+   "netQty": -331980,
+   "allocCount": 400
+  },
+  "ACC1210": {
+   "netQty": 55900,
+   "allocCount": 400
+  },
+  "ACC1211": {
+   "netQty": 221430,
+   "allocCount": 400
+  },
+  "ACC1212": {
+   "netQty": -534910,
+   "allocCount": 400
+  },
+  "ACC1213": {
+   "netQty": 531950,
+   "allocCount": 400
+  },
+  "ACC1214": {
+   "netQty": 141950,
+   "allocCount": 400
+  },
+  "ACC1215": {
+   "netQty": -248590,
+   "allocCount": 400
+  },
+  "ACC1216": {
+   "netQty": -289640,
+   "allocCount": 400
+  },
+  "ACC1217": {
+   "netQty": -349430,
+   "allocCount": 400
+  },
+  "ACC1218": {
+   "netQty": 470270,
+   "allocCount": 400
+  },
+  "ACC1219": {
+   "netQty": -65210,
+   "allocCount": 400
+  },
+  "ACC1220": {
+   "netQty": 106920,
+   "allocCount": 400
+  },
+  "ACC1221": {
+   "netQty": -8800,
+   "allocCount": 400
+  },
+  "ACC1222": {
+   "netQty": -390750,
+   "allocCount": 400
+  },
+  "ACC1223": {
+   "netQty": -105070,
+   "allocCount": 400
+  },
+  "ACC1224": {
+   "netQty": 313530,
+   "allocCount": 400
+  },
+  "ACC1225": {
+   "netQty": -438600,
+   "allocCount": 400
+  },
+  "ACC1226": {
+   "netQty": -17780,
+   "allocCount": 400
+  },
+  "ACC1227": {
+   "netQty": -380900,
+   "allocCount": 400
+  },
+  "ACC1228": {
+   "netQty": -456300,
+   "allocCount": 400
+  },
+  "ACC1229": {
+   "netQty": -3750,
+   "allocCount": 400
+  },
+  "ACC1230": {
+   "netQty": 49220,
+   "allocCount": 400
+  },
+  "ACC1231": {
+   "netQty": -192150,
+   "allocCount": 400
+  },
+  "ACC1232": {
+   "netQty": 221410,
+   "allocCount": 400
+  },
+  "ACC1233": {
+   "netQty": -127980,
+   "allocCount": 400
+  },
+  "ACC1234": {
+   "netQty": 131850,
+   "allocCount": 400
+  },
+  "ACC1235": {
+   "netQty": 438770,
+   "allocCount": 400
+  },
+  "ACC1236": {
+   "netQty": -127360,
+   "allocCount": 400
+  },
+  "ACC1237": {
+   "netQty": -128690,
+   "allocCount": 400
+  },
+  "ACC1238": {
+   "netQty": -328200,
+   "allocCount": 400
+  },
+  "ACC1239": {
+   "netQty": 449460,
+   "allocCount": 400
+  },
+  "ACC1240": {
+   "netQty": -205520,
+   "allocCount": 400
+  },
+  "ACC1241": {
+   "netQty": 345860,
+   "allocCount": 400
+  },
+  "ACC1242": {
+   "netQty": -96340,
+   "allocCount": 400
+  },
+  "ACC1243": {
+   "netQty": 289470,
+   "allocCount": 400
+  },
+  "ACC1244": {
+   "netQty": 318740,
+   "allocCount": 400
+  },
+  "ACC1245": {
+   "netQty": -270930,
+   "allocCount": 400
+  },
+  "ACC1246": {
+   "netQty": -157670,
+   "allocCount": 400
+  },
+  "ACC1247": {
+   "netQty": 816300,
+   "allocCount": 400
+  },
+  "ACC1248": {
+   "netQty": -144490,
+   "allocCount": 400
+  },
+  "ACC1249": {
+   "netQty": 177930,
+   "allocCount": 400
+  },
+  "ACC1250": {
+   "netQty": 109250,
+   "allocCount": 400
+  },
+  "ACC1251": {
+   "netQty": 75550,
+   "allocCount": 400
+  },
+  "ACC1252": {
+   "netQty": -396690,
+   "allocCount": 400
+  },
+  "ACC1253": {
+   "netQty": -13310,
+   "allocCount": 400
+  },
+  "ACC1254": {
+   "netQty": -372840,
+   "allocCount": 400
+  },
+  "ACC1255": {
+   "netQty": 63920,
+   "allocCount": 400
+  },
+  "ACC1256": {
+   "netQty": 323230,
+   "allocCount": 400
+  },
+  "ACC1257": {
+   "netQty": -161300,
+   "allocCount": 400
+  },
+  "ACC1258": {
+   "netQty": 294840,
+   "allocCount": 400
+  },
+  "ACC1259": {
+   "netQty": -273550,
+   "allocCount": 400
+  },
+  "ACC1260": {
+   "netQty": 178460,
+   "allocCount": 400
+  },
+  "ACC1261": {
+   "netQty": 52480,
+   "allocCount": 400
+  },
+  "ACC1262": {
+   "netQty": -686120,
+   "allocCount": 400
+  },
+  "ACC1263": {
+   "netQty": 838920,
+   "allocCount": 400
+  },
+  "ACC1264": {
+   "netQty": -6240,
+   "allocCount": 400
+  },
+  "ACC1265": {
+   "netQty": -267540,
+   "allocCount": 400
+  },
+  "ACC1266": {
+   "netQty": 3990,
+   "allocCount": 400
+  },
+  "ACC1267": {
+   "netQty": 225180,
+   "allocCount": 400
+  },
+  "ACC1268": {
+   "netQty": 198030,
+   "allocCount": 400
+  },
+  "ACC1269": {
+   "netQty": -46720,
+   "allocCount": 400
+  },
+  "ACC1270": {
+   "netQty": -553210,
+   "allocCount": 400
+  },
+  "ACC1271": {
+   "netQty": 14250,
+   "allocCount": 400
+  },
+  "ACC1272": {
+   "netQty": -355870,
+   "allocCount": 400
+  },
+  "ACC1273": {
+   "netQty": -19100,
+   "allocCount": 400
+  },
+  "ACC1274": {
+   "netQty": -775570,
+   "allocCount": 400
+  },
+  "ACC1275": {
+   "netQty": -320860,
+   "allocCount": 400
+  },
+  "ACC1276": {
+   "netQty": 178230,
+   "allocCount": 400
+  },
+  "ACC1277": {
+   "netQty": -602140,
+   "allocCount": 400
+  },
+  "ACC1278": {
+   "netQty": 251250,
+   "allocCount": 400
+  },
+  "ACC1279": {
+   "netQty": 818690,
+   "allocCount": 400
+  },
+  "ACC1280": {
+   "netQty": 410900,
+   "allocCount": 400
+  },
+  "ACC1281": {
+   "netQty": -287460,
+   "allocCount": 400
+  },
+  "ACC1282": {
+   "netQty": 148200,
+   "allocCount": 400
+  },
+  "ACC1283": {
+   "netQty": -138070,
+   "allocCount": 400
+  },
+  "ACC1284": {
+   "netQty": 270930,
+   "allocCount": 400
+  },
+  "ACC1285": {
+   "netQty": 133460,
+   "allocCount": 400
+  },
+  "ACC1286": {
+   "netQty": -308690,
+   "allocCount": 400
+  },
+  "ACC1287": {
+   "netQty": 265200,
+   "allocCount": 400
+  },
+  "ACC1288": {
+   "netQty": 205760,
+   "allocCount": 400
+  },
+  "ACC1289": {
+   "netQty": 256880,
+   "allocCount": 400
+  },
+  "ACC1290": {
+   "netQty": -72800,
+   "allocCount": 400
+  },
+  "ACC1291": {
+   "netQty": 410950,
+   "allocCount": 400
+  },
+  "ACC1292": {
+   "netQty": -106690,
+   "allocCount": 400
+  },
+  "ACC1293": {
+   "netQty": 496140,
+   "allocCount": 400
+  },
+  "ACC1294": {
+   "netQty": 94330,
+   "allocCount": 400
+  },
+  "ACC1295": {
+   "netQty": -184230,
+   "allocCount": 400
+  },
+  "ACC1296": {
+   "netQty": 350400,
+   "allocCount": 400
+  },
+  "ACC1297": {
+   "netQty": 598800,
+   "allocCount": 400
+  },
+  "ACC1298": {
+   "netQty": 113710,
+   "allocCount": 400
+  },
+  "ACC1299": {
+   "netQty": -363110,
+   "allocCount": 400
+  },
+  "ACC1300": {
+   "netQty": 95900,
+   "allocCount": 400
+  },
+  "ACC1301": {
+   "netQty": 27950,
+   "allocCount": 400
+  },
+  "ACC1302": {
+   "netQty": 106620,
+   "allocCount": 400
+  },
+  "ACC1303": {
+   "netQty": -29530,
+   "allocCount": 400
+  },
+  "ACC1304": {
+   "netQty": 188160,
+   "allocCount": 400
+  },
+  "ACC1305": {
+   "netQty": -821260,
+   "allocCount": 400
+  },
+  "ACC1306": {
+   "netQty": 99910,
+   "allocCount": 400
+  },
+  "ACC1307": {
+   "netQty": 601190,
+   "allocCount": 400
+  },
+  "ACC1308": {
+   "netQty": -487740,
+   "allocCount": 400
+  },
+  "ACC1309": {
+   "netQty": -307650,
+   "allocCount": 400
+  },
+  "ACC1310": {
+   "netQty": -199090,
+   "allocCount": 400
+  },
+  "ACC1311": {
+   "netQty": -150180,
+   "allocCount": 400
+  },
+  "ACC1312": {
+   "netQty": 688270,
+   "allocCount": 400
+  },
+  "ACC1313": {
+   "netQty": -119390,
+   "allocCount": 400
+  },
+  "ACC1314": {
+   "netQty": 471930,
+   "allocCount": 400
+  },
+  "ACC1315": {
+   "netQty": -52020,
+   "allocCount": 400
+  },
+  "ACC1316": {
+   "netQty": -298360,
+   "allocCount": 400
+  },
+  "ACC1317": {
+   "netQty": 71750,
+   "allocCount": 400
+  },
+  "ACC1318": {
+   "netQty": -1270,
+   "allocCount": 400
+  },
+  "ACC1319": {
+   "netQty": 92420,
+   "allocCount": 400
+  },
+  "ACC1320": {
+   "netQty": -463360,
+   "allocCount": 400
+  },
+  "ACC1321": {
+   "netQty": -112500,
+   "allocCount": 400
+  },
+  "ACC1322": {
+   "netQty": 325300,
+   "allocCount": 400
+  },
+  "ACC1323": {
+   "netQty": -71020,
+   "allocCount": 400
+  },
+  "ACC1324": {
+   "netQty": 148990,
+   "allocCount": 400
+  },
+  "ACC1325": {
+   "netQty": -432740,
+   "allocCount": 400
+  },
+  "ACC1326": {
+   "netQty": 13650,
+   "allocCount": 400
+  },
+  "ACC1327": {
+   "netQty": 85510,
+   "allocCount": 400
+  },
+  "ACC1328": {
+   "netQty": 108650,
+   "allocCount": 400
+  },
+  "ACC1329": {
+   "netQty": 197250,
+   "allocCount": 400
+  },
+  "ACC1330": {
+   "netQty": 483430,
+   "allocCount": 400
+  },
+  "ACC1331": {
+   "netQty": 56760,
+   "allocCount": 400
+  },
+  "ACC1332": {
+   "netQty": -457720,
+   "allocCount": 400
+  },
+  "ACC1333": {
+   "netQty": 127140,
+   "allocCount": 400
+  },
+  "ACC1334": {
+   "netQty": -574120,
+   "allocCount": 400
+  },
+  "ACC1335": {
+   "netQty": -725670,
+   "allocCount": 400
+  },
+  "ACC1336": {
+   "netQty": -44420,
+   "allocCount": 400
+  },
+  "ACC1337": {
+   "netQty": 492510,
+   "allocCount": 400
+  },
+  "ACC1338": {
+   "netQty": 6020,
+   "allocCount": 400
+  },
+  "ACC1339": {
+   "netQty": -124610,
+   "allocCount": 400
+  },
+  "ACC1340": {
+   "netQty": 588480,
+   "allocCount": 400
+  },
+  "ACC1341": {
+   "netQty": -175890,
+   "allocCount": 400
+  },
+  "ACC1342": {
+   "netQty": 439120,
+   "allocCount": 400
+  },
+  "ACC1343": {
+   "netQty": -73790,
+   "allocCount": 400
+  },
+  "ACC1344": {
+   "netQty": -158670,
+   "allocCount": 400
+  },
+  "ACC1345": {
+   "netQty": -134560,
+   "allocCount": 400
+  },
+  "ACC1346": {
+   "netQty": -261440,
+   "allocCount": 400
+  },
+  "ACC1347": {
+   "netQty": 91450,
+   "allocCount": 400
+  },
+  "ACC1348": {
+   "netQty": -45160,
+   "allocCount": 400
+  },
+  "ACC1349": {
+   "netQty": -213630,
+   "allocCount": 400
+  },
+  "ACC1350": {
+   "netQty": -253600,
+   "allocCount": 400
+  },
+  "ACC1351": {
+   "netQty": 260080,
+   "allocCount": 400
+  },
+  "ACC1352": {
+   "netQty": 322220,
+   "allocCount": 400
+  },
+  "ACC1353": {
+   "netQty": -73720,
+   "allocCount": 400
+  },
+  "ACC1354": {
+   "netQty": -230200,
+   "allocCount": 400
+  },
+  "ACC1355": {
+   "netQty": 188880,
+   "allocCount": 400
+  },
+  "ACC1356": {
+   "netQty": -123880,
+   "allocCount": 400
+  },
+  "ACC1357": {
+   "netQty": -489840,
+   "allocCount": 400
+  },
+  "ACC1358": {
+   "netQty": -302100,
+   "allocCount": 400
+  },
+  "ACC1359": {
+   "netQty": -16670,
+   "allocCount": 400
+  },
+  "ACC1360": {
+   "netQty": -215150,
+   "allocCount": 400
+  },
+  "ACC1361": {
+   "netQty": 276430,
+   "allocCount": 400
+  },
+  "ACC1362": {
+   "netQty": -113670,
+   "allocCount": 400
+  },
+  "ACC1363": {
+   "netQty": 556630,
+   "allocCount": 400
+  },
+  "ACC1364": {
+   "netQty": -230430,
+   "allocCount": 400
+  },
+  "ACC1365": {
+   "netQty": -563880,
+   "allocCount": 400
+  },
+  "ACC1366": {
+   "netQty": -89610,
+   "allocCount": 400
+  },
+  "ACC1367": {
+   "netQty": 335040,
+   "allocCount": 400
+  },
+  "ACC1368": {
+   "netQty": 94460,
+   "allocCount": 400
+  },
+  "ACC1369": {
+   "netQty": -85200,
+   "allocCount": 400
+  },
+  "ACC1370": {
+   "netQty": 392100,
+   "allocCount": 400
+  },
+  "ACC1371": {
+   "netQty": -122180,
+   "allocCount": 400
+  },
+  "ACC1372": {
+   "netQty": -18290,
+   "allocCount": 400
+  },
+  "ACC1373": {
+   "netQty": -120210,
+   "allocCount": 400
+  },
+  "ACC1374": {
+   "netQty": 189190,
+   "allocCount": 400
+  },
+  "ACC1375": {
+   "netQty": 342780,
+   "allocCount": 400
+  },
+  "ACC1376": {
+   "netQty": -324310,
+   "allocCount": 400
+  },
+  "ACC1377": {
+   "netQty": -15360,
+   "allocCount": 400
+  },
+  "ACC1378": {
+   "netQty": 774200,
+   "allocCount": 400
+  },
+  "ACC1379": {
+   "netQty": 120420,
+   "allocCount": 400
+  },
+  "ACC1380": {
+   "netQty": -48240,
+   "allocCount": 400
+  },
+  "ACC1381": {
+   "netQty": 409170,
+   "allocCount": 400
+  },
+  "ACC1382": {
+   "netQty": -193130,
+   "allocCount": 400
+  },
+  "ACC1383": {
+   "netQty": 41670,
+   "allocCount": 400
+  },
+  "ACC1384": {
+   "netQty": -21450,
+   "allocCount": 400
+  },
+  "ACC1385": {
+   "netQty": -492360,
+   "allocCount": 400
+  },
+  "ACC1386": {
+   "netQty": 639100,
+   "allocCount": 400
+  },
+  "ACC1387": {
+   "netQty": 87120,
+   "allocCount": 400
+  },
+  "ACC1388": {
+   "netQty": -507720,
+   "allocCount": 400
+  },
+  "ACC1389": {
+   "netQty": -171860,
+   "allocCount": 400
+  },
+  "ACC1390": {
+   "netQty": 384680,
+   "allocCount": 400
+  },
+  "ACC1391": {
+   "netQty": 278650,
+   "allocCount": 400
+  },
+  "ACC1392": {
+   "netQty": -162670,
+   "allocCount": 400
+  },
+  "ACC1393": {
+   "netQty": 204720,
+   "allocCount": 400
+  },
+  "ACC1394": {
+   "netQty": 284610,
+   "allocCount": 400
+  },
+  "ACC1395": {
+   "netQty": 388690,
+   "allocCount": 400
+  },
+  "ACC1396": {
+   "netQty": -367850,
+   "allocCount": 400
+  },
+  "ACC1397": {
+   "netQty": 26520,
+   "allocCount": 400
+  },
+  "ACC1398": {
+   "netQty": 267800,
+   "allocCount": 400
+  },
+  "ACC1399": {
+   "netQty": -530930,
+   "allocCount": 400
+  },
+  "ACC1400": {
+   "netQty": 20110,
+   "allocCount": 400
+  },
+  "ACC1401": {
+   "netQty": 22260,
+   "allocCount": 400
+  },
+  "ACC1402": {
+   "netQty": 328980,
+   "allocCount": 400
+  },
+  "ACC1403": {
+   "netQty": 830330,
+   "allocCount": 400
+  },
+  "ACC1404": {
+   "netQty": 94610,
+   "allocCount": 400
+  },
+  "ACC1405": {
+   "netQty": -204210,
+   "allocCount": 400
+  },
+  "ACC1406": {
+   "netQty": 107000,
+   "allocCount": 400
+  },
+  "ACC1407": {
+   "netQty": 157710,
+   "allocCount": 400
+  },
+  "ACC1408": {
+   "netQty": 76170,
+   "allocCount": 400
+  },
+  "ACC1409": {
+   "netQty": -327050,
+   "allocCount": 400
+  },
+  "ACC1410": {
+   "netQty": 272060,
+   "allocCount": 400
+  },
+  "ACC1411": {
+   "netQty": 759780,
+   "allocCount": 400
+  },
+  "ACC1412": {
+   "netQty": 35830,
+   "allocCount": 400
+  },
+  "ACC1413": {
+   "netQty": 255340,
+   "allocCount": 400
+  },
+  "ACC1414": {
+   "netQty": -241920,
+   "allocCount": 400
+  },
+  "ACC1415": {
+   "netQty": 71820,
+   "allocCount": 400
+  },
+  "ACC1416": {
+   "netQty": -246670,
+   "allocCount": 400
+  },
+  "ACC1417": {
+   "netQty": 237150,
+   "allocCount": 400
+  },
+  "ACC1418": {
+   "netQty": 376160,
+   "allocCount": 400
+  },
+  "ACC1419": {
+   "netQty": -548320,
+   "allocCount": 400
+  },
+  "ACC1420": {
+   "netQty": -338970,
+   "allocCount": 400
+  },
+  "ACC1421": {
+   "netQty": 522860,
+   "allocCount": 400
+  },
+  "ACC1422": {
+   "netQty": 51850,
+   "allocCount": 400
+  },
+  "ACC1423": {
+   "netQty": 216280,
+   "allocCount": 400
+  },
+  "ACC1424": {
+   "netQty": 269530,
+   "allocCount": 400
+  },
+  "ACC1425": {
+   "netQty": -240550,
+   "allocCount": 400
+  },
+  "ACC1426": {
+   "netQty": 295230,
+   "allocCount": 400
+  },
+  "ACC1427": {
+   "netQty": -341280,
+   "allocCount": 400
+  },
+  "ACC1428": {
+   "netQty": 157780,
+   "allocCount": 400
+  },
+  "ACC1429": {
+   "netQty": -662870,
+   "allocCount": 400
+  },
+  "ACC1430": {
+   "netQty": 226270,
+   "allocCount": 400
+  },
+  "ACC1431": {
+   "netQty": 60220,
+   "allocCount": 400
+  },
+  "ACC1432": {
+   "netQty": -443600,
+   "allocCount": 400
+  },
+  "ACC1433": {
+   "netQty": -159830,
+   "allocCount": 400
+  },
+  "ACC1434": {
+   "netQty": 199150,
+   "allocCount": 400
+  },
+  "ACC1435": {
+   "netQty": 138560,
+   "allocCount": 400
+  },
+  "ACC1436": {
+   "netQty": 346030,
+   "allocCount": 400
+  },
+  "ACC1437": {
+   "netQty": -11330,
+   "allocCount": 400
+  },
+  "ACC1438": {
+   "netQty": 14370,
+   "allocCount": 400
+  },
+  "ACC1439": {
+   "netQty": -382710,
+   "allocCount": 400
+  },
+  "ACC1440": {
+   "netQty": -352900,
+   "allocCount": 400
+  },
+  "ACC1441": {
+   "netQty": -221230,
+   "allocCount": 400
+  },
+  "ACC1442": {
+   "netQty": 231940,
+   "allocCount": 400
+  },
+  "ACC1443": {
+   "netQty": -296990,
+   "allocCount": 400
+  },
+  "ACC1444": {
+   "netQty": -6840,
+   "allocCount": 400
+  },
+  "ACC1445": {
+   "netQty": 541120,
+   "allocCount": 400
+  },
+  "ACC1446": {
+   "netQty": 551610,
+   "allocCount": 400
+  },
+  "ACC1447": {
+   "netQty": 42400,
+   "allocCount": 400
+  },
+  "ACC1448": {
+   "netQty": -78030,
+   "allocCount": 400
+  },
+  "ACC1449": {
+   "netQty": 883520,
+   "allocCount": 400
+  },
+  "ACC1450": {
+   "netQty": 298070,
+   "allocCount": 400
+  },
+  "ACC1451": {
+   "netQty": -63940,
+   "allocCount": 400
+  },
+  "ACC1452": {
+   "netQty": 240550,
+   "allocCount": 400
+  },
+  "ACC1453": {
+   "netQty": 200920,
+   "allocCount": 400
+  },
+  "ACC1454": {
+   "netQty": 160030,
+   "allocCount": 400
+  },
+  "ACC1455": {
+   "netQty": -594520,
+   "allocCount": 400
+  },
+  "ACC1456": {
+   "netQty": 37450,
+   "allocCount": 400
+  },
+  "ACC1457": {
+   "netQty": 7280,
+   "allocCount": 400
+  },
+  "ACC1458": {
+   "netQty": -202510,
+   "allocCount": 400
+  },
+  "ACC1459": {
+   "netQty": 439960,
+   "allocCount": 400
+  },
+  "ACC1460": {
+   "netQty": -47240,
+   "allocCount": 400
+  },
+  "ACC1461": {
+   "netQty": -200590,
+   "allocCount": 400
+  },
+  "ACC1462": {
+   "netQty": 85590,
+   "allocCount": 400
+  },
+  "ACC1463": {
+   "netQty": -185840,
+   "allocCount": 400
+  },
+  "ACC1464": {
+   "netQty": -919710,
+   "allocCount": 400
+  },
+  "ACC1465": {
+   "netQty": 68370,
+   "allocCount": 400
+  },
+  "ACC1466": {
+   "netQty": 177700,
+   "allocCount": 400
+  },
+  "ACC1467": {
+   "netQty": 346800,
+   "allocCount": 400
+  },
+  "ACC1468": {
+   "netQty": -133400,
+   "allocCount": 400
+  },
+  "ACC1469": {
+   "netQty": 7150,
+   "allocCount": 400
+  },
+  "ACC1470": {
+   "netQty": -384900,
+   "allocCount": 400
+  },
+  "ACC1471": {
+   "netQty": 137000,
+   "allocCount": 400
+  },
+  "ACC1472": {
+   "netQty": -584380,
+   "allocCount": 400
+  },
+  "ACC1473": {
+   "netQty": 442680,
+   "allocCount": 400
+  },
+  "ACC1474": {
+   "netQty": 232990,
+   "allocCount": 400
+  },
+  "ACC1475": {
+   "netQty": -747480,
+   "allocCount": 400
+  },
+  "ACC1476": {
+   "netQty": -33230,
+   "allocCount": 400
+  },
+  "ACC1477": {
+   "netQty": -177640,
+   "allocCount": 400
+  },
+  "ACC1478": {
+   "netQty": 384550,
+   "allocCount": 400
+  },
+  "ACC1479": {
+   "netQty": -322480,
+   "allocCount": 400
+  },
+  "ACC1480": {
+   "netQty": -173820,
+   "allocCount": 400
+  },
+  "ACC1481": {
+   "netQty": 159170,
+   "allocCount": 400
+  },
+  "ACC1482": {
+   "netQty": -353080,
+   "allocCount": 400
+  },
+  "ACC1483": {
+   "netQty": -130450,
+   "allocCount": 400
+  },
+  "ACC1484": {
+   "netQty": -59310,
+   "allocCount": 400
+  },
+  "ACC1485": {
+   "netQty": -50890,
+   "allocCount": 400
+  },
+  "ACC1486": {
+   "netQty": 422560,
+   "allocCount": 400
+  },
+  "ACC1487": {
+   "netQty": 397770,
+   "allocCount": 400
+  },
+  "ACC1488": {
+   "netQty": 157330,
+   "allocCount": 400
+  },
+  "ACC1489": {
+   "netQty": -216120,
+   "allocCount": 400
+  },
+  "ACC1490": {
+   "netQty": -505910,
+   "allocCount": 400
+  },
+  "ACC1491": {
+   "netQty": 364570,
+   "allocCount": 400
+  },
+  "ACC1492": {
+   "netQty": 107680,
+   "allocCount": 400
+  },
+  "ACC1493": {
+   "netQty": 408970,
+   "allocCount": 400
+  },
+  "ACC1494": {
+   "netQty": -273470,
+   "allocCount": 400
+  },
+  "ACC1495": {
+   "netQty": 411670,
+   "allocCount": 400
+  },
+  "ACC1496": {
+   "netQty": 587360,
+   "allocCount": 400
+  },
+  "ACC1497": {
+   "netQty": 205320,
+   "allocCount": 400
+  },
+  "ACC1498": {
+   "netQty": 66210,
+   "allocCount": 400
+  },
+  "ACC1499": {
+   "netQty": -23220,
+   "allocCount": 400
+  },
+  "ACC1500": {
+   "netQty": 309800,
+   "allocCount": 400
+  },
+  "ACC1501": {
+   "netQty": 153210,
+   "allocCount": 400
+  },
+  "ACC1502": {
+   "netQty": -292530,
+   "allocCount": 400
+  },
+  "ACC1503": {
+   "netQty": -179140,
+   "allocCount": 400
+  },
+  "ACC1504": {
+   "netQty": 115500,
+   "allocCount": 400
+  },
+  "ACC1505": {
+   "netQty": 136640,
+   "allocCount": 400
+  },
+  "ACC1506": {
+   "netQty": 105950,
+   "allocCount": 400
+  },
+  "ACC1507": {
+   "netQty": -537480,
+   "allocCount": 400
+  },
+  "ACC1508": {
+   "netQty": 74180,
+   "allocCount": 400
+  },
+  "ACC1509": {
+   "netQty": 737810,
+   "allocCount": 400
+  },
+  "ACC1510": {
+   "netQty": -284080,
+   "allocCount": 400
+  },
+  "ACC1511": {
+   "netQty": 369250,
+   "allocCount": 400
+  },
+  "ACC1512": {
+   "netQty": -327460,
+   "allocCount": 400
+  },
+  "ACC1513": {
+   "netQty": 439130,
+   "allocCount": 400
+  },
+  "ACC1514": {
+   "netQty": 340590,
+   "allocCount": 400
+  },
+  "ACC1515": {
+   "netQty": -3410,
+   "allocCount": 400
+  },
+  "ACC1516": {
+   "netQty": 258250,
+   "allocCount": 400
+  },
+  "ACC1517": {
+   "netQty": 295220,
+   "allocCount": 400
+  },
+  "ACC1518": {
+   "netQty": 404800,
+   "allocCount": 400
+  },
+  "ACC1519": {
+   "netQty": -476620,
+   "allocCount": 400
+  },
+  "ACC1520": {
+   "netQty": 396810,
+   "allocCount": 400
+  },
+  "ACC1521": {
+   "netQty": -538540,
+   "allocCount": 400
+  },
+  "ACC1522": {
+   "netQty": -338270,
+   "allocCount": 400
+  },
+  "ACC1523": {
+   "netQty": 630550,
+   "allocCount": 400
+  },
+  "ACC1524": {
+   "netQty": 25050,
+   "allocCount": 400
+  },
+  "ACC1525": {
+   "netQty": -453140,
+   "allocCount": 400
+  },
+  "ACC1526": {
+   "netQty": -223180,
+   "allocCount": 400
+  },
+  "ACC1527": {
+   "netQty": -352380,
+   "allocCount": 400
+  },
+  "ACC1528": {
+   "netQty": 91520,
+   "allocCount": 400
+  },
+  "ACC1529": {
+   "netQty": -224480,
+   "allocCount": 400
+  },
+  "ACC1530": {
+   "netQty": -313060,
+   "allocCount": 400
+  },
+  "ACC1531": {
+   "netQty": 85420,
+   "allocCount": 400
+  },
+  "ACC1532": {
+   "netQty": 646410,
+   "allocCount": 400
+  },
+  "ACC1533": {
+   "netQty": 170160,
+   "allocCount": 400
+  },
+  "ACC1534": {
+   "netQty": -524330,
+   "allocCount": 400
+  },
+  "ACC1535": {
+   "netQty": 211300,
+   "allocCount": 400
+  },
+  "ACC1536": {
+   "netQty": -142350,
+   "allocCount": 400
+  },
+  "ACC1537": {
+   "netQty": -384730,
+   "allocCount": 400
+  },
+  "ACC1538": {
+   "netQty": -612670,
+   "allocCount": 400
+  },
+  "ACC1539": {
+   "netQty": -45600,
+   "allocCount": 400
+  },
+  "ACC1540": {
+   "netQty": -17480,
+   "allocCount": 400
+  },
+  "ACC1541": {
+   "netQty": -48860,
+   "allocCount": 400
+  },
+  "ACC1542": {
+   "netQty": -4450,
+   "allocCount": 400
+  },
+  "ACC1543": {
+   "netQty": -62290,
+   "allocCount": 400
+  },
+  "ACC1544": {
+   "netQty": 268670,
+   "allocCount": 400
+  },
+  "ACC1545": {
+   "netQty": 3710,
+   "allocCount": 400
+  },
+  "ACC1546": {
+   "netQty": 46640,
+   "allocCount": 400
+  },
+  "ACC1547": {
+   "netQty": -102710,
+   "allocCount": 400
+  },
+  "ACC1548": {
+   "netQty": 561090,
+   "allocCount": 400
+  },
+  "ACC1549": {
+   "netQty": 122710,
+   "allocCount": 400
+  },
+  "ACC1550": {
+   "netQty": 52640,
+   "allocCount": 400
+  },
+  "ACC1551": {
+   "netQty": 288420,
+   "allocCount": 400
+  },
+  "ACC1552": {
+   "netQty": -533630,
+   "allocCount": 400
+  },
+  "ACC1553": {
+   "netQty": 278150,
+   "allocCount": 400
+  },
+  "ACC1554": {
+   "netQty": 51980,
+   "allocCount": 400
+  },
+  "ACC1555": {
+   "netQty": 399360,
+   "allocCount": 400
+  },
+  "ACC1556": {
+   "netQty": -194370,
+   "allocCount": 400
+  },
+  "ACC1557": {
+   "netQty": -311310,
+   "allocCount": 400
+  },
+  "ACC1558": {
+   "netQty": -171380,
+   "allocCount": 400
+  },
+  "ACC1559": {
+   "netQty": -125230,
+   "allocCount": 400
+  },
+  "ACC1560": {
+   "netQty": -85710,
+   "allocCount": 400
+  },
+  "ACC1561": {
+   "netQty": 305840,
+   "allocCount": 400
+  },
+  "ACC1562": {
+   "netQty": 52540,
+   "allocCount": 400
+  },
+  "ACC1563": {
+   "netQty": -349730,
+   "allocCount": 400
+  },
+  "ACC1564": {
+   "netQty": -771550,
+   "allocCount": 400
+  },
+  "ACC1565": {
+   "netQty": 69290,
+   "allocCount": 400
+  },
+  "ACC1566": {
+   "netQty": 479230,
+   "allocCount": 400
+  },
+  "ACC1567": {
+   "netQty": -356030,
+   "allocCount": 400
+  },
+  "ACC1568": {
+   "netQty": -475260,
+   "allocCount": 400
+  },
+  "ACC1569": {
+   "netQty": 188580,
+   "allocCount": 400
+  },
+  "ACC1570": {
+   "netQty": 35060,
+   "allocCount": 400
+  },
+  "ACC1571": {
+   "netQty": -4020,
+   "allocCount": 400
+  },
+  "ACC1572": {
+   "netQty": -311530,
+   "allocCount": 400
+  },
+  "ACC1573": {
+   "netQty": -218950,
+   "allocCount": 400
+  },
+  "ACC1574": {
+   "netQty": -739360,
+   "allocCount": 400
+  },
+  "ACC1575": {
+   "netQty": -249630,
+   "allocCount": 400
+  },
+  "ACC1576": {
+   "netQty": -257370,
+   "allocCount": 400
+  },
+  "ACC1577": {
+   "netQty": -92660,
+   "allocCount": 400
+  },
+  "ACC1578": {
+   "netQty": -308850,
+   "allocCount": 400
+  },
+  "ACC1579": {
+   "netQty": -315340,
+   "allocCount": 400
+  },
+  "ACC1580": {
+   "netQty": 133360,
+   "allocCount": 400
+  },
+  "ACC1581": {
+   "netQty": -70310,
+   "allocCount": 400
+  },
+  "ACC1582": {
+   "netQty": -115630,
+   "allocCount": 400
+  },
+  "ACC1583": {
+   "netQty": -183680,
+   "allocCount": 400
+  },
+  "ACC1584": {
+   "netQty": -793810,
+   "allocCount": 400
+  },
+  "ACC1585": {
+   "netQty": -158230,
+   "allocCount": 400
+  },
+  "ACC1586": {
+   "netQty": 274890,
+   "allocCount": 400
+  },
+  "ACC1587": {
+   "netQty": -187710,
+   "allocCount": 400
+  },
+  "ACC1588": {
+   "netQty": -272800,
+   "allocCount": 400
+  },
+  "ACC1589": {
+   "netQty": 442970,
+   "allocCount": 400
+  },
+  "ACC1590": {
+   "netQty": 286880,
+   "allocCount": 400
+  },
+  "ACC1591": {
+   "netQty": 85340,
+   "allocCount": 400
+  },
+  "ACC1592": {
+   "netQty": -255060,
+   "allocCount": 400
+  },
+  "ACC1593": {
+   "netQty": -132830,
+   "allocCount": 400
+  },
+  "ACC1594": {
+   "netQty": 83780,
+   "allocCount": 400
+  },
+  "ACC1595": {
+   "netQty": -339070,
+   "allocCount": 400
+  },
+  "ACC1596": {
+   "netQty": 166680,
+   "allocCount": 400
+  },
+  "ACC1597": {
+   "netQty": -244780,
+   "allocCount": 400
+  },
+  "ACC1598": {
+   "netQty": 531480,
+   "allocCount": 400
+  },
+  "ACC1599": {
+   "netQty": -184230,
+   "allocCount": 400
+  },
+  "ACC1600": {
+   "netQty": 75550,
+   "allocCount": 400
+  },
+  "ACC1601": {
+   "netQty": -153450,
+   "allocCount": 400
+  },
+  "ACC1602": {
+   "netQty": -382880,
+   "allocCount": 400
+  },
+  "ACC1603": {
+   "netQty": 251560,
+   "allocCount": 400
+  },
+  "ACC1604": {
+   "netQty": 628120,
+   "allocCount": 400
+  },
+  "ACC1605": {
+   "netQty": 481150,
+   "allocCount": 400
+  },
+  "ACC1606": {
+   "netQty": -96160,
+   "allocCount": 400
+  },
+  "ACC1607": {
+   "netQty": 501520,
+   "allocCount": 400
+  },
+  "ACC1608": {
+   "netQty": 291330,
+   "allocCount": 400
+  },
+  "ACC1609": {
+   "netQty": 70260,
+   "allocCount": 400
+  },
+  "ACC1610": {
+   "netQty": -657280,
+   "allocCount": 400
+  },
+  "ACC1611": {
+   "netQty": -139050,
+   "allocCount": 400
+  },
+  "ACC1612": {
+   "netQty": -411780,
+   "allocCount": 400
+  },
+  "ACC1613": {
+   "netQty": -651150,
+   "allocCount": 400
+  },
+  "ACC1614": {
+   "netQty": -128080,
+   "allocCount": 400
+  },
+  "ACC1615": {
+   "netQty": 83440,
+   "allocCount": 400
+  },
+  "ACC1616": {
+   "netQty": -211590,
+   "allocCount": 400
+  },
+  "ACC1617": {
+   "netQty": 58150,
+   "allocCount": 400
+  },
+  "ACC1618": {
+   "netQty": -62510,
+   "allocCount": 400
+  },
+  "ACC1619": {
+   "netQty": 141500,
+   "allocCount": 400
+  },
+  "ACC1620": {
+   "netQty": -70590,
+   "allocCount": 400
+  },
+  "ACC1621": {
+   "netQty": -309860,
+   "allocCount": 400
+  },
+  "ACC1622": {
+   "netQty": 108700,
+   "allocCount": 400
+  },
+  "ACC1623": {
+   "netQty": -144960,
+   "allocCount": 400
+  },
+  "ACC1624": {
+   "netQty": -575780,
+   "allocCount": 400
+  },
+  "ACC1625": {
+   "netQty": -157720,
+   "allocCount": 400
+  },
+  "ACC1626": {
+   "netQty": -260640,
+   "allocCount": 400
+  },
+  "ACC1627": {
+   "netQty": 513820,
+   "allocCount": 400
+  },
+  "ACC1628": {
+   "netQty": -332210,
+   "allocCount": 400
+  },
+  "ACC1629": {
+   "netQty": -209260,
+   "allocCount": 400
+  },
+  "ACC1630": {
+   "netQty": 312950,
+   "allocCount": 400
+  },
+  "ACC1631": {
+   "netQty": 80950,
+   "allocCount": 400
+  },
+  "ACC1632": {
+   "netQty": -38890,
+   "allocCount": 400
+  },
+  "ACC1633": {
+   "netQty": -15980,
+   "allocCount": 400
+  },
+  "ACC1634": {
+   "netQty": -458950,
+   "allocCount": 400
+  },
+  "ACC1635": {
+   "netQty": 313190,
+   "allocCount": 400
+  },
+  "ACC1636": {
+   "netQty": -319650,
+   "allocCount": 400
+  },
+  "ACC1637": {
+   "netQty": -70130,
+   "allocCount": 400
+  },
+  "ACC1638": {
+   "netQty": -138220,
+   "allocCount": 400
+  },
+  "ACC1639": {
+   "netQty": 705740,
+   "allocCount": 400
+  },
+  "ACC1640": {
+   "netQty": -231360,
+   "allocCount": 400
+  },
+  "ACC1641": {
+   "netQty": 295310,
+   "allocCount": 400
+  },
+  "ACC1642": {
+   "netQty": -357750,
+   "allocCount": 400
+  },
+  "ACC1643": {
+   "netQty": 180560,
+   "allocCount": 400
+  },
+  "ACC1644": {
+   "netQty": -102570,
+   "allocCount": 400
+  },
+  "ACC1645": {
+   "netQty": -235530,
+   "allocCount": 400
+  },
+  "ACC1646": {
+   "netQty": 92030,
+   "allocCount": 400
+  },
+  "ACC1647": {
+   "netQty": -80000,
+   "allocCount": 400
+  },
+  "ACC1648": {
+   "netQty": 121160,
+   "allocCount": 400
+  },
+  "ACC1649": {
+   "netQty": -353360,
+   "allocCount": 400
+  },
+  "ACC1650": {
+   "netQty": 209420,
+   "allocCount": 400
+  },
+  "ACC1651": {
+   "netQty": 183800,
+   "allocCount": 400
+  },
+  "ACC1652": {
+   "netQty": 7870,
+   "allocCount": 400
+  },
+  "ACC1653": {
+   "netQty": -662230,
+   "allocCount": 400
+  },
+  "ACC1654": {
+   "netQty": 420350,
+   "allocCount": 400
+  },
+  "ACC1655": {
+   "netQty": -272080,
+   "allocCount": 400
+  },
+  "ACC1656": {
+   "netQty": 3890,
+   "allocCount": 400
+  },
+  "ACC1657": {
+   "netQty": -17600,
+   "allocCount": 400
+  },
+  "ACC1658": {
+   "netQty": -39760,
+   "allocCount": 400
+  },
+  "ACC1659": {
+   "netQty": -7810,
+   "allocCount": 400
+  },
+  "ACC1660": {
+   "netQty": 455070,
+   "allocCount": 400
+  },
+  "ACC1661": {
+   "netQty": 404890,
+   "allocCount": 400
+  },
+  "ACC1662": {
+   "netQty": 221380,
+   "allocCount": 400
+  },
+  "ACC1663": {
+   "netQty": -101320,
+   "allocCount": 400
+  },
+  "ACC1664": {
+   "netQty": 645940,
+   "allocCount": 400
+  },
+  "ACC1665": {
+   "netQty": 225380,
+   "allocCount": 400
+  },
+  "ACC1666": {
+   "netQty": 515550,
+   "allocCount": 400
+  },
+  "ACC1667": {
+   "netQty": -121070,
+   "allocCount": 400
+  },
+  "ACC1668": {
+   "netQty": -209300,
+   "allocCount": 400
+  },
+  "ACC1669": {
+   "netQty": 278910,
+   "allocCount": 400
+  },
+  "ACC1670": {
+   "netQty": -211910,
+   "allocCount": 400
+  },
+  "ACC1671": {
+   "netQty": -411150,
+   "allocCount": 400
+  },
+  "ACC1672": {
+   "netQty": 230120,
+   "allocCount": 400
+  },
+  "ACC1673": {
+   "netQty": 151810,
+   "allocCount": 400
+  },
+  "ACC1674": {
+   "netQty": -3550,
+   "allocCount": 400
+  },
+  "ACC1675": {
+   "netQty": -205000,
+   "allocCount": 400
+  },
+  "ACC1676": {
+   "netQty": -33640,
+   "allocCount": 400
+  },
+  "ACC1677": {
+   "netQty": 233870,
+   "allocCount": 400
+  },
+  "ACC1678": {
+   "netQty": -461910,
+   "allocCount": 400
+  },
+  "ACC1679": {
+   "netQty": -142120,
+   "allocCount": 400
+  },
+  "ACC1680": {
+   "netQty": -31520,
+   "allocCount": 400
+  },
+  "ACC1681": {
+   "netQty": 236090,
+   "allocCount": 400
+  },
+  "ACC1682": {
+   "netQty": 400930,
+   "allocCount": 400
+  },
+  "ACC1683": {
+   "netQty": -425580,
+   "allocCount": 400
+  },
+  "ACC1684": {
+   "netQty": -274460,
+   "allocCount": 400
+  },
+  "ACC1685": {
+   "netQty": -245790,
+   "allocCount": 400
+  },
+  "ACC1686": {
+   "netQty": -166420,
+   "allocCount": 400
+  },
+  "ACC1687": {
+   "netQty": -122540,
+   "allocCount": 400
+  },
+  "ACC1688": {
+   "netQty": -61970,
+   "allocCount": 400
+  },
+  "ACC1689": {
+   "netQty": 253370,
+   "allocCount": 400
+  },
+  "ACC1690": {
+   "netQty": 391320,
+   "allocCount": 400
+  },
+  "ACC1691": {
+   "netQty": -75330,
+   "allocCount": 400
+  },
+  "ACC1692": {
+   "netQty": 123970,
+   "allocCount": 400
+  },
+  "ACC1693": {
+   "netQty": 241030,
+   "allocCount": 400
+  },
+  "ACC1694": {
+   "netQty": -68730,
+   "allocCount": 400
+  },
+  "ACC1695": {
+   "netQty": -278640,
+   "allocCount": 400
+  },
+  "ACC1696": {
+   "netQty": -90320,
+   "allocCount": 400
+  },
+  "ACC1697": {
+   "netQty": -119530,
+   "allocCount": 400
+  },
+  "ACC1698": {
+   "netQty": -241090,
+   "allocCount": 400
+  },
+  "ACC1699": {
+   "netQty": -352840,
+   "allocCount": 400
+  },
+  "ACC1700": {
+   "netQty": -600070,
+   "allocCount": 400
+  },
+  "ACC1701": {
+   "netQty": 11510,
+   "allocCount": 400
+  },
+  "ACC1702": {
+   "netQty": -61780,
+   "allocCount": 400
+  },
+  "ACC1703": {
+   "netQty": 5230,
+   "allocCount": 400
+  },
+  "ACC1704": {
+   "netQty": 693600,
+   "allocCount": 400
+  },
+  "ACC1705": {
+   "netQty": 248430,
+   "allocCount": 400
+  },
+  "ACC1706": {
+   "netQty": 84810,
+   "allocCount": 400
+  },
+  "ACC1707": {
+   "netQty": -101500,
+   "allocCount": 400
+  },
+  "ACC1708": {
+   "netQty": -552280,
+   "allocCount": 400
+  },
+  "ACC1709": {
+   "netQty": 273070,
+   "allocCount": 400
+  },
+  "ACC1710": {
+   "netQty": 140110,
+   "allocCount": 400
+  },
+  "ACC1711": {
+   "netQty": -187930,
+   "allocCount": 400
+  },
+  "ACC1712": {
+   "netQty": 430210,
+   "allocCount": 400
+  },
+  "ACC1713": {
+   "netQty": 232580,
+   "allocCount": 400
+  },
+  "ACC1714": {
+   "netQty": -212320,
+   "allocCount": 400
+  },
+  "ACC1715": {
+   "netQty": -651050,
+   "allocCount": 400
+  },
+  "ACC1716": {
+   "netQty": -3670,
+   "allocCount": 400
+  },
+  "ACC1717": {
+   "netQty": -17530,
+   "allocCount": 400
+  },
+  "ACC1718": {
+   "netQty": -83950,
+   "allocCount": 400
+  },
+  "ACC1719": {
+   "netQty": 42260,
+   "allocCount": 400
+  },
+  "ACC1720": {
+   "netQty": -20620,
+   "allocCount": 400
+  },
+  "ACC1721": {
+   "netQty": 94300,
+   "allocCount": 400
+  },
+  "ACC1722": {
+   "netQty": -143020,
+   "allocCount": 400
+  },
+  "ACC1723": {
+   "netQty": 498200,
+   "allocCount": 400
+  },
+  "ACC1724": {
+   "netQty": -72220,
+   "allocCount": 400
+  },
+  "ACC1725": {
+   "netQty": -362790,
+   "allocCount": 400
+  },
+  "ACC1726": {
+   "netQty": -432980,
+   "allocCount": 400
+  },
+  "ACC1727": {
+   "netQty": -87790,
+   "allocCount": 400
+  },
+  "ACC1728": {
+   "netQty": -278470,
+   "allocCount": 400
+  },
+  "ACC1729": {
+   "netQty": 600810,
+   "allocCount": 400
+  },
+  "ACC1730": {
+   "netQty": -378470,
+   "allocCount": 400
+  },
+  "ACC1731": {
+   "netQty": 151920,
+   "allocCount": 400
+  },
+  "ACC1732": {
+   "netQty": 37950,
+   "allocCount": 400
+  },
+  "ACC1733": {
+   "netQty": 61610,
+   "allocCount": 400
+  },
+  "ACC1734": {
+   "netQty": 133540,
+   "allocCount": 400
+  },
+  "ACC1735": {
+   "netQty": -123070,
+   "allocCount": 400
+  },
+  "ACC1736": {
+   "netQty": 73180,
+   "allocCount": 400
+  },
+  "ACC1737": {
+   "netQty": 72780,
+   "allocCount": 400
+  },
+  "ACC1738": {
+   "netQty": 262490,
+   "allocCount": 400
+  },
+  "ACC1739": {
+   "netQty": -544690,
+   "allocCount": 400
+  },
+  "ACC1740": {
+   "netQty": 306350,
+   "allocCount": 400
+  },
+  "ACC1741": {
+   "netQty": 6090,
+   "allocCount": 400
+  },
+  "ACC1742": {
+   "netQty": 112540,
+   "allocCount": 400
+  },
+  "ACC1743": {
+   "netQty": 78590,
+   "allocCount": 400
+  },
+  "ACC1744": {
+   "netQty": -101180,
+   "allocCount": 400
+  },
+  "ACC1745": {
+   "netQty": 435650,
+   "allocCount": 400
+  },
+  "ACC1746": {
+   "netQty": 639310,
+   "allocCount": 400
+  },
+  "ACC1747": {
+   "netQty": 172550,
+   "allocCount": 400
+  },
+  "ACC1748": {
+   "netQty": -136840,
+   "allocCount": 400
+  },
+  "ACC1749": {
+   "netQty": 121080,
+   "allocCount": 400
+  },
+  "ACC1750": {
+   "netQty": 829530,
+   "allocCount": 400
+  },
+  "ACC1751": {
+   "netQty": -334300,
+   "allocCount": 400
+  },
+  "ACC1752": {
+   "netQty": 179470,
+   "allocCount": 400
+  },
+  "ACC1753": {
+   "netQty": -485850,
+   "allocCount": 400
+  },
+  "ACC1754": {
+   "netQty": -181360,
+   "allocCount": 400
+  },
+  "ACC1755": {
+   "netQty": 282620,
+   "allocCount": 400
+  },
+  "ACC1756": {
+   "netQty": -340230,
+   "allocCount": 400
+  },
+  "ACC1757": {
+   "netQty": 220110,
+   "allocCount": 400
+  },
+  "ACC1758": {
+   "netQty": -592160,
+   "allocCount": 400
+  },
+  "ACC1759": {
+   "netQty": 158020,
+   "allocCount": 400
+  },
+  "ACC1760": {
+   "netQty": -47280,
+   "allocCount": 400
+  },
+  "ACC1761": {
+   "netQty": -168390,
+   "allocCount": 400
+  },
+  "ACC1762": {
+   "netQty": 364330,
+   "allocCount": 400
+  },
+  "ACC1763": {
+   "netQty": -605850,
+   "allocCount": 400
+  },
+  "ACC1764": {
+   "netQty": -292680,
+   "allocCount": 400
+  },
+  "ACC1765": {
+   "netQty": -250450,
+   "allocCount": 400
+  },
+  "ACC1766": {
+   "netQty": 594870,
+   "allocCount": 400
+  },
+  "ACC1767": {
+   "netQty": 95560,
+   "allocCount": 400
+  },
+  "ACC1768": {
+   "netQty": -119560,
+   "allocCount": 400
+  },
+  "ACC1769": {
+   "netQty": -435780,
+   "allocCount": 400
+  },
+  "ACC1770": {
+   "netQty": 215680,
+   "allocCount": 400
+  },
+  "ACC1771": {
+   "netQty": -439600,
+   "allocCount": 400
+  },
+  "ACC1772": {
+   "netQty": 189990,
+   "allocCount": 400
+  },
+  "ACC1773": {
+   "netQty": -961940,
+   "allocCount": 400
+  },
+  "ACC1774": {
+   "netQty": -158340,
+   "allocCount": 400
+  },
+  "ACC1775": {
+   "netQty": 37480,
+   "allocCount": 400
+  },
+  "ACC1776": {
+   "netQty": -629240,
+   "allocCount": 400
+  },
+  "ACC1777": {
+   "netQty": -79000,
+   "allocCount": 400
+  },
+  "ACC1778": {
+   "netQty": 693310,
+   "allocCount": 400
+  },
+  "ACC1779": {
+   "netQty": 758950,
+   "allocCount": 400
+  },
+  "ACC1780": {
+   "netQty": -298060,
+   "allocCount": 400
+  },
+  "ACC1781": {
+   "netQty": 129370,
+   "allocCount": 400
+  },
+  "ACC1782": {
+   "netQty": -303930,
+   "allocCount": 400
+  },
+  "ACC1783": {
+   "netQty": 166060,
+   "allocCount": 400
+  },
+  "ACC1784": {
+   "netQty": 203050,
+   "allocCount": 400
+  },
+  "ACC1785": {
+   "netQty": 74620,
+   "allocCount": 400
+  },
+  "ACC1786": {
+   "netQty": 219110,
+   "allocCount": 400
+  },
+  "ACC1787": {
+   "netQty": 267090,
+   "allocCount": 400
+  },
+  "ACC1788": {
+   "netQty": 87160,
+   "allocCount": 400
+  },
+  "ACC1789": {
+   "netQty": -17320,
+   "allocCount": 400
+  },
+  "ACC1790": {
+   "netQty": 352080,
+   "allocCount": 400
+  },
+  "ACC1791": {
+   "netQty": 166300,
+   "allocCount": 400
+  },
+  "ACC1792": {
+   "netQty": 458240,
+   "allocCount": 400
+  },
+  "ACC1793": {
+   "netQty": 102940,
+   "allocCount": 400
+  },
+  "ACC1794": {
+   "netQty": -443710,
+   "allocCount": 400
+  },
+  "ACC1795": {
+   "netQty": -104440,
+   "allocCount": 400
+  },
+  "ACC1796": {
+   "netQty": 286250,
+   "allocCount": 400
+  },
+  "ACC1797": {
+   "netQty": 560,
+   "allocCount": 400
+  },
+  "ACC1798": {
+   "netQty": -353230,
+   "allocCount": 400
+  },
+  "ACC1799": {
+   "netQty": 79010,
+   "allocCount": 400
+  },
+  "ACC1800": {
+   "netQty": -13430,
+   "allocCount": 400
+  },
+  "ACC1801": {
+   "netQty": 81990,
+   "allocCount": 400
+  },
+  "ACC1802": {
+   "netQty": 69160,
+   "allocCount": 400
+  },
+  "ACC1803": {
+   "netQty": 235120,
+   "allocCount": 400
+  },
+  "ACC1804": {
+   "netQty": -778360,
+   "allocCount": 400
+  },
+  "ACC1805": {
+   "netQty": 339850,
+   "allocCount": 400
+  },
+  "ACC1806": {
+   "netQty": 511940,
+   "allocCount": 400
+  },
+  "ACC1807": {
+   "netQty": -74650,
+   "allocCount": 400
+  },
+  "ACC1808": {
+   "netQty": 31230,
+   "allocCount": 400
+  },
+  "ACC1809": {
+   "netQty": -366820,
+   "allocCount": 400
+  },
+  "ACC1810": {
+   "netQty": -277810,
+   "allocCount": 400
+  },
+  "ACC1811": {
+   "netQty": -19650,
+   "allocCount": 400
+  },
+  "ACC1812": {
+   "netQty": -26520,
+   "allocCount": 400
+  },
+  "ACC1813": {
+   "netQty": -8500,
+   "allocCount": 400
+  },
+  "ACC1814": {
+   "netQty": 400430,
+   "allocCount": 400
+  },
+  "ACC1815": {
+   "netQty": -89400,
+   "allocCount": 400
+  },
+  "ACC1816": {
+   "netQty": 217440,
+   "allocCount": 400
+  },
+  "ACC1817": {
+   "netQty": 251010,
+   "allocCount": 400
+  },
+  "ACC1818": {
+   "netQty": -41910,
+   "allocCount": 400
+  },
+  "ACC1819": {
+   "netQty": -558650,
+   "allocCount": 400
+  },
+  "ACC1820": {
+   "netQty": 140450,
+   "allocCount": 400
+  },
+  "ACC1821": {
+   "netQty": 355910,
+   "allocCount": 400
+  },
+  "ACC1822": {
+   "netQty": -353240,
+   "allocCount": 400
+  },
+  "ACC1823": {
+   "netQty": 352440,
+   "allocCount": 400
+  },
+  "ACC1824": {
+   "netQty": -164220,
+   "allocCount": 400
+  },
+  "ACC1825": {
+   "netQty": -201200,
+   "allocCount": 400
+  },
+  "ACC1826": {
+   "netQty": 74370,
+   "allocCount": 400
+  },
+  "ACC1827": {
+   "netQty": -88900,
+   "allocCount": 400
+  },
+  "ACC1828": {
+   "netQty": 158710,
+   "allocCount": 400
+  },
+  "ACC1829": {
+   "netQty": 56760,
+   "allocCount": 400
+  },
+  "ACC1830": {
+   "netQty": 202520,
+   "allocCount": 400
+  },
+  "ACC1831": {
+   "netQty": -645120,
+   "allocCount": 400
+  },
+  "ACC1832": {
+   "netQty": 296990,
+   "allocCount": 400
+  },
+  "ACC1833": {
+   "netQty": -465630,
+   "allocCount": 400
+  },
+  "ACC1834": {
+   "netQty": -516950,
+   "allocCount": 400
+  },
+  "ACC1835": {
+   "netQty": -335760,
+   "allocCount": 400
+  },
+  "ACC1836": {
+   "netQty": 339090,
+   "allocCount": 400
+  },
+  "ACC1837": {
+   "netQty": 147680,
+   "allocCount": 400
+  },
+  "ACC1838": {
+   "netQty": -50130,
+   "allocCount": 400
+  },
+  "ACC1839": {
+   "netQty": 379700,
+   "allocCount": 400
+  },
+  "ACC1840": {
+   "netQty": 229150,
+   "allocCount": 400
+  },
+  "ACC1841": {
+   "netQty": 323340,
+   "allocCount": 400
+  },
+  "ACC1842": {
+   "netQty": -246870,
+   "allocCount": 400
+  },
+  "ACC1843": {
+   "netQty": 335050,
+   "allocCount": 400
+  },
+  "ACC1844": {
+   "netQty": -164520,
+   "allocCount": 400
+  },
+  "ACC1845": {
+   "netQty": -327710,
+   "allocCount": 400
+  },
+  "ACC1846": {
+   "netQty": 328530,
+   "allocCount": 400
+  },
+  "ACC1847": {
+   "netQty": -523980,
+   "allocCount": 400
+  },
+  "ACC1848": {
+   "netQty": -192680,
+   "allocCount": 400
+  },
+  "ACC1849": {
+   "netQty": 90170,
+   "allocCount": 400
+  },
+  "ACC1850": {
+   "netQty": -111470,
+   "allocCount": 400
+  },
+  "ACC1851": {
+   "netQty": 332120,
+   "allocCount": 400
+  },
+  "ACC1852": {
+   "netQty": 243290,
+   "allocCount": 400
+  },
+  "ACC1853": {
+   "netQty": -379600,
+   "allocCount": 400
+  },
+  "ACC1854": {
+   "netQty": 782490,
+   "allocCount": 400
+  },
+  "ACC1855": {
+   "netQty": -91570,
+   "allocCount": 400
+  },
+  "ACC1856": {
+   "netQty": -425890,
+   "allocCount": 400
+  },
+  "ACC1857": {
+   "netQty": -372510,
+   "allocCount": 400
+  },
+  "ACC1858": {
+   "netQty": -5920,
+   "allocCount": 400
+  },
+  "ACC1859": {
+   "netQty": -305490,
+   "allocCount": 400
+  },
+  "ACC1860": {
+   "netQty": 191160,
+   "allocCount": 400
+  },
+  "ACC1861": {
+   "netQty": 172800,
+   "allocCount": 400
+  },
+  "ACC1862": {
+   "netQty": 463180,
+   "allocCount": 400
+  },
+  "ACC1863": {
+   "netQty": -94060,
+   "allocCount": 400
+  },
+  "ACC1864": {
+   "netQty": -259830,
+   "allocCount": 400
+  },
+  "ACC1865": {
+   "netQty": 69990,
+   "allocCount": 400
+  },
+  "ACC1866": {
+   "netQty": 125590,
+   "allocCount": 400
+  },
+  "ACC1867": {
+   "netQty": -46360,
+   "allocCount": 400
+  },
+  "ACC1868": {
+   "netQty": -214060,
+   "allocCount": 400
+  },
+  "ACC1869": {
+   "netQty": 186200,
+   "allocCount": 400
+  },
+  "ACC1870": {
+   "netQty": -57310,
+   "allocCount": 400
+  },
+  "ACC1871": {
+   "netQty": 74160,
+   "allocCount": 400
+  },
+  "ACC1872": {
+   "netQty": 254120,
+   "allocCount": 400
+  },
+  "ACC1873": {
+   "netQty": 308690,
+   "allocCount": 400
+  },
+  "ACC1874": {
+   "netQty": 241280,
+   "allocCount": 400
+  },
+  "ACC1875": {
+   "netQty": -55010,
+   "allocCount": 400
+  },
+  "ACC1876": {
+   "netQty": -379110,
+   "allocCount": 400
+  },
+  "ACC1877": {
+   "netQty": 382770,
+   "allocCount": 400
+  },
+  "ACC1878": {
+   "netQty": 74820,
+   "allocCount": 400
+  },
+  "ACC1879": {
+   "netQty": 345150,
+   "allocCount": 400
+  },
+  "ACC1880": {
+   "netQty": -118510,
+   "allocCount": 400
+  },
+  "ACC1881": {
+   "netQty": 55250,
+   "allocCount": 400
+  },
+  "ACC1882": {
+   "netQty": 297450,
+   "allocCount": 400
+  },
+  "ACC1883": {
+   "netQty": -635870,
+   "allocCount": 400
+  },
+  "ACC1884": {
+   "netQty": -287150,
+   "allocCount": 400
+  },
+  "ACC1885": {
+   "netQty": 195210,
+   "allocCount": 400
+  },
+  "ACC1886": {
+   "netQty": -92570,
+   "allocCount": 400
+  },
+  "ACC1887": {
+   "netQty": -144060,
+   "allocCount": 400
+  },
+  "ACC1888": {
+   "netQty": 221040,
+   "allocCount": 400
+  },
+  "ACC1889": {
+   "netQty": 26090,
+   "allocCount": 400
+  },
+  "ACC1890": {
+   "netQty": 332500,
+   "allocCount": 400
+  },
+  "ACC1891": {
+   "netQty": -299770,
+   "allocCount": 400
+  },
+  "ACC1892": {
+   "netQty": -210600,
+   "allocCount": 400
+  },
+  "ACC1893": {
+   "netQty": 269980,
+   "allocCount": 400
+  },
+  "ACC1894": {
+   "netQty": 70990,
+   "allocCount": 400
+  },
+  "ACC1895": {
+   "netQty": -19270,
+   "allocCount": 400
+  },
+  "ACC1896": {
+   "netQty": 33760,
+   "allocCount": 400
+  },
+  "ACC1897": {
+   "netQty": 306410,
+   "allocCount": 400
+  },
+  "ACC1898": {
+   "netQty": -75440,
+   "allocCount": 400
+  },
+  "ACC1899": {
+   "netQty": -151300,
+   "allocCount": 400
+  },
+  "ACC1900": {
+   "netQty": 148520,
+   "allocCount": 400
+  },
+  "ACC1901": {
+   "netQty": -29680,
+   "allocCount": 400
+  },
+  "ACC1902": {
+   "netQty": 241130,
+   "allocCount": 400
+  },
+  "ACC1903": {
+   "netQty": 468710,
+   "allocCount": 400
+  },
+  "ACC1904": {
+   "netQty": 250,
+   "allocCount": 400
+  },
+  "ACC1905": {
+   "netQty": 312780,
+   "allocCount": 400
+  },
+  "ACC1906": {
+   "netQty": 180770,
+   "allocCount": 400
+  },
+  "ACC1907": {
+   "netQty": 33380,
+   "allocCount": 400
+  },
+  "ACC1908": {
+   "netQty": -113580,
+   "allocCount": 400
+  },
+  "ACC1909": {
+   "netQty": 340290,
+   "allocCount": 400
+  },
+  "ACC1910": {
+   "netQty": 171580,
+   "allocCount": 400
+  },
+  "ACC1911": {
+   "netQty": 26620,
+   "allocCount": 400
+  },
+  "ACC1912": {
+   "netQty": -13250,
+   "allocCount": 400
+  },
+  "ACC1913": {
+   "netQty": -62100,
+   "allocCount": 400
+  },
+  "ACC1914": {
+   "netQty": 192000,
+   "allocCount": 400
+  },
+  "ACC1915": {
+   "netQty": 40550,
+   "allocCount": 400
+  },
+  "ACC1916": {
+   "netQty": 233160,
+   "allocCount": 400
+  },
+  "ACC1917": {
+   "netQty": 492940,
+   "allocCount": 400
+  },
+  "ACC1918": {
+   "netQty": -282420,
+   "allocCount": 400
+  },
+  "ACC1919": {
+   "netQty": 137800,
+   "allocCount": 400
+  },
+  "ACC1920": {
+   "netQty": 465680,
+   "allocCount": 400
+  },
+  "ACC1921": {
+   "netQty": 163810,
+   "allocCount": 400
+  },
+  "ACC1922": {
+   "netQty": -1400,
+   "allocCount": 400
+  },
+  "ACC1923": {
+   "netQty": -62960,
+   "allocCount": 400
+  },
+  "ACC1924": {
+   "netQty": -59730,
+   "allocCount": 400
+  },
+  "ACC1925": {
+   "netQty": 220900,
+   "allocCount": 400
+  },
+  "ACC1926": {
+   "netQty": -211870,
+   "allocCount": 400
+  },
+  "ACC1927": {
+   "netQty": -129770,
+   "allocCount": 400
+  },
+  "ACC1928": {
+   "netQty": -170070,
+   "allocCount": 400
+  },
+  "ACC1929": {
+   "netQty": -89820,
+   "allocCount": 400
+  },
+  "ACC1930": {
+   "netQty": 107920,
+   "allocCount": 400
+  },
+  "ACC1931": {
+   "netQty": -275050,
+   "allocCount": 400
+  },
+  "ACC1932": {
+   "netQty": -377650,
+   "allocCount": 400
+  },
+  "ACC1933": {
+   "netQty": 258350,
+   "allocCount": 400
+  },
+  "ACC1934": {
+   "netQty": 516770,
+   "allocCount": 400
+  },
+  "ACC1935": {
+   "netQty": 216750,
+   "allocCount": 400
+  },
+  "ACC1936": {
+   "netQty": 44790,
+   "allocCount": 400
+  },
+  "ACC1937": {
+   "netQty": 241380,
+   "allocCount": 400
+  },
+  "ACC1938": {
+   "netQty": -658180,
+   "allocCount": 400
+  },
+  "ACC1939": {
+   "netQty": -252250,
+   "allocCount": 400
+  },
+  "ACC1940": {
+   "netQty": -175690,
+   "allocCount": 400
+  },
+  "ACC1941": {
+   "netQty": 205710,
+   "allocCount": 400
+  },
+  "ACC1942": {
+   "netQty": 134890,
+   "allocCount": 400
+  },
+  "ACC1943": {
+   "netQty": 108900,
+   "allocCount": 400
+  },
+  "ACC1944": {
+   "netQty": 163320,
+   "allocCount": 400
+  },
+  "ACC1945": {
+   "netQty": 530990,
+   "allocCount": 400
+  },
+  "ACC1946": {
+   "netQty": 70680,
+   "allocCount": 400
+  },
+  "ACC1947": {
+   "netQty": -119940,
+   "allocCount": 400
+  },
+  "ACC1948": {
+   "netQty": 531720,
+   "allocCount": 400
+  },
+  "ACC1949": {
+   "netQty": 191530,
+   "allocCount": 400
+  },
+  "ACC1950": {
+   "netQty": -264050,
+   "allocCount": 400
+  },
+  "ACC1951": {
+   "netQty": -320730,
+   "allocCount": 400
+  },
+  "ACC1952": {
+   "netQty": 85290,
+   "allocCount": 400
+  },
+  "ACC1953": {
+   "netQty": -144190,
+   "allocCount": 400
+  },
+  "ACC1954": {
+   "netQty": -352570,
+   "allocCount": 400
+  },
+  "ACC1955": {
+   "netQty": 220900,
+   "allocCount": 400
+  },
+  "ACC1956": {
+   "netQty": -239460,
+   "allocCount": 400
+  },
+  "ACC1957": {
+   "netQty": 76640,
+   "allocCount": 400
+  },
+  "ACC1958": {
+   "netQty": 876520,
+   "allocCount": 400
+  },
+  "ACC1959": {
+   "netQty": -352140,
+   "allocCount": 400
+  },
+  "ACC1960": {
+   "netQty": -443830,
+   "allocCount": 400
+  },
+  "ACC1961": {
+   "netQty": -294840,
+   "allocCount": 400
+  },
+  "ACC1962": {
+   "netQty": -152680,
+   "allocCount": 400
+  },
+  "ACC1963": {
+   "netQty": -708760,
+   "allocCount": 400
+  },
+  "ACC1964": {
+   "netQty": 330470,
+   "allocCount": 400
+  },
+  "ACC1965": {
+   "netQty": 246600,
+   "allocCount": 400
+  },
+  "ACC1966": {
+   "netQty": 83320,
+   "allocCount": 400
+  },
+  "ACC1967": {
+   "netQty": -331550,
+   "allocCount": 400
+  },
+  "ACC1968": {
+   "netQty": -156640,
+   "allocCount": 400
+  },
+  "ACC1969": {
+   "netQty": -468880,
+   "allocCount": 400
+  },
+  "ACC1970": {
+   "netQty": -299840,
+   "allocCount": 400
+  },
+  "ACC1971": {
+   "netQty": -212980,
+   "allocCount": 400
+  },
+  "ACC1972": {
+   "netQty": -228680,
+   "allocCount": 400
+  },
+  "ACC1973": {
+   "netQty": 73910,
+   "allocCount": 400
+  },
+  "ACC1974": {
+   "netQty": -237150,
+   "allocCount": 400
+  },
+  "ACC1975": {
+   "netQty": -341270,
+   "allocCount": 400
+  },
+  "ACC1976": {
+   "netQty": 344620,
+   "allocCount": 400
+  },
+  "ACC1977": {
+   "netQty": 178560,
+   "allocCount": 400
+  },
+  "ACC1978": {
+   "netQty": -78080,
+   "allocCount": 400
+  },
+  "ACC1979": {
+   "netQty": 60360,
+   "allocCount": 400
+  },
+  "ACC1980": {
+   "netQty": 238860,
+   "allocCount": 400
+  },
+  "ACC1981": {
+   "netQty": -204900,
+   "allocCount": 400
+  },
+  "ACC1982": {
+   "netQty": -316880,
+   "allocCount": 400
+  },
+  "ACC1983": {
+   "netQty": -353790,
+   "allocCount": 400
+  },
+  "ACC1984": {
+   "netQty": 46020,
+   "allocCount": 400
+  },
+  "ACC1985": {
+   "netQty": -190970,
+   "allocCount": 400
+  },
+  "ACC1986": {
+   "netQty": 37700,
+   "allocCount": 400
+  },
+  "ACC1987": {
+   "netQty": 307020,
+   "allocCount": 400
+  },
+  "ACC1988": {
+   "netQty": -131840,
+   "allocCount": 400
+  },
+  "ACC1989": {
+   "netQty": -343840,
+   "allocCount": 400
+  },
+  "ACC1990": {
+   "netQty": 299800,
+   "allocCount": 400
+  },
+  "ACC1991": {
+   "netQty": -278730,
+   "allocCount": 400
+  },
+  "ACC1992": {
+   "netQty": 530710,
+   "allocCount": 400
+  },
+  "ACC1993": {
+   "netQty": -262760,
+   "allocCount": 400
+  },
+  "ACC1994": {
+   "netQty": 275100,
+   "allocCount": 400
+  },
+  "ACC1995": {
+   "netQty": 256650,
+   "allocCount": 400
+  },
+  "ACC1996": {
+   "netQty": 74560,
+   "allocCount": 400
+  },
+  "ACC1997": {
+   "netQty": 148150,
+   "allocCount": 400
+  },
+  "ACC1998": {
+   "netQty": 359930,
+   "allocCount": 400
+  },
+  "ACC1999": {
+   "netQty": 945280,
+   "allocCount": 400
+  }
+ }
+}

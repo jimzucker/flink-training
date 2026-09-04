@@ -1,0 +1,10 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[18:18:12] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-13/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=75000000 --seed=20260905 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-13/results/manifest-tiny.json
+[18:18:52] fill done: produced 75000000 records to block-trades-tiny over 8 partitions in 38.305s (1957968 rec/s)
+[18:18:53] backlog block-trades-tiny: 75,000,000 records read back over 8 partitions
+[18:18:53] ---- tiny case 1 cores ----
+[18:21:53]   1c: 142,937 rec/s, tm 100.2% of cap, vantage 0.36%
+[18:21:53] ---- tiny case 4 cores ----
+[18:24:23]   REFUSED (case): vantage points disagree by 20.2% (source committed 14821652, sinks imply 17813429) > tolerance 5%
+TINY PROOF FAILED

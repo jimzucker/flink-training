@@ -1,0 +1,23 @@
+{
+ "build": "6381961fd22c52ef",
+ "records": 8000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "st13-complete-clean",
+   "killed": false,
+   "drainS": 90.0,
+   "killedAtCommitted": null,
+   "verify": "read 8000000 records from positions-by-symbol -> 200 distinct keys\nread 32000000 records from positions-by-account -> 2000 distinct keys\nmanifest    : 8000000 trades, 200 symbols, 2000 accounts, 32000000 allocations, net qty 113658400\nsymbol sink : 200 keys, 8000000 trades, net qty 113658400\naccount sink: 2000 keys, 32000000 allocations, net qty 113658400\nCOMPLETENESS OK \u2014 every assertion holds exactly, no tolerances\n"
+  },
+  {
+   "group": "st13-complete-kill",
+   "killed": true,
+   "drainS": 140.5,
+   "killedAtCommitted": 3798903,
+   "verify": "read 8074119 records from positions-by-symbol -> 200 distinct keys\nread 32290672 records from positions-by-account -> 2000 distinct keys\nmanifest    : 8000000 trades, 200 symbols, 2000 accounts, 32000000 allocations, net qty 113658400\nsymbol sink : 200 keys, 8000000 trades, net qty 113658400\naccount sink: 2000 keys, 32000000 allocations, net qty 113658400\nCOMPLETENESS OK \u2014 every assertion holds exactly, no tolerances\n"
+  }
+ ],
+ "at": "2026-09-04 18:30:00",
+ "result": "PASS"
+}
