@@ -22,10 +22,13 @@ way to tell them apart.
 | [7](clean-room-run-7.md) | DataStream | **0.92 h** | **$22.63** | 98 | 82,530 | 267,734 | 3.24× | **101%** |
 | [8](clean-room-run-8.md) | DataStream | 1.59 h | $26.39 | 92 | 140,308 | **457,264** | 3.26× | **99%** |
 | [9](clean-room-run-9.md) | DataStream | 2.75 h† | — | — | 69,132 | **267,708** | 3.87× | **99%** |
+| [10](clean-room-run-10.md) | DataStream | 2.32 h‡ | — | 104 | — | 394,315 | — | **99%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
 † Run 9 ran against the skill cut to 3,546 words; its harness counted input legs (4 per block order), shown here divided by 4. Its **2→4 step ratio was 2.10× pooled over 17 passes** (1.96–2.25× across seven suites). Most of its wall clock went to re-running suites a mis-scoped spread guard had refused; the agent was then killed by API overload before writing its report or recording its cost.
+
+‡ Run 10 ran 2- and 4-core cases only, as the prompt asked. Its harness voided a valid **2→4 step of 2.07×** (spread 11.2% / 4.6%) on a 10% ceiling that the record already contradicted, and reported no ratio. The 4-core figure is trades/s from that suite. It is the run that moved the harness into the skill as code.
 
 **Do not read the throughput columns across rows.** Each agent chose its own
 fan-out, key cardinality, checkpoint mode, record shape and partition count, so
@@ -85,6 +88,8 @@ result.
 | 6 | its own idempotence claim disproved by killing a worker | the sink guarantee and the checkpointing guarantee are two settings |
 | 7 | its own baseline refused by a guard written the day before | measure back-pressure at the **external boundary**; the baseline is a case, not a reference point |
 | 8 | the skill's own baseline mechanism was wrong, and `docker stats` refused a valid case | find the baseline asymmetry **in your own stack**; read CPU from a cumulative counter; **one sample is not a measurement** |
+| 9 | six of seven suites refused on a 1-core spread while the 2→4 step was valid in every one | a data refusal voids the case, not the suite |
+| 10 | a valid 2.07× voided at 11.2% spread by a 10% ceiling; a second harness rewritten from the same prose | **replay every threshold against the record before a run; the harness ships with the skill** |
 
 **Runs 4, 5, 6, 7 and 8 each corrected the skill's own text.** Run 4 found that the
 documented fix for a no-op CPU command creates a second trap. Run 5 found that

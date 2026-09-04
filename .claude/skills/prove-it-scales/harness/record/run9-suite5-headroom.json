@@ -1,0 +1,20 @@
+{
+ "run": 9,
+ "suite": "suite5-headroom",
+ "unit": "input legs/s (4 per order)",
+ "rates": {
+  "1": [
+   250818
+  ],
+  "2": [
+   496270
+  ],
+  "4": [
+   1034084
+  ]
+ },
+ "validSteps": {
+  "1->2": false,
+  "2->4": false
+ }
+}

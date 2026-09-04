@@ -1,0 +1,23 @@
+{
+ "run": 9,
+ "suite": "suite2-20s-windows",
+ "unit": "input legs/s (4 per order)",
+ "rates": {
+  "1": [
+   157135,
+   239919
+  ],
+  "2": [
+   458555,
+   513005
+  ],
+  "4": [
+   1108756,
+   1082052
+  ]
+ },
+ "validSteps": {
+  "1->2": false,
+  "2->4": true
+ }
+}

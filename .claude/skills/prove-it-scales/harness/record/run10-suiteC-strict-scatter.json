@@ -1,0 +1,16 @@
+{
+ "run": 10,
+ "suite": "suiteC-strict-scatter",
+ "unit": "block trades/s",
+ "rates": {
+  "2": [
+   197365
+  ],
+  "4": [
+   245264
+  ]
+ },
+ "validSteps": {
+  "2->4": false
+ }
+}

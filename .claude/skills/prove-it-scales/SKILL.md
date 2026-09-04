@@ -12,6 +12,20 @@ refuses on, or a **rule of judgment** kept short enough to read. The
 validation record behind each rule lives with the project that wrote it, not
 here.
 
+**The measurement harness ships with this skill. Use it; do not write one.**
+`harness/prove.py` (next to this file) is the preflight, the tiny proof, the
+completeness run, the suite, the guards and the report table, with a self-test
+per guard and a replay of every threshold against the recorded runs before
+any command touches a stack. You supply the pipeline: a job jar, a
+deterministic generator, a verifier that exits non-zero on any loss, and a
+`pipeline.json` describing them — `harness/README.md` is the contract. Ten
+runs each rewrote the harness from this prose, and every one re-decided
+something it had already decided: what a refusal does, what the window is
+anchored on, what counts as flat. Sections 3–6 below say what the harness
+enforces and why, so you can read its refusals; they are not a specification
+to re-implement. If the harness cannot express your pipeline, say so in the
+report and stop — do not fork it.
+
 ## 1. Interview before building
 
 **Ask one question at a time. Wait for the answer. Do not start building until
@@ -216,14 +230,16 @@ not a second table; size the backlog for the longest single *use* — including 
 dashboard image — plus headroom, not for the suite. Record submit, steady,
 open and close timestamps per case so the next budget is measured.
 
-**Start the fill the moment the tiny proof passes** and build the harness and
-dashboard while it runs. Nothing but the cases depends on it.
+**Start the fill the moment the tiny proof passes** and build the dashboard
+while it runs. Nothing but the cases depends on it.
 
 ## 6. The harness refuses
 
 **A benchmark that prints a number for every input will eventually print a
-wrong one.** A harness that does not implement and self-test every guard below
-is not finished. Each one exists because a run paid for it.
+wrong one.** The shipped harness implements and self-tests every guard below;
+`prove.py tinyproof` runs the self-test live and `suite` will not start until
+it has passed for the build under test. Each guard exists because a run paid
+for it.
 
 | the harness refuses when | how it checks |
 |---|---|
@@ -274,12 +290,13 @@ passing honestly, because the harness cannot see a process it did not start.
 Put samplers in the compose file; `compose down` reaps them.
 
 **The promotion rule:** when a run breaks a rule, that rule becomes a guard
-with a self-test, or it is deleted. **And before any new guard or threshold
+in `harness/lib.py` with a self-test in `prove.py selftest`, or it is deleted. **And before any new guard or threshold
 goes into a run, replay it against every result already recorded**: if it
 would have refused a table considered valid, it is wrong, and it is cheaper
 to learn that in a minute than in a run. Thresholds come from measured
 spread, not round numbers — a 10% spread guard written when the record
-already showed 10–17% cost two runs. Sort every new rule into one of three piles
+already showed 10–17% cost two runs; `prove.py replay` is that check, and
+it runs before every command. Sort every new rule into one of three piles
 — *checkable while running* (a guard above), *checkable before running* (a
 preflight row in §3), *judgment* (prose, and keep that pile small).
 

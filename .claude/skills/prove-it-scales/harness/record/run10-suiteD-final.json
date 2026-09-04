@@ -1,0 +1,20 @@
+{
+ "run": 10,
+ "suite": "suiteD-final",
+ "unit": "block trades/s",
+ "rates": {
+  "2": [
+   218714,
+   206952,
+   182561
+  ],
+  "4": [
+   411255,
+   411718,
+   310504
+  ]
+ },
+ "validSteps": {
+  "2->4": false
+ }
+}
