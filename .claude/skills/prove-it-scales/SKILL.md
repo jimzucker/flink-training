@@ -264,7 +264,7 @@ for it.
 | observed cardinality ≠ predicted | distinct keys vs the interview's answer |
 | completeness has not passed for this build | §4, with no tolerances |
 | host free disk is below the next case's write | checked **before** the case — a full disk takes the shell down with it |
-| a monitor outlived the thing it watched | at teardown, no child the run started survives |
+| a monitor outlived the thing it watched | at teardown, no child the run started survives, and no host process watching `results/` or `prove.py` either |
 
 **A refusal stops the suite — when it is about the rig.** A cap that did not
 apply at one core will not apply at two; a busy cluster, a bad window anchor,
@@ -291,7 +291,12 @@ half-hour one.
 **Anything that watches the stack runs as part of the stack.** Four
 consecutive runs left a host-side sampler running with the teardown assertion
 passing honestly, because the harness cannot see a process it did not start.
-Put samplers in the compose file; `compose down` reaps them.
+Put samplers in the compose file; `compose down` reaps them. The rule was
+prose for five runs and broken on every one of them, so `down` now also looks
+for strangers: any host process holding a file under `results/` open, or
+whose command line names `results/` or `prove.py`, is killed and listed, and
+`down` refuses if one survives. A watcher you start on the host will be
+killed by the teardown it was waiting for — start none.
 
 **The promotion rule:** when a run breaks a rule, that rule becomes a guard
 in `harness/lib.py` with a self-test in `prove.py selftest`, or it is deleted. **And before any new guard or threshold
