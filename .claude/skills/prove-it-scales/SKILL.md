@@ -274,7 +274,12 @@ passing honestly, because the harness cannot see a process it did not start.
 Put samplers in the compose file; `compose down` reaps them.
 
 **The promotion rule:** when a run breaks a rule, that rule becomes a guard
-with a self-test, or it is deleted. Sort every new rule into one of three piles
+with a self-test, or it is deleted. **And before any new guard or threshold
+goes into a run, replay it against every result already recorded**: if it
+would have refused a table considered valid, it is wrong, and it is cheaper
+to learn that in a minute than in a run. Thresholds come from measured
+spread, not round numbers — a 10% spread guard written when the record
+already showed 10–17% cost two runs. Sort every new rule into one of three piles
 — *checkable while running* (a guard above), *checkable before running* (a
 preflight row in §3), *judgment* (prose, and keep that pile small).
 
