@@ -156,6 +156,33 @@ def cmd_selftest(live=True, topic=None):
             raise Exception(f"an 8% drift (inside the 10% noise floor) was refused: {t['sentinel']}")
     expect("sentinel: drift inside the noise floor (must not fire)", sentinel_ok, "", should_fire=False)
 
+    def watcher():
+        import subprocess
+        os.makedirs(c.results, exist_ok=True)
+        probe = os.path.join(c.results, "selftest-watcher.log")
+        open(probe, "a").close()
+        w = subprocess.Popen(["bash", "-c", f"while true; do ls {c.results} >/dev/null; sleep 5; done"],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+        t = subprocess.Popen(["tail", "-f", probe], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                             start_new_session=True)
+        time.sleep(0.5)
+        # they are our children here; the suite's watchers are not, so look at them as strangers
+        found = {pid for pid, _ in L.host_watchers(ignore_children=True)}
+        if w.pid not in found or t.pid not in found:
+            w.kill(); t.kill()
+            raise Exception(f"host_watchers missed {w.pid}/{t.pid}: {sorted(found)}")
+        L.reap_host_watchers(ignore_children=True)
+        time.sleep(0.5)
+        left = {pid for pid, _ in L.host_watchers(ignore_children=True)} & {w.pid, t.pid}
+        try:
+            os.remove(probe)
+        except OSError:
+            pass
+        if left:
+            raise Exception(f"watchers survived reaping: {left}")
+        raise Refusal("rig", f"host processes watching this run were found and killed: {w.pid}, {t.pid}")
+    expect("a host-side watcher outlives the run", watcher, "watching this run")
+
     def warm():
         ok, d = L.warmup_verdict([325e3, 259e3, 241e3, 340e3], 120)
         if ok:

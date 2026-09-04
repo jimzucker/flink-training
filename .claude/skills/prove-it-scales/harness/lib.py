@@ -419,11 +419,73 @@ def stack_down(trim=True):
         raise Refusal("rig", "anonymous volumes created during the run survive teardown")
     if ours:
         log(f"removed {len(ours)} anonymous volume(s) left by containers removed without -v")
+    killed = reap_host_watchers()
+    if killed:
+        log(f"killed {len(killed)} host process(es) watching this run: " +
+            "; ".join(f"{pid} {cmd[:80]}" for pid, cmd in killed))
+    left = host_watchers()
+    if left:
+        raise Refusal("rig", "host processes watching this run survive teardown: " +
+                             "; ".join(f"{pid} {cmd[:80]}" for pid, cmd in left))
     if trim:
         r = sh("docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- "
                "fstrim -v /var/lib/docker", check=False, timeout=600)
         log("fstrim:", (r.stdout + r.stderr).strip()[-200:])
     log("stack down; nothing with prefix", c.project, "survives")
+
+
+def host_watchers(ignore_children=False):
+    """Host processes the harness did not start but that watch this run: anything
+    holding a file open under results/, or whose command line names results/ or
+    prove.py. Run 11 left two `until ! pgrep -f "prove.py suite"` shells alive,
+    each matching its own command line and so waiting on itself; the assertion
+    on containers, volumes and networks could not see them. Own process, its
+    ancestors and its children are excluded."""
+    c = cfg()
+    me = os.getpid()
+    ps = sh("ps -axo pid=,ppid=,command=", check=False).stdout.splitlines()
+    parent, cmd = {}, {}
+    for line in ps:
+        parts = line.split(None, 2)
+        if len(parts) < 2:
+            continue
+        pid, ppid = int(parts[0]), int(parts[1])
+        parent[pid] = ppid
+        cmd[pid] = parts[2] if len(parts) > 2 else ""
+    skip = {me}
+    p = me
+    while p in parent and parent[p] not in skip and parent[p] > 1:
+        p = parent[p]; skip.add(p)
+    def descends(pid):
+        while pid in parent and pid > 1:
+            if pid == me:
+                return True
+            pid = parent[pid]
+        return False
+    holders = set()
+    r = sh(f"lsof -t +D {c.results}", check=False)
+    for tok in r.stdout.split():
+        if tok.isdigit():
+            holders.add(int(tok))
+    found = []
+    for pid, line in cmd.items():
+        if pid in skip or (descends(pid) and not ignore_children):
+            continue
+        if pid in holders or c.results in line or "prove.py" in line:
+            found.append((pid, line))
+    return sorted(found)
+
+
+def reap_host_watchers(ignore_children=False):
+    found = host_watchers(ignore_children)
+    for pid, _ in found:
+        sh(f"kill -TERM {pid}", check=False)
+    if found:
+        time.sleep(1.0)
+        for pid, _ in host_watchers(ignore_children):
+            sh(f"kill -KILL {pid}", check=False)
+        time.sleep(0.5)
+    return found
 
 
 def surviving():
