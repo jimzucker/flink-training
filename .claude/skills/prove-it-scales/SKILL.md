@@ -142,7 +142,7 @@ step — that is what a vendor sells, so the number prices.
 
 **You can only show that something scales when it is the thing constrained.**
 This is the rule runs break most, always with the evidence in their own table,
-so the harness owns it (§6): ≥98% of cap at the baseline, ≥95% at every case,
+so the harness owns it (§6): ≥95% of cap at every case (the baseline included),
 and no material back-pressure **at the boundary to the external component**.
 Internal back-pressure inside a capped single-slot worker is expected — the
 source waits on the aggregation threads sharing its core — so it is reported in
@@ -251,7 +251,7 @@ for it.
 | the resource cap was not applied | read it back from the container, never the environment variable |
 | parallelism ≠ cap ≠ allocated slots | all three read back from the engine on every case |
 | the job graph differs from the other cases | vertex count and edge ship strategies read off the running plan |
-| the component under test is not the constraint | ≥98% of cap at baseline, ≥95% per case; external-boundary back-pressure not material |
+| the component under test is not the constraint | ≥95% of cap at every case, baseline included; external-boundary back-pressure not material |
 | a refused case still owns the cluster | job torn down on **every** exit path |
 | no job is actually running | engine reports RUNNING with the expected parallelism |
 | the cluster is still busy from the last case | assert idle by asking the engine, not by killing what you think is there |

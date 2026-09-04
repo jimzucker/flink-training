@@ -112,7 +112,9 @@ def cmd_selftest(live=True, topic=None):
     expect("backlog lacks headroom at close", case(backlogRemaining=1000, headroomS=0.006), "headroom")
     expect("external-boundary samples missing", case(sourceIdle=None), "samples")
     expect("too few reporter samples in the window", case(bpSamples=2), "samples")
-    expect("worker is not the constraint (baseline)", case(tmCapFrac=0.97, _baseline=True), "not the constraint")
+    expect("worker is not the constraint (baseline, run 5\'s 94%)", case(tmCapFrac=0.94, _baseline=True), "not the constraint")
+    expect("baseline at 95.9% is the constraint (run 12 p3; must not fire)",
+           case(tmCapFrac=0.959, _baseline=True), "", should_fire=False)
     expect("worker is not the constraint (other)", case(tmCapFrac=0.90), "not the constraint")
     expect("source idle past the ceiling", case(sourceIdle=0.4), "waited on input")
     expect("job graph differs across cases",

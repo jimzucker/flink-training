@@ -48,8 +48,17 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # one of them would void a table the record marks valid.
 
 T = {
-    # constraint ownership — run 5 published a 2.82x from a worker at 94% of cap
-    "capFloorBaseline": 0.98,
+    # constraint ownership — run 5 published a 2.82x from a worker at 94% of cap.
+    # The baseline floor was 98% until 2026-09-04. Replayed by hand against every
+    # baseline pass it had refused (the record does not carry per-pass cap
+    # fractions, so `replay` cannot): four refusals at 95.9-97.4% (runs 11, 12,
+    # rig Phase 3, incl. run 12's sentinel) carried the same rate as the accepted
+    # passes (x0.97-x1.05); the two at 95.3% and 94.2% (Phase 1) were 31% high and
+    # 24% low, which the spread guard refuses on its own. One floor for every
+    # case; run 5's 94% stays out. The good/bad gap on record is 0.6 points at
+    # n=6 — 95% is the existing floor the record does not contradict, not a
+    # floor measured from noise.
+    "capFloorBaseline": 0.95,
     "capFloorOther": 0.95,
     # external boundary: a starved source idles (run 5: the broker was the ceiling
     # at 43% back-pressure with the TM under cap). Measured 2026-09-04: at-cap
