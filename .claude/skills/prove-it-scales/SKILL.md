@@ -228,7 +228,11 @@ floor set by the checkpoint interval (three boundaries; four is prudent — 40 s
 at a 10 s interval, not 60); the descending pass detects order effects and is
 not a second table; size the backlog for the longest single *use* — including a
 dashboard image — plus headroom, not for the suite. Record submit, steady,
-open and close timestamps per case so the next budget is measured.
+open and close timestamps per case so the next budget is measured. The
+harness ends every suite with a **sentinel** — the baseline case once more —
+so the suite's first and last measurements are the same case and a rig that
+drifted across it is visible as baseline spread (one rig read its four-core
+case 12% higher ten minutes after the suite than in it). Budget one extra case.
 
 **Start the fill the moment the tiny proof passes** and build the dashboard
 while it runs. Nothing but the cases depends on it.
