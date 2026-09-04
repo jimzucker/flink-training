@@ -161,26 +161,42 @@ def cmd_selftest(live=True, topic=None):
         os.makedirs(c.results, exist_ok=True)
         probe = os.path.join(c.results, "selftest-watcher.log")
         open(probe, "a").close()
+        # three shapes of watcher: names the project on its command line; holds a
+        # results file open; names prove.py and runs from inside the project (run 11's shells)
         w = subprocess.Popen(["bash", "-c", f"while true; do ls {c.results} >/dev/null; sleep 5; done"],
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True)
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True, cwd="/")
         t = subprocess.Popen(["tail", "-f", probe], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                             start_new_session=True)
+                             start_new_session=True, cwd="/")
+        u = subprocess.Popen(["bash", "-c", "while true; do pgrep -f 'prove.py suite' >/dev/null; sleep 5; done"],
+                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True, cwd=c.root)
+        # and two that must NOT be touched: another project's harness elsewhere, and a
+        # bystander shell merely sitting in the project directory
+        other = subprocess.Popen(["bash", "-c", "exec -a 'python3 harness/prove.py tinyproof' sleep 300"],
+                                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True, cwd="/")
+        bystander = subprocess.Popen(["bash", "-c", "sleep 300"], stdout=subprocess.DEVNULL,
+                                     stderr=subprocess.DEVNULL, start_new_session=True, cwd=c.root)
         time.sleep(0.5)
         # they are our children here; the suite's watchers are not, so look at them as strangers
         found = {pid for pid, _ in L.host_watchers(ignore_children=True)}
-        if w.pid not in found or t.pid not in found:
-            w.kill(); t.kill()
-            raise Exception(f"host_watchers missed {w.pid}/{t.pid}: {sorted(found)}")
+        want = {w.pid, t.pid, u.pid}
+        if not want <= found or other.pid in found or bystander.pid in found:
+            for x in (w, t, u, other, bystander):
+                x.kill()
+            raise Exception(f"host_watchers wanted {sorted(want)} and not {other.pid}/{bystander.pid}; got {sorted(found)}")
         L.reap_host_watchers(ignore_children=True)
         time.sleep(0.5)
-        left = {pid for pid, _ in L.host_watchers(ignore_children=True)} & {w.pid, t.pid}
+        left = {pid for pid, _ in L.host_watchers(ignore_children=True)} & want
+        other_alive = other.poll() is None and bystander.poll() is None
+        other.kill(); bystander.kill()
         try:
             os.remove(probe)
         except OSError:
             pass
         if left:
             raise Exception(f"watchers survived reaping: {left}")
-        raise Refusal("rig", f"host processes watching this run were found and killed: {w.pid}, {t.pid}")
+        if not other_alive:
+            raise Exception("another project's harness, or a bystander shell in the project directory, was killed")
+        raise Refusal("rig", f"host processes watching this run were found and killed: {sorted(want)}")
     expect("a host-side watcher outlives the run", watcher, "watching this run")
 
     def warm():
