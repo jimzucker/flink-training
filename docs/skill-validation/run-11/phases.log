@@ -1,0 +1,21 @@
+2026-09-03 22:47:47 EDT  phase=start
+2026-09-03 23:02:12 phase=completeness-1 start
+2026-09-03 23:07:27 completeness build-A: clean arm PASS (drain 57.0s / 10M at 2 cores); kill arm in flight
+2026-09-03 23:18:59 phase=tinyproof-1 start (build 687da142db2203db)
+2026-09-03 23:34:04 phase=completeness-2 start (build 6ee9600b17e9ba41)
+2026-09-03 23:46:51 phase=tinyproof-2 start (build 6ee9600b17e9ba41)
+2026-09-03 23:48 CORRECTION: an earlier note here blamed an 8-minute gap before the tiny fill on two runs contending. Wrong. phases.log records tinyproof-2 starting 23:46:51 and its fill at 23:46:55 - four seconds. The gap was my own latency between phases, outside any run. The wrong note was written and removed before it reached the report.
+2026-09-03 23:57:43 phase=fill start (200,000,000 records)
+2026-09-04 00:03:06 phase=suite start
+2026-09-04 00:06:39 REFUSAL (case) 2c p1-asc: tm 96.4% of cap, floor 98%. I had been running df/grep/docker-exec polls on the host throughout that window - host-side load I introduced. Hypothesis only, not measured. Corrective action: no host commands at all for the remainder of the suite.
+2026-09-04 00:26:32 phase=suite end
+2026-09-04 00:28:27 phase=ceiling start
+2026-09-04 00:40:37 phase=ceiling end
+2026-09-04 00:45:12 phase=teardown start
+2026-09-04 00:47 TEARDOWN: prove.py down reported clean and fstrim returned 67.6 GiB. Independent
+  re-assert found 0 containers/volumes/networks with the st11 prefix - BUT two of my own host-side
+  watcher shells were still alive: `until ! pgrep -f "prove.py suite"` loops whose own command line
+  contained the string they were grepping for, so each was waiting on itself. Exactly the failure
+  skill section 6 names ("a monitor outlived the thing it watched"; the harness cannot see a process
+  it did not start). Killed explicitly; re-asserted empty.
+2026-09-04 00:45:52 phase=teardown end

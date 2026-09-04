@@ -1,0 +1,216 @@
+{
+  "build": "6ee9600b17e9ba41",
+  "records": 140000000,
+  "cases": [
+    {
+      "cores": 2,
+      "pass": "tiny",
+      "group": "st11-tiny-c2-tiny",
+      "hostFreeGB": 105.4,
+      "nanoCpus": 2000000000,
+      "reporterS": 2,
+      "slotsTotal": 2,
+      "tSubmit": 1788493840.633137,
+      "jobId": "0878c84ad7d9d8b555d5c58712652e03",
+      "shape": {
+        "vertexCount": 3,
+        "signature": [
+          [
+            "Source: kafka-source<br/>+- parse-trade<br/>   +- allocate<br/>",
+            []
+          ],
+          [
+            "account-position<br/>+- sink-by-account: Writer<br/>   +- sink-by-account: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ],
+          [
+            "symbol-position<br/>+- sink-by-symbol: Writer<br/>   +- sink-by-symbol: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ]
+        ]
+      },
+      "warmup": {
+        "rates": [
+          374044.9113722366,
+          369374.0526525728,
+          380105.9622490762,
+          382350.5988653078
+        ],
+        "mean": 376468.8812847984,
+        "drift": 0.0284,
+        "scatter": 0.0345,
+        "warmupS": 62.4
+      },
+      "tSteady": 1788493914.9383512,
+      "tOpen": 1788493915.170099,
+      "open": {
+        "ts": 1788493914621,
+        "committed": 21282660,
+        "endIn": 140000000,
+        "end_positions-by-symbol": 21303524,
+        "end_positions-by-account": 63868684
+      },
+      "tClose": 1788493945.074445,
+      "close": {
+        "ts": 1788493944698,
+        "committed": 32423490,
+        "endIn": 140000000,
+        "end_positions-by-symbol": 32474076,
+        "end_positions-by-account": 97395563
+      },
+      "boundaries": 3,
+      "elapsedS": 30.08,
+      "recordsConsumed": 11140830,
+      "rateSource": "kafka committed offsets on block-trades-tiny",
+      "recordsPerSec": 370410.3,
+      "outputRecsPerSec": 1481641.1,
+      "vantageSinkRecords": 11174357.8,
+      "vantageDisagreement": 0.003,
+      "backlogRemaining": 107576510,
+      "headroomS": 290.4,
+      "tmCores": 1.985,
+      "tmCapFrac": 0.9923,
+      "tmThrottledPeriodsPct": 99.7,
+      "kafkaCores": 0.295,
+      "kafkaCapFrac": 0.1181,
+      "gcMsInWindow": 2132.0,
+      "gcFracOfCapacity": 0.0354,
+      "sourceIdle": 0.1292,
+      "sourceBusy": 0.7175,
+      "sourceBackpressured": 0.1534,
+      "bpSamples": 28,
+      "backpressure": {
+        "symbol-position -> sink-by-symbol: Writer -> sink-by-symbol: Committer": {
+          "idle": 0.3259,
+          "backPressured": 0.0,
+          "busy": 0.6741,
+          "samples": 28
+        },
+        "Source: kafka-source -> parse-trade -> allocate": {
+          "busy": 0.7175,
+          "idle": 0.1292,
+          "backPressured": 0.1534,
+          "samples": 28
+        },
+        "account-position -> sink-by-account: Writer -> sink-by-account: Committer": {
+          "backPressured": 0.0,
+          "idle": 0.2003,
+          "busy": 0.7997,
+          "samples": 28
+        }
+      },
+      "status": "OK"
+    },
+    {
+      "cores": 4,
+      "pass": "tiny",
+      "group": "st11-tiny-c4-tiny",
+      "hostFreeGB": 100.7,
+      "nanoCpus": 4000000000,
+      "reporterS": 2,
+      "slotsTotal": 4,
+      "tSubmit": 1788494000.240601,
+      "jobId": "96e475cc3cacfff24111fde0c3c4687f",
+      "shape": {
+        "vertexCount": 3,
+        "signature": [
+          [
+            "Source: kafka-source<br/>+- parse-trade<br/>   +- allocate<br/>",
+            []
+          ],
+          [
+            "account-position<br/>+- sink-by-account: Writer<br/>   +- sink-by-account: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ],
+          [
+            "symbol-position<br/>+- sink-by-symbol: Writer<br/>   +- sink-by-symbol: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ]
+        ]
+      },
+      "warmup": {
+        "rates": [
+          774003.9920159681,
+          682115.9100462379,
+          779284.1884607705,
+          791746.504194966
+        ],
+        "mean": 756787.6486794857,
+        "drift": 0.0596,
+        "scatter": 0.1449,
+        "warmupS": 32.0
+      },
+      "tSteady": 1788494043.9899,
+      "tOpen": 1788494044.213462,
+      "open": {
+        "ts": 1788494043671,
+        "committed": 23030491,
+        "endIn": 140000000,
+        "end_positions-by-symbol": 23347095,
+        "end_positions-by-account": 70045134
+      },
+      "tClose": 1788494074.161778,
+      "close": {
+        "ts": 1788494073734,
+        "committed": 47305811,
+        "endIn": 140000000,
+        "end_positions-by-symbol": 47679910,
+        "end_positions-by-account": 143046041
+      },
+      "boundaries": 3,
+      "elapsedS": 30.06,
+      "recordsConsumed": 24275320,
+      "rateSource": "kafka committed offsets on block-trades-tiny",
+      "recordsPerSec": 807481.6,
+      "outputRecsPerSec": 3229926.5,
+      "vantageSinkRecords": 24333430.5,
+      "vantageDisagreement": 0.0024,
+      "backlogRemaining": 92694189,
+      "headroomS": 114.8,
+      "tmCores": 3.983,
+      "tmCapFrac": 0.9959,
+      "tmThrottledPeriodsPct": 99.3,
+      "kafkaCores": 0.646,
+      "kafkaCapFrac": 0.2583,
+      "gcMsInWindow": 3612.0,
+      "gcFracOfCapacity": 0.03,
+      "sourceIdle": 0.1156,
+      "sourceBusy": 0.7792,
+      "sourceBackpressured": 0.1051,
+      "bpSamples": 56,
+      "backpressure": {
+        "symbol-position -> sink-by-symbol: Writer -> sink-by-symbol: Committer": {
+          "backPressured": 0.0,
+          "busy": 0.6638,
+          "idle": 0.3362,
+          "samples": 56
+        },
+        "account-position -> sink-by-account: Writer -> sink-by-account: Committer": {
+          "backPressured": 0.0,
+          "busy": 0.8856,
+          "idle": 0.1144,
+          "samples": 56
+        },
+        "Source: kafka-source -> parse-trade -> allocate": {
+          "busy": 0.7792,
+          "backPressured": 0.1051,
+          "idle": 0.1156,
+          "samples": 56
+        }
+      },
+      "status": "OK"
+    }
+  ],
+  "at": "2026-09-03 23:50:21",
+  "ratio": 2.18,
+  "result": "PASS",
+  "selftest": "PASS"
+}

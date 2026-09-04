@@ -1,0 +1,12 @@
+{
+ "run": 11,
+ "suite": "first clean-room run on the shipped harness; 2c p1 refused (96.4% of cap) and the case reported on two passes",
+ "unit": "block trades/s",
+ "rates": {
+  "2": [376886, 392293],
+  "4": [687827, 693104, 775611]
+ },
+ "validSteps": {
+  "2->4": true
+ }
+}

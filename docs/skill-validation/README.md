@@ -24,6 +24,7 @@ way to tell them apart.
 | [9](clean-room-run-9.md) | DataStream | 2.75 h† | — | — | 69,132 | **267,708** | 3.87× | **99%** |
 | [10](clean-room-run-10.md) | DataStream | 2.32 h‡ | — | 104 | — | 394,315 | — | **99%** |
 | [harness, live 1](clean-room-run-10.md) | DataStream | 0.8 h§ | — | — | — | **438,789** | — | **98%** |
+| [11](clean-room-run-11.md) | DataStream | 1.97 h | — | 708 | — | **718,847** | — | **98%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -32,6 +33,8 @@ Human time was **0 h** and human prompts **1** in every row.
 ‡ Run 10 ran 2- and 4-core cases only, as the prompt asked. Its harness voided a valid **2→4 step of 2.07×** (spread 11.2% / 4.6%) on a 10% ceiling that the record already contradicted, and reported no ratio. The 4-core figure is trades/s from that suite. It is the run that moved the harness into the skill as code.
 
 § Not a clean-room run: the shipped harness driven by hand against run 10's pipeline and build, after six sizing defects in the harness were fixed. **2→4 = 2.019×** (1.98–2.07× across passes; spread 3.7% / 0.8%). The 0.8 h is preflight through suite, excluding the fixes.
+
+Run 11 is the first clean-room run on the shipped harness: **one suite, 2→4 = 1.87×** (1.75–2.06× across passes; spread 4.0% / 12.2%), no harness written. Its 4-core figure is trades/s. The wall clock missed a 1.5 h criterion on a rebuild that re-ran the gates and an optional ceiling run; the suite itself was 23 minutes.
 
 **Do not read the throughput columns across rows.** Each agent chose its own
 fan-out, key cardinality, checkpoint mode, record shape and partition count, so
@@ -93,6 +96,7 @@ result.
 | 8 | the skill's own baseline mechanism was wrong, and `docker stats` refused a valid case | find the baseline asymmetry **in your own stack**; read CPU from a cumulative counter; **one sample is not a measurement** |
 | 9 | six of seven suites refused on a 1-core spread while the 2→4 step was valid in every one | a data refusal voids the case, not the suite |
 | 10 | a valid 2.07× voided at 11.2% spread by a 10% ceiling; a second harness rewritten from the same prose | **replay every threshold against the record before a run; the harness ships with the skill** |
+| 11 | two host-side watcher shells outlived `down`, waiting on their own `pgrep` | the harness held for the first time — one suite, no rewrite; the watcher rule is still prose |
 
 **Runs 4, 5, 6, 7 and 8 each corrected the skill's own text.** Run 4 found that the
 documented fix for a no-op CPU command creates a second trap. Run 5 found that
