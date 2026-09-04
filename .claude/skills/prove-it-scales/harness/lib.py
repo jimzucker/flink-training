@@ -53,10 +53,10 @@ T = {
     "capFloorOther": 0.95,
     # external boundary: a starved source idles (run 5: the broker was the ceiling
     # at 43% back-pressure with the TM under cap). Measured 2026-09-04: at-cap
-    # 2-core cases idle 8.1-16.8% at the same throughput (13 cases, sd 2.6%), and
+    # 2-core cases idle 8.1-16.8% at the same throughput (14 cases, sd 2.3%), and
     # the one recorded broker-constrained step (ceiling run, TM at 91.7%) idled
-    # 16.7% — idle alone does not separate the two; the cap floor does. Ceiling =
-    # max at-cap idle + one sd. 15% was a round number inside the measured band.
+    # 16.7% — idle alone does not separate the two; the cap floor does. Ceiling:
+    # max at-cap idle + one sd = 19%. 15% was a round number inside the band.
     "sourceIdleCeil": 0.20,
     # two vantage points: 0.5% measured after anchoring on commit boundaries (run 7);
     # 5% is ten times that

@@ -169,6 +169,42 @@ topic took host free from 92.4 to 121.3 GB and `Docker.raw` from 54.8 to
 are reclaimable before the suite fill and the projection now adds them to
 the free figure (`hostFreeBytesNow`, `reclaimableBytes` in `tinyproof.json`).
 
+**2.7 — added by Phase 3's first three attempts: the idle ceiling from the
+record.** Every chained `all` refused the tiny proof's 2-core case on
+`source idle > 15%`, while every tiny proof run as the first work of a fresh
+stack session passed:
+
+| session | tiny 2c idle | TM of cap | rec/s | verdict |
+|---|---:|---:|---:|---|
+| fresh (07:46, arm B 08:51; 07:23 and 07:34 passed too, records since overwritten) | 8.1%, 11.6% | 101.0%, 99.7% | 343k, 375k | pass |
+| run 11's tiny proof (record) | 12.9% | 99.2% | 370k | pass |
+| after preflight + completeness (`all` 08:02, 08:20) | 16.8%, 15.6% | 98.5%, 99.3% | 375k, 382k | **refused** |
+| after a tiny proof (arm A 08:40, tick run 09:04) | 15.05%, 15.1% | 100.6%, 99.9% | 386k, 371k | **refused** |
+
+Throughput is the same in both rows (within 1A's 10.2% floor), the TM is at
+its cap in every case, and the broker is at 11–12% of its own cap — the
+refusal's message ("the broker, not the task manager, is the constraint") is
+contradicted by the record it is printed from. What makes the second and
+later cases of a session idle more is **not known**; it is not explained
+here. What the record does show is what separates a broker-constrained case:
+run 11's ceiling step with Kafka capped at 0.6 idled **16.65% with the TM at
+91.7%** — the cap floor caught it, the idle ceiling would have at 15% or 20%.
+Across the 14 at-cap 2-core cases on disk idle runs 8.1–16.8% (sd 2.3%,
+max + one sd = 19.0%); the ceiling is now **0.20**, the message states the measurement instead of a
+mechanism, and replay of the 14 recorded suites is unchanged (no recorded
+verdict rested on the idle guard). 15% was a round number inside the
+measured band — the rule this plan was written under. Shipped with Phase 3.
+
+Seen once in the same attempts and **unexplained**: arm B's 4-core tiny case
+refused on `vantage points disagree by 33.9%` (committed 15.69M, sinks imply
+21.0M; the committed rate 522k/s, the sink-implied 699k/s normal). Checkpoints
+were on time and no restart occurred. A partial commit at the closing tick
+fits the arithmetic (6 of 8 partitions un-committed ≈ 7.5 s of the missing
+7.6 s) but a run with per-partition ticks recorded saw every one of 20
+checkpoints commit all 8 partitions in a single 500 ms tick — not confirmed.
+Each case record now keeps its ticks (`ticks[]` with `committedParts`) so a
+recurrence can be read instead of guessed at. n = 1 in 33 recorded cases.
+
 ### Phase 2 verdict
 
 Four of six items shipped (#38, #39, #40+#41, #42), two dropped by Phase 1's
@@ -178,7 +214,8 @@ Two of the four needed more than one attempt, both for the same reason: the
 pure self-test cannot see a rule that is wrong about the machine (what
 counts as "this project's" process; what disk is free once the tiny proof
 is gone). Both fixes came from measuring the rig, not from reading the
-code. Ready for Phase 3.
+code. Ready for Phase 3 — which then sent back a fifth item, 2.7, for the
+same reason a third time.
 
 
 ## Phase 3 — run time
