@@ -24,7 +24,9 @@ Exit code 0 means the command's own assertion held; anything else, read the log.
 """
 import json
 import os
+import shutil
 import sys
+import tempfile
 import time
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -78,6 +80,7 @@ def cmd_selftest(live=True, topic=None):
     through the same code path the suite uses."""
     c = cfg()
     results = []
+    t_self = time.time()
 
     def expect(name, fn, needle, should_fire=True):
         try:
@@ -212,14 +215,25 @@ def cmd_selftest(live=True, topic=None):
     expect("disk: the suite would not fit", lambda: L.disk_verdict(60e9, **run11), "would not fit")
 
     def chain():
+        # in its own directory: the first version wrote its fake chain into the
+        # live results/ (phases.log, all.json and a DONE saying "FAIL at c")
+        # while a real `all` was running the live self-test around it
         ran = []
         fake = [(n, (lambda n=n: (ran.append(n), 0)[1])) for n in ("a", "b")]
         fake += [("c", lambda: (ran.append("c"), 1)[1]), ("d", lambda: (ran.append("d"), 0)[1])]
-        rc = cmd_all(steps=fake)
-        done = open(os.path.join(c.results, "DONE")).read().strip()
-        allj = load_json("all.json")
+        tmp = tempfile.mkdtemp(prefix="prove-all-selftest-")
+        try:
+            rc = cmd_all(steps=fake, results=tmp)
+            done = open(os.path.join(tmp, "DONE")).read().strip()
+            allj = json.load(open(os.path.join(tmp, "all.json")))
+            stray = [f for f in ("DONE", "all.json") if os.path.exists(os.path.join(c.results, f))
+                     and os.path.getmtime(os.path.join(c.results, f)) > t_self]
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
         if rc != 1 or ran != ["a", "b", "c"] or not done.startswith("FAIL at c") or allj["verdict"] != "FAIL at c":
             raise Exception(f"rc={rc} ran={ran} DONE={done!r} verdict={allj.get('verdict')}")
+        if stray:
+            raise Exception(f"the self-test wrote into the live results directory: {stray}")
         raise Refusal("rig", f"chain stopped at c, d never ran, DONE says {done!r}")
     expect("all: the chain stops at the first failing step", chain, "stopped at c")
 
@@ -737,15 +751,19 @@ def cmd_report():
 
 # ------------------------------------------------------------------------ all
 
-def cmd_all(steps=None):
+def cmd_all(steps=None, results=None):
     """The whole chain as one command. Run 11 spent 20 minutes of its 1.97 h in
     the gaps between commands an agent typed by hand, and wrote phases.log by
-    hand; here the harness writes it, and DONE is the file to wait on."""
+    hand; here the harness writes it, and DONE is the file to wait on.
+    `results` is where phases.log, all.json and DONE go — the self-test passes
+    its own directory so a fake chain never lands in the live one."""
     c = cfg()
     steps = steps or [("up", COMMANDS["up"]), ("preflight", cmd_preflight), ("completeness", cmd_completeness),
                       ("tinyproof", cmd_tinyproof), ("fill", cmd_fill), ("suite", cmd_suite), ("report", cmd_report)]
-    phases = os.path.join(c.results, "phases.log")
-    done = os.path.join(c.results, "DONE")
+    results = results or c.results
+    os.makedirs(results, exist_ok=True)
+    phases = os.path.join(results, "phases.log")
+    done = os.path.join(results, "DONE")
     if os.path.exists(done):
         os.remove(done)
     out = {"build": build_hash() if os.path.exists(c.jar) else None, "steps": []}
@@ -754,6 +772,10 @@ def cmd_all(steps=None):
         with open(phases, "a") as f:
             f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + line + "\n")
         log(line)
+
+    def save_all():
+        with open(os.path.join(results, "all.json"), "w") as f:
+            json.dump(out, f, indent=2, default=str)
 
     t_all = time.time()
     mark("phase=all start")
@@ -774,13 +796,13 @@ def cmd_all(steps=None):
                     pass
         out["steps"].append({"step": name, "rc": rc, "seconds": round(time.time() - t0, 1)})
         mark(f"phase={name} end rc={rc} {time.time() - t0:.0f}s")
-        save_json("all.json", out)
+        save_all()
         if rc:
             verdict = f"FAIL at {name}"
             break
     out["verdict"] = verdict
     out["seconds"] = round(time.time() - t_all, 1)
-    save_json("all.json", out)
+    save_all()
     mark(f"phase=all end {verdict} {out['seconds']/60:.1f} min")
     with open(done, "w") as f:
         f.write(f"{verdict} {out['seconds']/60:.1f} min\n")
