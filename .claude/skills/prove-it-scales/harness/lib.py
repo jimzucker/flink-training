@@ -257,11 +257,13 @@ def host_free_bytes():
 def topic_bytes(topics):
     """Bytes on the broker's disk for these topics, read from the log dir."""
     c = cfg()
+    # summed here, not in the container: the first live test died on awk quoting three shells deep
     pat = " ".join(f"/var/lib/kafka/data/{t}-*" for t in topics)
-    r = sh(f"docker exec {c.kafka} sh -c 'du -sk {pat} 2>/dev/null | awk \'{{s+=$1}} END {{print s+0}}\''", check=False)
-    if r.returncode != 0 or not r.stdout.strip().isdigit():
+    r = sh(f"docker exec {c.kafka} sh -c 'du -sk {pat}'", check=False)
+    sizes = [ln.split()[0] for ln in r.stdout.splitlines() if ln.split()]
+    if r.returncode != 0 or not sizes or not all(x.isdigit() for x in sizes):
         raise Refusal("rig", f"could not read the broker log dir size for {topics}: {r.stdout} {r.stderr}")
-    return int(r.stdout.strip()) * 1024
+    return sum(int(x) for x in sizes) * 1024
 
 
 def volume_bytes(vol):
@@ -290,7 +292,7 @@ def disk_verdict(free, in_bytes_per_rec, backlog, sink_bytes_per_in, partitions,
     if need > free:
         e = Refusal("rig", f"the suite would not fit on disk: input {inp/1e9:.1f} GB + sinks {sink/1e9:.1f} GB "
                            f"(retention-capped at {sink_cap/1e9:.1f} GB) + checkpoints {ckpt_bytes/1e9:.1f} GB + "
-                           f"floor {T['diskFloorBytes']/1e9:.0f} GB = {need/1e9:.1f} GB against {free/1e9:.1f} GB free "
+                           f"floor {T['diskFloorBytes']/1e9:.0f} GB = {need/1e9:.1f} GB against {free/1e9:.1f} GB free once the tiny proof's topics are gone "
                            f"— shrink the backlog or the records before the fill, not after the suite")
         e.detail = d
         raise e
@@ -301,13 +303,22 @@ def disk_projection(tiny_topic, tiny_count, last_case_rec):
     """The measured shape: input bytes per record from the tiny topic, sink bytes
     per input from what the last tiny case wrote, checkpoint bytes from the volume."""
     c = cfg()
-    in_bpr = topic_bytes([tiny_topic]) / tiny_count
+    tiny_bytes = topic_bytes([tiny_topic])
+    in_bpr = tiny_bytes / tiny_count
     consumed = int(last_case_rec["close"]["committed"])
     sink_bytes = topic_bytes(c.topics_out)
     sink_bpi = sink_bytes / consumed if consumed else 0.0
     ckpt = volume_bytes(c.ckpt_vol)
-    d = disk_verdict(host_free_bytes(), in_bpr, c.backlog, sink_bpi, c.partitions, len(c.topics_out), ckpt)
-    d.update(measuredOn={"tinyTopicRecords": tiny_count, "sinkRecordsConsumed": consumed, "sinkBytesOnDisk": sink_bytes})
+    # The tiny topic and the tiny cases' sinks are still on disk when this runs and are
+    # deleted before the suite fill; measured on the noise rig, deleting the 29.6 GB tiny
+    # topic returned 29 GB to the host within three minutes (92.4 -> 121.3 GB free). The
+    # first live projection counted them as used and refused a suite that fitted.
+    host_free = host_free_bytes()
+    reclaimable = tiny_bytes + sink_bytes
+    d = disk_verdict(host_free + reclaimable, in_bpr, c.backlog, sink_bpi, c.partitions, len(c.topics_out), ckpt)
+    d.update(hostFreeBytesNow=int(host_free), reclaimableBytes=int(reclaimable),
+             measuredOn={"tinyTopicRecords": tiny_count, "tinyTopicBytes": int(tiny_bytes),
+                         "sinkRecordsConsumed": consumed, "sinkBytesOnDisk": int(sink_bytes)})
     return d
 
 

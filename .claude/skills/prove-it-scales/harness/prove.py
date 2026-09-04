@@ -252,6 +252,19 @@ def cmd_selftest(live=True, topic=None):
             L.verify_backlog({c.count_field: L.log_end(t)[0] - 1}, topic=t)
         expect("backlog does not match its manifest", truncated, "manifest says")
 
+        def disk_reads():
+            # the projection's two measurements against the real broker and a real volume;
+            # the first live 2.6 test died here on awk quoting the pure self-test never ran
+            t = topic or c.topic_in
+            n = L.log_end(t)[0]
+            b = L.topic_bytes([t])
+            if n and b < n:
+                raise Exception(f"topic {t}: {n} records but only {b} bytes on the broker")
+            vb = L.volume_bytes(c.ckpt_vol)
+            if vb < 0:
+                raise Exception(f"volume {c.ckpt_vol}: {vb}")
+        expect("disk: broker and volume sizes read (must not fire)", disk_reads, "", should_fire=False)
+
         def dead_sampler():
             sh(f"docker rm -f {c.sampler}", check=False)
             sh(f"docker run -d --name {c.sampler} --network {c.net} --entrypoint sh alpine -c 'echo nope; exit 1'")
@@ -454,7 +467,8 @@ def cmd_tinyproof():
                 f"sinks {d['sinkBytesPerInput']:.0f} B/input -> {d['sinkBytesUnbounded']/1e9:.1f} GB, "
                 f"retention caps them at {d['sinkRetentionCapBytes']/1e9:.1f} GB; checkpoints {d['checkpointBytes']/1e9:.2f} GB; "
                 f"need {d['neededBytes']/1e9:.1f} GB incl. the {d['floorBytes']/1e9:.0f} GB floor, "
-                f"{d['hostFreeBytes']/1e9:.1f} GB free: FITS")
+                f"{d['hostFreeBytesNow']/1e9:.1f} GB free now + {d['reclaimableBytes']/1e9:.1f} GB the tiny proof gives back "
+                f"= {d['hostFreeBytes']/1e9:.1f} GB: FITS")
             ratio = recs[hi]["recordsPerSec"] / recs[lo]["recordsPerSec"]
             ideal = hi / lo
             out["ratio"] = round(ratio, 3)
