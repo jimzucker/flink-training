@@ -1,0 +1,14 @@
+{
+ "run": "plan 12 phase 1",
+ "suite": "rig-noise experiment on run 11's build: arm A six 4-core passes at a constant config (spread 10.2%, sd 3.8%); arm C 1-core p=1 (two valid of three, one refused at 95.3% of cap) and 2-core p=2. Arms ran back to back, not interleaved; same rig, build and day",
+ "unit": "block trades/s",
+ "rates": {
+  "1": [175286, 189498],
+  "2": [406455, 385684, 390475],
+  "4": [772290, 791042, 759646, 798902, 747776, 720658]
+ },
+ "validSteps": {
+  "1->2": true,
+  "2->4": true
+ }
+}
