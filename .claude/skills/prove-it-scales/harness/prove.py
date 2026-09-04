@@ -574,14 +574,16 @@ def cmd_ceiling():
             L.assert_cap(c.kafka, cap)
             log(f"---- ceiling: broker capped at {cap} cores, worker at {top} ----")
             try:
-                rec, _ = L.run_case(top, f"k{cap:g}", run_id, None, False, man)
+                rec, _ = L.run_case(top, f"k{cap:g}", run_id, None, False, man, kafka_cap=cap)
                 rec["brokerCap"] = cap
-                rec["brokerCapFrac"] = round(rec["kafkaCores"] / cap, 4)
+                rec["brokerCapFrac"] = rec["kafkaCapFrac"]
                 out["steps"].append(rec)
                 log(f"  broker {rec['kafkaCores']:.2f}/{cap:g} ({rec['brokerCapFrac']:.0%})  worker {rec['tmCapFrac']:.1%}  "
                     f"{rec['recordsPerSec']:,.0f} rec/s  srcIdle {rec['sourceIdle']:.1%}")
             except CaseRefused as e:
                 e.rec["brokerCap"] = cap
+                if "kafkaCapFrac" in e.rec:
+                    e.rec["brokerCapFrac"] = e.rec["kafkaCapFrac"]
                 out["steps"].append(e.rec)
                 log(f"  at broker cap {cap:g}: {e.refusal.msg}")
             save_json("ceiling.json", out)

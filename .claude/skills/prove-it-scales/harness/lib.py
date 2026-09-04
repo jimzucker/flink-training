@@ -888,9 +888,16 @@ def check_shape(shape, shape_ref):
 
 
 def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
-             min_boundaries=None, min_window_s=None, ckpt_ms=None, warmup_max_s=None, reporter_s=None):
-    """One measured case. The job is torn down on every exit path."""
+             min_boundaries=None, min_window_s=None, ckpt_ms=None, warmup_max_s=None, reporter_s=None,
+             kafka_cap=None, parallelism=None):
+    """One measured case. The job is torn down on every exit path.
+    kafka_cap: the broker's cap *during this case* — the ceiling run steps it
+    below the configured one, and the fraction must be read against the step.
+    parallelism: slots and job parallelism, when they are not the core count
+    (plan 12 phase 1C: the one-core case at the suite's parallelism)."""
     c = cfg()
+    kafka_cap = kafka_cap or c.kafka_cap
+    par = parallelism or cores
     min_boundaries = min_boundaries or T["minBoundaries"]
     min_window_s = min_window_s if min_window_s is not None else T["minWindowS"]
     ckpt_ms = ckpt_ms or c.ckpt_ms
@@ -909,18 +916,19 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
         recreate_output_topics()
         verify_backlog(manifest)
 
-        rec["nanoCpus"] = start_tm(cores, reporter_s=reporter_s)
+        rec["nanoCpus"] = start_tm(cores, slots=par, reporter_s=reporter_s)
         rec["reporterS"] = reporter_s or T["reporterS"]
+        rec["parallelism"] = par
         o = rest("/overview")
-        # GUARD: parallelism == cap == allocated slots
-        if o["slots-total"] != cores:
-            raise Refusal("rig", f"slots-total {o['slots-total']} != cap {cores}")
+        # GUARD: parallelism == allocated slots (== cap unless overridden)
+        if o["slots-total"] != par:
+            raise Refusal("rig", f"slots-total {o['slots-total']} != parallelism {par}")
         rec["slotsTotal"] = o["slots-total"]
 
         start_sampler(group)
         rec["tSubmit"] = time.time()
-        jid = submit_job(cores, group, ckpt_ms)
-        wait_running(jid, cores)
+        jid = submit_job(par, group, ckpt_ms)
+        wait_running(jid, par)
         rec["jobId"] = jid
         o = rest("/overview")
         if o["slots-available"] != 0:
@@ -978,7 +986,8 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
         d_per = max(1, cpu1_tm["nr_periods"] - cpu0_tm["nr_periods"])
         rec["tmThrottledPeriodsPct"] = round(100.0 * (cpu1_tm["nr_throttled"] - cpu0_tm["nr_throttled"]) / d_per, 1)
         rec["kafkaCores"] = round(k_cores, 3)
-        rec["kafkaCapFrac"] = round(k_cores / c.kafka_cap, 4)
+        rec["kafkaCap"] = kafka_cap
+        rec["kafkaCapFrac"] = round(k_cores / kafka_cap, 4)
 
         gcm = bp.pop("_gc", {})
         gc_ms = sum(v for k, v in gcm.items() if k.endswith(".Time"))
