@@ -199,6 +199,15 @@ def cmd_selftest(live=True, topic=None):
         raise Refusal("rig", f"host processes watching this run were found and killed: {sorted(want)}")
     expect("a host-side watcher outlives the run", watcher, "watching this run")
 
+    # run 11's build A: 210.6 B/input, 607 B of sink per input, 200M backlog, 8 partitions,
+    # two sinks, 103 GB free. Retention caps the sinks at 34.4 GB; it fitted, and the
+    # rebuild that re-ran both gates was not needed.
+    run11 = dict(in_bytes_per_rec=210.6, backlog=200_000_000, sink_bytes_per_in=607.0, partitions=8,
+                 n_out_topics=2, ckpt_bytes=1e9)
+    expect("disk: run 11's build A fitted (must not fire)",
+           lambda: L.disk_verdict(103e9, **run11), "", should_fire=False)
+    expect("disk: the suite would not fit", lambda: L.disk_verdict(60e9, **run11), "would not fit")
+
     def warm():
         ok, d = L.warmup_verdict([325e3, 259e3, 241e3, 340e3], 120)
         if ok:
@@ -431,6 +440,21 @@ def cmd_tinyproof():
                 out["result"] = "FAIL"
                 rc = 1
         if rc == 0:
+            # GUARD: the suite's disk, projected from the measured shape, before the fill
+            try:
+                out["disk"] = L.disk_projection(topic, c.tiny, recs[hi])
+            except Refusal as e:
+                out["disk"] = getattr(e, "detail", None)
+                out["result"] = "FAIL"
+                log(f"  REFUSED ({e.scope}): {e.msg}")
+                rc = 1
+        if rc == 0:
+            d = out["disk"]
+            log(f"  disk: input {d['inputBytesPerRecord']:.0f} B/record x {c.backlog:,} = {d['inputBytes']/1e9:.1f} GB; "
+                f"sinks {d['sinkBytesPerInput']:.0f} B/input -> {d['sinkBytesUnbounded']/1e9:.1f} GB, "
+                f"retention caps them at {d['sinkRetentionCapBytes']/1e9:.1f} GB; checkpoints {d['checkpointBytes']/1e9:.2f} GB; "
+                f"need {d['neededBytes']/1e9:.1f} GB incl. the {d['floorBytes']/1e9:.0f} GB floor, "
+                f"{d['hostFreeBytes']/1e9:.1f} GB free: FITS")
             ratio = recs[hi]["recordsPerSec"] / recs[lo]["recordsPerSec"]
             ideal = hi / lo
             out["ratio"] = round(ratio, 3)
