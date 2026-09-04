@@ -16,6 +16,9 @@ prove-it-scales harness — the one entry point.
   ceiling       hold the largest case, starve the broker in steps
   report        results/suite.json -> results/suite.txt + results/suite.md
   down          tear everything down, assert nothing survives, fstrim
+  all           up -> preflight -> completeness -> tinyproof -> fill -> suite -> report,
+                one stack session, stops at the first non-zero step; results/phases.log
+                carries the timestamps and results/DONE the outcome   (run it detached)
 
 Exit code 0 means the command's own assertion held; anything else, read the log.
 """
@@ -207,6 +210,18 @@ def cmd_selftest(live=True, topic=None):
     expect("disk: run 11's build A fitted (must not fire)",
            lambda: L.disk_verdict(103e9, **run11), "", should_fire=False)
     expect("disk: the suite would not fit", lambda: L.disk_verdict(60e9, **run11), "would not fit")
+
+    def chain():
+        ran = []
+        fake = [(n, (lambda n=n: (ran.append(n), 0)[1])) for n in ("a", "b")]
+        fake += [("c", lambda: (ran.append("c"), 1)[1]), ("d", lambda: (ran.append("d"), 0)[1])]
+        rc = cmd_all(steps=fake)
+        done = open(os.path.join(c.results, "DONE")).read().strip()
+        allj = load_json("all.json")
+        if rc != 1 or ran != ["a", "b", "c"] or not done.startswith("FAIL at c") or allj["verdict"] != "FAIL at c":
+            raise Exception(f"rc={rc} ran={ran} DONE={done!r} verdict={allj.get('verdict')}")
+        raise Refusal("rig", f"chain stopped at c, d never ran, DONE says {done!r}")
+    expect("all: the chain stops at the first failing step", chain, "stopped at c")
 
     def warm():
         ok, d = L.warmup_verdict([325e3, 259e3, 241e3, 340e3], 120)
@@ -720,6 +735,58 @@ def cmd_report():
     return 0
 
 
+# ------------------------------------------------------------------------ all
+
+def cmd_all(steps=None):
+    """The whole chain as one command. Run 11 spent 20 minutes of its 1.97 h in
+    the gaps between commands an agent typed by hand, and wrote phases.log by
+    hand; here the harness writes it, and DONE is the file to wait on."""
+    c = cfg()
+    steps = steps or [("up", COMMANDS["up"]), ("preflight", cmd_preflight), ("completeness", cmd_completeness),
+                      ("tinyproof", cmd_tinyproof), ("fill", cmd_fill), ("suite", cmd_suite), ("report", cmd_report)]
+    phases = os.path.join(c.results, "phases.log")
+    done = os.path.join(c.results, "DONE")
+    if os.path.exists(done):
+        os.remove(done)
+    out = {"build": build_hash() if os.path.exists(c.jar) else None, "steps": []}
+
+    def mark(line):
+        with open(phases, "a") as f:
+            f.write(time.strftime("%Y-%m-%d %H:%M:%S ") + line + "\n")
+        log(line)
+
+    t_all = time.time()
+    mark("phase=all start")
+    verdict = "PASS"
+    for name, fn in steps:
+        t0 = time.time()
+        mark(f"phase={name} start")
+        try:
+            rc = fn()
+        except Refusal as e:
+            log(f"REFUSED ({e.scope}): {e.msg}")
+            rc = 1
+        finally:
+            if name in ("completeness", "tinyproof", "suite"):
+                try:
+                    L.stop_sampler(); L.stop_tm()
+                except Exception:
+                    pass
+        out["steps"].append({"step": name, "rc": rc, "seconds": round(time.time() - t0, 1)})
+        mark(f"phase={name} end rc={rc} {time.time() - t0:.0f}s")
+        save_json("all.json", out)
+        if rc:
+            verdict = f"FAIL at {name}"
+            break
+    out["verdict"] = verdict
+    out["seconds"] = round(time.time() - t_all, 1)
+    save_json("all.json", out)
+    mark(f"phase=all end {verdict} {out['seconds']/60:.1f} min")
+    with open(done, "w") as f:
+        f.write(f"{verdict} {out['seconds']/60:.1f} min\n")
+    return 0 if verdict == "PASS" else 1
+
+
 # ---------------------------------------------------------------------- main
 
 COMMANDS = {
@@ -735,6 +802,7 @@ COMMANDS = {
     "ceiling": cmd_ceiling,
     "report": cmd_report,
     "down": lambda: (L.stack_down(), 0)[1],
+    "all": cmd_all,
 }
 
 if __name__ == "__main__":
@@ -756,7 +824,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         rc = 130
     finally:
-        if name in ("suite", "tinyproof", "completeness", "ceiling", "selftest"):
+        if name in ("suite", "tinyproof", "completeness", "ceiling", "selftest", "all"):
             try:
                 L.stop_sampler(); L.stop_tm()
             except Exception:

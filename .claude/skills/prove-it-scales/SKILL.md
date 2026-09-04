@@ -16,7 +16,8 @@ here.
 `harness/prove.py` (next to this file) is the preflight, the tiny proof, the
 completeness run, the suite, the guards and the report table, with a self-test
 per guard and a replay of every threshold against the recorded runs before
-any command touches a stack. You supply the pipeline: a job jar, a
+any command touches a stack; `prove.py all` runs the whole chain detached and
+writes `results/DONE` when it is over. You supply the pipeline: a job jar, a
 deterministic generator, a verifier that exits non-zero on any loss, and a
 `pipeline.json` describing them — `harness/README.md` is the contract. Ten
 runs each rewrote the harness from this prose, and every one re-decided

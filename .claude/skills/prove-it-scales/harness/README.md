@@ -10,6 +10,17 @@ the window is anchored on, what counts as flat — and paid for it in hours.
 ```
 cp ~/.claude/skills/prove-it-scales/harness/pipeline.example.json pipeline.json   # edit
 H=~/.claude/skills/prove-it-scales/harness/prove.py
+nohup python3 $H all > results/all.log 2>&1 &        # the whole chain below, one stack session;
+                                                     # wait on results/DONE, read results/phases.log
+```
+
+`all` is `up → preflight → completeness → tinyproof → fill → suite → report`,
+stopping at the first step that does not pass; `results/DONE` holds the
+verdict and the wall time, `results/phases.log` the timestamps the harness
+wrote (run 11 wrote its own by hand and spent 20 minutes between commands).
+Type the steps yourself only when one of them needs re-running:
+
+```
 python3 $H replay          # thresholds vs the recorded runs — seconds, no stack
 python3 $H up              # stack/compose.yml generated, broker + job manager up, sampler compiled
 python3 $H preflight       # §3, one PASS/FAIL row per check
@@ -81,6 +92,7 @@ What the harness measures and how:
 | `completeness.json` | completeness |
 | `suite.json`, `suite.txt`, `suite.md` | suite (and `report`, which regenerates the last two) |
 | `ceiling.json` | ceiling |
+| `all.json`, `phases.log`, `DONE` | all (per-step rc and seconds; timestamps; the verdict to wait on) |
 | `harness.log` | everything |
 
 `suite.md` is the table for the report: header fields, step ratios with their
