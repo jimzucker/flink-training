@@ -113,7 +113,73 @@ Stack down at 06:50, nothing with the prefix survived, fstrim returned 52.5 GiB.
 | ~~2.3~~ | ~~host-quiet guard~~ | **dropped by 1B**: host polling did not move the number | — |
 | 2.4 | `down` kills any host process holding the results directory and asserts none survive | the one rule broken on every run it appears in | live: a planted watcher shell is found and killed; `down` refuses if one survives |
 | ~~2.5~~ | ~~one-core case at the suite's parallelism~~ | **dropped by 1C**: the plain one-core case steps at 2.11×; two slots on one core is the weaker baseline | — |
-| 2.6 | sink-size projection in the tiny proof: bytes/output × suite backlog × outputsPerInput vs free disk, refused before the suite fill | run 11's rebuild, 37 min of gates run twice | self-test fires on a synthetic 607 B record; run 11's build-A shape would have been refused at minute 20 |
+| 2.6 | sink-size projection in the tiny proof: bytes/output × suite backlog × outputsPerInput vs free disk, refused before the suite fill | run 11's rebuild, 37 min of gates run twice | self-test fires on a synthetic 607 B record; ~~run 11's build-A shape would have been refused at minute 20~~ **criterion corrected by arithmetic, see below** |
+
+### Phase 2 responses
+
+**2.1 — PASS** (shipped inside #38). Pure self-test passes; replay OK. Recomputed
+from run 11's [ceiling.json](../run-11/ceiling.json): the k0.6 step recorded
+`kafkaCores` 0.527 and `kafkaCapFrac` 0.2109 (divided by the host's cores);
+0.527 / 0.6 = **0.88** against the step's own cap, and the refused record now
+carries `brokerCapFrac` instead of `null`.
+
+**2.2 — PASS** (#39). `passes_plan` appends a final `("sentinel", [baseline])`;
+`build_table` reports `sentinel.drift` and the baseline's spread counts that
+last measurement. Self-tests: a synthetic 25% first-to-last drift voids the
+baseline; 8% (inside the 10.2% floor from 1A) does not. Replay: none of the
+14 recorded suites refused, run 11's suite re-renders identically. No new
+threshold — the 20% ceiling counts the sentinel.
+
+**2.4 — PASS on the third attempt** (#40, then #41). The criterion held in
+#40 — a planted polling shell and a `tail -f` were found and killed on the
+noise rig — but the rule was wrong twice before it was right, and the record
+should say so:
+
+| version | rule | what it killed that it should not have |
+|---|---|---|
+| #40 | any command line naming `results/` or `prove.py` | the live 2.6 tiny proof in `flink-rig-noise`, when `selftest-pure` ran in another directory (07:07) |
+| draft | + any process whose cwd is the project | the `tail` its own shell was piping into — a user's terminal in the directory would have gone the same way |
+| #41 | holds a results file open, **or** names the project directory, **or** names `prove.py` **and** runs from inside the project | nothing: the self-test plants both decoys (another project's harness elsewhere, a bystander shell in the directory) and asserts they survive; 19/19 |
+
+Run 11's `until ! pgrep -f "prove.py suite"` shells match the third clause;
+another project's harness matches none.
+
+**2.6 — PASS, with the criterion corrected.** The criterion as written said
+run 11's build A "would have been refused at minute 20". The arithmetic says
+otherwise: the sinks are bounded by retention (8 partitions × 2 topics ×
+2 GiB = 34.4 GB), so build A needed 42.1 + 34.4 + ~1 + 20 = 77.5 GB against
+103 GB free — it fitted, and run 11's rebuild (37 min of gates run twice)
+was unnecessary. The projection is built so a rebuild like that cannot be
+prompted again: it reports the retention-capped figure, and the pure
+self-test's first case is "run 11's build A fitted (must not fire)".
+
+Three live attempts before the line appeared, each a defect in the
+measurement the pure self-test could not see:
+
+| attempt | tiny cases | what happened |
+|---|---|---|
+| 1 | killed at 07:07 by 2.4's first reaper (see above) | — |
+| 2 | 2c 395,763 · 4c 773,005 rec/s, both pass | `topic_bytes` refused: `awk: Unexpected token` — an awk program quoted through three shells; summation moved into Python and a live guard added that reads the real broker and volume |
+| 3 | 2c 361,564 · 4c 810,908 rec/s, both pass | projection **refused** a suite that fits: 96.7 GB needed against 94.6 GB free — measured while the 29.6 GB tiny topic was still on disk |
+| 4 | 2c 342,515 · 4c 805,549 rec/s | `disk: input 212 B/record × 200,000,000 = 42.3 GB; sinks 209 B/input → 41.8 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 96.7 GB incl. the 20 GB floor, 93.4 GB free now + 44.5 GB the tiny proof gives back = 137.9 GB: FITS`; 27/27 live guards; TINY PROOF PASSED ([log](phase2/p2-6-live.log)) |
+
+Attempt 3's refusal was checked before the rule changed: deleting the tiny
+topic took host free from 92.4 to 121.3 GB and `Docker.raw` from 54.8 to
+25.9 GB within three minutes, so the tiny topic and the tiny cases' sinks
+are reclaimable before the suite fill and the projection now adds them to
+the free figure (`hostFreeBytesNow`, `reclaimableBytes` in `tinyproof.json`).
+
+### Phase 2 verdict
+
+Four of six items shipped (#38, #39, #40+#41, #42), two dropped by Phase 1's
+measurements. Every item's pure self-test fires, replay of the 14 recorded
+suites is unchanged, and each live behaviour was exercised on the noise rig.
+Two of the four needed more than one attempt, both for the same reason: the
+pure self-test cannot see a rule that is wrong about the machine (what
+counts as "this project's" process; what disk is free once the tiny proof
+is gone). Both fixes came from measuring the rig, not from reading the
+code. Ready for Phase 3.
+
 
 ## Phase 3 — run time
 

@@ -1,0 +1,58 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[07:42:05] fstrim: /var/lib/docker: 14 GiB (15004012544 bytes) trimmed
+[07:42:05] stack down; nothing with prefix st11 survives
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[07:42:22] stack up: st11-kafka (cap 2.5), st11-jm (cap 0.5); task manager is started per case
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[07:42:26] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-rig-noise/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=140000000 --seed=20260904 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-rig-noise/results/manifest-tiny.json
+[07:46:14] fill done: {"tradeCount":140000000,"manifest":"~/code/GitHub/flink-rig-noise/results/manifest-tiny.json"}
+[07:46:16] backlog block-trades-tiny: 140,000,000 records read back over 8 partitions
+[07:46:16] ---- tiny case 2 cores ----
+[07:49:22]   2c: 342,515 rec/s, tm 101.0% of cap, vantage 0.12%
+[07:49:22] ---- tiny case 4 cores ----
+[07:52:26]   4c: 805,549 rec/s, tm 97.8% of cap, vantage 1.17%
+[07:52:26]   disk: input 212 B/record x 200,000,000 = 42.3 GB; sinks 209 B/input -> 41.8 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 96.7 GB incl. the 20 GB floor, 93.4 GB free now + 44.5 GB the tiny proof gives back = 137.9 GB: FITS
+
+tiny proof 2 -> 4 ratio: 2.352x (bounds 1.50-2.50)
+
+guard self-test:
+pure guards (synthetic case records through check_case):
+  ok  window has < 3 commit boundaries               -> REFUSED | only 2 commit boundaries inside the window
+  ok  measured rate is zero                          -> REFUSED | measured rate is not positive: 0 records in 60.0s
+  ok  rate came from the engine                      -> REFUSED | rate came from the engine, not the transport
+  ok  two vantage points disagree                    -> REFUSED | vantage points disagree by 12.0% (source committed 10000000, sinks imply 10010000) > tolerance 5%
+  ok  backlog lacks headroom at close                -> REFUSED | backlog headroom at close is 1000 records (0.0s) < one checkpoint interval at the measured rate
+  ok  external-boundary samples missing              -> REFUSED | 6 source back-pressure samples inside the window (< 3): the external-boundary guard would not have b
+  ok  too few reporter samples in the window         -> REFUSED | 2 source back-pressure samples inside the window (< 3): the external-boundary guard would not have b
+  ok  worker is not the constraint (baseline)        -> REFUSED | task manager used 97.0% of its 4-core cap (floor 98%) — it is not the constraint
+  ok  worker is not the constraint (other)           -> REFUSED | task manager used 90.0% of its 4-core cap (floor 95%) — it is not the constraint
+  ok  source idle: broker is the constraint          -> REFUSED | source idle 40.0% > 15%: the broker, not the task manager, is the constraint
+  ok  job graph differs across cases                 -> REFUSED | job graph shape differs from the other cases:
+{'vertexCount': 3, 'signature': [['a', ['HASH']]]}
+vs
+
+  ok  a case's passes spread past the ceiling        -> REFUSED | spread 26.1% > 20% ceiling
+  ok  a case measured only once                      -> REFUSED | 1 pass(es) < 2
+  ok  sentinel: rig drifted across the suite         -> REFUSED | sentinel drift -28.6%: spread 27.4% > 20% ceiling
+  ok  sentinel: drift inside the noise floor (must not fire) -> DID NOT FIRE
+  ok  a host-side watcher outlives the run           -> REFUSED | host processes watching this run were found and killed: [68775, 68776, 68777]
+  ok  disk: run 11's build A fitted (must not fire)  -> DID NOT FIRE
+  ok  disk: the suite would not fit                  -> REFUSED | the suite would not fit on disk: input 42.1 GB + sinks 34.4 GB (retention-capped at 34.4 GB) + check
+  ok  warm-up accepts a noisy ramp                   -> REFUSED | scatter 34%
+  ok  warm-up accepts a flat plateau (must not fire) -> DID NOT FIRE
+  ok  a valid case record passes (must not fire)     -> DID NOT FIRE
+live guards (the rig, broken on purpose):
+  ok  resource cap was not applied                   -> REFUSED | cpu cap did not apply on st11-tm: NanoCpus=2000000000, wanted 4000000000
+  ok  cluster still busy from the last case          -> REFUSED | a task manager from the last case is still registered: {'taskmanagers': 1, 'slots-total': 2, 'slots-
+  ok  backlog does not match its manifest            -> REFUSED | backlog on block-trades-tiny is 140000000 records, manifest says 139999999
+  ok  disk: broker and volume sizes read (must not fire) -> DID NOT FIRE
+  ok  monitor launched unattended is dead            -> REFUSED | offset sampler died at startup:
+nope
+
+  ok  no job is actually running                     -> REFUSED | job never reached RUNNING
+27/27 guards fired as expected
+TINY PROOF PASSED
+EXIT 0
