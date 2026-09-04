@@ -74,12 +74,29 @@ each was set from. `prove.py replay` re-derives the recorded suites against
 the current thresholds before any command touches a stack. An agent supplies
 the pipeline and a `pipeline.json`; it does not write a harness.
 
-Its first live test, against this run's own pipeline, found three defects in
-the harness's own sizing before any case was measured — a window shorter
-than the reporter interval, a tiny backlog that drained during warm-up, and a
-2 s checkpoint override that read 83–94% of cap where the pipeline's 10 s read
-100% (A/B, one rig, one build, one variable). Every one of those would have
-been a refusal a fresh agent went off to explain.
+Its first live test, against this run's own pipeline and build, found **six
+defects in the harness's own sizing** before the suite ran — a window shorter
+than the reporter interval, a tiny backlog that drained during warm-up, a 2 s
+checkpoint override that read 83–94% of cap where the pipeline's 10 s read
+100% (A/B, one rig, one build, one variable), a warm-up ceiling one interval
+too short, a self-test aimed at a topic that did not exist, and a
+completeness backlog one checkpoint interval long so the kill could not land
+where it was asked. Every one of those would have been a refusal a fresh
+agent went off to explain. Then, with nothing else changed, the suite
+([`harness-live-1/`](harness-live-1/suite.md)):
+
+| cores | p1-asc | p2-desc | p3-asc | mean | spread | % of cap |
+|---:|---:|---:|---:|---:|---:|---:|
+| 2 | 213,073 | 221,023 | 217,746 | 217,281 | 3.7% | 100.1% |
+| 4 | 438,039 | 437,344 | 440,984 | 438,789 | 0.8% | 98.4% |
+
+**2→4 = 2.019×**, range 1.98–2.07× across passes, source idle ≤0.1%, vantage
+points within 0.4%, order effect 1.03 / 1.00 — the same pipeline this run
+could not report on. Preflight 13/13, tiny proof 1.86× with 21/21 guards
+fired live, completeness clean and with the worker killed at 37% of a 20M
+drain, 23 minutes for the suite and about 50 for the whole command chain.
+One number is noted and not explained: the last 4-core pass read 95.7% of
+its cap where the other two read 99.6–99.7%.
 
 ## What it sent back into the skill
 

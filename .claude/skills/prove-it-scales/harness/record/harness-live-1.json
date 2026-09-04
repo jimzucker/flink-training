@@ -1,0 +1,12 @@
+{
+ "run": "harness-live-1",
+ "suite": "first live run of the shipped harness against run 10's pipeline, 2026-09-03",
+ "unit": "block trades/s",
+ "rates": {
+  "2": [213073, 221023, 217746],
+  "4": [438039, 437344, 440984]
+ },
+ "validSteps": {
+  "2->4": true
+ }
+}

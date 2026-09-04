@@ -23,12 +23,15 @@ way to tell them apart.
 | [8](clean-room-run-8.md) | DataStream | 1.59 h | $26.39 | 92 | 140,308 | **457,264** | 3.26× | **99%** |
 | [9](clean-room-run-9.md) | DataStream | 2.75 h† | — | — | 69,132 | **267,708** | 3.87× | **99%** |
 | [10](clean-room-run-10.md) | DataStream | 2.32 h‡ | — | 104 | — | 394,315 | — | **99%** |
+| [harness, live 1](clean-room-run-10.md) | DataStream | 0.8 h§ | — | — | — | **438,789** | — | **98%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
 † Run 9 ran against the skill cut to 3,546 words; its harness counted input legs (4 per block order), shown here divided by 4. Its **2→4 step ratio was 2.10× pooled over 17 passes** (1.96–2.25× across seven suites). Most of its wall clock went to re-running suites a mis-scoped spread guard had refused; the agent was then killed by API overload before writing its report or recording its cost.
 
 ‡ Run 10 ran 2- and 4-core cases only, as the prompt asked. Its harness voided a valid **2→4 step of 2.07×** (spread 11.2% / 4.6%) on a 10% ceiling that the record already contradicted, and reported no ratio. The 4-core figure is trades/s from that suite. It is the run that moved the harness into the skill as code.
+
+§ Not a clean-room run: the shipped harness driven by hand against run 10's pipeline and build, after six sizing defects in the harness were fixed. **2→4 = 2.019×** (1.98–2.07× across passes; spread 3.7% / 0.8%). The 0.8 h is preflight through suite, excluding the fixes.
 
 **Do not read the throughput columns across rows.** Each agent chose its own
 fan-out, key cardinality, checkpoint mode, record shape and partition count, so
