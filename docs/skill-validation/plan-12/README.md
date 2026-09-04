@@ -235,7 +235,7 @@ from `preflight` to `report`, with the suite's own thresholds untouched.
 ### Phase 3 response
 
 **PASS on the fourth attempt — `prove.py all` from a cold stack to a valid
-table in 50.6 min, 49.2 min from `preflight` to `report`** (criterion 75).
+table in 50.6 min, 50.2 min from `preflight` to `report`** (criterion 75).
 Run 11's build (`6ee9600b17e9ba41`), the noise rig's pipeline (cases 2 and 4,
 three passes, sentinel). Evidence: [phases.log](phase3/phases.log),
 [all.json](phase3/all.json), [all.log](phase3/all.log),
@@ -249,7 +249,7 @@ three passes, sentinel). Evidence: [phases.log](phase3/phases.log),
 | suite (3 passes × 2 cases + sentinel) | 23 | ~26 | 27.4 |
 | report | — | — | 0.0 |
 | agent latency between commands | 20 | ~2 | 0 |
-| **total** | **118** | **~67** | **50.6** |
+| **total** | **118** (1.97 h; the rows plus the 12 min ceiling sum to 113) | **~67** | **50.6** |
 
 Run 11's 16 min of "build + preflight" was mostly the build; the rig's jar
 was already built, so that row is not comparable and is not claimed. The
