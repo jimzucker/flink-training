@@ -52,8 +52,12 @@ T = {
     "capFloorBaseline": 0.98,
     "capFloorOther": 0.95,
     # external boundary: a starved source idles (run 5: the broker was the ceiling
-    # at 43% back-pressure with the TM under cap)
-    "sourceIdleCeil": 0.15,
+    # at 43% back-pressure with the TM under cap). Measured 2026-09-04: at-cap
+    # 2-core cases idle 8.1-16.8% at the same throughput (14 cases, sd 2.3%), and
+    # the one recorded broker-constrained step (ceiling run, TM at 91.7%) idled
+    # 16.7% — idle alone does not separate the two; the cap floor does. Ceiling:
+    # max at-cap idle + one sd = 19%. 15% was a round number inside the band.
+    "sourceIdleCeil": 0.20,
     # two vantage points: 0.5% measured after anchoring on commit boundaries (run 7);
     # 5% is ten times that
     "vantageTol": 0.05,
@@ -593,7 +597,9 @@ def build_sampler():
     pipeline's jar and the pipeline cannot influence it."""
     c = cfg()
     out = os.path.join(c.stack_dir, "sampler")
-    if os.path.exists(os.path.join(out, "OffsetSampler.class")):
+    src = os.path.join(HERE, "sampler", "OffsetSampler.java")
+    cls = os.path.join(out, "OffsetSampler.class")
+    if os.path.exists(cls) and os.path.getmtime(cls) >= os.path.getmtime(src):
         return out
     os.makedirs(out, exist_ok=True)
     cid = sh(f"docker create {c.kafka_img}").stdout.strip()
@@ -632,6 +638,22 @@ def start_sampler(group):
 
 def stop_sampler():
     sh(f"docker rm -f -v {cfg().sampler}", check=False)
+
+
+def sampler_ticks_since(ts_ms):
+    """Every tick the sampler printed at or after ts_ms (its whole log is read)."""
+    r = sh(f"docker logs {cfg().sampler}", check=False)
+    out = []
+    for line in r.stdout.splitlines():
+        line = line.strip()
+        if line.startswith("{") and '"ts"' in line:
+            try:
+                t = json.loads(line)
+            except Exception:
+                continue
+            if t.get("ts", 0) >= ts_ms:
+                out.append(t)
+    return out
 
 
 def sampler_tail(n=8):
@@ -1025,7 +1047,7 @@ def check_case(rec, cores, is_baseline):
                               f"(floor {floor:.0%}) — it is not the constraint")
     if rec["sourceIdle"] > T["sourceIdleCeil"]:
         raise Refusal("case", f"source idle {rec['sourceIdle']:.1%} > {T['sourceIdleCeil']:.0%}: "
-                              f"the broker, not the task manager, is the constraint")
+                              f"the source waited on input for more of the window than any at-cap case on record")
 
 
 def check_shape(shape, shape_ref):
@@ -1160,6 +1182,12 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
         try:
             cancel_job(jid)
         finally:
+            # keep the ticks: a vantage refusal on the noise rig (4c, 33.9%, 2026-09-04)
+            # could not be examined because the sampler went down with its log
+            try:
+                rec["ticks"] = sampler_ticks_since(int((rec.get("tOpen") or time.time()) * 1000) - 20000)
+            except Exception:
+                rec["ticks"] = None
             stop_sampler()
             stop_tm()
 

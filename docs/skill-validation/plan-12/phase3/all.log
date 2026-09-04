@@ -1,0 +1,170 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[09:14:20] phase=all start
+[09:14:20] phase=up start
+[09:14:39] stack up: st11-kafka (cap 2.5), st11-jm (cap 0.5); task manager is started per case
+[09:14:39] phase=up end rc=0 19s
+[09:14:39] phase=preflight start
+PASS  every image is native to the host arch               host=arm64 apache/kafka=arm64 flink=arm64
+PASS  the JDK the engine needs resolves, pinned            host openjdk version "17.0.20" 2026-07-21 | image openjdk version "17.0.15" 2025-04-15
+PASS  the engine can write its state directory             uid 9999 (flink) can mkdir under /ckpt
+PASS  the metrics reporter is not duplicated               no reporter jar copied into lib/; slf4j reporter used from plugins/
+PASS  disk budget on the HOST, not the container           host free 137.9 GB >= budget 71.2 GB (backlog 24.0 + sinks at retention 34.4 + ckpt 2 + slack 10)
+PASS  retention on every topic written but never drained   retention.bytes=2147483648 set and read back on ['positions-by-symbol', 'positions-by-account'] (a periodic sweep, not a bound)
+PASS  the generator is deterministic                       identical sha256=bf2e0ef37190 for 200,000 records at seed 20260903
+PASS  CPU cap mechanism chosen once                        --cpus throughout; read back NanoCpus=2000000000 and cgroup cpu.max = 2.0 cores
+PASS  slots >= parallelism x jobs                          slots-total=4 >= parallelism 4 x 1 job
+PASS  group / txn-id prefix scoped per run                 consumer group = st11-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)
+PASS  back-pressure counters exist on the endpoint read    Flink 1.20.1: busy/idle/backPressured read from the worker's slf4j reporter; REST path deprecated
+PASS  the VM trim command is known                         docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker
+PASS  the job jar exists and hashes                        build 6ee9600b17e9ba41
+
+13/13 PASS
+[09:15:42] phase=preflight end rc=0 63s
+[09:15:42] phase=completeness start
+[09:15:45] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-rig-noise/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=10000000 --seed=20260905 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-rig-noise/results/manifest-small.json
+[09:16:04] fill done: {"tradeCount":10000000,"manifest":"~/code/GitHub/flink-rig-noise/results/manifest-small.json"}
+[09:16:05] backlog block-trades-small: 10,000,000 records read back over 8 partitions
+[09:17:35] drained to the last record in 55.0s
+read 10,000,000 records (log end 10,000,000) from positions-by-symbol in 4.8s, 64 distinct symbol keys
+read 30,000,000 records (log end 30,000,000) from positions-by-account in 8.4s, 512 distinct account keys
+---- completeness ----
+trades in manifest        : 10,000,000
+distinct symbols          : 64 (predicted 64)
+distinct accounts         : 512 (predicted 512)
+trades over symbol path   : 10,000,000
+allocs over account path  : 30,000,000 (= 3 x trades)
+net qty  symbol / account : -192,632,300 / -192,632,300
+gross qty symbol / account: 250,544,416,100 / 250,544,416,100
+COMPLETENESS OK — every assertion held exactly, no tolerances
+
+[09:19:23] KILL: committed=3738502, killing the task manager mid-drain
+[09:20:14] KILL: job RUNNING again on the replacement worker
+[09:20:59] drained to the last record in 112.0s (worker killed mid-drain)
+read 10,232,486 records (log end 10,232,486) from positions-by-symbol in 4.9s, 64 distinct symbol keys
+read 30,684,658 records (log end 30,684,658) from positions-by-account in 9.2s, 512 distinct account keys
+---- completeness ----
+trades in manifest        : 10,000,000
+distinct symbols          : 64 (predicted 64)
+distinct accounts         : 512 (predicted 512)
+trades over symbol path   : 10,000,000
+allocs over account path  : 30,000,000 (= 3 x trades)
+net qty  symbol / account : -192,632,300 / -192,632,300
+gross qty symbol / account: 250,544,416,100 / 250,544,416,100
+COMPLETENESS OK — every assertion held exactly, no tolerances
+
+COMPLETENESS PASSED FOR BUILD 6ee9600b17e9ba41 (clean drain, and a worker killed at 35%)
+[09:22:08] phase=completeness end rc=0 386s
+[09:22:08] phase=tinyproof start
+[09:22:11] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-rig-noise/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=140000000 --seed=20260904 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-rig-noise/results/manifest-tiny.json
+[09:25:45] fill done: {"tradeCount":140000000,"manifest":"~/code/GitHub/flink-rig-noise/results/manifest-tiny.json"}
+[09:25:46] backlog block-trades-tiny: 140,000,000 records read back over 8 partitions
+[09:25:46] ---- tiny case 2 cores ----
+[09:28:31]   2c: 385,585 rec/s, tm 100.5% of cap, vantage 0.40%
+[09:28:31] ---- tiny case 4 cores ----
+[09:31:21]   4c: 757,355 rec/s, tm 95.9% of cap, vantage 1.15%
+[09:31:21]   disk: input 212 B/record x 200,000,000 = 42.3 GB; sinks 208 B/input -> 41.7 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 96.7 GB incl. the 20 GB floor, 92.4 GB free now + 43.4 GB the tiny proof gives back = 135.8 GB: FITS
+
+tiny proof 2 -> 4 ratio: 1.964x (bounds 1.50-2.50)
+
+guard self-test:
+pure guards (synthetic case records through check_case):
+  ok  window has < 3 commit boundaries               -> REFUSED | only 2 commit boundaries inside the window
+  ok  measured rate is zero                          -> REFUSED | measured rate is not positive: 0 records in 60.0s
+  ok  rate came from the engine                      -> REFUSED | rate came from the engine, not the transport
+  ok  two vantage points disagree                    -> REFUSED | vantage points disagree by 12.0% (source committed 10000000, sinks imply 10010000) > tolerance 5%
+  ok  backlog lacks headroom at close                -> REFUSED | backlog headroom at close is 1000 records (0.0s) < one checkpoint interval at the measured rate
+  ok  external-boundary samples missing              -> REFUSED | 6 source back-pressure samples inside the window (< 3): the external-boundary guard would not have b
+  ok  too few reporter samples in the window         -> REFUSED | 2 source back-pressure samples inside the window (< 3): the external-boundary guard would not have b
+  ok  worker is not the constraint (baseline)        -> REFUSED | task manager used 97.0% of its 4-core cap (floor 98%) — it is not the constraint
+  ok  worker is not the constraint (other)           -> REFUSED | task manager used 90.0% of its 4-core cap (floor 95%) — it is not the constraint
+  ok  source idle past the ceiling                   -> REFUSED | source idle 40.0% > 20%: the source waited on input for more of the window than any at-cap case on r
+  ok  job graph differs across cases                 -> REFUSED | job graph shape differs from the other cases:
+{'vertexCount': 3, 'signature': [['a', ['HASH']]]}
+vs
+
+  ok  a case's passes spread past the ceiling        -> REFUSED | spread 26.1% > 20% ceiling
+  ok  a case measured only once                      -> REFUSED | 1 pass(es) < 2
+  ok  sentinel: rig drifted across the suite         -> REFUSED | sentinel drift -28.6%: spread 27.4% > 20% ceiling
+  ok  sentinel: drift inside the noise floor (must not fire) -> DID NOT FIRE
+  ok  a host-side watcher outlives the run           -> REFUSED | host processes watching this run were found and killed: [86316, 86317, 86319]
+  ok  disk: run 11's build A fitted (must not fire)  -> DID NOT FIRE
+  ok  disk: the suite would not fit                  -> REFUSED | the suite would not fit on disk: input 42.1 GB + sinks 34.4 GB (retention-capped at 34.4 GB) + check
+[09:31:25] phase=all start
+[09:31:25] phase=a start
+[09:31:25] phase=a end rc=0 0s
+[09:31:25] phase=b start
+[09:31:25] phase=b end rc=0 0s
+[09:31:25] phase=c start
+[09:31:25] phase=c end rc=1 0s
+[09:31:25] phase=all end FAIL at c 0.0 min
+  ok  all: the chain stops at the first failing step -> REFUSED | chain stopped at c, d never ran, DONE says 'FAIL at c 0.0 min'
+  ok  warm-up accepts a noisy ramp                   -> REFUSED | scatter 34%
+  ok  warm-up accepts a flat plateau (must not fire) -> DID NOT FIRE
+  ok  a valid case record passes (must not fire)     -> DID NOT FIRE
+live guards (the rig, broken on purpose):
+  ok  resource cap was not applied                   -> REFUSED | cpu cap did not apply on st11-tm: NanoCpus=2000000000, wanted 4000000000
+  ok  cluster still busy from the last case          -> REFUSED | a task manager from the last case is still registered: {'taskmanagers': 1, 'slots-total': 2, 'slots-
+  ok  backlog does not match its manifest            -> REFUSED | backlog on block-trades-tiny is 140000000 records, manifest says 139999999
+  ok  disk: broker and volume sizes read (must not fire) -> DID NOT FIRE
+  ok  monitor launched unattended is dead            -> REFUSED | offset sampler died at startup:
+nope
+
+  ok  no job is actually running                     -> REFUSED | job never reached RUNNING
+28/28 guards fired as expected
+TINY PROOF PASSED
+[09:32:22] phase=tinyproof end rc=0 614s
+[09:32:22] phase=fill start
+[09:32:25] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-rig-noise/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=200000000 --seed=20260903 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-rig-noise/results/manifest.json
+[09:37:28] fill done: {"tradeCount":200000000,"manifest":"~/code/GitHub/flink-rig-noise/results/manifest.json"}
+[09:37:29] backlog block-trades: 200,000,000 records read back over 8 partitions
+backlog 200,000,000 records on block-trades; manifest results/manifest.json
+[09:37:29] phase=fill end rc=0 308s
+[09:37:29] phase=suite start
+[09:37:29] ---- case 2 cores, pass p1-asc ----
+[09:41:22]   REFUSED (case): task manager used 97.4% of its 2-core cap (floor 98%) — it is not the constraint
+[09:41:22] ---- case 4 cores, pass p1-asc ----
+[09:45:11]   4c p1-asc: 742,967 rec/s  tm 3.87/4 (96.8%)  kafka 0.61/2.5  srcIdle 10.1%  srcBP 7.5%  headroom 113s  vantage 0.67%
+[09:45:11] ---- case 4 cores, pass p2-desc ----
+[09:49:02]   4c p2-desc: 773,543 rec/s  tm 3.82/4 (95.6%)  kafka 0.61/2.5  srcIdle 10.4%  srcBP 8.1%  headroom 110s  vantage 0.06%
+[09:49:02] ---- case 2 cores, pass p2-desc ----
+[09:53:12]   2c p2-desc: 390,456 rec/s  tm 2.00/2 (99.8%)  kafka 0.29/2.5  srcIdle 15.6%  srcBP 13.0%  headroom 357s  vantage 0.10%
+[09:53:12] ---- case 2 cores, pass p3-asc ----
+[09:57:12]   2c p3-asc: 395,828 rec/s  tm 2.00/2 (99.9%)  kafka 0.29/2.5  srcIdle 15.7%  srcBP 13.3%  headroom 355s  vantage 0.53%
+[09:57:12] ---- case 4 cores, pass p3-asc ----
+[10:00:48]   4c p3-asc: 768,095 rec/s  tm 3.85/4 (96.2%)  kafka 0.61/2.5  srcIdle 10.1%  srcBP 7.8%  headroom 107s  vantage 0.52%
+[10:00:48] ---- case 2 cores, pass sentinel ----
+[10:04:53]   2c sentinel: 394,752 rec/s  tm 2.00/2 (100.2%)  kafka 0.29/2.5  srcIdle 15.9%  srcBP 12.6%  headroom 361s  vantage 0.15%
+wrote results/suite.txt and results/suite.md
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent by emitting the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : 6ee9600b17e9ba41  (completeness passed for 6ee9600b17e9ba41)
+passes per case      : 3
+backlog              : 200,000,000 records, 8 partitions, 4 outputs per input
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    2   p1-asc           —           —          —      —     —          —        —       —      —      —  REFUSED
+        refusal (case): task manager used 97.4% of its 2-core cap (floor 98%) — it is not the constraint
+    4   p1-asc     742,967   2,971,868   3.87/4   96.8%    95   0.61/2.5   10.1%   7.5%   113s  0.7%       OK
+    4  p2-desc     773,543   3,094,171   3.82/4   95.6%    96   0.61/2.5   10.4%   8.1%   110s  0.1%       OK
+    2  p2-desc     390,456   1,561,822   2.00/2   99.8%   100   0.29/2.5   15.6%  13.0%   357s  0.1%       OK
+    2   p3-asc     395,828   1,583,312   2.00/2   99.9%   100   0.29/2.5   15.7%  13.3%   355s  0.5%       OK
+    4   p3-asc     768,095   3,072,379   3.85/4   96.2%    94   0.61/2.5   10.1%   7.8%   107s  0.5%       OK
+    2 sentinel     394,752   1,579,010   2.00/2   100.2%   100   0.29/2.5   15.9%  12.6%   361s  0.1%       OK
+-----------------------------------------------------------------------------------------------------------------
+    2     MEAN     393,679   1,574,715   2.00/2   100.0%   100   0.29/2.5   15.8%  13.0%   358s  0.5%   spread 1.4%
+    4     MEAN     761,535   3,046,139   3.85/4   96.2%    95   0.61/2.5   10.2%   7.8%   110s  0.7%   spread 4.0%
+======================================================================================================================
+STEP 2->4 cores: 1.934x  (ideal 2x, efficiency 96.7%, range across passes 1.877x-1.981x)
+order effect (descending / ascending): {2: 0.9864, 4: 1.0238}
+sentinel: 2c first 390,456 -> last 394,752 rec/s, drift +1.1% across the suite (counted in the 2c spread)
+======================================================================================================================
+[10:04:53] phase=suite end rc=0 1644s
+[10:04:53] phase=report start
+wrote results/suite.txt and results/suite.md
+[10:04:53] phase=report end rc=0 0s
+[10:04:53] phase=all end PASS 50.6 min

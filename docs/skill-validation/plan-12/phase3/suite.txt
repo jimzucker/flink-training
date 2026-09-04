@@ -1,0 +1,27 @@
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent by emitting the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : 6ee9600b17e9ba41  (completeness passed for 6ee9600b17e9ba41)
+passes per case      : 3
+backlog              : 200,000,000 records, 8 partitions, 4 outputs per input
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    2   p1-asc           —           —          —      —     —          —        —       —      —      —  REFUSED
+        refusal (case): task manager used 97.4% of its 2-core cap (floor 98%) — it is not the constraint
+    4   p1-asc     742,967   2,971,868   3.87/4   96.8%    95   0.61/2.5   10.1%   7.5%   113s  0.7%       OK
+    4  p2-desc     773,543   3,094,171   3.82/4   95.6%    96   0.61/2.5   10.4%   8.1%   110s  0.1%       OK
+    2  p2-desc     390,456   1,561,822   2.00/2   99.8%   100   0.29/2.5   15.6%  13.0%   357s  0.1%       OK
+    2   p3-asc     395,828   1,583,312   2.00/2   99.9%   100   0.29/2.5   15.7%  13.3%   355s  0.5%       OK
+    4   p3-asc     768,095   3,072,379   3.85/4   96.2%    94   0.61/2.5   10.1%   7.8%   107s  0.5%       OK
+    2 sentinel     394,752   1,579,010   2.00/2   100.2%   100   0.29/2.5   15.9%  12.6%   361s  0.1%       OK
+-----------------------------------------------------------------------------------------------------------------
+    2     MEAN     393,679   1,574,715   2.00/2   100.0%   100   0.29/2.5   15.8%  13.0%   358s  0.5%   spread 1.4%
+    4     MEAN     761,535   3,046,139   3.85/4   96.2%    95   0.61/2.5   10.2%   7.8%   110s  0.7%   spread 4.0%
+======================================================================================================================
+STEP 2->4 cores: 1.934x  (ideal 2x, efficiency 96.7%, range across passes 1.877x-1.981x)
+order effect (descending / ascending): {2: 0.9864, 4: 1.0238}
+sentinel: 2c first 390,456 -> last 394,752 rec/s, drift +1.1% across the suite (counted in the 2c spread)
+======================================================================================================================
