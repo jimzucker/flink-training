@@ -361,6 +361,7 @@ def compose_path():
 def stack_up():
     """Bring the stack up from cold. Idempotent. Asserts every effect."""
     c = cfg()
+    save_json("volumes-before.json", dangling_anonymous_volumes())
     p = compose_path()
     sh(f"docker compose -f {p} up -d", timeout=900)
     # The flink entrypoint drops privileges to uid 9999; a named volume is
@@ -388,11 +389,18 @@ def stack_up():
         f"task manager is started per case")
 
 
+def dangling_anonymous_volumes():
+    """Anonymous volumes the engine image declares, left by any container removed
+    without -v. The harness removes with -v; this catches the ones it did not."""
+    r = sh("docker volume ls -q -f dangling=true", check=False)
+    return [v for v in r.stdout.split() if re.fullmatch(r"[0-9a-f]{64}", v)]
+
+
 def stack_down(trim=True):
     """Tear down everything this project started, and assert nothing survives."""
     c = cfg()
     for n in (c.sampler, c.tm, f"{c.project}-capprobe"):
-        sh(f"docker rm -f {n}", check=False)
+        sh(f"docker rm -f -v {n}", check=False)
     p = os.path.join(c.stack_dir, "compose.yml")
     if os.path.exists(p):
         sh(f"docker compose -f {p} down -v --remove-orphans", check=False, timeout=600)
@@ -401,6 +409,16 @@ def stack_down(trim=True):
     left = surviving()
     if left:
         raise Refusal("rig", f"teardown left these behind: {left}")
+    # dangling anonymous volumes were recorded at `up`; anything newer is ours
+    vb = os.path.join(c.results, "volumes-before.json")
+    before = set(load_json("volumes-before.json")) if os.path.exists(vb) else set()
+    ours = [v for v in dangling_anonymous_volumes() if v not in before]
+    for v in ours:
+        sh(f"docker volume rm {v}", check=False)
+    if [v for v in dangling_anonymous_volumes() if v not in before]:
+        raise Refusal("rig", "anonymous volumes created during the run survive teardown")
+    if ours:
+        log(f"removed {len(ours)} anonymous volume(s) left by containers removed without -v")
     if trim:
         r = sh("docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- "
                "fstrim -v /var/lib/docker", check=False, timeout=600)
@@ -439,7 +457,7 @@ def build_sampler():
             raise Refusal("rig", "no kafka-clients jar in the broker image")
         sh(f"docker cp {cid}:/opt/kafka/libs/{cl[0]} {out}/{cl[0]}")
     finally:
-        sh(f"docker rm {cid}", check=False)
+        sh(f"docker rm -v {cid}", check=False)
     sh(f"{c.jdk}/bin/javac --release 17 -cp {out}/{cl[0]} -d {out} {HERE}/sampler/OffsetSampler.java")
     if not os.path.exists(os.path.join(out, "OffsetSampler.class")):
         raise Refusal("rig", "sampler did not compile")
@@ -449,7 +467,7 @@ def build_sampler():
 def start_sampler(group):
     c = cfg()
     sdir = build_sampler()
-    sh(f"docker rm -f {c.sampler}", check=False)
+    sh(f"docker rm -f -v {c.sampler}", check=False)
     sh(f"docker run -d --name {c.sampler} --network {c.net} -v {sdir}:/sampler:ro "
        f"--entrypoint java {c.kafka_img} -cp '/opt/kafka/libs/*:/sampler' OffsetSampler "
        f"--bootstrap={c.boot_int} --group={group} --inTopic={c.topic_in} "
@@ -466,7 +484,7 @@ def start_sampler(group):
 
 
 def stop_sampler():
-    sh(f"docker rm -f {cfg().sampler}", check=False)
+    sh(f"docker rm -f -v {cfg().sampler}", check=False)
 
 
 def sampler_tail(n=8):
@@ -582,7 +600,7 @@ def tm_running():
 
 def stop_tm():
     c = cfg()
-    sh(f"docker rm -f {c.tm}", check=False)
+    sh(f"docker rm -f -v {c.tm}", check=False)
     for _ in range(60):
         if not tm_running():
             break
