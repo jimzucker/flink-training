@@ -117,6 +117,10 @@ def cmd_selftest(live=True, topic=None):
            case(tmCapFrac=0.959, _baseline=True), "", should_fire=False)
     expect("worker is not the constraint (other)", case(tmCapFrac=0.90), "not the constraint")
     expect("source idle past the ceiling", case(sourceIdle=0.4), "waited on input")
+    expect("the broker was starved of page cache",
+           case(brokerLimitHits=310423, brokerRefaults=6270562), "memory limit")
+    expect("a broker that never hit its limit (must not fire)",
+           case(brokerLimitHits=0, brokerRefaults=1200), "", should_fire=False)
     expect("job graph differs across cases",
            lambda: L.check_shape({"vertexCount": 3, "signature": [["a", ["HASH"]]]},
                                  {"vertexCount": 3, "signature": [["a", ["REBALANCE"]]]}), "shape")

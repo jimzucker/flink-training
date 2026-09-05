@@ -72,6 +72,15 @@ T = {
     # floor measured from noise.
     "capFloorBaseline": 0.95,
     "capFloorOther": 0.95,
+    # the broker starved of page cache — measured 2026-09-05 by a one-variable
+    # comparison on one rig, one build, one backlog: at a 2 GiB container limit
+    # the broker hit that limit 310,423 times with 6.3M file-page refaults and
+    # 649 MB of cache, and all three 4-core passes were refused at 93.1-93.8%
+    # of cap; at 4 GiB, with nothing else changed, the same case held 99.6-100.1%
+    # of cap at 651,653 rec/s (mean of 3) and the cache grew to 2.14 GB. Across
+    # the seven cases measured at 4 GiB the limit was hit zero times inside a
+    # window, so any hit at all is outside the measured noise.
+    "brokerLimitHits": 0,
     # external boundary: a starved source idles (run 5: the broker was the ceiling
     # at 43% back-pressure with the TM under cap). Measured 2026-09-04: at-cap
     # 2-core cases idle 8.1-16.8% at the same throughput (14 cases, sd 2.3%), and
@@ -866,6 +875,27 @@ def assert_cap(container, cores):
     return nano
 
 
+def cgroup_mem(container):
+    """Page-cache pressure on a container, as the kernel counts it: how many
+    times the cgroup hit its memory limit, and how many file pages it had to
+    read back after eviction."""
+    r = sh(f"docker exec {container} sh -c 'cat /sys/fs/cgroup/memory.events; "
+           f"cat /sys/fs/cgroup/memory.stat'", check=False)
+    d = {"limitHits": 0, "refaults": 0, "fileCache": 0}
+    for line in (r.stdout or "").strip().splitlines():
+        parts = line.split()
+        if len(parts) != 2:
+            continue
+        k, v = parts[0], parts[1]
+        if k == "max":
+            d["limitHits"] = int(v)
+        elif k == "workingset_refault_file":
+            d["refaults"] = int(v)
+        elif k == "file":
+            d["fileCache"] = int(v)
+    return d
+
+
 def cgroup_cpu(container):
     r = sh(f"docker exec {container} cat /sys/fs/cgroup/cpu.stat")
     d = {}
@@ -1104,6 +1134,10 @@ def check_case(rec, cores, is_baseline):
     if rec["tmCapFrac"] < floor:
         raise Refusal("case", f"task manager used {rec['tmCapFrac']:.1%} of its {cores}-core cap "
                               f"(floor {floor:.0%}) — it is not the constraint")
+    if (rec.get("brokerLimitHits") or 0) > T["brokerLimitHits"]:
+        raise Refusal("case", f"the broker hit its memory limit {rec['brokerLimitHits']:,} times inside the window "
+                              f"({rec.get('brokerRefaults', 0):,} file-page refaults): it was reading the backlog off "
+                              f"disk, so the worker is not the constraint — give the broker container more memory")
     if rec["sourceIdle"] > T["sourceIdleCeil"]:
         raise Refusal("case", f"source idle {rec['sourceIdle']:.1%} > {T['sourceIdleCeil']:.0%}: "
                               f"the source waited on input for more of the window than any at-cap case on record")
@@ -1170,6 +1204,7 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
 
         open_tick = next_boundary()
         cpu0_tm, cpu0_k = cgroup_cpu(c.tm), cgroup_cpu(c.kafka)
+        mem0_k = cgroup_mem(c.kafka)
         rec["tOpen"] = time.time()
         rec["open"] = open_tick
         boundaries, last, close_tick = 1, open_tick, None
@@ -1184,6 +1219,10 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
             if elapsed > T["windowMaxS"]:
                 raise Refusal("case", f"window never closed within {T['windowMaxS']:.0f} s")
         cpu1_tm, cpu1_k = cgroup_cpu(c.tm), cgroup_cpu(c.kafka)
+        mem1_k = cgroup_mem(c.kafka)
+        rec["brokerLimitHits"] = mem1_k["limitHits"] - mem0_k["limitHits"]
+        rec["brokerRefaults"] = mem1_k["refaults"] - mem0_k["refaults"]
+        rec["brokerFileCacheBytes"] = mem1_k["fileCache"]
         rec["tClose"] = time.time()
         rec["close"] = close_tick
         rec["boundaries"] = boundaries - 1
