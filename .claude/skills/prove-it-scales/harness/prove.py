@@ -140,6 +140,27 @@ def cmd_selftest(live=True, topic=None):
         raise Refusal("case", t["cases"][2]["unreportableReason"])
     expect("a case measured only once", one_pass, "pass")
 
+    def quick_marks_unpublishable():
+        """QUICK: one pass per case still produces numbers, and every one of them
+        is stamped unpublishable. The mode exists to answer 'did it run clean and
+        how fast', and the record says a single pass lands anywhere in a band
+        wider than the accept line (2.04-2.27x where a suite reported 2.15x)."""
+        L.QUICK = True
+        try:
+            t = build_table([{"cores": 2, "pass": "p1-asc", "recordsPerSec": 100.0},
+                             {"cores": 4, "pass": "p1-asc", "recordsPerSec": 200.0}])
+        finally:
+            L.QUICK = False
+        c2, step = t["cases"][2], t["stepRatios"][0]
+        if t.get("publishable") is not False or t.get("quickLook") is not True:
+            raise Exception(f"quick table was not stamped: {t.get('quickLook')} {t.get('publishable')}")
+        if c2.get("publishable") is not False or not c2["reportable"] or not step["reportable"]:
+            raise Exception(f"quick mode should compute the ratio and mark it unpublishable: {c2} {step}")
+        if abs(step["ratio"] - 2.0) > 1e-9:
+            raise Exception(f"quick ratio wrong: {step}")
+    expect("quick look: one pass computes a ratio, stamped unpublishable (must not fire)",
+           quick_marks_unpublishable, "", should_fire=False)
+
     def sentinel_drift():
         runs = [{"cores": 2, "pass": "p1-asc", "recordsPerSec": 400.0},
                 {"cores": 4, "pass": "p1-asc", "recordsPerSec": 800.0},
@@ -834,6 +855,9 @@ if __name__ == "__main__":
     if len(sys.argv) < 2 or sys.argv[1] not in COMMANDS:
         print(__doc__); sys.exit(2)
     name = sys.argv[1]
+    if "--quick" in sys.argv[2:]:
+        L.QUICK = True
+        print("QUICK LOOK: one pass per case; the table it writes is marked unpublishable")
     if name not in ("replay",):
         cfg()  # validate pipeline.json first
     if name not in ("replay", "selftest-pure", "report"):
