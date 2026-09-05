@@ -1,0 +1,53 @@
+[2026-09-05 08:42:59] stack up: bt15-kafka (cap 3.0), bt15-jm (cap 0.5); task manager is started per case
+[2026-09-05 08:44:49] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-15/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=24000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-15/results/manifest-tiny.json
+[2026-09-05 08:45:12] fill done: produced 24000000 records to block-trades-tiny over 8 partitions in 22.5s (1068424 rec/s)
+[2026-09-05 08:45:13] backlog block-trades-tiny: 24,000,000 records read back over 8 partitions
+[2026-09-05 08:45:13] ---- tiny case 1 cores ----
+[2026-09-05 08:48:27]   1c: 181,903 rec/s, tm 99.5% of cap, vantage 0.38%
+[2026-09-05 08:48:27] ---- tiny case 4 cores ----
+[2026-09-05 08:50:17]   REFUSED (case): backlog drained (24,000,000 records) before the window closed — size it for warm-up + window at the largest case's rate
+[2026-09-05 08:52:01] phase=all start
+[2026-09-05 08:52:01] phase=up start
+[2026-09-05 08:52:03] stack up: bt15-kafka (cap 3.0), bt15-jm (cap 0.5); task manager is started per case
+[2026-09-05 08:52:03] phase=up end rc=0 2s
+[2026-09-05 08:52:03] phase=preflight start
+[2026-09-05 08:53:17] phase=preflight end rc=0 74s
+[2026-09-05 08:53:17] phase=completeness start
+[2026-09-05 08:53:20] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-15/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=12000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-15/results/manifest-small.json
+[2026-09-05 08:53:31] fill done: produced 12000000 records to block-trades-small over 8 partitions in 10.3s (1163580 rec/s)
+[2026-09-05 08:53:32] backlog block-trades-small: 12,000,000 records read back over 8 partitions
+[2026-09-05 08:55:41] drained to the last record in 95.1s
+[2026-09-05 08:57:35] KILL: committed=5153789, killing the task manager mid-drain
+[2026-09-05 08:58:18] KILL: job RUNNING again on the replacement worker
+[2026-09-05 08:59:23] drained to the last record in 142.1s (worker killed mid-drain)
+[2026-09-05 09:00:19] phase=completeness end rc=0 422s
+[2026-09-05 09:00:19] phase=tinyproof start
+[2026-09-05 09:00:23] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-15/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=104000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-15/results/manifest-tiny.json
+[2026-09-05 09:02:06] fill done: produced 104000000 records to block-trades-tiny over 8 partitions in 102.6s (1013596 rec/s)
+[2026-09-05 09:02:07] backlog block-trades-tiny: 104,000,000 records read back over 8 partitions
+[2026-09-05 09:02:07] ---- tiny case 1 cores ----
+[2026-09-05 09:05:17]   1c: 182,847 rec/s, tm 99.6% of cap, vantage 0.43%
+[2026-09-05 09:05:17] ---- tiny case 4 cores ----
+[2026-09-05 09:07:51]   4c: 583,079 rec/s, tm 98.0% of cap, vantage 0.60%
+[2026-09-05 09:07:51]   disk: input 61 B/record x 264,000,000 = 16.0 GB; sinks 73 B/input -> 19.4 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 55.4 GB incl. the 20 GB floor, 155.1 GB free now + 9.7 GB the tiny proof gives back = 164.8 GB: FITS
+[2026-09-05 09:08:38] phase=tinyproof end rc=0 498s
+[2026-09-05 09:08:38] phase=fill start
+[2026-09-05 09:08:41] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-15/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=264000000 --seed=20260905 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-15/results/manifest.json
+[2026-09-05 09:13:18] fill done: produced 264000000 records to block-trades over 8 partitions in 275.5s (958153 rec/s)
+[2026-09-05 09:13:19] backlog block-trades: 264,000,000 records read back over 8 partitions
+[2026-09-05 09:13:19] phase=fill end rc=0 282s
+[2026-09-05 09:13:19] phase=suite start
+[2026-09-05 09:13:19] ---- case 1 cores, pass p1-asc ----
+[2026-09-05 09:17:21]   1c p1-asc: 186,468 rec/s  tm 1.00/1 (99.9%)  kafka 0.06/3  srcIdle 0.1%  srcBP 32.0%  headroom 1268s  vantage 0.21%
+[2026-09-05 09:17:21] ---- case 2 cores, pass p1-asc ----
+[2026-09-05 09:21:21]   2c p1-asc: 398,686 rec/s  tm 1.97/2 (98.4%)  kafka 0.13/3  srcIdle 0.2%  srcBP 37.7%  headroom 516s  vantage 0.18%
+[2026-09-05 09:21:21] ---- case 4 cores, pass p1-asc ----
+[2026-09-05 09:25:31]   4c p1-asc: 539,902 rec/s  tm 3.83/4 (95.9%)  kafka 0.25/3  srcIdle 2.6%  srcBP 26.8%  headroom 326s  vantage 0.04%
+[2026-09-05 09:25:31] ---- case 1 cores, pass sentinel ----
+[2026-09-05 09:29:08]   1c sentinel: 190,876 rec/s  tm 0.96/1 (96.3%)  kafka 0.06/3  srcIdle 0.0%  srcBP 30.4%  headroom 1243s  vantage 0.16%
+[2026-09-05 09:29:08] phase=suite end rc=0 949s
+[2026-09-05 09:29:08] phase=report start
+[2026-09-05 09:29:08] phase=report end rc=0 0s
+[2026-09-05 09:29:08] phase=all end PASS 37.1 min
+[2026-09-05 09:30:13] fstrim: /var/lib/docker: 19.8 GiB (21247311872 bytes) trimmed
+[2026-09-05 09:30:13] stack down; nothing with prefix bt15 survives
