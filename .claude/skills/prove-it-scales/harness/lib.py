@@ -51,6 +51,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # build_table takes it as an argument; the record and the guards keep normal
 # semantics whatever the flag says.
 QUICK = False
+QUICK_BANNER = ("one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.")
 
 # ------------------------------------------------------------------ thresholds
 #
@@ -1306,7 +1307,7 @@ def render_table(out):
     L = []
     L.append("=" * 118)
     if out.get("table", {}).get("quickLook"):
-        L.append("!! " + "QUICK LOOK — one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.")
+        L.append("!! QUICK LOOK — " + QUICK_BANNER)
         L.append("=" * 118)
     L.append(f"axis                 : {out['axis']}")
     L.append(f"API level            : {out['apiLevel']}")
@@ -1364,7 +1365,7 @@ def render_markdown(out):
     """The same table for a report."""
     t = out["table"]
     c = cfg()
-    L = ([f"> **QUICK LOOK — not a result.** QUICK LOOK — one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is.", ""]
+    L = ([f"> **QUICK LOOK — not a result.** {QUICK_BANNER}", ""]
          if out.get("table", {}).get("quickLook") else [])
     L += ["| field | value |", "|---|---|",
          f"| axis | {out['axis']} |", f"| API level | {out['apiLevel']} |",
@@ -1375,7 +1376,12 @@ def render_markdown(out):
          f"| rate source | committed broker offsets on `{c.topic_in}` |",
          f"| CPU source | cgroup `cpu.stat usage_usec` |", ""]
     for r in t["stepRatios"]:
-        if r["reportable"]:
+        if r["reportable"] and t.get("quickLook"):
+            # one pass per case: min and max are the same measurement, so a
+            # "range across passes" here would be an invented interval.
+            L.append(f"**{r['step'].replace('->', '→')} cores: {r['ratio']:.2f}× "
+                     f"({r['efficiency']:.0%} of linear) — one pass per case, no spread measured.**")
+        elif r["reportable"]:
             L.append(f"**{r['step'].replace('->', '→')} cores: {r['ratio']:.2f}× ({r['efficiency']:.0%} of linear), "
                      f"range {r['ratioLow']:.2f}–{r['ratioHigh']:.2f}× across passes.**")
         else:

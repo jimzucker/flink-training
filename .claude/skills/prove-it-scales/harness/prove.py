@@ -146,8 +146,9 @@ def cmd_selftest(live=True, topic=None):
         suites would have been reported, and this file's own single-pass guard
         stopped firing. Both correctly refused a run. Quickness belongs to one
         table, never to the record or the guards."""
-        L.QUICK = True
-        try:
+        prev = L.QUICK          # restore, never assume: setting this False at the
+        L.QUICK = True          # end turned quick mode off for the rest of a live
+        try:                    # chain on 2026-09-05, and the suite voided itself
             if cmd_replay() != 0:
                 raise Exception("the replay disagreed with the record while --quick was set")
             t = build_table([{"cores": 2, "pass": "p1", "recordsPerSec": 100.0},
@@ -155,7 +156,9 @@ def cmd_selftest(live=True, topic=None):
             if t["cases"][2]["reportable"] or t.get("quickLook"):
                 raise Exception(f"the flag leaked into a table that did not ask for it: {t['cases'][2]}")
         finally:
-            L.QUICK = False
+            L.QUICK = prev
+        if L.QUICK != prev:
+            raise Exception("the self-test did not restore the quick flag")
     expect("quick look: the flag reaches neither the record nor the guards (must not fire)",
            quick_does_not_leak, "", should_fire=False)
 
@@ -806,6 +809,10 @@ def cmd_all(steps=None, results=None):
     if os.path.exists(done):
         os.remove(done)
     out = {"build": build_hash() if os.path.exists(c.jar) else None, "steps": []}
+    quick0 = L.QUICK   # GUARD: a phase that leaves the flag different from how it
+                       # found it mis-stamps every table after it (2026-09-05: the
+                       # tiny proof's self-test cleared it and the suite voided
+                       # itself as "1 pass < 2" while still running one pass).
 
     def mark(line):
         with open(phases, "a") as f:
@@ -834,6 +841,10 @@ def cmd_all(steps=None, results=None):
                     L.stop_sampler(); L.stop_tm()
                 except Exception:
                     pass
+        if L.QUICK != quick0:
+            log(f"phase {name} left the quick flag {L.QUICK} (it was {quick0}); restoring")
+            L.QUICK = quick0
+            rc = rc or 1
         out["steps"].append({"step": name, "rc": rc, "seconds": round(time.time() - t0, 1)})
         mark(f"phase={name} end rc={rc} {time.time() - t0:.0f}s")
         save_all()
