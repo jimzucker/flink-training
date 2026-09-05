@@ -1,0 +1,23 @@
+{
+ "build": "6ee9600b17e9ba41",
+ "records": 10000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "st11-complete-clean",
+   "killed": false,
+   "drainS": 90.3,
+   "killedAtCommitted": null,
+   "verify": "read 10,000,000 records (log end 10,000,000) from positions-by-symbol in 4.7s, 64 distinct symbol keys\nread 30,000,000 records (log end 30,000,000) from positions-by-account in 8.8s, 512 distinct account keys\n---- completeness ----\ntrades in manifest        : 10,000,000\ndistinct symbols          : 64 (predicted 64)\ndistinct accounts         : 512 (predicted 512)\ntrades over symbol path   : 10,000,000\nallocs over account path  : 30,000,000 (= 3 x trades)\nnet qty  symbol / account : -192,632,300 / -192,632,300\ngross qty symbol / account: 250,544,416,100 / 250,544,416,100\nCOMPLETENESS OK \u2014 every assertion held exactly, no tolerances\n"
+  },
+  {
+   "group": "st11-complete-kill",
+   "killed": true,
+   "drainS": 159.2,
+   "killedAtCommitted": 3719458,
+   "verify": "read 10,057,974 records (log end 10,057,974) from positions-by-symbol in 5.4s, 64 distinct symbol keys\nread 30,174,123 records (log end 30,174,123) from positions-by-account in 9.0s, 512 distinct account keys\n---- completeness ----\ntrades in manifest        : 10,000,000\ndistinct symbols          : 64 (predicted 64)\ndistinct accounts         : 512 (predicted 512)\ntrades over symbol path   : 10,000,000\nallocs over account path  : 30,000,000 (= 3 x trades)\nnet qty  symbol / account : -192,632,300 / -192,632,300\ngross qty symbol / account: 250,544,416,100 / 250,544,416,100\nCOMPLETENESS OK \u2014 every assertion held exactly, no tolerances\n"
+  }
+ ],
+ "at": "2026-09-04 20:59:01",
+ "result": "PASS"
+}

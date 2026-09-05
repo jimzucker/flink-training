@@ -1,0 +1,55 @@
+[2026-09-04 20:57:15] phase=all start
+[2026-09-04 20:57:15] phase=up start
+[2026-09-04 20:57:34] stack up: st11-kafka (cap 2.5), st11-jm (cap 0.5); task manager is started per case
+[2026-09-04 20:57:34] phase=up end rc=0 19s
+[2026-09-04 20:57:34] phase=preflight start
+[2026-09-04 20:58:42] phase=preflight end rc=0 68s
+[2026-09-04 20:58:42] phase=completeness start
+[2026-09-04 20:58:45] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-rig-noise/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=10000000 --seed=20260905 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-rig-noise/results/manifest-small.json
+[2026-09-04 20:59:00] fill done: {"tradeCount":10000000,"manifest":"~/code/GitHub/flink-rig-noise/results/manifest-small.json"}
+[2026-09-04 20:59:01] backlog block-trades-small: 10,000,000 records read back over 8 partitions
+[2026-09-04 21:01:09] drained to the last record in 90.3s
+[2026-09-04 21:03:00] KILL: committed=3719458, killing the task manager mid-drain
+[2026-09-04 21:04:01] KILL: job RUNNING again on the replacement worker
+[2026-09-04 21:05:10] drained to the last record in 159.1s (worker killed mid-drain)
+[2026-09-04 21:06:22] phase=completeness end rc=0 460s
+[2026-09-04 21:06:22] phase=tinyproof start
+[2026-09-04 21:06:25] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-rig-noise/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=140000000 --seed=20260904 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-rig-noise/results/manifest-tiny.json
+[2026-09-04 21:10:11] fill done: {"tradeCount":140000000,"manifest":"~/code/GitHub/flink-rig-noise/results/manifest-tiny.json"}
+[2026-09-04 21:10:12] backlog block-trades-tiny: 140,000,000 records read back over 8 partitions
+[2026-09-04 21:10:12] ---- tiny case 1 cores ----
+[2026-09-04 21:13:15]   1c: 154,214 rec/s, tm 99.9% of cap, vantage 0.82%
+[2026-09-04 21:13:15] ---- tiny case 4 cores ----
+[2026-09-04 21:15:56]   4c: 740,526 rec/s, tm 96.2% of cap, vantage 0.15%
+[2026-09-04 21:15:56]   disk: input 212 B/record x 200,000,000 = 42.3 GB; sinks 209 B/input -> 41.8 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 96.7 GB incl. the 20 GB floor, 126.1 GB free now + 42.0 GB the tiny proof gives back = 168.1 GB: FITS
+[2026-09-04 21:16:56] phase=tinyproof end rc=0 634s
+[2026-09-04 21:16:56] phase=fill start
+[2026-09-04 21:16:59] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-rig-noise/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=200000000 --seed=20260903 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-rig-noise/results/manifest.json
+[2026-09-04 21:22:20] fill done: {"tradeCount":200000000,"manifest":"~/code/GitHub/flink-rig-noise/results/manifest.json"}
+[2026-09-04 21:22:21] backlog block-trades: 200,000,000 records read back over 8 partitions
+[2026-09-04 21:22:21] phase=fill end rc=0 325s
+[2026-09-04 21:22:21] phase=suite start
+[2026-09-04 21:22:21] ---- case 1 cores, pass p1-asc ----
+[2026-09-04 21:26:13]   1c p1-asc: 183,365 rec/s  tm 1.00/1 (99.9%)  kafka 0.13/2.5  srcIdle 0.3%  srcBP 19.6%  headroom 933s  vantage 0.01%
+[2026-09-04 21:26:13] ---- case 2 cores, pass p1-asc ----
+[2026-09-04 21:31:52]   2c p1-asc: 327,499 rec/s  tm 2.01/2 (100.4%)  kafka 0.41/2.5  srcIdle 10.7%  srcBP 13.7%  headroom 349s  vantage 0.00%
+[2026-09-04 21:31:52] ---- case 4 cores, pass p1-asc ----
+[2026-09-04 21:35:52]   4c p1-asc: 705,850 rec/s  tm 3.99/4 (99.7%)  kafka 0.63/2.5  srcIdle 8.4%  srcBP 10.0%  headroom 137s  vantage 0.21%
+[2026-09-04 21:35:52] ---- case 4 cores, pass p2-desc ----
+[2026-09-04 21:39:22]   4c p2-desc: 731,807 rec/s  tm 3.90/4 (97.4%)  kafka 0.68/2.5  srcIdle 9.3%  srcBP 8.3%  headroom 121s  vantage 0.41%
+[2026-09-04 21:39:22] ---- case 2 cores, pass p2-desc ----
+[2026-09-04 21:43:37]   2c p2-desc: 357,660 rec/s  tm 1.99/2 (99.4%)  kafka 0.33/2.5  srcIdle 12.8%  srcBP 13.1%  headroom 396s  vantage 0.40%
+[2026-09-04 21:43:37] ---- case 1 cores, pass p2-desc ----
+[2026-09-04 21:47:37]   1c p2-desc: 179,771 rec/s  tm 1.00/1 (99.9%)  kafka 0.15/2.5  srcIdle 0.2%  srcBP 21.8%  headroom 970s  vantage 0.32%
+[2026-09-04 21:47:37] ---- case 1 cores, pass p3-asc ----
+[2026-09-04 21:51:35]   1c p3-asc: 186,783 rec/s  tm 0.97/1 (97.2%)  kafka 0.12/2.5  srcIdle 0.2%  srcBP 23.9%  headroom 927s  vantage 0.50%
+[2026-09-04 21:51:35] ---- case 2 cores, pass p3-asc ----
+[2026-09-04 21:55:27]   2c p3-asc: 390,769 rec/s  tm 2.00/2 (100.1%)  kafka 0.32/2.5  srcIdle 16.5%  srcBP 12.2%  headroom 367s  vantage 0.26%
+[2026-09-04 21:55:27] ---- case 4 cores, pass p3-asc ----
+[2026-09-04 21:59:17]   REFUSED (case): task manager used 92.8% of its 4-core cap (floor 95%) — it is not the constraint
+[2026-09-04 21:59:17] ---- case 1 cores, pass sentinel ----
+[2026-09-04 22:03:28]   1c sentinel: 170,982 rec/s  tm 1.00/1 (99.8%)  kafka 0.15/2.5  srcIdle 0.2%  srcBP 24.1%  headroom 1018s  vantage 0.43%
+[2026-09-04 22:03:28] phase=suite end rc=0 2467s
+[2026-09-04 22:03:28] phase=report start
+[2026-09-04 22:03:28] phase=report end rc=0 0s
+[2026-09-04 22:03:28] phase=all end PASS 66.2 min

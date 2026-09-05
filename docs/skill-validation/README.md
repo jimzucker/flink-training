@@ -30,6 +30,12 @@ way to tell them apart.
 
 Human time was **0 h** and human prompts **1** in every row.
 
+Runs of the harness alone — no agent, no skill — are not in that table.
+[2026-09-04](rig-2026-09-04.md) is one: `prove.py all` on a rig whose
+pipeline was already built, cases 1/2/4, PASS in 66.2 min on the first
+attempt, 1→2 = 1.99× and 2→4 = 2.00×, with one 4-core pass refused at 92.8%
+of cap and the 2-core spread at 17.6% against a 20% ceiling.
+
 † Run 9 ran against the skill cut to 3,546 words; its harness counted input legs (4 per block order), shown here divided by 4. Its **2→4 step ratio was 2.10× pooled over 17 passes** (1.96–2.25× across seven suites). Most of its wall clock went to re-running suites a mis-scoped spread guard had refused; the agent was then killed by API overload before writing its report or recording its cost.
 
 ‡ Run 10 ran 2- and 4-core cases only, as the prompt asked. Its harness voided a valid **2→4 step of 2.07×** (spread 11.2% / 4.6%) on a 10% ceiling that the record already contradicted, and reported no ratio. The 4-core figure is trades/s from that suite. It is the run that moved the harness into the skill as code.
