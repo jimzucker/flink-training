@@ -41,10 +41,15 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
-# quick look: set by `prove.py <cmd> --quick`. One pass per case instead of the
-# configured number. The chain runs end to end and every per-case guard fires;
-# the table it produces is marked unpublishable and must never be quoted as a
-# result. It answers "does this rig run clean, and roughly how fast", nothing more.
+# quick look: set by `prove.py <cmd> --quick`, and read in exactly one place —
+# Cfg, to run each case once instead of the configured number. It must never
+# reach build_table through this global: the first version did, and the replay
+# then re-derived the *record* with minPasses bypassed (three recorded suites
+# the record marks invalid would have been reported) while the live self-test's
+# "a case measured only once" guard stopped firing. Both refusals were correct
+# and both stopped a run (2026-09-05). Quickness is a property of one table, so
+# build_table takes it as an argument; the record and the guards keep normal
+# semantics whatever the flag says.
 QUICK = False
 
 # ------------------------------------------------------------------ thresholds
@@ -1219,7 +1224,7 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
 
 # ------------------------------------------------------------------ the table
 
-def build_table(runs, cases_order=None):
+def build_table(runs, cases_order=None, quick=False):
     """Pure: per-case means, spreads, reportability, step ratios, order effect.
     Fed by the suite, by `selftest`, and by `replay` over the record."""
     ok = {}
@@ -1234,9 +1239,9 @@ def build_table(runs, cases_order=None):
         entry = {"cores": cores, "passes": len(rates), "meanRecordsPerSec": round(mean, 1),
                  "minRecordsPerSec": min(rates), "maxRecordsPerSec": max(rates),
                  "spread": round(spread, 4), "reportable": True}
-        if QUICK:
+        if quick:
             entry.update(quickLook=True, publishable=False)
-        if len(rates) < T["minPasses"] and not QUICK:
+        if len(rates) < T["minPasses"] and not quick:
             entry.update(reportable=False, unreportableReason=f"{len(rates)} pass(es) < {T['minPasses']}")
         elif spread > T["spreadCeil"]:
             entry.update(reportable=False,
@@ -1290,7 +1295,7 @@ def build_table(runs, cases_order=None):
             sentinel = {"cores": int(last["cores"]), "firstPass": first.get("pass"), "firstRecordsPerSec": f,
                         "lastRecordsPerSec": l, "drift": round((l - f) / ((f + l) / 2), 4)}
     return {"cases": cases, "stepRatios": ratios, "orderEffect": order, "sentinel": sentinel,
-            "quickLook": QUICK, "publishable": not QUICK}
+            "quickLook": quick, "publishable": not quick}
 
 
 def render_table(out):
