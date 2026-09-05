@@ -140,6 +140,23 @@ def cmd_selftest(live=True, topic=None):
         raise Refusal("case", t["cases"][2]["unreportableReason"])
     expect("a case measured only once", one_pass, "pass")
 
+    def split_commit_boundary():
+        """REGRESSION, from the rig's own ticks (2026-09-05, 4c, 10 s checkpoints):
+        a commit arrived as +1,902,797 then +5,672,429 half a second later, the
+        window closed on the first piece, and the vantage points disagreed by 33%."""
+        ticks = [{"ts": 39590, "committed": 54613970}, {"ts": 49600, "committed": 56516767},
+                 {"ts": 50100, "committed": 62189196}, {"ts": 59610, "committed": 69800000}]
+        got = L.settle_boundary(ticks, ticks[1], 1500.0)
+        if got["committed"] != 62189196:
+            raise Exception(f"the window closed on half a commit: {got}")
+        whole = L.settle_boundary(ticks, ticks[3], 1500.0)
+        if whole["committed"] != 69800000:
+            raise Exception(f"a settled boundary was dragged forward into the next commit: {whole}")
+        clean = [{"ts": 1000, "committed": 100}, {"ts": 11000, "committed": 200}]
+        if L.settle_boundary(clean, clean[0], 1500.0)["ts"] != 1000:
+            raise Exception("a boundary with nothing to settle was moved")
+    expect("a commit that lands in two pieces (must not fire)", split_commit_boundary, "", should_fire=False)
+
     def quick_does_not_leak(): 
         """REGRESSION (2026-09-05): with the flag set process-wide, the replay
         re-derived the record with minPasses bypassed and three recorded-invalid
