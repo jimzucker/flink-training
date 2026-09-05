@@ -140,14 +140,32 @@ def cmd_selftest(live=True, topic=None):
         raise Refusal("case", t["cases"][2]["unreportableReason"])
     expect("a case measured only once", one_pass, "pass")
 
+    def split_commit_boundary():
+        """REGRESSION, from the rig's own ticks (2026-09-05, 4c, 10 s checkpoints):
+        a commit arrived as +1,902,797 then +5,672,429 half a second later, the
+        window closed on the first piece, and the vantage points disagreed by 33%."""
+        ticks = [{"ts": 39590, "committed": 54613970}, {"ts": 49600, "committed": 56516767},
+                 {"ts": 50100, "committed": 62189196}, {"ts": 59610, "committed": 69800000}]
+        got = L.settle_boundary(ticks, ticks[1], 1500.0)
+        if got["committed"] != 62189196:
+            raise Exception(f"the window closed on half a commit: {got}")
+        whole = L.settle_boundary(ticks, ticks[3], 1500.0)
+        if whole["committed"] != 69800000:
+            raise Exception(f"a settled boundary was dragged forward into the next commit: {whole}")
+        clean = [{"ts": 1000, "committed": 100}, {"ts": 11000, "committed": 200}]
+        if L.settle_boundary(clean, clean[0], 1500.0)["ts"] != 1000:
+            raise Exception("a boundary with nothing to settle was moved")
+    expect("a commit that lands in two pieces (must not fire)", split_commit_boundary, "", should_fire=False)
+
     def quick_does_not_leak(): 
         """REGRESSION (2026-09-05): with the flag set process-wide, the replay
         re-derived the record with minPasses bypassed and three recorded-invalid
         suites would have been reported, and this file's own single-pass guard
         stopped firing. Both correctly refused a run. Quickness belongs to one
         table, never to the record or the guards."""
-        L.QUICK = True
-        try:
+        prev = L.QUICK          # restore, never assume: setting this False at the
+        L.QUICK = True          # end turned quick mode off for the rest of a live
+        try:                    # chain on 2026-09-05, and the suite voided itself
             if cmd_replay() != 0:
                 raise Exception("the replay disagreed with the record while --quick was set")
             t = build_table([{"cores": 2, "pass": "p1", "recordsPerSec": 100.0},
@@ -155,7 +173,9 @@ def cmd_selftest(live=True, topic=None):
             if t["cases"][2]["reportable"] or t.get("quickLook"):
                 raise Exception(f"the flag leaked into a table that did not ask for it: {t['cases'][2]}")
         finally:
-            L.QUICK = False
+            L.QUICK = prev
+        if L.QUICK != prev:
+            raise Exception("the self-test did not restore the quick flag")
     expect("quick look: the flag reaches neither the record nor the guards (must not fire)",
            quick_does_not_leak, "", should_fire=False)
 
@@ -806,6 +826,10 @@ def cmd_all(steps=None, results=None):
     if os.path.exists(done):
         os.remove(done)
     out = {"build": build_hash() if os.path.exists(c.jar) else None, "steps": []}
+    quick0 = L.QUICK   # GUARD: a phase that leaves the flag different from how it
+                       # found it mis-stamps every table after it (2026-09-05: the
+                       # tiny proof's self-test cleared it and the suite voided
+                       # itself as "1 pass < 2" while still running one pass).
 
     def mark(line):
         with open(phases, "a") as f:
@@ -834,6 +858,10 @@ def cmd_all(steps=None, results=None):
                     L.stop_sampler(); L.stop_tm()
                 except Exception:
                     pass
+        if L.QUICK != quick0:
+            log(f"phase {name} left the quick flag {L.QUICK} (it was {quick0}); restoring")
+            L.QUICK = quick0
+            rc = rc or 1
         out["steps"].append({"step": name, "rc": rc, "seconds": round(time.time() - t0, 1)})
         mark(f"phase={name} end rc={rc} {time.time() - t0:.0f}s")
         save_all()

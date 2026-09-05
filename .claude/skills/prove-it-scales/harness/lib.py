@@ -51,6 +51,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # build_table takes it as an argument; the record and the guards keep normal
 # semantics whatever the flag says.
 QUICK = False
+QUICK_BANNER = ("one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.")
 
 # ------------------------------------------------------------------ thresholds
 #
@@ -983,9 +984,35 @@ def backpressure_in_window(t_open, t_close):
 
 # ------------------------------------------------------------------- the case
 
-def next_boundary(after=None, timeout=90):
-    """The window is anchored on the committed offset advancing, never on wall clock."""
+def settle_boundary(ticks, cand, settle_ms):
+    """Pure: a checkpoint's offsets can reach the broker in pieces, so the first
+    tick that shows an advance may hold only part of the commit. Take the last
+    tick that keeps advancing within settle_ms of the one before it.
+
+    Measured on the rig 2026-09-05, 4 cores, 10 s checkpoints: commits landed
+    every ~10 s at 7.5-8.2M records, and one arrived as +1,902,797 followed
+    0.50 s later by +5,672,429. The window closed on the first half and the two
+    vantage points disagreed by 33% — the third such refusal on record (20.2%,
+    33.9%, 33.0%), every one at parallelism > 1, none at 1. Nothing real
+    advances the committed offset twice inside a fraction of a checkpoint
+    interval, so settling is safe: settle_ms is a fifth of the interval, and
+    the widest observed split is a twentieth of it."""
+    out = cand
+    for t in ticks:
+        if t["ts"] <= out["ts"] or t.get("committed", -1) < 0:
+            continue
+        if t["committed"] > out["committed"] and t["ts"] - out["ts"] <= settle_ms:
+            out = t
+        elif t["ts"] - out["ts"] > settle_ms:
+            break
+    return out
+
+
+def next_boundary(after=None, timeout=90, settle_ms=None):
+    """The window is anchored on the committed offset advancing, never on wall
+    clock — and on the *whole* commit, not the first piece of one to arrive."""
     base = after
+    settle_ms = settle_ms if settle_ms is not None else min(1500.0, 0.2 * cfg().ckpt_ms)
     t0 = time.time()
     while time.time() - t0 < timeout:
         for t in sampler_tail(8):
@@ -995,7 +1022,9 @@ def next_boundary(after=None, timeout=90):
                 base = t
                 continue
             if t["committed"] > base["committed"] and t["ts"] > base["ts"]:
-                return t
+                # let the rest of this commit land before the window uses it
+                time.sleep(settle_ms / 1000.0 + 0.2)
+                return settle_boundary(sampler_tail(16), t, settle_ms)
             drained(t)
         time.sleep(0.4)
     raise Refusal("case", f"committed offset did not advance within {timeout}s")
@@ -1306,7 +1335,7 @@ def render_table(out):
     L = []
     L.append("=" * 118)
     if out.get("table", {}).get("quickLook"):
-        L.append("!! " + "QUICK LOOK — one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.")
+        L.append("!! QUICK LOOK — " + QUICK_BANNER)
         L.append("=" * 118)
     L.append(f"axis                 : {out['axis']}")
     L.append(f"API level            : {out['apiLevel']}")
@@ -1364,7 +1393,7 @@ def render_markdown(out):
     """The same table for a report."""
     t = out["table"]
     c = cfg()
-    L = ([f"> **QUICK LOOK — not a result.** QUICK LOOK — one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is.", ""]
+    L = ([f"> **QUICK LOOK — not a result.** {QUICK_BANNER}", ""]
          if out.get("table", {}).get("quickLook") else [])
     L += ["| field | value |", "|---|---|",
          f"| axis | {out['axis']} |", f"| API level | {out['apiLevel']} |",
@@ -1375,7 +1404,12 @@ def render_markdown(out):
          f"| rate source | committed broker offsets on `{c.topic_in}` |",
          f"| CPU source | cgroup `cpu.stat usage_usec` |", ""]
     for r in t["stepRatios"]:
-        if r["reportable"]:
+        if r["reportable"] and t.get("quickLook"):
+            # one pass per case: min and max are the same measurement, so a
+            # "range across passes" here would be an invented interval.
+            L.append(f"**{r['step'].replace('->', '→')} cores: {r['ratio']:.2f}× "
+                     f"({r['efficiency']:.0%} of linear) — one pass per case, no spread measured.**")
+        elif r["reportable"]:
             L.append(f"**{r['step'].replace('->', '→')} cores: {r['ratio']:.2f}× ({r['efficiency']:.0%} of linear), "
                      f"range {r['ratioLow']:.2f}–{r['ratioHigh']:.2f}× across passes.**")
         else:
