@@ -1,0 +1,23 @@
+{
+ "build": "4d8c12dd55ddb90a",
+ "records": 16000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt16-complete-clean",
+   "killed": false,
+   "drainS": 97.0,
+   "killedAtCommitted": null,
+   "verify": "read 32 symbol keys and 4096 account-symbol keys in 24.0s\n  ok  distinct symbol keys = 32\n  ok  distinct account-symbol keys = 4096\n  ok  predicted symbol cardinality = 32\n  ok  predicted account-symbol cardinality = 4096\n  ok  total net quantity by symbol = -6568415\n  ok  total net quantity by account = -6568415\n  ok  total symbol updates = 16000000\n  ok  total account updates = 64000000\nCOMPLETENESS OK: 16,000,000 trades, 32 symbol keys, 4096 account-symbol keys, net -6568415 by symbol == -6568415 by account, 64,000,000 allocation updates, no tolerances\n"
+  },
+  {
+   "group": "bt16-complete-kill",
+   "killed": true,
+   "drainS": 161.2,
+   "killedAtCommitted": 5799124,
+   "verify": "read 32 symbol keys and 4096 account-symbol keys in 25.2s\n  ok  distinct symbol keys = 32\n  ok  distinct account-symbol keys = 4096\n  ok  predicted symbol cardinality = 32\n  ok  predicted account-symbol cardinality = 4096\n  ok  total net quantity by symbol = -6568415\n  ok  total net quantity by account = -6568415\n  ok  total symbol updates = 16000000\n  ok  total account updates = 64000000\nCOMPLETENESS OK: 16,000,000 trades, 32 symbol keys, 4096 account-symbol keys, net -6568415 by symbol == -6568415 by account, 64,000,000 allocation updates, no tolerances\n"
+  }
+ ],
+ "at": "2026-09-05 17:00:42",
+ "result": "PASS"
+}
