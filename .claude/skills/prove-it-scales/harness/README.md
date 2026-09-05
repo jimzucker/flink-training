@@ -22,6 +22,18 @@ Wait with `until [ -f results/DONE ]; do sleep 30; done` and nothing more: a
 shell whose command line names `prove.py` from inside the project is a
 watcher by the reaper's rule and is killed with the rest (it took the
 author's own `pgrep -f 'prove.py all'` loop).
+**`--quick` is a smoke run, not a result.** `prove.py all --quick` runs one
+pass per case instead of the configured number (the sentinel still follows,
+so the baseline is measured twice) and stamps `quickLook`/`publishable:false`
+on the table it writes, with a banner in `suite.md` and `suite.txt`. Every
+per-case guard stays live, so it answers "does this rig run clean, and
+roughly how fast" — about 37 min here against 60, because the gates
+(completeness, tiny proof, fill) do not shrink. It answers nothing about the
+ratio: replayed against the record, single passes of the recorded suites read
+2.039-2.273x where the suite reported 2.154x, and 1.837-1.859x where it
+reported 1.850x — a band wider than the accept line. Never quote a quick
+table, and never put one in `record/`.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```

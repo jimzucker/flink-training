@@ -41,6 +41,12 @@ import urllib.request
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 
+# quick look: set by `prove.py <cmd> --quick`. One pass per case instead of the
+# configured number. The chain runs end to end and every per-case guard fires;
+# the table it produces is marked unpublishable and must never be quoted as a
+# result. It answers "does this rig run clean, and roughly how fast", nothing more.
+QUICK = False
+
 # ------------------------------------------------------------------ thresholds
 #
 # Each value names where it came from. `prove.py replay` re-derives the table
@@ -201,7 +207,17 @@ class Cfg:
         self.log_path = os.path.join(self.results, "harness.log")
         if self.baseline not in self.cases:
             raise Refusal("rig", f"baseline {self.baseline} is not one of the cases {self.cases}")
-        if self.passes < T["minPasses"]:
+        if QUICK:
+            # quick look: one pass per case, still followed by the sentinel, so
+            # the baseline is measured twice and drift is visible. Every per-case
+            # guard stays live; what is lost is the spread, and with it the right
+            # to publish. Replayed against the record 2026-09-04: single passes of
+            # the recorded suites read 2.039-2.273x where the suite reported
+            # 2.154x (run 12, 2->4) and 1.837-1.859x against 1.850x (run 13) —
+            # a one-pass number lands anywhere in a band wider than the accept
+            # line, which is why this mode marks its table unpublishable.
+            self.passes = 1
+        elif self.passes < T["minPasses"]:
             raise Refusal("rig", f"passes must be >= {T['minPasses']} (every case at least twice)")
 
     def fmt(self, s, **kw):
@@ -1218,7 +1234,9 @@ def build_table(runs, cases_order=None):
         entry = {"cores": cores, "passes": len(rates), "meanRecordsPerSec": round(mean, 1),
                  "minRecordsPerSec": min(rates), "maxRecordsPerSec": max(rates),
                  "spread": round(spread, 4), "reportable": True}
-        if len(rates) < T["minPasses"]:
+        if QUICK:
+            entry.update(quickLook=True, publishable=False)
+        if len(rates) < T["minPasses"] and not QUICK:
             entry.update(reportable=False, unreportableReason=f"{len(rates)} pass(es) < {T['minPasses']}")
         elif spread > T["spreadCeil"]:
             entry.update(reportable=False,
@@ -1271,7 +1289,8 @@ def build_table(runs, cases_order=None):
             f, l = first["recordsPerSec"], last["recordsPerSec"]
             sentinel = {"cores": int(last["cores"]), "firstPass": first.get("pass"), "firstRecordsPerSec": f,
                         "lastRecordsPerSec": l, "drift": round((l - f) / ((f + l) / 2), 4)}
-    return {"cases": cases, "stepRatios": ratios, "orderEffect": order, "sentinel": sentinel}
+    return {"cases": cases, "stepRatios": ratios, "orderEffect": order, "sentinel": sentinel,
+            "quickLook": QUICK, "publishable": not QUICK}
 
 
 def render_table(out):
@@ -1281,6 +1300,9 @@ def render_table(out):
     c = cfg()
     L = []
     L.append("=" * 118)
+    if out.get("table", {}).get("quickLook"):
+        L.append("!! " + "QUICK LOOK — one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.")
+        L.append("=" * 118)
     L.append(f"axis                 : {out['axis']}")
     L.append(f"API level            : {out['apiLevel']}")
     L.append(f"guarantee            : state = {out['guarantee']['state']}; sink = {out['guarantee']['sink']}")
@@ -1337,7 +1359,9 @@ def render_markdown(out):
     """The same table for a report."""
     t = out["table"]
     c = cfg()
-    L = ["| field | value |", "|---|---|",
+    L = ([f"> **QUICK LOOK — not a result.** QUICK LOOK — one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is.", ""]
+         if out.get("table", {}).get("quickLook") else [])
+    L += ["| field | value |", "|---|---|",
          f"| axis | {out['axis']} |", f"| API level | {out['apiLevel']} |",
          f"| guarantee | state: {out['guarantee']['state']}; sink: {out['guarantee']['sink']} |",
          f"| checkpoint interval | {out['checkpointIntervalMs']} ms |",
