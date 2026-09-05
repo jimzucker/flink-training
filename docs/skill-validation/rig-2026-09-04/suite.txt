@@ -1,0 +1,32 @@
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent by emitting the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : 6ee9600b17e9ba41  (completeness passed for 6ee9600b17e9ba41)
+passes per case      : 3
+backlog              : 200,000,000 records, 8 partitions, 4 outputs per input
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     183,365     733,460   1.00/1   99.9%   100   0.13/2.5    0.3%  19.6%   933s  0.0%       OK
+    2   p1-asc     327,499   1,309,996   2.01/2   100.4%   100   0.41/2.5   10.7%  13.7%   349s  0.0%       OK
+    4   p1-asc     705,850   2,823,400   3.99/4   99.7%    99   0.63/2.5    8.4%  10.0%   137s  0.2%       OK
+    4  p2-desc     731,807   2,927,230   3.90/4   97.4%    94   0.68/2.5    9.3%   8.3%   121s  0.4%       OK
+    2  p2-desc     357,660   1,430,639   1.99/2   99.4%   100   0.33/2.5   12.8%  13.1%   396s  0.4%       OK
+    1  p2-desc     179,771     719,086   1.00/1   99.9%   100   0.15/2.5    0.2%  21.8%   970s  0.3%       OK
+    1   p3-asc     186,783     747,134   0.97/1   97.2%   100   0.12/2.5    0.2%  23.9%   927s  0.5%       OK
+    2   p3-asc     390,769   1,563,076   2.00/2   100.1%   100   0.32/2.5   16.5%  12.2%   367s  0.3%       OK
+    4   p3-asc           —           —          —      —     —          —        —       —      —      —  REFUSED
+        refusal (case): task manager used 92.8% of its 4-core cap (floor 95%) — it is not the constraint
+    1 sentinel     170,982     683,926   1.00/1   99.8%   100   0.15/2.5    0.2%  24.1%  1018s  0.4%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     180,225     720,902   0.99/1   99.2%   100   0.14/2.5    0.2%  22.3%   962s  0.5%   spread 8.8%
+    2     MEAN     358,642   1,434,570   2.00/2   100.0%   100   0.36/2.5   13.3%  13.0%   371s  0.4%   spread 17.6%
+    4     MEAN     718,829   2,875,315   3.94/4   98.5%    96   0.66/2.5    8.9%   9.2%   129s  0.4%   spread 3.6%
+======================================================================================================================
+STEP 1->2 cores: 1.990x  (ideal 2x, efficiency 99.5%, range across passes 1.753x-2.285x)
+STEP 2->4 cores: 2.004x  (ideal 2x, efficiency 100.2%, range across passes 1.806x-2.235x)
+order effect (descending / ascending): {1: 0.9713, 2: 0.9959, 4: 1.0368}
+sentinel: 1c first 183,365 -> last 170,982 rec/s, drift -7.0% across the suite (counted in the 1c spread)
+======================================================================================================================
