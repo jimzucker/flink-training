@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Fourteen runs of the same problem, each by a fresh agent in an empty directory, barred
+Fifteen runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -28,6 +28,7 @@ way to tell them apart.
 | [12](clean-room-run-12.md) | DataStream | 4.53 h | — | 106 | 74,126 | **321,408** | 4.34× | **100%** |
 | [13](clean-room-run-13.md) | DataStream | **2.08 h** | — | 74 | 147,795 | **593,531** | 4.02× | **100%** |
 | [14](clean-room-run-14.md)¶ | DataStream | **0.93 h** | — | 54 | 186,468 | 539,902 | *2.90×* | **96%** |
+| [15](clean-room-run-15.md)¶ | DataStream | 1.85 h | — | 155 | 245,934 | **964,912** | *3.92×* | **98%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -65,6 +66,20 @@ refused in the suite, every case the constraint at 95.9–99.9% of cap. Its
 2→4 read 1.35× against 1.85–2.15× everywhere else, on a single pass with the
 worker throttled in 87% of periods rather than 100%; that is recorded and not
 explained. Getting there cost four harness defects, fixed in #50–#52.
+
+Run 15 is run 14 again with one guard added: a case is refused if the broker
+hit its container memory limit inside the window. Run 14's 1.35× turned out
+to be a starved broker — the [controlled
+comparison](rig-2026-09-05-broker.md) took the same build from "all three
+4-core passes refused" at 2 GiB to 99.6–100.1% of cap at 4 GiB, and the
+decisive pair sat at **96.4% of cap while hitting its memory limit 30,927
+times**, above the floor that was supposed to catch it. In run 15 the agent
+sized the broker at 5 GiB unprompted, the guard recorded zero hits in every
+case, and the same step read **1.836×** at the highest rate on record
+(964,912 trades/s in, 4.82M position records/s out). It cost three chain
+attempts — both false starts were the agent mis-sizing its own backlog — so
+the chain was clean in 37.9 min but the run was not clean on the first
+attempt.
 
 Run 11 is the first clean-room run on the shipped harness: **one suite, 2→4 = 1.87×** (1.75–2.06× across passes; spread 4.0% / 12.2%), no harness written. Its 4-core figure is trades/s. The wall clock missed a 1.5 h criterion on a rebuild that re-ran the gates and an optional ceiling run; the suite itself was 23 minutes.
 

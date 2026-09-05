@@ -1,0 +1,67 @@
+QUICK LOOK: one pass per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[16:41:05] phase=all start
+[16:41:05] phase=up start
+[16:41:22] stack up: bt16-kafka (cap 2.5), bt16-jm (cap 0.5); task manager is started per case
+[16:41:22] phase=up end rc=0 17s
+[16:41:22] phase=preflight start
+PASS  every image is native to the host arch               host=arm64 apache/kafka=arm64 flink=arm64
+PASS  the JDK the engine needs resolves, pinned            host openjdk version "17.0.20" 2026-07-21 | image openjdk version "17.0.15" 2025-04-15
+PASS  the engine can write its state directory             uid 9999 (flink) can mkdir under /ckpt
+PASS  the metrics reporter is not duplicated               no reporter jar copied into lib/; slf4j reporter used from plugins/
+PASS  disk budget on the HOST, not the container           host free 161.9 GB >= budget 85.6 GB (backlog 38.4 + sinks at retention 34.4 + ckpt 2 + slack 10)
+PASS  retention on every topic written but never drained   retention.bytes=2147483648 set and read back on ['positions-by-symbol', 'positions-by-account'] (a periodic sweep, not a bound)
+PASS  the generator is deterministic                       identical sha256=754066abc419 for 200,000 records at seed 20260905
+PASS  CPU cap mechanism chosen once                        --cpus throughout; read back NanoCpus=2000000000 and cgroup cpu.max = 2.0 cores
+PASS  slots >= parallelism x jobs                          slots-total=4 >= parallelism 4 x 1 job
+PASS  group / txn-id prefix scoped per run                 consumer group = bt16-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)
+PASS  back-pressure counters exist on the endpoint read    Flink 1.20.1: busy/idle/backPressured read from the worker's slf4j reporter; REST path deprecated
+PASS  the VM trim command is known                         docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker
+PASS  the job jar exists and hashes                        build 4d8c12dd55ddb90a
+
+13/13 PASS
+[16:42:25] phase=preflight end rc=0 64s
+[16:42:25] phase=completeness start
+[16:42:29] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-16/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=16000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-16/results/manifest-small.json
+[16:42:42] fill done: manifest: tradeCount=16000000 symbolKeys=32 accountSymbolKeys=4096 totalNetQty=-6568415 manifest=~/code/GitHub/flink-skill-test-16/results/manifest-small.json
+[16:42:43] backlog block-trades-small: 16,000,000 records read back over 8 partitions
+[16:44:58] drained to the last record in 98.5s
+read 32 symbol keys and 4096 account-symbol keys in 24.2s
+  ok  distinct symbol keys = 32
+  ok  distinct account-symbol keys = 4096
+  ok  predicted symbol cardinality = 32
+  ok  predicted account-symbol cardinality = 4096
+  ok  total net quantity by symbol = -6568415
+  ok  total net quantity by account = -6568415
+  ok  total symbol updates = 16000000
+  ok  total account updates = 64000000
+COMPLETENESS OK: 16,000,000 trades, 32 symbol keys, 4096 account-symbol keys, net -6568415 by symbol == -6568415 by account, 64,000,000 allocation updates, no tolerances
+
+[16:47:30] KILL: committed=6117077, killing the task manager mid-drain
+[16:48:04] KILL: job RUNNING again on the replacement worker
+[16:49:18] drained to the last record in 144.8s (worker killed mid-drain)
+read 32 symbol keys and 4096 account-symbol keys in 26.0s
+  ok  distinct symbol keys = 32
+  ok  distinct account-symbol keys = 4096
+  ok  predicted symbol cardinality = 32
+  ok  predicted account-symbol cardinality = 4096
+  ok  total net quantity by symbol = -6568415
+  ok  total net quantity by account = -6568415
+  ok  total symbol updates = 16000000
+  ok  total account updates = 64000000
+COMPLETENESS OK: 16,000,000 trades, 32 symbol keys, 4096 account-symbol keys, net -6568415 by symbol == -6568415 by account, 64,000,000 allocation updates, no tolerances
+
+COMPLETENESS PASSED FOR BUILD 4d8c12dd55ddb90a (clean drain, and a worker killed at 35%)
+[16:50:47] phase=completeness end rc=0 501s
+[16:50:47] phase=tinyproof start
+[16:50:50] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-16/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=80000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-16/results/manifest-tiny.json
+[16:51:54] fill done: manifest: tradeCount=80000000 symbolKeys=32 accountSymbolKeys=4096 totalNetQty=1682126 manifest=~/code/GitHub/flink-skill-test-16/results/manifest-tiny.json
+[16:51:55] backlog block-trades-tiny: 80,000,000 records read back over 8 partitions
+[16:51:55] ---- tiny case 1 cores ----
+[16:55:06]   1c: 228,329 rec/s, tm 101.0% of cap, vantage 0.25%
+[16:55:06] ---- tiny case 4 cores ----
+[16:57:56]   REFUSED (case): backlog headroom at close is 6709849 records (6.9s) < one checkpoint interval at the measured rate
+TINY PROOF FAILED
+[16:57:59] phase=tinyproof end rc=1 432s
+[16:57:59] phase=all end FAIL at tinyproof 16.9 min
