@@ -43,6 +43,17 @@ found three recorded-invalid suites it would now report, and the live
 self-test's "a case measured only once" guard stopped firing. A guard that
 does not fire, or a record that changes under a flag, is a broken harness.
 
+**Give the broker enough memory to hold the working set.** The harness now
+refuses any case where the broker hit its container memory limit inside the
+window. Measured 2026-09-05, one rig, one build, one backlog, one variable:
+at a 2 GiB limit the broker hit it 310,423 times with 6.3M file-page refaults
+and 649 MB of cache, and all three 4-core passes were refused at 93.1-93.8%
+of cap; at 4 GiB the same case held 99.6-100.1% of cap at 651,653 rec/s and
+the cache grew to 2.14 GB. Back-to-back single cases minutes apart: 2 GiB
+refused with 30,927 hits at 562,907 rec/s and **96.4% of cap** — above the
+cap floor, so nothing else would have caught it — and 4 GiB clean with zero
+hits at 646,423 rec/s. A 264M-record backlog wanted 4 GiB here.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
