@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Thirteen runs of the same problem, each by a fresh agent in an empty directory, barred
+Fourteen runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -27,8 +27,11 @@ way to tell them apart.
 | [11](clean-room-run-11.md) | DataStream | 1.97 h | — | 708 | — | **718,847** | — | **98%** |
 | [12](clean-room-run-12.md) | DataStream | 4.53 h | — | 106 | 74,126 | **321,408** | 4.34× | **100%** |
 | [13](clean-room-run-13.md) | DataStream | **2.08 h** | — | 74 | 147,795 | **593,531** | 4.02× | **100%** |
+| [14](clean-room-run-14.md)¶ | DataStream | **0.93 h** | — | 54 | 186,468 | 539,902 | *2.90×* | **96%** |
 
 Human time was **0 h** and human prompts **1** in every row.
+
+¶ Run 14 was a **one-pass quick look** (`prove.py all --quick`): every case measured once, so its ratios are stamped unpublishable by the harness and are shown here in italics. It is in the table for its clock, not its numbers.
 
 Runs of the harness alone — no agent, no skill — are not in that table.
 [2026-09-04](rig-2026-09-04.md) is one: `prove.py all` on a rig whose
@@ -53,6 +56,15 @@ harness to come in under its own clock. The step-ratio criterion became
 one-sided (≥ 1.85) on that run, after its 2.17× was seen; the page says so.
 [Run 13](clean-room-run-13.md) has the criteria and the two things it
 measured and did not explain.
+
+Run 14 asked the same question the way a user in a hurry would: one pass per
+case, `prove.py all --quick`. It is the fastest run on record — **55.9 min
+end to end, 37.1 min of chain** — and the first to pass every pre-launch
+criterion on the first attempt: no rerun of a phase, no fallback, nothing
+refused in the suite, every case the constraint at 95.9–99.9% of cap. Its
+2→4 read 1.35× against 1.85–2.15× everywhere else, on a single pass with the
+worker throttled in 87% of periods rather than 100%; that is recorded and not
+explained. Getting there cost four harness defects, fixed in #50–#52.
 
 Run 11 is the first clean-room run on the shipped harness: **one suite, 2→4 = 1.87×** (1.75–2.06× across passes; spread 4.0% / 12.2%), no harness written. Its 4-core figure is trades/s. The wall clock missed a 1.5 h criterion on a rebuild that re-ran the gates and an optional ceiling run; the suite itself was 23 minutes.
 
