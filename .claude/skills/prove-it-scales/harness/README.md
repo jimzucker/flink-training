@@ -34,6 +34,15 @@ ratio: replayed against the record, single passes of the recorded suites read
 reported 1.850x — a band wider than the accept line. Never quote a quick
 table, and never put one in `record/`.
 
+The flag reaches exactly one place — the number of passes for this run — and
+is carried on the table it produced (`quickLook` in `suite.json`), never on
+the record or the guards. The first version of it was a process-wide global
+that reached `build_table`, and on 2026-09-05 that stopped a run twice, both
+times correctly: `replay` re-derived the record with `minPasses` bypassed and
+found three recorded-invalid suites it would now report, and the live
+self-test's "a case measured only once" guard stopped firing. A guard that
+does not fire, or a record that changes under a flag, is a broken harness.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```

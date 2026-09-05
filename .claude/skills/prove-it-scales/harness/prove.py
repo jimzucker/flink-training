@@ -140,17 +140,32 @@ def cmd_selftest(live=True, topic=None):
         raise Refusal("case", t["cases"][2]["unreportableReason"])
     expect("a case measured only once", one_pass, "pass")
 
+    def quick_does_not_leak(): 
+        """REGRESSION (2026-09-05): with the flag set process-wide, the replay
+        re-derived the record with minPasses bypassed and three recorded-invalid
+        suites would have been reported, and this file's own single-pass guard
+        stopped firing. Both correctly refused a run. Quickness belongs to one
+        table, never to the record or the guards."""
+        L.QUICK = True
+        try:
+            if cmd_replay() != 0:
+                raise Exception("the replay disagreed with the record while --quick was set")
+            t = build_table([{"cores": 2, "pass": "p1", "recordsPerSec": 100.0},
+                             {"cores": 4, "pass": "p1", "recordsPerSec": 200.0}])
+            if t["cases"][2]["reportable"] or t.get("quickLook"):
+                raise Exception(f"the flag leaked into a table that did not ask for it: {t['cases'][2]}")
+        finally:
+            L.QUICK = False
+    expect("quick look: the flag reaches neither the record nor the guards (must not fire)",
+           quick_does_not_leak, "", should_fire=False)
+
     def quick_marks_unpublishable():
         """QUICK: one pass per case still produces numbers, and every one of them
         is stamped unpublishable. The mode exists to answer 'did it run clean and
         how fast', and the record says a single pass lands anywhere in a band
         wider than the accept line (2.04-2.27x where a suite reported 2.15x)."""
-        L.QUICK = True
-        try:
-            t = build_table([{"cores": 2, "pass": "p1-asc", "recordsPerSec": 100.0},
-                             {"cores": 4, "pass": "p1-asc", "recordsPerSec": 200.0}])
-        finally:
-            L.QUICK = False
+        t = build_table([{"cores": 2, "pass": "p1-asc", "recordsPerSec": 100.0},
+                         {"cores": 4, "pass": "p1-asc", "recordsPerSec": 200.0}], quick=True)
         c2, step = t["cases"][2], t["stepRatios"][0]
         if t.get("publishable") is not False or t.get("quickLook") is not True:
             raise Exception(f"quick table was not stamped: {t.get('quickLook')} {t.get('publishable')}")
@@ -669,7 +684,8 @@ def cmd_suite():
     plan = passes_plan(c.cases, c.passes, c.baseline)
     out = {"axis": c.axis, "apiLevel": c.api_level, "guarantee": c.guarantee,
            "checkpointIntervalMs": c.ckpt_ms, "buildHash": bh, "completenessBuild": comp.get("build"),
-           "passesPerCase": c.passes, "cases": c.cases, "baseline": c.baseline,
+           "passesPerCase": c.passes, "quickLook": L.QUICK, "publishable": not L.QUICK,
+           "cases": c.cases, "baseline": c.baseline,
            "backlogRecords": int(man[c.count_field]), "partitions": c.partitions,
            "outputsPerInput": c.out_per_in,
            "heldStill": {"kafkaCap": c.kafka_cap, "jobManagerCap": c.jm_cap, "partitions": c.partitions,
@@ -680,7 +696,7 @@ def cmd_suite():
 
     def save():
         out["savedAt"] = time.strftime("%Y-%m-%d %H:%M:%S %Z")
-        out["table"] = build_table(out["runs"])
+        out["table"] = build_table(out["runs"], quick=out.get("quickLook", False))
         save_json("suite.json", out)
 
     shape_ref, stop = None, None
@@ -761,7 +777,7 @@ def cmd_ceiling():
 
 def cmd_report():
     out = load_json("suite.json")
-    out["table"] = build_table(out["runs"])
+    out["table"] = build_table(out["runs"], quick=out.get("quickLook", False))
     c = cfg()
     with open(os.path.join(c.results, "suite.txt"), "w") as f:
         f.write(render_table(out) + "\n")
