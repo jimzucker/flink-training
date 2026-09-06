@@ -1,0 +1,26 @@
+2026-09-06 17:29:30 phase=all start
+2026-09-06 17:29:30 phase=up start
+2026-09-06 17:29:32 phase=up end rc=0 2s
+2026-09-06 17:29:32 phase=preflight start
+2026-09-06 17:30:29 phase=preflight end rc=0 57s
+2026-09-06 17:30:29 phase=completeness start
+2026-09-06 17:36:30 phase=completeness end rc=0 361s
+2026-09-06 17:36:30 phase=tinyproof start
+2026-09-06 17:43:40 phase=tinyproof end rc=1 430s
+2026-09-06 17:43:40 phase=all end FAIL at tinyproof 14.2 min
+2026-09-06 17:44:55 phase=all start
+2026-09-06 17:44:55 phase=up start
+2026-09-06 17:44:57 phase=up end rc=0 2s
+2026-09-06 17:44:57 phase=preflight start
+2026-09-06 17:46:01 phase=preflight end rc=0 64s
+2026-09-06 17:46:01 phase=completeness start
+2026-09-06 17:51:47 phase=completeness end rc=0 346s
+2026-09-06 17:51:47 phase=tinyproof start
+2026-09-06 18:01:02 phase=tinyproof end rc=0 555s
+2026-09-06 18:01:02 phase=fill start
+2026-09-06 18:04:58 phase=fill end rc=0 236s
+2026-09-06 18:04:58 phase=suite start
+2026-09-06 18:21:02 phase=suite end rc=0 964s
+2026-09-06 18:21:02 phase=report start
+2026-09-06 18:21:02 phase=report end rc=0 0s
+2026-09-06 18:21:02 phase=all end PASS 36.1 min
