@@ -252,6 +252,7 @@ for it.
 | parallelism ≠ cap ≠ allocated slots | all three read back from the engine on every case |
 | the job graph differs from the other cases | vertex count and edge ship strategies read off the running plan |
 | the component under test is not the constraint | ≥95% of cap at every case, baseline included; external-boundary back-pressure not material; the broker never hits its own memory limit inside a window (a starved page cache depresses the rate while the worker still reads 96% of cap) |
+| the input divides evenly across subtasks | partition count divisible by every parallelism under test (8 partitions serves 1, 2, 4; 6 would leave the 4-core case reading 2/2/1/1 and never reaching its cap) |
 | a refused case still owns the cluster | job torn down on **every** exit path |
 | no job is actually running | engine reports RUNNING with the expected parallelism |
 | the cluster is still busy from the last case | assert idle by asking the engine, not by killing what you think is there |
