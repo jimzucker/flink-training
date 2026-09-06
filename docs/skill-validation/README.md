@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Sixteen runs of the same problem, each by a fresh agent in an empty directory, barred
+Seventeen runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -30,6 +30,7 @@ way to tell them apart.
 | [14](clean-room-run-14.md)¶ | DataStream | **0.93 h** | — | 54 | 186,468 | 539,902 | *2.90×* | **96%** |
 | [15](clean-room-run-15.md)¶ | DataStream | 1.85 h | — | 155 | 245,934 | **964,912** | *3.92×* | **98%** |
 | [16](clean-room-run-16.md)¶ | DataStream | 1.62 h | — | 77 | 153,525 | 584,031 | *3.80×* | **98%** |
+| [17](clean-room-run-17.md)¶ | DataStream | 1.88 h | — | 187 | 157,216 | **832,233** | *5.29×* | **99%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -89,6 +90,17 @@ nothing, zero broker memory-limit hits. Its 2→4 read **1.809×** against run
 across runs 14–16 sits in a 2.3-minute band. What is still unexplained is the
 shape all three share: 1→2 above linear, 2→4 below it, with the worker pinned
 at 96–100% of cap and the broker nowhere near its own.
+
+Run 17 was a prediction test: [why 2→4 falls short](why-2to4-falls-short.md)
+argued the demo's 1.99× came from heavier records, so the prompt asked for the
+demo's workload — positions plus market value at close on a ten-second window
+— and the prediction was written down before launch. The ratio came out as
+predicted (**1.946×**) and the mechanism did not: the job's records cost
+4.79 µs of CPU at four cores, no heavier than run 16's, and it lost 2.7% per
+core where run 16 lost 9.6%. Record weight does not order the penalty, so the
+explanation was withdrawn rather than reinterpreted. The run also gave the
+broker-memory guard its first live catch on a pipeline written after it —
+841 limit hits at 4 GiB, zero once the agent moved to 6 GiB.
 
 Run 11 is the first clean-room run on the shipped harness: **one suite, 2→4 = 1.87×** (1.75–2.06× across passes; spread 4.0% / 12.2%), no harness written. Its 4-core figure is trades/s. The wall clock missed a 1.5 h criterion on a rebuild that re-ran the gates and an optional ceiling run; the suite itself was 23 minutes.
 

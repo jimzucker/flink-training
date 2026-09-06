@@ -1,5 +1,14 @@
 # Why 2→4 reads 1.8× in the skill runs and 1.99× in the demo
 
+> **Superseded in part, 2026-09-06.** The explanation below — that the demo
+> scales better because its records are heavier, so a fixed per-record
+> parallelism overhead costs it proportionally less — was tested by
+> [run 17](clean-room-run-17.md) and **refuted**. That run's records are as
+> light as run 16's (4.79 µs of CPU each at four cores) and it still lost only
+> 2.7% per core from 2 to 4, against run 16's 9.6%. The measurements on this
+> page stand; the mechanism drawn from them does not. What determines the
+> penalty is not established.
+
 The clean-room runs kept reporting a 2→4 step ratio of 1.72–1.84× while this
 repository's own demo reports 1.96–1.99×. Same laptop, same 8 partitions, same
 axis — `scale-units.sh` sets `TASKMANAGER_CPUS=n` and `PARALLELISM=n` on one

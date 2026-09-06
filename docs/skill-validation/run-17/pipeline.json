@@ -1,0 +1,54 @@
+{
+  "project": "st18",
+  "topics": {
+    "in": "block-trades",
+    "out": ["positions-by-symbol", "positions-by-account", "mv-by-symbol", "mv-by-account"]
+  },
+  "partitions": 8,
+  "outputsPerInput": 5,
+  "checkpointMs": 10000,
+  "job": {
+    "jar": "job/target/blocktrades-1.0.jar",
+    "mainClass": "scaletest.BlockTradesJob",
+    "args": "--bootstrap={bootstrap} --topicTrades={in} --topicPrices={in}-prices --topicPosSym={out0} --topicPosAcct={out1} --topicMvSym={out2} --topicMvAcct={out3} --group={group} --parallelism={par} --checkpointMs={ckptMs}",
+    "sourceVertexMatch": "trades"
+  },
+  "generator": {
+    "cmd": "{java} -cp {jar} scaletest.GenerateBacklog --mode=produce --count={count} --seed={seed} --partitions={partitions} --bootstrap={bootstrapExt} --topic={topic} --pricesTopic={topic}-prices --manifest={manifest}",
+    "manifestCmd": "{java} -cp {jar} scaletest.GenerateBacklog --mode=manifest --count={count} --seed={seed} --partitions={partitions} --manifest={manifest}",
+    "manifestCountField": "tradeCount"
+  },
+  "verifier": {
+    "cmd": "{java} -cp {jar} scaletest.VerifyCompleteness --bootstrap={bootstrapExt} --topicPosSym={out0} --topicPosAcct={out1} --topicMvSym={out2} --topicMvAcct={out3} --manifest={manifest}"
+  },
+  "cases": [1, 2, 4],
+  "baseline": 1,
+  "passes": 2,
+  "backlog": {
+    "count": 192000000,
+    "seed": 20260906,
+    "smallCount": 8000000,
+    "tinyCount": 80000000,
+    "killAtFraction": 0.35
+  },
+  "caps": {
+    "kafka": 2.5,
+    "jobmanager": 0.5,
+    "tmMemory": "2048m",
+    "tmMemoryLimit": "3g",
+    "kafkaMemory": "6g",
+    "kafkaHeap": "1G"
+  },
+  "images": {
+    "flink": "flink:1.20.1-scala_2.12-java17",
+    "kafka": "apache/kafka:3.9.0"
+  },
+  "ports": {"kafka": 19092, "rest": 18081},
+  "jdk": "/opt/homebrew/opt/openjdk@17",
+  "axis": "one worker growing: one task manager container capped at N cores, parallelism N, N slots",
+  "apiLevel": "Flink DataStream API, hand-written operators (no SQL, no Table API)",
+  "guarantee": {
+    "state": "exactly-once checkpointing",
+    "sink": "at-least-once, idempotent by emitting the absolute position per key and one market value per key per window"
+  }
+}

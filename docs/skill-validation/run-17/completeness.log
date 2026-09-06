@@ -1,0 +1,18 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[12:04:17] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[12:04:21] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[12:04:22] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[12:06:28] drained to the last record in 80.5s
+verifying 8,000,000 trades (seed 20260908): 64 symbols, 256 accounts, 39 fired windows
+read sinks: positions-by-symbol 8,000,000, positions-by-account 32,000,000, mv-by-symbol 2,496, mv-by-account 9,984 records
+COMPLETENESS OK after 1 read(s): every assertion held with no tolerance
+
+[12:08:45] KILL: committed=3135808, killing the task manager mid-drain
+[12:09:15] KILL: job RUNNING again on the replacement worker
+[12:10:16] drained to the last record in 119.0s (worker killed mid-drain)
+verifying 8,000,000 trades (seed 20260908): 64 symbols, 256 accounts, 39 fired windows
+read sinks: positions-by-symbol 8,060,854, positions-by-account 32,238,021, mv-by-symbol 2,496, mv-by-account 9,984 records
+COMPLETENESS OK after 1 read(s): every assertion held with no tolerance
+
+COMPLETENESS PASSED FOR BUILD e8dfe2fd8b187ab4 (clean drain, and a worker killed at 35%)

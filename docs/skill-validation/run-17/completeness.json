@@ -1,0 +1,23 @@
+{
+ "build": "e8dfe2fd8b187ab4",
+ "records": 8000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "st18-complete-clean",
+   "killed": false,
+   "drainS": 85.3,
+   "killedAtCommitted": null,
+   "verify": "verifying 8,000,000 trades (seed 20260908): 64 symbols, 256 accounts, 39 fired windows\nread sinks: positions-by-symbol 8,000,000, positions-by-account 32,000,000, mv-by-symbol 2,496, mv-by-account 9,984 records\nCOMPLETENESS OK after 1 read(s): every assertion held with no tolerance\n"
+  },
+  {
+   "group": "st18-complete-kill",
+   "killed": true,
+   "drainS": 145.2,
+   "killedAtCommitted": 3817252,
+   "verify": "verifying 8,000,000 trades (seed 20260908): 64 symbols, 256 accounts, 39 fired windows\nread sinks: positions-by-symbol 8,127,170, positions-by-account 32,512,039, mv-by-symbol 2,560, mv-by-account 10,240 records\nCOMPLETENESS OK after 1 read(s): every assertion held with no tolerance\n"
+  }
+ ],
+ "at": "2026-09-06 12:31:38",
+ "result": "PASS"
+}
