@@ -28,8 +28,8 @@ public record JobConfig(
     public static final String MV_BY_SYMBOL = "mv-by-symbol";
     public static final String MV_BY_ACCOUNT = "mv-by-account";
 
-    /** One minute, as the requirements specify. */
-    public static final long DEFAULT_WINDOW_MS = 60_000L;
+    /** Ten seconds, as the requirements specify — the value everything runs at. */
+    public static final long DEFAULT_WINDOW_MS = 10_000L;
 
     /**
      * How long an input may be silent before it stops holding the watermark

@@ -13,12 +13,9 @@ mvn package -DskipTests
 ```
 
 `demo.sh` starts the stack, creates the topics and submits both jobs **with a
-ten-second window**. The requirements specify one minute and the job defaults to
-it; ten seconds is used for the demo purely so the market value sinks say
-something within the first few seconds rather than after a minute of dead air.
-
-**Say that out loud when you get to sinks ⑤ and ⑥.** It is a presentation choice,
-not a difference in the calculation, and it is better volunteered than noticed.
+ten-second window** — the specified value, the job's own default, and what the
+verification runs against. Nothing about the demo's timing differs from the
+requirement, so there is nothing to explain away on screen.
 
 Have these open, in this order, and leave them open:
 
@@ -88,8 +85,8 @@ it is laid out:
 
 Sinks ⑤ and ⑥ step rather than flow. That is what once-per-key-per-window looks
 like, and it is worth pointing at before someone asks — as is the fact that the
-window is ten seconds here rather than the specified minute, so that they say
-something while people are watching.
+window is ten seconds — the specified value — so one closes every few seconds
+while people are watching.
 
 ### 4. Explain any number on the screen
 
@@ -179,10 +176,10 @@ four accounts sum to the block — but the update counts differ by design.
 **Why do the market value sinks look like steps?**
 They emit once per key per window, not continuously.
 
-**Why is the window ten seconds and not a minute?**
-Only for the demo, so the sinks say something without a minute of waiting. The
-job defaults to the specified minute; `demo.sh` overrides it. The calculation is
-identical either way, and the verification runs against both.
+**Why is the window ten seconds?**
+Because that is what the requirements specify. It is also the job's own default,
+so `demo.sh` overrides nothing, and the verification runs against the same
+value you are watching.
 
 **Why did a number appear a moment late?**
 Delivery is exactly-once, so a record is not readable until the checkpoint that
