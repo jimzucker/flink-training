@@ -463,6 +463,20 @@ def cmd_preflight():
             sh(f"docker rm -f {probe}", check=False)
         return f"--cpus throughout; read back NanoCpus={nano} and cgroup cpu.max = 2.0 cores"
 
+    def partitions_per_subtask():
+        """Every case must divide the input evenly across its subtasks. Fewer
+        partitions than subtasks leaves some with nothing to read; an uneven
+        split makes the busiest subtask set the pace, and either one shows up
+        as the largest case sitting below its CPU cap — which is a scaling
+        shortfall the table cannot tell apart from a real one."""
+        bad = [n for n in c.cases if c.partitions % n]
+        if bad:
+            raise Exception(f"{c.partitions} partitions do not divide evenly by parallelism {bad}: "
+                            f"subtasks would read {c.partitions // max(bad)} or "
+                            f"{c.partitions // max(bad) + 1} partitions each")
+        return (f"{c.partitions} partitions / parallelism {sorted(c.cases)} = "
+                + ", ".join(f"{c.partitions // n} per subtask at {n}" for n in sorted(c.cases)))
+
     def slots():
         m = max(c.cases)
         L.start_tm(m)
@@ -499,6 +513,7 @@ def cmd_preflight():
     check("the generator is deterministic", determinism)
     check("CPU cap mechanism chosen once", capmech)
     check("slots >= parallelism x jobs", slots)
+    check("partitions divide evenly by every parallelism", partitions_per_subtask)
     check("group / txn-id prefix scoped per run", scoping)
     check("back-pressure counters exist on the endpoint read", bp_endpoint)
     check("the VM trim command is known", trim)
