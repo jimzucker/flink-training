@@ -25,4 +25,64 @@ between runs; the ratios and the clock are.
 
 ## Response
 
-*(written after the run)*
+Model: Claude Opus 5. Harness at `83437ff`, run from the skill directory,
+nothing copied. 77 tool calls, 0 forbidden-path reads. 18:23 → 20:04 local.
+Raw results in [run-16/](run-16/) (the manifests' per-key maps are stripped;
+they are regenerable from the seed).
+
+| criterion | result |
+|---|---|
+| **the chain passes on the first attempt** | **PASS** — one `phase=all start`, every phase rc=0, the suite refused nothing |
+| harness verbatim, one suite, 0 forbidden reads | **PASS** — 77 tool calls, 0 hits |
+| chain ≤ 45 min | **PASS — 35.6 min** (up 2 s, preflight 68, completeness 400, tinyproof 507, fill 221, suite 939) |
+| whole-run wall clock (reported) | **1 h 37 m** — 34 min of it the agent's own sizing calibration, including a 10-minute tool timeout that killed a run and forced a 70M refill |
+| no case refused for broker memory | **PASS** — 0 limit hits in every case (broker 4 GiB) |
+| every case at 95–101% of cap | **PASS** — 99.6 / 96.3 / 97.9%, sentinel 100.2% |
+| sentinel measured | **PASS** — +4.1% |
+| table stamped unpublishable | **PASS** — `quickLook: true`, `publishable: false`, banner quoted in the agent's own report |
+| ratios (recorded, not judged) | 1→2 = **2.060×**, 2→4 = **1.809×** |
+| stability: 2→4 inside 1.72–1.85× | **PASS** — 1.809× |
+
+| cores | records/s | % of cap | src idle | broker hits |
+|---:|---:|---:|---:|---:|
+| 1 | 153,525 | 99.6% | 0.1% | 0 |
+| 2 | 322,914 | 96.3% | 0.7% | 0 |
+| 4 | 584,031 | 97.9% | 2.8% | 0 |
+| 1 (sentinel) | 159,993 | 100.2% | 0.0% | 0 |
+
+## Is it stable?
+
+Three one-pass runs on the shipped harness, each a different agent's
+pipeline, so only the ratios and the clock compare:
+
+| | run 14 | run 15 | run 16 |
+|---|---:|---:|---:|
+| 1→2 | 2.113× | 2.137× | **2.060×** |
+| 2→4 | 1.354×† | 1.836× | **1.809×** |
+| chain | 37.1 min | 37.9 min | **35.6 min** |
+| whole run | 55.9 min | 1 h 51 m | 1 h 37 m |
+| chain attempts | 1 | 3 | **1** |
+| broker limit hits | not measured | 0 | 0 |
+
+† measured on a starved broker; the cause is in
+[rig-2026-09-05-broker.md](rig-2026-09-05-broker.md) and is now a guard.
+
+With the broker guard live, the two runs that have it read 2→4 within
+**1.5%** of each other (1.836× and 1.809×) and 1→2 within 3.6%. The chain
+clock has landed in a 2.3-minute band across all three. That is the stability
+answer for the chain; it is not a statement about the ratio's own
+repeatability, which one pass per case cannot give.
+
+## Measured, not explained
+
+- **1→2 reads above linear and 2→4 below it, again.** Three runs now agree on
+  the shape and none has measured a cause. The agent ruled out the broker
+  (never above 0.57 of its 2.5-core cap), a starved source (idle ≤ 2.8%) and
+  the cap itself (95–100% of periods throttled). No mechanism is offered here
+  either.
+- The 1-core case's own two measurements differ by 4.1%, and swapping which
+  one is used moves 1→2 between 2.018× and 2.103× — a single pass wanders
+  more than the gap being argued about.
+- The whole-run clock is now dominated by the agent's sizing calibration
+  (34 min here, 36 min in run 15) rather than by the harness.
+
