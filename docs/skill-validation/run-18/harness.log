@@ -1,0 +1,78 @@
+[2026-09-06 17:22:18] stack up: st19-kafka (cap 2.5), st19-jm (cap 0.5); task manager is started per case
+[2026-09-06 17:23:32] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-19/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-19/results/manifest-small.json
+[2026-09-06 17:23:39] fill done: {"mode":"produce","tradeCount":8000000,"totalSignedQty":111556900,"seconds":6.7,"recordsPerSec":1199041,"manifest":"~/code/GitHub/flink-skill-test-19/results/manifest-small.json"}
+[2026-09-06 17:23:40] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 17:25:17] drained to the last record in 60.6s
+[2026-09-06 17:27:01] KILL: committed=2946713, killing the task manager mid-drain
+[2026-09-06 17:27:48] KILL: job RUNNING again on the replacement worker
+[2026-09-06 17:28:40] drained to the last record in 116.3s (worker killed mid-drain)
+[2026-09-06 17:29:30] phase=all start
+[2026-09-06 17:29:30] phase=up start
+[2026-09-06 17:29:32] stack up: st19-kafka (cap 2.5), st19-jm (cap 0.5); task manager is started per case
+[2026-09-06 17:29:32] phase=up end rc=0 2s
+[2026-09-06 17:29:32] phase=preflight start
+[2026-09-06 17:30:29] phase=preflight end rc=0 57s
+[2026-09-06 17:30:29] phase=completeness start
+[2026-09-06 17:30:34] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-19/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-19/results/manifest-small.json
+[2026-09-06 17:30:42] fill done: {"mode":"produce","tradeCount":8000000,"totalSignedQty":111556900,"seconds":7.5,"recordsPerSec":1063547,"manifest":"~/code/GitHub/flink-skill-test-19/results/manifest-small.json"}
+[2026-09-06 17:30:43] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 17:32:17] drained to the last record in 60.0s
+[2026-09-06 17:34:07] KILL: committed=3601956, killing the task manager mid-drain
+[2026-09-06 17:34:53] KILL: job RUNNING again on the replacement worker
+[2026-09-06 17:35:41] drained to the last record in 115.3s (worker killed mid-drain)
+[2026-09-06 17:36:30] phase=completeness end rc=0 361s
+[2026-09-06 17:36:30] phase=tinyproof start
+[2026-09-06 17:36:33] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-19/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=80000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-19/results/manifest-tiny.json
+[2026-09-06 17:37:44] fill done: {"mode":"produce","tradeCount":80000000,"totalSignedQty":-421232200,"seconds":70.5,"recordsPerSec":1134945,"manifest":"~/code/GitHub/flink-skill-test-19/results/manifest-tiny.json"}
+[2026-09-06 17:37:45] backlog block-trades-tiny: 80,000,000 records read back over 8 partitions
+[2026-09-06 17:37:45] ---- tiny case 1 cores ----
+[2026-09-06 17:40:50]   1c: 258,927 rec/s, tm 100.5% of cap, vantage 0.41%
+[2026-09-06 17:40:50] ---- tiny case 4 cores ----
+[2026-09-06 17:43:36]   REFUSED (case): backlog headroom at close is 0 records (0.0s) < one checkpoint interval at the measured rate
+[2026-09-06 17:43:40] phase=tinyproof end rc=1 430s
+[2026-09-06 17:43:40] phase=all end FAIL at tinyproof 14.2 min
+[2026-09-06 17:44:55] phase=all start
+[2026-09-06 17:44:55] phase=up start
+[2026-09-06 17:44:57] stack up: st19-kafka (cap 2.5), st19-jm (cap 0.5); task manager is started per case
+[2026-09-06 17:44:57] phase=up end rc=0 2s
+[2026-09-06 17:44:57] phase=preflight start
+[2026-09-06 17:46:01] phase=preflight end rc=0 64s
+[2026-09-06 17:46:01] phase=completeness start
+[2026-09-06 17:46:06] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-19/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-19/results/manifest-small.json
+[2026-09-06 17:46:14] fill done: {"mode":"produce","tradeCount":8000000,"totalSignedQty":111556900,"seconds":7.6,"recordsPerSec":1058761,"manifest":"~/code/GitHub/flink-skill-test-19/results/manifest-small.json"}
+[2026-09-06 17:46:15] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 17:47:48] drained to the last record in 59.9s
+[2026-09-06 17:49:38] KILL: committed=4534756, killing the task manager mid-drain
+[2026-09-06 17:50:30] KILL: job RUNNING again on the replacement worker
+[2026-09-06 17:51:13] drained to the last record in 118.0s (worker killed mid-drain)
+[2026-09-06 17:51:47] phase=completeness end rc=0 346s
+[2026-09-06 17:51:47] phase=tinyproof start
+[2026-09-06 17:51:50] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-19/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=140000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-19/results/manifest-tiny.json
+[2026-09-06 17:53:55] fill done: {"mode":"produce","tradeCount":140000000,"totalSignedQty":-519336900,"seconds":124.1,"recordsPerSec":1128432,"manifest":"~/code/GitHub/flink-skill-test-19/results/manifest-tiny.json"}
+[2026-09-06 17:53:56] backlog block-trades-tiny: 140,000,000 records read back over 8 partitions
+[2026-09-06 17:53:56] ---- tiny case 1 cores ----
+[2026-09-06 17:57:00]   1c: 262,987 rec/s, tm 99.7% of cap, vantage 0.27%
+[2026-09-06 17:57:00] ---- tiny case 4 cores ----
+[2026-09-06 17:59:57]   4c: 933,453 rec/s, tm 100.2% of cap, vantage 0.03%
+[2026-09-06 17:59:57]   disk: input 108 B/record x 300,000,000 = 32.3 GB; sinks 157 B/input -> 47.0 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 86.6 GB incl. the 20 GB floor, 124.1 GB free now + 31.9 GB the tiny proof gives back = 156.0 GB: FITS
+[2026-09-06 18:01:02] phase=tinyproof end rc=0 555s
+[2026-09-06 18:01:02] phase=fill start
+[2026-09-06 18:01:05] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-19/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=300000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-19/results/manifest.json
+[2026-09-06 18:04:56] fill done: {"mode":"produce","tradeCount":300000000,"totalSignedQty":43479600,"seconds":231.4,"recordsPerSec":1296283,"manifest":"~/code/GitHub/flink-skill-test-19/results/manifest.json"}
+[2026-09-06 18:04:58] backlog block-trades: 300,000,000 records read back over 8 partitions
+[2026-09-06 18:04:58] phase=fill end rc=0 236s
+[2026-09-06 18:04:58] phase=suite start
+[2026-09-06 18:04:58] ---- case 1 cores, pass p1-asc ----
+[2026-09-06 18:09:07]   1c p1-asc: 259,267 rec/s  tm 1.00/1 (99.7%)  kafka 0.13/2.5  srcIdle 1.0%  srcBP 53.0%  headroom 1010s  vantage 0.32%
+[2026-09-06 18:09:07] ---- case 2 cores, pass p1-asc ----
+[2026-09-06 18:13:01]   2c p1-asc: 578,062 rec/s  tm 2.00/2 (99.8%)  kafka 0.30/2.5  srcIdle 3.6%  srcBP 46.7%  headroom 375s  vantage 0.31%
+[2026-09-06 18:13:01] ---- case 4 cores, pass p1-asc ----
+[2026-09-06 18:17:02]   4c p1-asc: 889,406 rec/s  tm 3.84/4 (96.0%)  kafka 0.52/2.5  srcIdle 5.5%  srcBP 31.9%  headroom 192s  vantage 0.35%
+[2026-09-06 18:17:02] ---- case 1 cores, pass sentinel ----
+[2026-09-06 18:21:02]   1c sentinel: 279,391 rec/s  tm 0.95/1 (95.1%)  kafka 0.13/2.5  srcIdle 0.8%  srcBP 56.0%  headroom 938s  vantage 0.21%
+[2026-09-06 18:21:02] phase=suite end rc=0 964s
+[2026-09-06 18:21:02] phase=report start
+[2026-09-06 18:21:02] phase=report end rc=0 0s
+[2026-09-06 18:21:02] phase=all end PASS 36.1 min
+[2026-09-06 18:21:48] fstrim: /var/lib/docker: 35.8 GiB (38414667776 bytes) trimmed
+[2026-09-06 18:21:48] stack down; nothing with prefix st19 survives

@@ -1,0 +1,23 @@
+{
+ "build": "3671fa043154f6e5",
+ "records": 8000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "st19-complete-clean",
+   "killed": false,
+   "drainS": 60.0,
+   "killedAtCommitted": null,
+   "verify": "verify: 8,000,000 trades in the manifest; positions-by-symbol 8,000,000 records / 128 keys, positions-by-account 32,000,000 records / 1,024 keys; sum(symbols)=111556900 sum(accounts)=111556900 manifest=111556900; 11.1s\nCOMPLETENESS OK: every key, every total, both paths \u2014 exact, no tolerances\n"
+  },
+  {
+   "group": "st19-complete-kill",
+   "killed": true,
+   "drainS": 118.0,
+   "killedAtCommitted": 4534756,
+   "verify": "verify: 8,000,000 trades in the manifest; positions-by-symbol 8,024,858 records / 128 keys, positions-by-account 32,091,758 records / 1,024 keys; sum(symbols)=111556900 sum(accounts)=111556900 manifest=111556900; 10.4s\nCOMPLETENESS OK: every key, every total, both paths \u2014 exact, no tolerances\n"
+  }
+ ],
+ "at": "2026-09-06 17:46:15",
+ "result": "PASS"
+}
