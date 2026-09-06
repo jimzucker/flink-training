@@ -1,0 +1,16 @@
+{
+ "tradeCount": 6000000,
+ "seed": 20260907,
+ "symbolCount": 512,
+ "accountCount": 4096,
+ "allocationLegs": 4,
+ "outputsPerInput": 5,
+ "totalQty": 3725600,
+ "totalNotionalE4": 13331669379400,
+ "symbolUpdates": 6000000,
+ "accountUpdates": 24000000,
+ "perKeyMapsStripped": {
+  "symbols": 512,
+  "accounts": 4096
+ }
+}
