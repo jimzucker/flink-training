@@ -76,10 +76,10 @@ marketValue = position quantity at window close
             × last price for that symbol at or before window close
 ```
 
-The window length is a runtime parameter. The diagram and the figures here show
-the specified minute; the live demo and the verification both run it at ten
-seconds, so that a window closes while someone is watching. Only the interval
-changes — the calculation, and every check against it, are the same.
+The window length is a runtime parameter and the specified value is ten
+seconds — what the diagram, the figures here, the live demo, the verification
+and the job's own default all use. Changing it would change only the interval;
+the calculation, and every check against it, stay the same.
 
 **Price at close**, not an average or a VWAP across the window. Both inputs are
 taken as of the same instant — the window boundary — so the number is a snapshot
@@ -114,8 +114,8 @@ Sink 4 emits 4× the rate of sink 3 because each trade fans out to 4 allocations
 Sinks 5 and 6 emit once per key per window regardless of input rate, because the
 window collapses every update within it to a single value.
 
-**The window is 10s** — `WINDOW_MS`, the value the demo and the verification both
-run at — so sinks 5 and 6 emit 4 and 16 records every ten seconds. The window
+**The window is 10s** — `WINDOW_MS`, the specified value, which the demo, the
+verification and the job's default all run at — so sinks 5 and 6 emit 4 and 16 records every ten seconds. The window
 length is the only thing that moves those two rates; the calculation behind them
 does not change with it.
 

@@ -177,18 +177,16 @@ price topic before that boundary. The Flink UI is at <http://localhost:8081>.
 The generator runs exactly as it does for the demo: wall-clock event times, paced
 in real time, at the demo rates. Nothing about the clock is simulated.
 
-Only the **window** is shortened, and it is a runtime parameter rather than a
-change to the calculation.
+The **window** is ten seconds everywhere, and it is a runtime parameter rather
+than part of the calculation.
 
 | | Window | Set by | Why |
 |---|---|---|---|
-| Everything demonstrated | **10s** | `docker/compose.yml`, `scripts/verify-run.sh` | the demo, the verification and the design diagram all use it, so there is one number to remember |
-| The job's own default | **60s** | `WINDOW_MS` default in `JobConfig` | what the requirements state, kept as the default the code ships with |
+| Everything — demo, verification, diagram, the job's own default | **10s** | `docker/compose.yml`, `scripts/verify-run.sh`, `WINDOW_MS` default in `JobConfig` | what the requirements state, so there is one number to remember and nothing to reconcile |
 
-Event time is the wall clock and pacing is real time in all three — only the
-window length differs. The demo runbook says to volunteer that when reaching
-sinks 5 and 6, since it is the one deviation from the specification visible on
-screen.
+Event time is the wall clock and pacing is real time throughout, and the window
+length is the same everywhere. There is no deviation from the specification
+visible on screen.
 
 How many windows close depends on where the run starts relative to a boundary,
 which is a property of a real clock, so the count is read from the data rather
@@ -298,7 +296,7 @@ overrides on `docker compose`, so a demo can change one without touching a file.
 | `PARALLELISM` | `2` | the assignment's baseline; the scale case raises it to 4 |
 | `TASK_SLOTS` | `8` | two jobs at parallelism 4 |
 | `TASKMANAGER_CPUS` | `0` | no limit. `scripts/scale-units.sh` sets it per case — 2 and 4 by default, 1 through 8 for the full curve — since naming a number as the default breaks on any machine with fewer cores |
-| `WINDOW_MS` | `10000` locally, `60000` in the job | 10s so a demo shows several windows closing; 60s is what the requirements state |
+| `WINDOW_MS` | `10000` | 10s, what the requirements state — compose, the verification and the job's own default are all this value |
 | `CHECKPOINT_INTERVAL_MS` | `1000` | the floor under visible latency: a record is not readable until its checkpoint commits |
 | `IDLENESS_MS` | `5000` | how long a quiet partition may hold the watermark back |
 | `TRADES_PER_SECOND` | `10` | demo rate; scale case 1 raises it to 1000 |
