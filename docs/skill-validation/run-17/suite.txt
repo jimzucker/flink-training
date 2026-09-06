@@ -1,0 +1,27 @@
+======================================================================================================================
+!! QUICK LOOK — one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent by emitting the absolute position per key and one market value per key per window
+checkpoint interval  : 10000 ms
+build hash           : e8dfe2fd8b187ab4  (completeness passed for e8dfe2fd8b187ab4)
+passes per case      : 1
+backlog              : 192,000,000 records, 8 partitions, 5 outputs per input
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     157,216     786,078   1.00/1   100.0%   100   0.09/2.5    0.3%  66.1%  1080s  0.4%       OK
+    2   p1-asc     427,580   2,137,902   2.00/2   99.7%   100   0.23/2.5    1.8%  58.8%   305s  0.3%       OK
+    4   p1-asc     832,233   4,161,166   3.98/4   99.5%    97   0.47/2.5    4.7%  39.9%    86s  0.2%       OK
+    1 sentinel     154,919     774,595   1.00/1   100.2%   100   0.09/2.5    0.1%  68.8%  1088s  0.4%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     156,067     780,336   1.00/1   100.1%   100   0.09/2.5    0.2%  67.4%  1084s  0.4%   spread 1.5%
+    2     MEAN     427,580   2,137,902   2.00/2   99.7%   100   0.23/2.5    1.8%  58.8%   305s  0.3%   spread 0.0%
+    4     MEAN     832,233   4,161,166   3.98/4   99.5%    97   0.47/2.5    4.7%  39.9%    86s  0.2%   spread 0.0%
+======================================================================================================================
+STEP 1->2 cores: 2.740x  (ideal 2x, efficiency 137.0%, range across passes 2.720x-2.760x)
+STEP 2->4 cores: 1.946x  (ideal 2x, efficiency 97.3%, range across passes 1.946x-1.946x)
+order effect (descending / ascending): {1: None, 2: None, 4: None}
+sentinel: 1c first 157,216 -> last 154,919 rec/s, drift -1.5% across the suite (counted in the 1c spread)
+======================================================================================================================

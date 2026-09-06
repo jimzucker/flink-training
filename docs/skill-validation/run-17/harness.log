@@ -1,0 +1,94 @@
+[2026-09-06 11:33:38] stack up: st18-kafka (cap 2.5), st18-jm (cap 0.5); task manager is started per case
+[2026-09-06 11:35:22] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 11:35:26] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 11:35:27] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 11:37:36] drained to the last record in 80.4s
+[2026-09-06 11:40:38] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 11:40:41] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 11:40:42] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 11:42:49] drained to the last record in 81.8s
+[2026-09-06 11:46:09] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 11:46:13] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 11:46:14] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 11:48:13] drained to the last record in 72.8s
+[2026-09-06 11:50:30] KILL: committed=4067535, killing the task manager mid-drain
+[2026-09-06 11:51:24] KILL: job RUNNING again on the replacement worker
+[2026-09-06 11:52:16] drained to the last record in 139.8s (worker killed mid-drain)
+[2026-09-06 12:04:17] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 12:04:21] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 12:04:22] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 12:06:28] drained to the last record in 80.5s
+[2026-09-06 12:08:45] KILL: committed=3135808, killing the task manager mid-drain
+[2026-09-06 12:09:15] KILL: job RUNNING again on the replacement worker
+[2026-09-06 12:10:16] drained to the last record in 119.0s (worker killed mid-drain)
+[2026-09-06 12:14:16] phase=all start
+[2026-09-06 12:14:16] phase=up start
+[2026-09-06 12:14:18] stack up: st18-kafka (cap 2.5), st18-jm (cap 0.5); task manager is started per case
+[2026-09-06 12:14:18] phase=up end rc=0 2s
+[2026-09-06 12:14:18] phase=preflight start
+[2026-09-06 12:15:16] phase=preflight end rc=0 58s
+[2026-09-06 12:15:16] phase=completeness start
+[2026-09-06 12:15:21] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 12:15:25] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 12:15:26] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 12:17:26] drained to the last record in 74.5s
+[2026-09-06 12:19:42] KILL: committed=4029231, killing the task manager mid-drain
+[2026-09-06 12:20:24] KILL: job RUNNING again on the replacement worker
+[2026-09-06 12:21:17] drained to the last record in 131.8s (worker killed mid-drain)
+[2026-09-06 12:22:21] phase=completeness end rc=0 425s
+[2026-09-06 12:22:21] phase=tinyproof start
+[2026-09-06 12:22:24] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=80000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --pricesTopic=block-trades-tiny-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-tiny.json
+[2026-09-06 12:22:49] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-tiny.json
+[2026-09-06 12:22:50] backlog block-trades-tiny: 80,000,000 records read back over 8 partitions
+[2026-09-06 12:22:51] ---- tiny case 1 cores ----
+[2026-09-06 12:25:37]   REFUSED (case): the broker hit its memory limit 841 times inside the window (34,514 file-page refaults): it was reading the backlog off disk, so the worker is not the constraint — give the broker container more memory
+[2026-09-06 12:25:37] ---- tiny case 4 cores ----
+[2026-09-06 12:28:46]   4c: 617,572 rec/s, tm 98.5% of cap, vantage 0.27%
+[2026-09-06 12:28:49] phase=tinyproof end rc=1 389s
+[2026-09-06 12:28:49] phase=all end FAIL at tinyproof 14.6 min
+[2026-09-06 12:30:22] phase=all start
+[2026-09-06 12:30:22] phase=up start
+[2026-09-06 12:30:27] stack up: st18-kafka (cap 2.5), st18-jm (cap 0.5); task manager is started per case
+[2026-09-06 12:30:27] phase=up end rc=0 5s
+[2026-09-06 12:30:27] phase=preflight start
+[2026-09-06 12:31:27] phase=preflight end rc=0 60s
+[2026-09-06 12:31:27] phase=completeness start
+[2026-09-06 12:31:32] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=8000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 12:31:37] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-small.json
+[2026-09-06 12:31:38] backlog block-trades-small: 8,000,000 records read back over 8 partitions
+[2026-09-06 12:33:48] drained to the last record in 85.3s
+[2026-09-06 12:36:10] KILL: committed=3817252, killing the task manager mid-drain
+[2026-09-06 12:37:03] KILL: job RUNNING again on the replacement worker
+[2026-09-06 12:38:02] drained to the last record in 145.2s (worker killed mid-drain)
+[2026-09-06 12:38:49] phase=completeness end rc=0 442s
+[2026-09-06 12:38:49] phase=tinyproof start
+[2026-09-06 12:38:52] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=80000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --pricesTopic=block-trades-tiny-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest-tiny.json
+[2026-09-06 12:39:16] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest-tiny.json
+[2026-09-06 12:39:17] backlog block-trades-tiny: 80,000,000 records read back over 8 partitions
+[2026-09-06 12:39:17] ---- tiny case 1 cores ----
+[2026-09-06 12:42:10]   1c: 151,056 rec/s, tm 99.6% of cap, vantage 0.06%
+[2026-09-06 12:42:10] ---- tiny case 4 cores ----
+[2026-09-06 12:45:06]   4c: 705,171 rec/s, tm 99.0% of cap, vantage 0.22%
+[2026-09-06 12:45:07]   disk: input 31 B/record x 192,000,000 = 5.9 GB; sinks 112 B/input -> 21.4 GB, retention caps them at 68.7 GB; checkpoints 0.00 GB; need 47.4 GB incl. the 20 GB floor, 148.1 GB free now + 9.8 GB the tiny proof gives back = 157.8 GB: FITS
+[2026-09-06 12:46:12] phase=tinyproof end rc=0 442s
+[2026-09-06 12:46:12] phase=fill start
+[2026-09-06 12:46:15] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-18/job/target/blocktrades-1.0.jar scaletest.GenerateBacklog --mode=produce --count=192000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --pricesTopic=block-trades-prices --manifest=~/code/GitHub/flink-skill-test-18/results/manifest.json
+[2026-09-06 12:47:11] fill done: manifest written to ~/code/GitHub/flink-skill-test-18/results/manifest.json
+[2026-09-06 12:47:12] backlog block-trades: 192,000,000 records read back over 8 partitions
+[2026-09-06 12:47:12] phase=fill end rc=0 60s
+[2026-09-06 12:47:12] phase=suite start
+[2026-09-06 12:47:12] ---- case 1 cores, pass p1-asc ----
+[2026-09-06 12:50:57]   1c p1-asc: 157,216 rec/s  tm 1.00/1 (100.0%)  kafka 0.09/2.5  srcIdle 0.3%  srcBP 66.1%  headroom 1080s  vantage 0.37%
+[2026-09-06 12:50:57] ---- case 2 cores, pass p1-asc ----
+[2026-09-06 12:55:11]   2c p1-asc: 427,580 rec/s  tm 2.00/2 (99.7%)  kafka 0.23/2.5  srcIdle 1.8%  srcBP 58.8%  headroom 305s  vantage 0.26%
+[2026-09-06 12:55:11] ---- case 4 cores, pass p1-asc ----
+[2026-09-06 12:59:22]   4c p1-asc: 832,233 rec/s  tm 3.98/4 (99.5%)  kafka 0.47/2.5  srcIdle 4.7%  srcBP 39.9%  headroom 86s  vantage 0.23%
+[2026-09-06 12:59:22] ---- case 1 cores, pass sentinel ----
+[2026-09-06 13:03:27]   1c sentinel: 154,919 rec/s  tm 1.00/1 (100.2%)  kafka 0.09/2.5  srcIdle 0.1%  srcBP 68.8%  headroom 1088s  vantage 0.39%
+[2026-09-06 13:03:27] phase=suite end rc=0 975s
+[2026-09-06 13:03:27] phase=report start
+[2026-09-06 13:03:27] phase=report end rc=0 0s
+[2026-09-06 13:03:27] phase=all end PASS 33.1 min
+[2026-09-06 13:04:46] removed 2 anonymous volume(s) left by containers removed without -v
+[2026-09-06 13:04:47] fstrim: /var/lib/docker: 16.5 GiB (17729974272 bytes) trimmed
+[2026-09-06 13:04:47] stack down; nothing with prefix st18 survives
