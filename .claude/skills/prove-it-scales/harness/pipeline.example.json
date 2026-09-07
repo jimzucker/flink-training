@@ -22,7 +22,7 @@
   "baseline": 2,
   "passes": 3,
   "backlog": {"count": 160000000, "seed": 20260903, "smallCount": 20000000, "tinyCount": 60000000, "killAtFraction": 0.35},
-  "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemory": "4096m", "tmMemoryLimit": "6g", "kafkaMemory": "4g", "kafkaHeap": "3G"},
+  "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemoryPerCore": "1280m", "tmMemoryLimitPerCore": "1600m", "kafkaMemory": "4g", "kafkaHeap": "3G"},
   "images": {"flink": "flink:1.20.1-scala_2.12-java17", "kafka": "apache/kafka:3.9.0"},
   "ports": {"kafka": 19092, "rest": 18081},
   "jdk": "/opt/homebrew/opt/openjdk@17",
