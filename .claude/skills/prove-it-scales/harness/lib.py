@@ -51,7 +51,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # build_table takes it as an argument; the record and the guards keep normal
 # semantics whatever the flag says.
 QUICK = False
-QUICK_BANNER = ("one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.")
+QUICK_BANNER = ("two passes per case, not the configured number: enough for a spread, not enough to publish. A one-pass version of this table read 2->4 = 1.645 where the same build measured 1.910 with the memory it needed, and 1.539 where three passes read 1.678. Quote the spread with the ratio, or do not quote it.")
 
 # ------------------------------------------------------------------ thresholds
 #

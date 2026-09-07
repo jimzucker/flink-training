@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Eighteen runs of the same problem, each by a fresh agent in an empty directory, barred
+Twenty runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -32,6 +32,8 @@ way to tell them apart.
 | [16](clean-room-run-16.md)¶ | DataStream | 1.62 h | — | 77 | 153,525 | 584,031 | *3.80×* | **98%** |
 | [17](clean-room-run-17.md)¶ | DataStream | 1.88 h | — | 187 | 157,216 | **832,233** | *5.29×* | **99%** |
 | [18](clean-room-run-18.md)¶ | DataStream | 1.42 h | — | 47 | 259,267 | **889,406** | *3.43×* | **96%** |
+| [19](clean-room-run-19.md)¶ | DataStream | 2.33 h | — | 107 | 183,791 | 718,137 | *3.91×* | **96%** |
+| [20](clean-room-run-20.md) | DataStream | 2.00 h | — | — | 183,812 | **790,259** | **4.30×** | **100%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -102,6 +104,16 @@ core where run 16 lost 9.6%. Record weight does not order the penalty, so the
 explanation was withdrawn rather than reinterpreted. The run also gave the
 broker-memory guard its first live catch on a pipeline written after it —
 841 limit hits at 4 GiB, zero once the agent moved to 6 GiB.
+
+Runs 18 and 19 read 2→4 at 1.54× and 1.78×, and the cause turned out to be the
+harness's own memory contract: a flat worker memory divides across each case's
+subtasks, so the 4-core case ran on a quarter of what each 2-core subtask had.
+[The measurement](memory-per-subtask.md) is a one-variable comparison on run
+18's build — flat 2048m read 1.645× with GC at 9.3%, the memory it needed read
+1.910× with GC at 2.3%, and the 2-core figure did not move. #62 made memory per
+subtask, #63 added the fixed base term after per-core scaling starved the
+1-core case. [Run 20](clean-room-run-20.md) is the first run after the fix:
+**2→4 = 1.930×** with spreads of 1.1% and 1.9%, against 2.100× on the rig.
 
 Run 11 is the first clean-room run on the shipped harness: **one suite, 2→4 = 1.87×** (1.75–2.06× across passes; spread 4.0% / 12.2%), no harness written. Its 4-core figure is trades/s. The wall clock missed a 1.5 h criterion on a rebuild that re-ran the gates and an optional ceiling run; the suite itself was 23 minutes.
 
