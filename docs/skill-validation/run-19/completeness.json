@@ -1,0 +1,23 @@
+{
+ "build": "248e47691f1d1056",
+ "records": 10000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt20-complete-clean",
+   "killed": false,
+   "drainS": 84.7,
+   "killedAtCommitted": null,
+   "verify": "manifest: 10000000 trades, total signed qty 17148032; 64 symbols, 512 accounts\nsinks read: positions-by-symbol 10000000 records / 64 keys; positions-by-account 40000000 records / 512 keys\nCOMPLETENESS OK: 64 symbol keys and 512 account keys match the manifest exactly; both paths sum to 17148032 over 10000000 trades and 40000000 allocation legs\n"
+  },
+  {
+   "group": "bt20-complete-kill",
+   "killed": true,
+   "drainS": 130.3,
+   "killedAtCommitted": 5152693,
+   "verify": "manifest: 10000000 trades, total signed qty 17148032; 64 symbols, 512 accounts\nsinks read: positions-by-symbol 10047139 records / 64 keys; positions-by-account 40201455 records / 512 keys\nCOMPLETENESS OK: 64 symbol keys and 512 account keys match the manifest exactly; both paths sum to 17148032 over 10000000 trades and 40000000 allocation legs\n"
+  }
+ ],
+ "at": "2026-09-06 23:13:31",
+ "result": "PASS"
+}
