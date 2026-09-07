@@ -485,8 +485,9 @@ def cmd_preflight():
         read 1.910 with GC at 2.3%, and the 2-core figure did not move)."""
         if not c.tm_mem_per_core:
             raise Exception("caps.tmMemoryPerCore is not set")
-        return (f"{c.tm_mem_per_core} per subtask: "
-                + ", ".join(f"{L.mem_for(c.tm_mem_per_core, n)} at {n}" for n in sorted(c.cases)))
+        return (f"{c.tm_mem_base} base + {c.tm_mem_per_core} per subtask: "
+                + ", ".join(f"{L.mem_for(c.tm_mem_per_core, n, c.tm_mem_base)} at {n}"
+                            for n in sorted(c.cases)))
 
     def partitions_per_subtask():
         """Every case must divide the input evenly across its subtasks. Fewer
