@@ -1,0 +1,23 @@
+{
+ "build": "a5414abe5dd08261",
+ "records": 10000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt21-complete-clean",
+   "killed": false,
+   "drainS": 88.5,
+   "killedAtCommitted": null,
+   "verify": "manifest: 10,000,000 trades, 512 symbols, 4096 accounts, netQty 40728\ndraining positions-by-symbol: 10,000,000 records over 8 partitions\n  positions-by-symbol: 10,000,000 records read, 512 distinct keys\ndraining positions-by-account: 30,000,000 records over 8 partitions\n  positions-by-account: 30,000,000 records read, 4,096 distinct keys\n  ok  predicted symbol cardinality                   512\n  ok  predicted account cardinality                  4096\n  ok  symbol keys vs manifest                        512\n  ok  account keys vs manifest                       4096\n  ok  net quantity: manifest vs symbol positions     40728\n  ok  net quantity: manifest vs account positions    40728\n  ok  net quantity: the two aggregations agree       40728\nCOMPLETENESS OK: 512 symbol positions and 4096 account positions match the manifest exactly (net quantity 40728 on both paths)\n"
+  },
+  {
+   "group": "bt21-complete-kill",
+   "killed": true,
+   "drainS": 142.7,
+   "killedAtCommitted": 4479752,
+   "verify": "manifest: 10,000,000 trades, 512 symbols, 4096 accounts, netQty 40728\ndraining positions-by-symbol: 10,072,091 records over 8 partitions\n  positions-by-symbol: 10,072,091 records read, 512 distinct keys\ndraining positions-by-account: 30,213,129 records over 8 partitions\n  positions-by-account: 30,213,129 records read, 4,096 distinct keys\n  ok  predicted symbol cardinality                   512\n  ok  predicted account cardinality                  4096\n  ok  symbol keys vs manifest                        512\n  ok  account keys vs manifest                       4096\n  ok  net quantity: manifest vs symbol positions     40728\n  ok  net quantity: manifest vs account positions    40728\n  ok  net quantity: the two aggregations agree       40728\nCOMPLETENESS OK: 512 symbol positions and 4096 account positions match the manifest exactly (net quantity 40728 on both paths)\n"
+  }
+ ],
+ "at": "2026-09-07 12:34:56",
+ "result": "PASS"
+}

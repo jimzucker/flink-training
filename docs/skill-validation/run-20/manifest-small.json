@@ -1,0 +1,12 @@
+{
+ "tradeCount": 10000000,
+ "seed": 20260909,
+ "legsPerTrade": 3,
+ "predictedSymbols": 512,
+ "predictedAccounts": 4096,
+ "distinctSymbols": 512,
+ "distinctAccounts": 4096,
+ "netQtyTotal": 40728,
+ "symbols": "<512 entries stripped>",
+ "accounts": "<4096 entries stripped>"
+}
