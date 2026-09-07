@@ -215,6 +215,16 @@ class Cfg:
         caps = c["caps"]
         self.kafka_cap = float(caps.get("kafka", 2.5))
         self.jm_cap = float(caps.get("jobmanager", 0.5))
+        # Worker memory is per subtask, not per container. A flat figure gives
+        # the 4-core case a quarter of it each where the 2-core case had a half,
+        # and the largest case is then measuring memory pressure rather than
+        # cores. Measured 2026-09-07 on run 18's build, cap == parallelism,
+        # interleaved: at a flat 2048m, 2c read 558,059 and 4c 917,807 (2->4 =
+        # 1.645, GC 9.3% at four cores); with 5g, 2c read 549,380 -- unchanged --
+        # and 4c 1,049,130 (2->4 = 1.910, GC 2.3%). The fourth core was starved,
+        # not slow.
+        self.tm_mem_per_core = caps.get("tmMemoryPerCore")
+        self.tm_mem_limit_per_core = caps.get("tmMemoryLimitPerCore")
         self.tm_mem = caps.get("tmMemory", "4096m")
         self.tm_mem_limit = caps.get("tmMemoryLimit", "6g")
         self.kafka_mem = caps.get("kafkaMemory", "4g")
@@ -227,6 +237,11 @@ class Cfg:
         self.api_level = c["apiLevel"]
         self.guarantee = c["guarantee"]
         self.log_path = os.path.join(self.results, "harness.log")
+        if self.tm_mem_per_core is None and len(set(self.cases)) > 1:
+            raise Refusal("rig", "caps.tmMemoryPerCore is not set: a flat taskmanager memory divides "
+                                 f"across the subtasks of each case, so {self.cases} would run with "
+                                 "different memory per subtask and the cases would not be comparable "
+                                 "(measured: a flat 2048m read 2->4 = 1.645 where per-core memory read 1.910)")
         if self.baseline not in self.cases:
             raise Refusal("rig", f"baseline {self.baseline} is not one of the cases {self.cases}")
         if QUICK:
@@ -833,14 +848,30 @@ def stop_tm():
     raise Refusal("rig", "engine still reports a registered task manager after teardown")
 
 
+def mem_for(spec, cores):
+    """Per-subtask memory turned into the container's figure for this case."""
+    m = re.match(r"^(\d+)\s*([kmgKMG])$", str(spec).strip())
+    if not m:
+        raise Refusal("rig", f"memory {spec!r} must be a number followed by k, m or g")
+    return f"{int(m.group(1)) * cores}{m.group(2).lower()}"
+
+
 def start_tm(cores, slots=None, reporter_s=None):
     c = cfg()
     slots = slots if slots is not None else cores
+    tm_mem = mem_for(c.tm_mem_per_core, cores) if c.tm_mem_per_core else c.tm_mem
+    if c.tm_mem_limit_per_core:
+        tm_mem_limit = mem_for(c.tm_mem_limit_per_core, cores)
+    elif c.tm_mem_per_core:
+        m = re.match(r"^(\d+)([kmg])$", tm_mem)
+        tm_mem_limit = f"{int(int(m.group(1)) * 1.25)}{m.group(2)}"   # headroom over the JVM's own figure
+    else:
+        tm_mem_limit = c.tm_mem_limit
     reporter_s = reporter_s or T["reporterS"]
     stop_tm()
     props = (f"jobmanager.rpc.address: {c.jm}\n"
              f"taskmanager.numberOfTaskSlots: {slots}\n"
-             f"taskmanager.memory.process.size: {c.tm_mem}\n"
+             f"taskmanager.memory.process.size: {tm_mem}\n"
              f"taskmanager.memory.managed.fraction: 0.1\n"
              f"taskmanager.memory.network.fraction: 0.15\n"
              f"taskmanager.memory.network.max: 512m\n"
@@ -853,7 +884,7 @@ def start_tm(cores, slots=None, reporter_s=None):
              f"metrics.reporter.slf4j.interval: {reporter_s} SECONDS\n"
              f"metrics.reporter.slf4j.scope.variables.excludes: job_id;task_id;task_attempt_id;tm_id\n")
     sh(f"docker run -d --name {c.tm} --hostname {c.tm} --network {c.net} --user 0:0 "
-       f"--cpus {cores} --memory {c.tm_mem_limit} "
+       f"--cpus {cores} --memory {tm_mem_limit} "
        f"-v {c.ckpt_vol}:/ckpt -v {c.jar_dir}:/jobs:ro "
        f"-e FLINK_PROPERTIES=$'{props}' {c.flink_img} taskmanager")
     nano = assert_cap(c.tm, cores)

@@ -57,6 +57,15 @@ refused with 30,927 hits at 562,907 rec/s and **96.4% of cap** — above the
 cap floor, so nothing else would have caught it — and 4 GiB clean with zero
 hits at 646,423 rec/s. A 264M-record backlog wanted 4 GiB here.
 
+**Worker memory is per subtask.** `caps.tmMemoryPerCore` (and optionally
+`tmMemoryLimitPerCore`) is multiplied by the case's core count, so every case
+gives each subtask the same memory; a flat `tmMemory` is refused when there is
+more than one case. Measured 2026-09-07 on one build, cap == parallelism,
+cases interleaved: flat 2048m gave 2c 558,059 and 4c 917,807 rec/s — 2→4 =
+1.645, GC 9.3% at four cores — and per-core memory gave 2c 549,380 (unchanged)
+and 4c 1,049,130 — 2→4 = 1.910, GC 2.3%. The fourth core was starved of heap,
+not short of CPU, and every case before this change shared that flaw.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
