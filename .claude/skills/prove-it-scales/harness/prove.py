@@ -478,6 +478,15 @@ def cmd_preflight():
             sh(f"docker rm -f {probe}", check=False)
         return f"--cpus throughout; read back NanoCpus={nano} and cgroup cpu.max = 2.0 cores"
 
+    def backlog_sizing_hint():
+        """Preflight cannot know the rate yet, but it can say what the guess must
+        cover so the tiny proof does not have to refuse it."""
+        secs = T["warmupMinS"] + T["minWindowS"] + 3 * c.ckpt_ms / 1000.0
+        top = max(c.cases)
+        return (f"backlog {c.backlog:,} covers {secs:.0f}s x 1.5 at the {top}-core rate, so up to "
+                f"{c.backlog / (secs * 1.5):,.0f} rec/s; the tiny proof checks this against the "
+                f"measured rate")
+
     def memory_per_subtask():
         """Each case must give its subtasks the same memory, or the largest case
         measures memory pressure rather than cores (2026-09-07: a flat 2048m read
@@ -541,6 +550,7 @@ def cmd_preflight():
     check("slots >= parallelism x jobs", slots)
     check("partitions divide evenly by every parallelism", partitions_per_subtask)
     check("worker memory is per subtask, not per container", memory_per_subtask)
+    check("backlog covers warm-up, window and headroom", backlog_sizing_hint)
     check("group / txn-id prefix scoped per run", scoping)
     check("back-pressure counters exist on the endpoint read", bp_endpoint)
     check("the VM trim command is known", trim)
@@ -602,6 +612,20 @@ def cmd_tinyproof():
                 f"need {d['neededBytes']/1e9:.1f} GB incl. the {d['floorBytes']/1e9:.0f} GB floor, "
                 f"{d['hostFreeBytesNow']/1e9:.1f} GB free now + {d['reclaimableBytes']/1e9:.1f} GB the tiny proof gives back "
                 f"= {d['hostFreeBytes']/1e9:.1f} GB: FITS")
+            warm = (recs[hi].get("warmup") or {}).get("seconds")
+            want = L.size_backlog(recs[hi]["recordsPerSec"], hi, c.ckpt_ms / 1000.0,
+                                  warmup_max_s=warm)
+            out["backlogNeeded"] = want
+            out["backlogConfigured"] = c.backlog
+            if c.backlog < want:
+                out["result"] = "FAIL"
+                log(f"  REFUSED (rig): backlog {c.backlog:,} is short of the {want:,} records the "
+                    f"{hi}-core case needs at its measured {recs[hi]['recordsPerSec']:,.0f} rec/s "
+                    f"(warm-up + window + headroom, x1.5); set backlog.count to at least that")
+                rc = 1
+            else:
+                log(f"  backlog: {c.backlog:,} configured, {want:,} needed at the measured "
+                    f"{recs[hi]['recordsPerSec']:,.0f} rec/s")
             ratio = recs[hi]["recordsPerSec"] / recs[lo]["recordsPerSec"]
             ideal = hi / lo
             out["ratio"] = round(ratio, 3)

@@ -73,6 +73,14 @@ core with no base, the rig read GC 17.4% at one core against 3.4% at two and
 1.1% at four, because Flink's fixed overheads are most of a small process
 size. Hence the base term.
 
+**The tiny proof sizes the backlog.** It measures the largest case's rate and
+refuses the chain if `backlog.count` is short of what that case needs to
+survive warm-up, the window and more than one checkpoint interval of headroom
+(x1.5). Every clean-room run from 15 to 20 lost an attempt to a backlog sized
+by guess before anything ran — run 18 sized for 500k rec/s against an actual
+930k, run 20 drained 50M records mid-window. Preflight states the ceiling the
+current guess covers, and the refusal names the number to use.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
