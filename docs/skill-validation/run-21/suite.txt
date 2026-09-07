@@ -1,0 +1,30 @@
+======================================================================================================================
+!! QUICK LOOK — two passes per case, not the configured number: enough for a spread, not enough to publish. A one-pass version of this table read 2->4 = 1.645 where the same build measured 1.910 with the memory it needed, and 1.539 where three passes read 1.678. Quote the spread with the ratio, or do not quote it.
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing (aligned, hashmap backend, file:///ckpt); sink = at-least-once, idempotent by emitting the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : 92f657ccbb06b5fe  (completeness passed for 92f657ccbb06b5fe)
+passes per case      : 2
+backlog              : 300,000,000 records, 8 partitions, 5 outputs per input
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     200,024   1,000,121   0.99/1   99.5%   100   0.09/2.5    0.0%  66.9%  1353s  0.4%       OK
+    2   p1-asc     395,314   1,976,570   2.01/2   100.6%   100   0.15/2.5    0.0%  68.2%   603s  0.6%       OK
+    4   p1-asc     717,897   3,589,487   4.01/4   100.2%   100   0.30/2.5    0.0%  43.0%   263s  0.1%       OK
+    4  p2-desc     735,375   3,676,877   3.84/4   96.0%   100   0.28/2.5    0.0%  45.2%   263s  0.3%       OK
+    2  p2-desc     383,874   1,919,368   1.99/2   99.6%   100   0.15/2.5    0.0%  64.2%   629s  0.4%       OK
+    1  p2-desc     197,790     988,948   1.00/1   99.6%   100   0.08/2.5    0.0%  69.2%  1362s  0.3%       OK
+    1 sentinel           —           —          —      —     —          —        —       —      —      —  REFUSED
+        refusal (case): task manager used 94.5% of its 1-core cap (floor 95%) — it is not the constraint
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     198,907     994,534   1.00/1   99.5%   100   0.08/2.5    0.0%  68.1%  1358s  0.4%   spread 1.1%
+    2     MEAN     389,594   1,947,969   2.00/2   100.1%   100   0.15/2.5    0.0%  66.2%   616s  0.6%   spread 2.9%
+    4     MEAN     726,636   3,633,182   3.92/4   98.1%   100   0.29/2.5    0.0%  44.1%   263s  0.3%   spread 2.4%
+======================================================================================================================
+STEP 1->2 cores: 1.959x  (ideal 2x, efficiency 97.9%, range across passes 1.919x-1.999x)
+STEP 2->4 cores: 1.865x  (ideal 2x, efficiency 93.3%, range across passes 1.816x-1.916x)
+order effect (descending / ascending): {1: 0.9888, 2: 0.9711, 4: 1.0243}
+======================================================================================================================
