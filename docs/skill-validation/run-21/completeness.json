@@ -1,0 +1,23 @@
+{
+ "build": "92f657ccbb06b5fe",
+ "records": 12000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt22-complete-clean",
+   "killed": false,
+   "drainS": 88.5,
+   "killedAtCommitted": null,
+   "verify": "read 12,000,000 records from positions-by-symbol and 48,000,000 from positions-by-account (manifest: 12,000,000 trades)\nnet position: symbols 89,154,400 | accounts 89,154,400 | manifest 89,154,400\nCOMPLETE: 32,768 symbols and 16,384 accounts match the manifest exactly, both paths net 89,154,400\n"
+  },
+  {
+   "group": "bt22-complete-kill",
+   "killed": true,
+   "drainS": 135.0,
+   "killedAtCommitted": 4423451,
+   "verify": "read 12,095,573 records from positions-by-symbol and 48,376,063 from positions-by-account (manifest: 12,000,000 trades)\nnet position: symbols 89,154,400 | accounts 89,154,400 | manifest 89,154,400\nCOMPLETE: 32,768 symbols and 16,384 accounts match the manifest exactly, both paths net 89,154,400\n"
+  }
+ ],
+ "at": "2026-09-07 17:45:27",
+ "result": "PASS"
+}

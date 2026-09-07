@@ -1,0 +1,13 @@
+{
+ "tradeCount": 12000000,
+ "seed": 20260909,
+ "symbolUniverse": 32768,
+ "accountUniverse": 16384,
+ "accountsPerTrade": 4,
+ "outputsPerInput": 5,
+ "distinctSymbols": 32768,
+ "distinctAccounts": 16384,
+ "netTotalQty": 89154400,
+ "symbolPositions": "<32768 entries stripped>",
+ "accountPositions": "<16384 entries stripped>"
+}

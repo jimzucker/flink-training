@@ -1,0 +1,94 @@
+[2026-09-07 16:51:06] stack up: bt22-kafka (cap 2.5), bt22-jm (cap 0.5); task manager is started per case
+[2026-09-07 16:52:28] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=12000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-small.json
+[2026-09-07 16:52:33] fill done: manifest: 12,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net 89,154,400, 5.3s
+[2026-09-07 16:52:35] backlog block-trades-small: 12,000,000 records read back over 8 partitions
+[2026-09-07 16:54:37] drained to the last record in 85.6s
+[2026-09-07 16:56:24] KILL: committed=4347454, killing the task manager mid-drain
+[2026-09-07 16:57:06] KILL: job RUNNING again on the replacement worker
+[2026-09-07 16:58:11] drained to the last record in 133.5s (worker killed mid-drain)
+[2026-09-07 16:59:17] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=120000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-tiny.json
+[2026-09-07 17:00:12] fill done: manifest: 120,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net 518,056,100, 54.9s
+[2026-09-07 17:00:13] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-07 17:00:13] ---- tiny case 1 cores ----
+[2026-09-07 17:02:57]   REFUSED (case): the broker hit its memory limit 2,964 times inside the window (78,880 file-page refaults): it was reading the backlog off disk, so the worker is not the constraint — give the broker container more memory
+[2026-09-07 17:02:57] ---- tiny case 4 cores ----
+[2026-09-07 17:05:37]   REFUSED (case): the broker hit its memory limit 10,648 times inside the window (242,245 file-page refaults): it was reading the backlog off disk, so the worker is not the constraint — give the broker container more memory
+[2026-09-07 17:09:16] stack up: bt22-kafka (cap 2.5), bt22-jm (cap 0.5); task manager is started per case
+[2026-09-07 17:09:30] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=120000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-tiny.json
+[2026-09-07 17:10:12] fill done: manifest: 120,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net 518,056,100, 42.4s
+[2026-09-07 17:10:14] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-07 17:10:14] ---- tiny case 1 cores ----
+[2026-09-07 17:12:58]   REFUSED (case): the broker hit its memory limit 1,136 times inside the window (38,272 file-page refaults): it was reading the backlog off disk, so the worker is not the constraint — give the broker container more memory
+[2026-09-07 17:12:58] ---- tiny case 4 cores ----
+[2026-09-07 17:15:25]   4c: 615,011 rec/s, tm 99.4% of cap, vantage 0.48%
+[2026-09-07 17:16:58] stack up: bt22-kafka (cap 2.5), bt22-jm (cap 0.5); task manager is started per case
+[2026-09-07 17:17:06] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=120000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-tiny.json
+[2026-09-07 17:17:45] fill done: manifest: 120,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net 518,056,100, 39.5s
+[2026-09-07 17:17:46] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-07 17:17:46] ---- tiny case 1 cores ----
+[2026-09-07 17:20:18]   REFUSED (case): the broker hit its memory limit 995 times inside the window (36,448 file-page refaults): it was reading the backlog off disk, so the worker is not the constraint — give the broker container more memory
+[2026-09-07 17:20:18] ---- tiny case 4 cores ----
+[2026-09-07 17:22:35]   4c: 618,936 rec/s, tm 100.4% of cap, vantage 0.39%
+[2026-09-07 17:26:16] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=40000000 --seed=42 --partitions=8 --bootstrap=localhost:19092 --topic=probe-in --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-probe.json
+[2026-09-07 17:26:31] fill done: manifest: 40,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net -63,846,200, 15.4s
+[2026-09-07 17:26:32] backlog probe-in: 40,000,000 records read back over 8 partitions
+[2026-09-07 17:30:03] stack up: bt22-kafka (cap 2.5), bt22-jm (cap 0.5); task manager is started per case
+[2026-09-07 17:30:09] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=40000000 --seed=42 --partitions=8 --bootstrap=localhost:19092 --topic=probe-in --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-probe.json
+[2026-09-07 17:30:24] fill done: manifest: 40,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net -63,846,200, 15.0s
+[2026-09-07 17:30:25] backlog probe-in: 40,000,000 records read back over 8 partitions
+[2026-09-07 17:33:40] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=120000000 --seed=42 --partitions=8 --bootstrap=localhost:19092 --topic=probe-in --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-probe.json
+[2026-09-07 17:34:22] fill done: manifest: 120,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net 228,626,400, 42.3s
+[2026-09-07 17:34:24] backlog probe-in: 120,000,000 records read back over 8 partitions
+[2026-09-07 17:44:29] phase=all start
+[2026-09-07 17:44:29] phase=up start
+[2026-09-07 17:44:30] stack up: bt22-kafka (cap 2.5), bt22-jm (cap 0.5); task manager is started per case
+[2026-09-07 17:44:30] phase=up end rc=0 2s
+[2026-09-07 17:44:30] phase=preflight start
+[2026-09-07 17:45:15] phase=preflight end rc=0 45s
+[2026-09-07 17:45:15] phase=completeness start
+[2026-09-07 17:45:20] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=12000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-small.json
+[2026-09-07 17:45:26] fill done: manifest: 12,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net 89,154,400, 5.3s
+[2026-09-07 17:45:27] backlog block-trades-small: 12,000,000 records read back over 8 partitions
+[2026-09-07 17:47:28] drained to the last record in 88.5s
+[2026-09-07 17:49:37] KILL: committed=4423451, killing the task manager mid-drain
+[2026-09-07 17:50:15] KILL: job RUNNING again on the replacement worker
+[2026-09-07 17:51:23] drained to the last record in 135.0s (worker killed mid-drain)
+[2026-09-07 17:52:35] phase=completeness end rc=0 440s
+[2026-09-07 17:52:35] phase=tinyproof start
+[2026-09-07 17:52:38] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=120000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-22/results/manifest-tiny.json
+[2026-09-07 17:53:17] fill done: manifest: 120,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net 518,056,100, 39.3s
+[2026-09-07 17:53:19] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-07 17:53:19] ---- tiny case 1 cores ----
+[2026-09-07 17:56:06]   1c: 195,811 rec/s, tm 100.0% of cap, vantage 0.32%
+[2026-09-07 17:56:06] ---- tiny case 4 cores ----
+[2026-09-07 17:59:00]   4c: 720,683 rec/s, tm 100.0% of cap, vantage 0.87%
+[2026-09-07 17:59:00]   disk: input 26 B/record x 300,000,000 = 8.0 GB; sinks 69 B/input -> 20.6 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 48.6 GB incl. the 20 GB floor, 151.5 GB free now + 7.3 GB the tiny proof gives back = 158.8 GB: FITS
+[2026-09-07 17:59:00]   backlog: 300,000,000 configured, 86,481,960 needed at the measured 720,683 rec/s
+[2026-09-07 17:59:46] phase=tinyproof end rc=0 431s
+[2026-09-07 17:59:46] phase=fill start
+[2026-09-07 17:59:49] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-22/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=300000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-22/results/manifest.json
+[2026-09-07 18:01:33] fill done: manifest: 300,000,000 trades, 32,768 distinct symbols, 16,384 distinct accounts, net -561,507,500, 103.2s
+[2026-09-07 18:01:34] backlog block-trades: 300,000,000 records read back over 8 partitions
+[2026-09-07 18:01:34] phase=fill end rc=0 108s
+[2026-09-07 18:01:34] phase=suite start
+[2026-09-07 18:01:34] ---- case 1 cores, pass p1-asc ----
+[2026-09-07 18:05:05]   1c p1-asc: 200,024 rec/s  tm 0.99/1 (99.5%)  kafka 0.09/2.5  srcIdle 0.0%  srcBP 66.9%  headroom 1353s  vantage 0.45%
+[2026-09-07 18:05:05] ---- case 2 cores, pass p1-asc ----
+[2026-09-07 18:09:11]   2c p1-asc: 395,314 rec/s  tm 2.01/2 (100.6%)  kafka 0.15/2.5  srcIdle 0.0%  srcBP 68.2%  headroom 603s  vantage 0.57%
+[2026-09-07 18:09:11] ---- case 4 cores, pass p1-asc ----
+[2026-09-07 18:13:10]   4c p1-asc: 717,897 rec/s  tm 4.01/4 (100.2%)  kafka 0.30/2.5  srcIdle 0.0%  srcBP 43.0%  headroom 263s  vantage 0.15%
+[2026-09-07 18:13:10] ---- case 4 cores, pass p2-desc ----
+[2026-09-07 18:16:49]   4c p2-desc: 735,375 rec/s  tm 3.84/4 (96.0%)  kafka 0.28/2.5  srcIdle 0.0%  srcBP 45.2%  headroom 263s  vantage 0.31%
+[2026-09-07 18:16:49] ---- case 2 cores, pass p2-desc ----
+[2026-09-07 18:20:56]   2c p2-desc: 383,874 rec/s  tm 1.99/2 (99.6%)  kafka 0.15/2.5  srcIdle 0.0%  srcBP 64.2%  headroom 629s  vantage 0.39%
+[2026-09-07 18:20:56] ---- case 1 cores, pass p2-desc ----
+[2026-09-07 18:25:06]   1c p2-desc: 197,790 rec/s  tm 1.00/1 (99.6%)  kafka 0.08/2.5  srcIdle 0.0%  srcBP 69.2%  headroom 1362s  vantage 0.31%
+[2026-09-07 18:25:06] ---- case 1 cores, pass sentinel ----
+[2026-09-07 18:28:37]   REFUSED (case): task manager used 94.5% of its 1-core cap (floor 95%) — it is not the constraint
+[2026-09-07 18:28:37] phase=suite end rc=0 1623s
+[2026-09-07 18:28:37] phase=report start
+[2026-09-07 18:28:37] phase=report end rc=0 0s
+[2026-09-07 18:28:37] phase=all end PASS 44.1 min
+[2026-09-07 18:31:54] removed 2 anonymous volume(s) left by containers removed without -v
+[2026-09-07 18:31:55] fstrim: /var/lib/docker: 6.6 GiB (7095119872 bytes) trimmed
+[2026-09-07 18:31:55] stack down; nothing with prefix bt22 survives
