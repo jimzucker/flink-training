@@ -51,7 +51,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 # build_table takes it as an argument; the record and the guards keep normal
 # semantics whatever the flag says.
 QUICK = False
-QUICK_BANNER = ("one pass per case. No spread, so no table: these numbers say the rig ran clean and roughly how fast, and nothing about how repeatable the ratio is. The record's own passes read 2.04-2.27x where a suite reported 2.15x. Do not publish or quote.")
+QUICK_BANNER = ("two passes per case, not the configured number: enough for a spread, not enough to publish. A one-pass version of this table read 2->4 = 1.645 where the same build measured 1.910 with the memory it needed, and 1.539 where three passes read 1.678. Quote the spread with the ratio, or do not quote it.")
 
 # ------------------------------------------------------------------ thresholds
 #
@@ -215,6 +215,23 @@ class Cfg:
         caps = c["caps"]
         self.kafka_cap = float(caps.get("kafka", 2.5))
         self.jm_cap = float(caps.get("jobmanager", 0.5))
+        # Worker memory is per subtask, not per container. A flat figure gives
+        # the 4-core case a quarter of it each where the 2-core case had a half,
+        # and the largest case is then measuring memory pressure rather than
+        # cores. Measured 2026-09-07 on run 18's build, cap == parallelism,
+        # interleaved: at a flat 2048m, 2c read 558,059 and 4c 917,807 (2->4 =
+        # 1.645, GC 9.3% at four cores); with 5g, 2c read 549,380 -- unchanged --
+        # and 4c 1,049,130 (2->4 = 1.910, GC 2.3%). The fourth core was starved,
+        # not slow.
+        # Flink's process size also carries fixed overheads -- metaspace, JVM
+        # overhead, the network buffer floor -- that do not shrink with cores.
+        # Scaling the whole figure by cores therefore starves the smallest case:
+        # measured 2026-09-07 on the rig, 1280m per core read GC 17.4% at one
+        # core against 3.4% at two and 1.1% at four. The base term covers the
+        # fixed part; only the rest is per subtask.
+        self.tm_mem_base = caps.get("tmMemoryBase", "0m")
+        self.tm_mem_per_core = caps.get("tmMemoryPerCore")
+        self.tm_mem_limit_per_core = caps.get("tmMemoryLimitPerCore")
         self.tm_mem = caps.get("tmMemory", "4096m")
         self.tm_mem_limit = caps.get("tmMemoryLimit", "6g")
         self.kafka_mem = caps.get("kafkaMemory", "4g")
@@ -227,6 +244,11 @@ class Cfg:
         self.api_level = c["apiLevel"]
         self.guarantee = c["guarantee"]
         self.log_path = os.path.join(self.results, "harness.log")
+        if self.tm_mem_per_core is None and len(set(self.cases)) > 1:
+            raise Refusal("rig", "caps.tmMemoryPerCore is not set: a flat taskmanager memory divides "
+                                 f"across the subtasks of each case, so {self.cases} would run with "
+                                 "different memory per subtask and the cases would not be comparable "
+                                 "(measured: a flat 2048m read 2->4 = 1.645 where per-core memory read 1.910)")
         if self.baseline not in self.cases:
             raise Refusal("rig", f"baseline {self.baseline} is not one of the cases {self.cases}")
         if QUICK:
@@ -833,14 +855,35 @@ def stop_tm():
     raise Refusal("rig", "engine still reports a registered task manager after teardown")
 
 
+def _mib(spec):
+    m = re.match(r"^(\d+)\s*([kmgKMG])$", str(spec).strip())
+    if not m:
+        raise Refusal("rig", f"memory {spec!r} must be a number followed by k, m or g")
+    n, unit = int(m.group(1)), m.group(2).lower()
+    return n * {"k": 1 / 1024.0, "m": 1.0, "g": 1024.0}[unit]
+
+
+def mem_for(spec, cores, base="0m"):
+    """base + per-subtask x cores, as the container's figure for this case."""
+    return f"{int(_mib(base) + _mib(spec) * cores)}m"
+
+
 def start_tm(cores, slots=None, reporter_s=None):
     c = cfg()
     slots = slots if slots is not None else cores
+    tm_mem = mem_for(c.tm_mem_per_core, cores, c.tm_mem_base) if c.tm_mem_per_core else c.tm_mem
+    if c.tm_mem_limit_per_core:
+        tm_mem_limit = mem_for(c.tm_mem_limit_per_core, cores, c.tm_mem_base)
+    elif c.tm_mem_per_core:
+        m = re.match(r"^(\d+)([kmg])$", tm_mem)
+        tm_mem_limit = f"{int(int(m.group(1)) * 1.25)}{m.group(2)}"   # headroom over the JVM's own figure
+    else:
+        tm_mem_limit = c.tm_mem_limit
     reporter_s = reporter_s or T["reporterS"]
     stop_tm()
     props = (f"jobmanager.rpc.address: {c.jm}\n"
              f"taskmanager.numberOfTaskSlots: {slots}\n"
-             f"taskmanager.memory.process.size: {c.tm_mem}\n"
+             f"taskmanager.memory.process.size: {tm_mem}\n"
              f"taskmanager.memory.managed.fraction: 0.1\n"
              f"taskmanager.memory.network.fraction: 0.15\n"
              f"taskmanager.memory.network.max: 512m\n"
@@ -853,7 +896,7 @@ def start_tm(cores, slots=None, reporter_s=None):
              f"metrics.reporter.slf4j.interval: {reporter_s} SECONDS\n"
              f"metrics.reporter.slf4j.scope.variables.excludes: job_id;task_id;task_attempt_id;tm_id\n")
     sh(f"docker run -d --name {c.tm} --hostname {c.tm} --network {c.net} --user 0:0 "
-       f"--cpus {cores} --memory {c.tm_mem_limit} "
+       f"--cpus {cores} --memory {tm_mem_limit} "
        f"-v {c.ckpt_vol}:/ckpt -v {c.jar_dir}:/jobs:ro "
        f"-e FLINK_PROPERTIES=$'{props}' {c.flink_img} taskmanager")
     nano = assert_cap(c.tm, cores)

@@ -57,6 +57,22 @@ refused with 30,927 hits at 562,907 rec/s and **96.4% of cap** — above the
 cap floor, so nothing else would have caught it — and 4 GiB clean with zero
 hits at 646,423 rec/s. A 264M-record backlog wanted 4 GiB here.
 
+**Worker memory is a fixed base plus a per-subtask share.**
+`caps.tmMemoryBase` covers what does not scale with cores — metaspace, JVM
+overhead, the network buffer floor — and `caps.tmMemoryPerCore` (with optional
+`tmMemoryLimitPerCore`) is multiplied by the case's core count, so every case
+gives each subtask the same memory; a flat `tmMemory` is refused when there is
+more than one case. Measured 2026-09-07 on one build, cap == parallelism,
+cases interleaved: flat 2048m gave 2c 558,059 and 4c 917,807 rec/s — 2→4 =
+1.645, GC 9.3% at four cores — and per-core memory gave 2c 549,380 (unchanged)
+and 4c 1,049,130 — 2→4 = 1.910, GC 2.3%. The fourth core was starved of heap,
+not short of CPU, and every case before this change shared that flaw.
+
+Scaling the *whole* figure by cores then starves the other end: at 1280m per
+core with no base, the rig read GC 17.4% at one core against 3.4% at two and
+1.1% at four, because Flink's fixed overheads are most of a small process
+size. Hence the base term.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```

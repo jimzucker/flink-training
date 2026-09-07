@@ -478,6 +478,17 @@ def cmd_preflight():
             sh(f"docker rm -f {probe}", check=False)
         return f"--cpus throughout; read back NanoCpus={nano} and cgroup cpu.max = 2.0 cores"
 
+    def memory_per_subtask():
+        """Each case must give its subtasks the same memory, or the largest case
+        measures memory pressure rather than cores (2026-09-07: a flat 2048m read
+        2->4 = 1.645 with GC at 9.3%; the same build with memory scaled per core
+        read 1.910 with GC at 2.3%, and the 2-core figure did not move)."""
+        if not c.tm_mem_per_core:
+            raise Exception("caps.tmMemoryPerCore is not set")
+        return (f"{c.tm_mem_base} base + {c.tm_mem_per_core} per subtask: "
+                + ", ".join(f"{L.mem_for(c.tm_mem_per_core, n, c.tm_mem_base)} at {n}"
+                            for n in sorted(c.cases)))
+
     def partitions_per_subtask():
         """Every case must divide the input evenly across its subtasks. Fewer
         partitions than subtasks leaves some with nothing to read; an uneven
@@ -529,6 +540,7 @@ def cmd_preflight():
     check("CPU cap mechanism chosen once", capmech)
     check("slots >= parallelism x jobs", slots)
     check("partitions divide evenly by every parallelism", partitions_per_subtask)
+    check("worker memory is per subtask, not per container", memory_per_subtask)
     check("group / txn-id prefix scoped per run", scoping)
     check("back-pressure counters exist on the endpoint read", bp_endpoint)
     check("the VM trim command is known", trim)

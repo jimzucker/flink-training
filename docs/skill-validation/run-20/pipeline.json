@@ -1,8 +1,8 @@
 {
-  "project": "st11",
+  "project": "bt21",
   "topics": {"in": "block-trades", "out": ["positions-by-symbol", "positions-by-account"]},
   "partitions": 8,
-  "outputsPerInput": 8,
+  "outputsPerInput": 4,
   "checkpointMs": 10000,
   "job": {
     "jar": "job/target/positions-1.0.jar",
@@ -18,13 +18,13 @@
   "verifier": {
     "cmd": "{java} -cp {jar} scaletest.VerifyCompleteness --bootstrap={bootstrapExt} --topicSym={out0} --topicAcct={out1} --manifest={manifest}"
   },
-  "cases": [2, 4],
-  "baseline": 2,
+  "cases": [1, 2, 4],
+  "baseline": 1,
   "passes": 3,
-  "backlog": {"count": 160000000, "seed": 20260903, "smallCount": 20000000, "tinyCount": 60000000, "killAtFraction": 0.35},
-  "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemoryBase": "768m", "tmMemoryPerCore": "1280m", "tmMemoryLimitPerCore": "1600m", "kafkaMemory": "4g", "kafkaHeap": "3G"},
+  "backlog": {"count": 300000000, "seed": 20260907, "smallCount": 10000000, "tinyCount": 100000000, "killAtFraction": 0.35},
+  "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemoryBase": "768m", "tmMemoryPerCore": "640m", "tmMemoryLimitPerCore": "800m", "kafkaMemory": "5g", "kafkaHeap": "768m"},
   "images": {"flink": "flink:1.20.1-scala_2.12-java17", "kafka": "apache/kafka:3.9.0"},
-  "ports": {"kafka": 19092, "rest": 18081},
+  "ports": {"kafka": 19292, "rest": 18281},
   "jdk": "/opt/homebrew/opt/openjdk@17",
   "axis": "one worker growing: one task manager container capped at N cores, parallelism N, N slots",
   "apiLevel": "Flink DataStream API, hand-written operators (no SQL, no Table API)",
