@@ -223,6 +223,13 @@ class Cfg:
         # 1.645, GC 9.3% at four cores); with 5g, 2c read 549,380 -- unchanged --
         # and 4c 1,049,130 (2->4 = 1.910, GC 2.3%). The fourth core was starved,
         # not slow.
+        # Flink's process size also carries fixed overheads -- metaspace, JVM
+        # overhead, the network buffer floor -- that do not shrink with cores.
+        # Scaling the whole figure by cores therefore starves the smallest case:
+        # measured 2026-09-07 on the rig, 1280m per core read GC 17.4% at one
+        # core against 3.4% at two and 1.1% at four. The base term covers the
+        # fixed part; only the rest is per subtask.
+        self.tm_mem_base = caps.get("tmMemoryBase", "0m")
         self.tm_mem_per_core = caps.get("tmMemoryPerCore")
         self.tm_mem_limit_per_core = caps.get("tmMemoryLimitPerCore")
         self.tm_mem = caps.get("tmMemory", "4096m")
@@ -848,20 +855,25 @@ def stop_tm():
     raise Refusal("rig", "engine still reports a registered task manager after teardown")
 
 
-def mem_for(spec, cores):
-    """Per-subtask memory turned into the container's figure for this case."""
+def _mib(spec):
     m = re.match(r"^(\d+)\s*([kmgKMG])$", str(spec).strip())
     if not m:
         raise Refusal("rig", f"memory {spec!r} must be a number followed by k, m or g")
-    return f"{int(m.group(1)) * cores}{m.group(2).lower()}"
+    n, unit = int(m.group(1)), m.group(2).lower()
+    return n * {"k": 1 / 1024.0, "m": 1.0, "g": 1024.0}[unit]
+
+
+def mem_for(spec, cores, base="0m"):
+    """base + per-subtask x cores, as the container's figure for this case."""
+    return f"{int(_mib(base) + _mib(spec) * cores)}m"
 
 
 def start_tm(cores, slots=None, reporter_s=None):
     c = cfg()
     slots = slots if slots is not None else cores
-    tm_mem = mem_for(c.tm_mem_per_core, cores) if c.tm_mem_per_core else c.tm_mem
+    tm_mem = mem_for(c.tm_mem_per_core, cores, c.tm_mem_base) if c.tm_mem_per_core else c.tm_mem
     if c.tm_mem_limit_per_core:
-        tm_mem_limit = mem_for(c.tm_mem_limit_per_core, cores)
+        tm_mem_limit = mem_for(c.tm_mem_limit_per_core, cores, c.tm_mem_base)
     elif c.tm_mem_per_core:
         m = re.match(r"^(\d+)([kmg])$", tm_mem)
         tm_mem_limit = f"{int(int(m.group(1)) * 1.25)}{m.group(2)}"   # headroom over the JVM's own figure
