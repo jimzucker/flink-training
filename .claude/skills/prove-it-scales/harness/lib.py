@@ -949,7 +949,7 @@ def cgroup_mem(container):
     read back after eviction."""
     r = sh(f"docker exec {container} sh -c 'cat /sys/fs/cgroup/memory.events; "
            f"cat /sys/fs/cgroup/memory.stat'", check=False)
-    d = {"limitHits": 0, "refaults": 0, "fileCache": 0}
+    d = {"limitHits": 0, "refaults": 0, "fileCache": 0, "limitBytes": 0}
     for line in (r.stdout or "").strip().splitlines():
         parts = line.split()
         if len(parts) != 2:
@@ -961,6 +961,9 @@ def cgroup_mem(container):
             d["refaults"] = int(v)
         elif k == "file":
             d["fileCache"] = int(v)
+    r2 = sh(f"docker exec {container} cat /sys/fs/cgroup/memory.max", check=False)
+    v = (r2.stdout or "").strip()
+    d["limitBytes"] = int(v) if v.isdigit() else 0
     return d
 
 
@@ -1203,9 +1206,14 @@ def check_case(rec, cores, is_baseline):
         raise Refusal("case", f"task manager used {rec['tmCapFrac']:.1%} of its {cores}-core cap "
                               f"(floor {floor:.0%}) — it is not the constraint")
     if (rec.get("brokerLimitHits") or 0) > T["brokerLimitHits"]:
+        lim = rec.get("brokerLimitBytes") or 0
+        # measured 2026-09-07 (run 21): 3,840 MiB gave 995 hits and 6,144 gave none,
+        # so the step that worked was x1.6. Named here so the next run raises it once.
+        hint = (f" — raise caps.kafkaMemory from {lim / 1048576:.0f}m to about "
+                f"{int(lim * 1.6 / 268435456) * 256:.0f}m") if lim else ""
         raise Refusal("case", f"the broker hit its memory limit {rec['brokerLimitHits']:,} times inside the window "
                               f"({rec.get('brokerRefaults', 0):,} file-page refaults): it was reading the backlog off "
-                              f"disk, so the worker is not the constraint — give the broker container more memory")
+                              f"disk, so the worker is not the constraint{hint}")
     if rec["sourceIdle"] > T["sourceIdleCeil"]:
         raise Refusal("case", f"source idle {rec['sourceIdle']:.1%} > {T['sourceIdleCeil']:.0%}: "
                               f"the source waited on input for more of the window than any at-cap case on record")
@@ -1291,6 +1299,7 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
         rec["brokerLimitHits"] = mem1_k["limitHits"] - mem0_k["limitHits"]
         rec["brokerRefaults"] = mem1_k["refaults"] - mem0_k["refaults"]
         rec["brokerFileCacheBytes"] = mem1_k["fileCache"]
+        rec["brokerLimitBytes"] = mem1_k.get("limitBytes") or 0
         rec["tClose"] = time.time()
         rec["close"] = close_tick
         rec["boundaries"] = boundaries - 1

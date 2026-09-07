@@ -478,6 +478,25 @@ def cmd_preflight():
             sh(f"docker rm -f {probe}", check=False)
         return f"--cpus throughout; read back NanoCpus={nano} and cgroup cpu.max = 2.0 cores"
 
+    def memory_budget():
+        """Worker at its largest case, broker and job manager must fit the VM with
+        room to spare. Runs 20 and 21 each lost attempts discovering this by
+        refusal instead: the broker's page cache grows into whatever cap it is
+        given, and paying for that cap out of the worker drove 1-core GC to 26%."""
+        info = L.sh("docker info --format '{{.MemTotal}}'", check=False).stdout.strip()
+        vm = int(info) if info.isdigit() else 0
+        top = max(c.cases)
+        worker = L._mib(L.mem_for(c.tm_mem_per_core, top, c.tm_mem_base)) if c.tm_mem_per_core else L._mib(c.tm_mem)
+        broker = L._mib(c.kafka_mem)
+        jm = 1024.0
+        need = worker + broker + jm
+        if vm and need > (vm / 1048576.0) - 1024:
+            raise Exception(f"worker {worker:.0f}m at {top} cores + broker {broker:.0f}m + job manager "
+                            f"{jm:.0f}m = {need:.0f}m, and the VM has {vm / 1048576:.0f}m: leave 1 GB "
+                            f"for the VM itself or the broker's cache and the worker's heap fight")
+        return (f"worker {worker:.0f}m at {top} cores + broker {broker:.0f}m + job manager {jm:.0f}m "
+                f"= {need:.0f}m of {vm / 1048576:.0f}m VM" if vm else f"{need:.0f}m requested, VM size unknown")
+
     def backlog_sizing_hint():
         """Preflight cannot know the rate yet, but it can say what the guess must
         cover so the tiny proof does not have to refuse it."""
@@ -551,6 +570,7 @@ def cmd_preflight():
     check("partitions divide evenly by every parallelism", partitions_per_subtask)
     check("worker memory is per subtask, not per container", memory_per_subtask)
     check("backlog covers warm-up, window and headroom", backlog_sizing_hint)
+    check("worker, broker and job manager fit the VM", memory_budget)
     check("group / txn-id prefix scoped per run", scoping)
     check("back-pressure counters exist on the endpoint read", bp_endpoint)
     check("the VM trim command is known", trim)
