@@ -22,12 +22,15 @@ Wait with `until [ -f results/DONE ]; do sleep 30; done` and nothing more: a
 shell whose command line names `prove.py` from inside the project is a
 watcher by the reaper's rule and is killed with the rest (it took the
 author's own `pgrep -f 'prove.py all'` loop).
-**`--quick` is a smoke run, not a result.** `prove.py all --quick` runs one
-pass per case instead of the configured number (the sentinel still follows,
-so the baseline is measured twice) and stamps `quickLook`/`publishable:false`
+**`--quick` is a smoke run, not a result.** `prove.py all --quick` runs two
+passes per case instead of the configured number (the sentinel still follows,
+so the baseline is measured three times). It measured *one* pass until
+2026-09-06, when a one-pass ratio was found to wander: run 18's build read
+1.539x from a single pass against 1.678x from three, because a ratio compounds
+the error of both cases. Two passes reproduce the three-pass answer to 0.2% and stamps `quickLook`/`publishable:false`
 on the table it writes, with a banner in `suite.md` and `suite.txt`. Every
 per-case guard stays live, so it answers "does this rig run clean, and
-roughly how fast" — about 37 min here against 60, because the gates
+roughly how fast" — about 48 min here against 60, because the gates
 (completeness, tiny proof, fill) do not shrink. It answers nothing about the
 ratio: replayed against the record, single passes of the recorded suites read
 2.039-2.273x where the suite reported 2.154x, and 1.837-1.859x where it

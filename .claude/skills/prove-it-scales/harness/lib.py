@@ -97,6 +97,13 @@ T = {
     # replaces was set below the band and voided six valid tables in run 9.
     "spreadCeil": 0.20,
     "minPasses": 2,
+    # --quick measures each case twice, not once. Measured 2026-09-06: a
+    # one-pass ratio compounds the error of both cases and wandered 8.3% low on
+    # run 18's build (1.539x against 1.678x from three passes) and 3.2% low on
+    # run 16's (1.809x against 1.752x). Two passes of the same build reproduce
+    # the three-pass ratio to 0.2% (1.675x against 1.678x), give every case a
+    # spread, and cost about twelve minutes.
+    "quickPasses": 2,
     # warm-up: a flat least-squares slope through four commit intervals, and the
     # scatter bounded too — run 10 suite B admitted a still-accelerating ramp on
     # slope alone. 10% scatter was unsatisfiable at 4 cores (checkpoint jitter is
@@ -231,7 +238,7 @@ class Cfg:
             # 2.154x (run 12, 2->4) and 1.837-1.859x against 1.850x (run 13) —
             # a one-pass number lands anywhere in a band wider than the accept
             # line, which is why this mode marks its table unpublishable.
-            self.passes = 1
+            self.passes = T["quickPasses"]
         elif self.passes < T["minPasses"]:
             raise Refusal("rig", f"passes must be >= {T['minPasses']} (every case at least twice)")
 

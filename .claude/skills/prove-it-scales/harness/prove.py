@@ -183,6 +183,21 @@ def cmd_selftest(live=True, topic=None):
     expect("quick look: the flag reaches neither the record nor the guards (must not fire)",
            quick_does_not_leak, "", should_fire=False)
 
+    def quick_two_passes():
+        """REGRESSION (2026-09-06): --quick measured each case once, and a ratio
+        built from two single measurements wandered 8.3% against the same
+        build's three-pass answer. It now measures twice."""
+        if L.T["quickPasses"] < 2:
+            raise Exception(f"quick mode would report a ratio from {L.T['quickPasses']} pass(es)")
+        t = build_table([{"cores": 2, "pass": "p1", "recordsPerSec": 100.0},
+                         {"cores": 2, "pass": "p2", "recordsPerSec": 104.0},
+                         {"cores": 4, "pass": "p1", "recordsPerSec": 200.0},
+                         {"cores": 4, "pass": "p2", "recordsPerSec": 208.0}], quick=True)
+        if t["cases"][2]["spread"] <= 0 or not t["stepRatios"][0]["reportable"]:
+            raise Exception(f"a two-pass quick table must carry a spread and a ratio: {t['cases'][2]}")
+    expect("quick look: two passes, so every case has a spread (must not fire)",
+           quick_two_passes, "", should_fire=False)
+
     def quick_marks_unpublishable():
         """QUICK: one pass per case still produces numbers, and every one of them
         is stamped unpublishable. The mode exists to answer 'did it run clean and
@@ -920,7 +935,7 @@ if __name__ == "__main__":
     name = sys.argv[1]
     if "--quick" in sys.argv[2:]:
         L.QUICK = True
-        print("QUICK LOOK: one pass per case; the table it writes is marked unpublishable")
+        print(f"QUICK LOOK: {L.T['quickPasses']} passes per case; the table it writes is marked unpublishable")
     if name not in ("replay",):
         cfg()  # validate pipeline.json first
     if name not in ("replay", "selftest-pure", "report"):
