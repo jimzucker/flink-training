@@ -372,6 +372,24 @@ def disk_verdict(free, in_bytes_per_rec, backlog, sink_bytes_per_in, partitions,
     return d
 
 
+def size_backlog(rate_at_top, cores_top, ckpt_s, warmup_max_s=None, window_s=None, margin=1.5):
+    """How many records the suite needs, from the rate the tiny proof measured
+    at the largest case — instead of a guess made before anything ran.
+
+    Every clean-room run from 15 to 20 lost an attempt to this guess: run 18
+    sized for 500k rec/s against an actual 930k, run 20 drained a 50M backlog
+    mid-window. The largest case must survive warm-up, the window, and close
+    with more than one checkpoint interval of headroom left.
+    """
+    # the measured warm-up, not the ceiling: warmupMaxS is 240 s and real
+    # warm-ups run 100-150 s, so the ceiling would demand a backlog three times
+    # what any run has needed and fail the disk projection instead.
+    warmup = warmup_max_s if warmup_max_s is not None else T["warmupMinS"]
+    window = window_s if window_s is not None else T["minWindowS"]
+    seconds = warmup + window + ckpt_s * 3          # headroom guard wants > 1 interval
+    return int(rate_at_top * seconds * margin)
+
+
 def disk_projection(tiny_topic, tiny_count, last_case_rec):
     """The measured shape: input bytes per record from the tiny topic, sink bytes
     per input from what the last tiny case wrote, checkpoint bytes from the volume."""
