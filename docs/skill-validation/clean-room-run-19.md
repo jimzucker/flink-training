@@ -25,4 +25,45 @@ is the bar; anything else is still inconsistent.
 
 ## Response
 
-*(written after the run)*
+Opus 5, harness at #61, `prove.py all --quick`, 107 tool calls, 0
+forbidden-path reads, 21:45 → 00:05. Raw results in [run-19/](run-19/).
+
+| criterion | result |
+|---|---|
+| chain passes on the first attempt | **FAIL** — the first attempt died at the tiny proof (4 cores at 91.6% of cap after half an hour under load); it passed after ten minutes idle, at 98.5% |
+| harness verbatim, 0 forbidden reads | PASS |
+| chain ≤ 60 min | PASS — 51.1 min |
+| whole-run wall clock | 2 h 20 m |
+| **every case carries a spread** | **partly** — 1c three passes, 2c two, **4c one**: its other pass was refused at 94.1% of cap |
+| every case at 95–101% of cap | one refusal at 94.1% |
+| no broker-memory refusal | PASS |
+| sentinel drift | **+11.2%** |
+| ratios | 1→2 = 2.191×, 2→4 = **1.783×** |
+
+| cores | records/s | passes | spread | % of cap |
+|---:|---:|---:|---:|---:|
+| 1 | 183,791 | 3 | 11.2% | 100.0% |
+| 2 | 402,711 | 2 | 1.6% | 98.1% |
+| 4 | 718,137 | 1 | — | 96.4% |
+
+## What this run contributed
+
+Two passes were not enough while the 4-core case could still be refused, so
+its 2→4 still rested on a single 4-core measurement. The agent also measured
+something we had missed: **re-running its unchanged baseline read 59.5% of cap
+where it had read 88.0%**, and its tiny proof went 91.6% → 98.5% after ten
+minutes idle. It tested three mechanisms — bigger producer batches, smaller
+batches, more worker memory — and **withdrew all three**, because the rig was
+moving faster than the effects.
+
+That last observation is what sent the next day's work at the memory contract:
+the "more worker memory" arm was pointing at the right thing and could not be
+resolved against the drift. The controlled version, interleaved so drift
+cancels, is in [memory-per-subtask](memory-per-subtask.md), and it found the
+4-core case was starved of heap — flat 2048m read 2→4 = 1.645× against 1.910×
+with the memory it needed.
+
+The agent's own honest note stands: the superlinear 1→2 = 2.19× is inside the
+baseline's 11.2% sentinel drift, and against the baseline's last measurement
+the step is 2.09×.
+

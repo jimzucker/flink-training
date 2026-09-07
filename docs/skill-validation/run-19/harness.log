@@ -1,0 +1,77 @@
+[2026-09-06 21:57:47] stack up: bt20-kafka (cap 2.5), bt20-jm (cap 0.5); task manager is started per case
+[2026-09-06 22:15:48] phase=all start
+[2026-09-06 22:15:48] phase=up start
+[2026-09-06 22:15:50] stack up: bt20-kafka (cap 2.5), bt20-jm (cap 0.5); task manager is started per case
+[2026-09-06 22:15:50] phase=up end rc=0 2s
+[2026-09-06 22:15:50] phase=preflight start
+[2026-09-06 22:16:50] phase=preflight end rc=0 61s
+[2026-09-06 22:16:50] phase=completeness start
+[2026-09-06 22:16:53] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-20/job/target/blocktrades-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=10000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-20/results/manifest-small.json
+[2026-09-06 22:17:07] fill done: produced 10000000 records to block-trades-small over 8 partitions in 13.4s (748895 rec/s)
+[2026-09-06 22:17:08] backlog block-trades-small: 10,000,000 records read back over 8 partitions
+[2026-09-06 22:19:09] drained to the last record in 86.9s
+[2026-09-06 22:21:55] KILL: committed=3533697, killing the task manager mid-drain
+[2026-09-06 22:22:44] KILL: job RUNNING again on the replacement worker
+[2026-09-06 22:23:53] drained to the last record in 153.5s (worker killed mid-drain)
+[2026-09-06 22:25:11] phase=completeness end rc=0 501s
+[2026-09-06 22:25:11] phase=tinyproof start
+[2026-09-06 22:25:14] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-20/job/target/blocktrades-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=110000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-20/results/manifest-tiny.json
+[2026-09-06 22:27:32] fill done: produced 110000000 records to block-trades-tiny over 8 partitions in 135.8s (809937 rec/s)
+[2026-09-06 22:27:33] backlog block-trades-tiny: 110,000,000 records read back over 8 partitions
+[2026-09-06 22:27:33] ---- tiny case 1 cores ----
+[2026-09-06 22:30:06]   1c: 164,360 rec/s, tm 99.5% of cap, vantage 0.19%
+[2026-09-06 22:30:06] ---- tiny case 4 cores ----
+[2026-09-06 22:33:19]   REFUSED (case): task manager used 91.6% of its 4-core cap (floor 95%) — it is not the constraint
+[2026-09-06 22:33:22] phase=tinyproof end rc=1 492s
+[2026-09-06 22:33:22] phase=all end FAIL at tinyproof 17.6 min
+[2026-09-06 23:12:06] phase=all start
+[2026-09-06 23:12:06] phase=up start
+[2026-09-06 23:12:07] stack up: bt20-kafka (cap 2.5), bt20-jm (cap 0.5); task manager is started per case
+[2026-09-06 23:12:07] phase=up end rc=0 2s
+[2026-09-06 23:12:07] phase=preflight start
+[2026-09-06 23:13:11] phase=preflight end rc=0 64s
+[2026-09-06 23:13:11] phase=completeness start
+[2026-09-06 23:13:16] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-20/job/target/blocktrades-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=10000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-20/results/manifest-small.json
+[2026-09-06 23:13:30] fill done: produced 10000000 records to block-trades-small over 8 partitions in 13.2s (759013 rec/s)
+[2026-09-06 23:13:31] backlog block-trades-small: 10,000,000 records read back over 8 partitions
+[2026-09-06 23:15:28] drained to the last record in 84.7s
+[2026-09-06 23:18:05] KILL: committed=5152693, killing the task manager mid-drain
+[2026-09-06 23:18:40] KILL: job RUNNING again on the replacement worker
+[2026-09-06 23:19:38] drained to the last record in 130.3s (worker killed mid-drain)
+[2026-09-06 23:21:16] phase=completeness end rc=0 485s
+[2026-09-06 23:21:16] phase=tinyproof start
+[2026-09-06 23:21:20] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-20/job/target/blocktrades-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=110000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-20/results/manifest-tiny.json
+[2026-09-06 23:23:39] fill done: produced 110000000 records to block-trades-tiny over 8 partitions in 137.6s (799674 rec/s)
+[2026-09-06 23:23:40] backlog block-trades-tiny: 110,000,000 records read back over 8 partitions
+[2026-09-06 23:23:40] ---- tiny case 1 cores ----
+[2026-09-06 23:26:57]   1c: 182,260 rec/s, tm 99.6% of cap, vantage 0.29%
+[2026-09-06 23:26:57] ---- tiny case 4 cores ----
+[2026-09-06 23:29:30]   4c: 718,284 rec/s, tm 98.5% of cap, vantage 0.20%
+[2026-09-06 23:29:31]   disk: input 138 B/record x 240,000,000 = 33.1 GB; sinks 519 B/input -> 124.5 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 87.4 GB incl. the 20 GB floor, 111.1 GB free now + 44.1 GB the tiny proof gives back = 155.3 GB: FITS
+[2026-09-06 23:30:17] phase=tinyproof end rc=0 540s
+[2026-09-06 23:30:17] phase=fill start
+[2026-09-06 23:30:20] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-20/job/target/blocktrades-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=240000000 --seed=20260906 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-20/results/manifest.json
+[2026-09-06 23:35:36] fill done: produced 240000000 records to block-trades over 8 partitions in 312.6s (767710 rec/s)
+[2026-09-06 23:35:37] backlog block-trades: 240,000,000 records read back over 8 partitions
+[2026-09-06 23:35:37] phase=fill end rc=0 320s
+[2026-09-06 23:35:37] phase=suite start
+[2026-09-06 23:35:37] ---- case 1 cores, pass p1-asc ----
+[2026-09-06 23:39:17]   1c p1-asc: 172,397 rec/s  tm 1.00/1 (100.3%)  kafka 0.16/2.5  srcIdle 0.2%  srcBP 37.9%  headroom 1253s  vantage 0.24%
+[2026-09-06 23:39:17] ---- case 2 cores, pass p1-asc ----
+[2026-09-06 23:43:12]   2c p1-asc: 405,858 rec/s  tm 1.99/2 (99.6%)  kafka 0.38/2.5  srcIdle 1.8%  srcBP 33.6%  headroom 450s  vantage 0.24%
+[2026-09-06 23:43:12] ---- case 4 cores, pass p1-asc ----
+[2026-09-06 23:47:12]   REFUSED (case): task manager used 94.1% of its 4-core cap (floor 95%) — it is not the constraint
+[2026-09-06 23:47:12] ---- case 4 cores, pass p2-desc ----
+[2026-09-06 23:51:11]   4c p2-desc: 718,138 rec/s  tm 3.86/4 (96.4%)  kafka 0.74/2.5  srcIdle 3.5%  srcBP 29.3%  headroom 192s  vantage 0.15%
+[2026-09-06 23:51:11] ---- case 2 cores, pass p2-desc ----
+[2026-09-06 23:55:01]   2c p2-desc: 399,564 rec/s  tm 1.93/2 (96.6%)  kafka 0.36/2.5  srcIdle 1.6%  srcBP 35.6%  headroom 460s  vantage 0.27%
+[2026-09-06 23:55:01] ---- case 1 cores, pass p2-desc ----
+[2026-09-06 23:59:02]   1c p2-desc: 186,080 rec/s  tm 1.00/1 (100.2%)  kafka 0.16/2.5  srcIdle 0.1%  srcBP 41.6%  headroom 1147s  vantage 0.30%
+[2026-09-06 23:59:02] ---- case 1 cores, pass sentinel ----
+[2026-09-07 00:03:12]   1c sentinel: 192,899 rec/s  tm 0.99/1 (99.5%)  kafka 0.16/2.5  srcIdle 0.1%  srcBP 40.8%  headroom 1100s  vantage 0.26%
+[2026-09-07 00:03:12] phase=suite end rc=0 1655s
+[2026-09-07 00:03:12] phase=report start
+[2026-09-07 00:03:12] phase=report end rc=0 0s
+[2026-09-07 00:03:12] phase=all end PASS 51.1 min
+[2026-09-07 00:04:49] fstrim: /var/lib/docker: 48.6 GiB (52215435264 bytes) trimmed
+[2026-09-07 00:04:49] stack down; nothing with prefix bt20 survives
