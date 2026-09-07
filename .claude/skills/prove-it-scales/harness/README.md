@@ -81,6 +81,13 @@ by guess before anything ran — run 18 sized for 500k rec/s against an actual
 930k, run 20 drained 50M records mid-window. Preflight states the ceiling the
 current guess covers, and the refusal names the number to use.
 
+**Broker memory is named, not guessed.** When the broker hits its cgroup
+limit inside a window the refusal now carries the figure to use — the step that
+worked on this host was x1.6 (3,840 MiB gave 995 hits, 6,144 gave none) — and
+preflight refuses a configuration where the worker at its largest case plus the
+broker plus the job manager do not leave the VM a spare gigabyte. Runs 20 and
+21 lost five tiny proofs between them discovering both by trial.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
