@@ -940,12 +940,19 @@ def cmd_report():
     out = load_json("suite.json")
     out["table"] = build_table(out["runs"], quick=out.get("quickLook", False))
     c = cfg()
+    short = [r for r in out["table"]["stepRatios"] if r.get("meetsClaim") is False]
     with open(os.path.join(c.results, "suite.txt"), "w") as f:
         f.write(render_table(out) + "\n")
     with open(os.path.join(c.results, "suite.md"), "w") as f:
         f.write(render_markdown(out))
     save_json("suite.json", out)
     print("wrote results/suite.txt and results/suite.md")
+    if short:
+        for r in short:
+            print(f"CLAIM NOT MET: {r['step']} returned {r['ratio']:.3f}x of an ideal {r['idealRatio']:.0f}x "
+                  f"— {r['efficiency']:.1%} of linear, floor {T['scalingFloor']:.0%}. The table stands; "
+                  f"the pipeline did not scale on this rig.")
+        return 1
     return 0
 
 
@@ -1003,6 +1010,8 @@ def cmd_all(steps=None, results=None):
             log(f"phase {name} left the quick flag {L.QUICK} (it was {quick0}); restoring")
             L.QUICK = quick0
             rc = rc or 1
+        if name == "report" and rc:
+            log("the chain measured a valid table whose step ratios do not meet the claim")
         out["steps"].append({"step": name, "rc": rc, "seconds": round(time.time() - t0, 1)})
         mark(f"phase={name} end rc={rc} {time.time() - t0:.0f}s")
         save_all()

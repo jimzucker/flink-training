@@ -88,6 +88,14 @@ preflight refuses a configuration where the worker at its largest case plus the
 broker plus the job manager do not leave the VM a spare gigabyte. Runs 20 and
 21 lost five tiny proofs between them discovering both by trial.
 
+**The claim is gated separately from the measurement.** A table can be beyond
+reproach and still say the pipeline does not scale. `report` marks each step
+`meetsClaim` against `scalingFloor` (95% of linear) and exits non-zero when a
+step misses, so `all` ends FAIL rather than PASS. The floor comes from this
+repository's own demo, which reads 1.99x from 2 to 4 cores on the same laptop,
+less the +-3% a two-pass ratio carries. Replayed against the record before it
+shipped: 1->2 meets it in 11 of 12 recorded runs, 2->4 in three.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
