@@ -33,6 +33,8 @@ import hashlib
 import json
 import os
 import re
+import tempfile
+import shutil
 import subprocess
 import sys
 import time
@@ -966,6 +968,39 @@ def assert_cap(container, cores):
     if len(cpumax) != 2 or cpumax[0] == "max" or abs(int(cpumax[0]) / int(cpumax[1]) - cores) > 1e-6:
         raise Refusal("rig", f"cgroup cpu.max={cpumax} on {container} does not equal {cores} cores")
     return nano
+
+
+def host_scaling(seconds=5.0, cases=(1, 2, 4)):
+    """What this host's own cores do, before any pipeline is judged for missing
+    linear. Register-only and memory-bound arms at each case, in the same image
+    the worker runs in, capped the same way."""
+    src = os.path.join(HERE, "probe", "Spin.java")
+    if not os.path.exists(src):
+        return None
+    work = tempfile.mkdtemp(prefix="hostprobe-")
+    shutil.copy(src, work)
+    # the Flink image has no compiler; use the host JDK the rig already requires
+    r = sh(f"{cfg().jdk}/bin/javac --release 17 -d {work} {work}/Spin.java", check=False)
+    if r.returncode:
+        return {"error": (r.stderr or "")[-200:]}
+    out = {"perCore": {}, "ofLinear": {}}
+    for mode in ("alu", "mem"):
+        per = {}
+        for n in cases:
+            rr = sh(f"docker run --rm --cpus {n} -v {work}:/probe:ro --entrypoint java "
+                    f"{cfg().flink_img} -cp /probe Spin {n} {int(seconds * 1000)} {mode}", check=False)
+            m = re.search(r"per-core=([\d,]+)", rr.stdout or "")
+            if m:
+                per[n] = float(m.group(1).replace(",", ""))
+        out["perCore"][mode] = per
+        steps = {}
+        ordered = sorted(per)
+        for a, b in zip(ordered, ordered[1:]):
+            if per.get(a):
+                steps[f"{a}->{b}"] = round((per[b] * b) / (per[a] * a) / (b / a), 3)
+        out["ofLinear"][mode] = steps
+    shutil.rmtree(work, ignore_errors=True)
+    return out
 
 
 def cgroup_mem(container):
