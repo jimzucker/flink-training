@@ -37,13 +37,52 @@ from lib import (T, Refusal, CaseRefused, cfg, log, sh, rest, save_json, load_js
 
 # ---------------------------------------------------------------------- replay
 
+def replay_configs():
+    """Config guards against configurations whose verdict we already know.
+
+    The suite record cannot exercise these: it re-derives step verdicts from
+    recorded rates and never builds a Cfg. #68 shipped a rule that refused two
+    configurations which had already produced accepted runs, and cost a whole
+    clean-room run to find out. Same discipline as the suite replay -- a guard
+    that disagrees with the record is wrong.
+    """
+    path = os.path.join(L.HERE, "record", "configs.json")
+    if not os.path.exists(path):
+        return 0
+    doc = json.load(open(path))
+    bad = 0
+    for entry in doc["configs"]:
+        cfg_doc = json.load(open(os.path.join(L.HERE, "pipeline.example.json")))
+        cfg_doc["cases"] = entry["cases"]
+        cfg_doc["baseline"] = min(entry["cases"])
+        cfg_doc["partitions"] = entry["partitions"]
+        cfg_doc["caps"] = entry["caps"]
+        tmp = os.path.join(tempfile.mkdtemp(prefix="replay-cfg-"), "pipeline.json")
+        json.dump(cfg_doc, open(tmp, "w"))
+        got, why = "accept", ""
+        try:
+            c = L.Cfg(tmp)
+            if [n for n in c.cases if c.partitions % n]:
+                got, why = "refuse", f"{c.partitions} partitions do not divide by {c.cases}"
+        except Refusal as e:
+            got, why = "refuse", e.msg
+        if got != entry["expect"]:
+            bad += 1
+            print(f"  DISAGREES: {entry['name']}: expected {entry['expect']}, got {got}"
+                  + (f" ({why[:90]})" if why else ""))
+    print(f"replayed {len(doc['configs'])} recorded configurations"
+          + ("" if not bad else f" — {bad} DISAGREE"))
+    return 1 if bad else 0
+
+
 def cmd_replay():
     """Every threshold, checked against every recorded suite before it can refuse
     anything new. record/*.json holds per-pass rates per case and a verdict on
     which step ratios the record considers valid."""
     import glob
     rec_dir = os.path.join(L.HERE, "record")
-    files = sorted(glob.glob(os.path.join(rec_dir, "*.json")))
+    files = [f for f in sorted(glob.glob(os.path.join(rec_dir, "*.json")))
+             if os.path.basename(f) != "configs.json"]
     bad, n = [], 0
     for f in files:
         d = json.load(open(f))
@@ -69,7 +108,11 @@ def cmd_replay():
     if bad:
         print("REPLAY FAILED: a threshold disagrees with the record. Fix the threshold, not the record.")
         return 1
-    print("REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported")
+    if replay_configs():
+        print("REPLAY FAILED: a guard disagrees with a recorded configuration. Fix the guard, not the record.")
+        return 1
+    print("REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, "
+          "and every recorded configuration still gets its recorded verdict")
     return 0
 
 

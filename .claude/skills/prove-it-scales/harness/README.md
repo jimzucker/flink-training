@@ -129,6 +129,14 @@ self-test) and `completeness` have passed **for the same build hash**.
 ## What the harness owns, and the agent does not change
 
 The thresholds in `lib.py` (`T`), each with the measurement it was set from.
+Config guards are replayed too: `record/configs.json` holds configurations
+whose verdict is already known — run 20's and run 21's, the rig's, plus two
+that must be refused (flat worker memory, six partitions with a four-core
+case) — and `replay` builds each one and checks it still gets that verdict. It
+exists because #68 shipped a rule that refused two configurations which had
+already produced accepted runs, and run 22 spent two chains and produced no
+ratios finding out. With this in place that rule fails replay in a second.
+
 `prove.py replay` re-derives every recorded suite in `record/` with the current
 thresholds before any command that touches a stack, and refuses to run if a
 threshold would void a table the record marks valid or report one it marks
