@@ -1,0 +1,23 @@
+{
+ "build": "ecd91ca64b6e7938",
+ "records": 10000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt25-complete-clean",
+   "killed": false,
+   "drainS": 113.9,
+   "killedAtCommitted": null,
+   "verify": "manifest: 10,000,000 block trades, 4096 symbols, 8192 accounts, 5 outputs per input\nread both sinks in 17.9s\nCOMPLETE: 4096 symbol positions and 8192 account positions match the manifest exactly; totals net=87634900 gross=500551540300 notional=28059245816700 agree on both paths\n"
+  },
+  {
+   "group": "bt25-complete-kill",
+   "killed": true,
+   "drainS": 170.3,
+   "killedAtCommitted": 4370971,
+   "verify": "manifest: 10,000,000 block trades, 4096 symbols, 8192 accounts, 5 outputs per input\nread both sinks in 18.1s\nCOMPLETE: 4096 symbol positions and 8192 account positions match the manifest exactly; totals net=87634900 gross=500551540300 notional=28059245816700 agree on both paths\n"
+  }
+ ],
+ "at": "2026-09-08 16:35:20",
+ "result": "PASS"
+}

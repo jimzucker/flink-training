@@ -1,0 +1,31 @@
+Host CPU-scaling probe -- 2026-09-08 16:20-16:25, run outside the harness.
+
+Why: the suite's 2->4 step was short of linear while the worker sat at 99.9% of its
+cap and the broker at 20% of its own. Before offering a mechanism for that, find out
+what this host's cores do at all. One rig, one binary, one variable (the cap and the
+thread count together), two arms, whole thing repeated.
+
+  docker run --rm --cpus N -v /tmp/bt25probe:/probe:ro --entrypoint java \
+    flink:1.20.1-scala_2.12-java17 -cp /probe Spin N 15000 {alu|mem}
+
+  alu: a register-only 64-bit mix loop, no memory traffic
+  mem: a random read-modify-write over a 4 MB per-thread array
+
+                       per-core ops/s              of linear
+  cores   alu          mem              alu 1->2  alu 2->4  mem 1->2  mem 2->4
+  1       624,104,821  522,968,792
+  2       612,242,598  526,617,068      0.981     -         1.007     -
+  4       599,613,923  356,597,412      -         0.980     -         0.690
+  (repeat)
+  1       628,793,759  521,045,961
+  2       611,956,522  510,950,317      0.974     -         0.980     -
+  4       600,001,667  371,294,098      -         0.981     -         0.727
+
+Read: this host doubles ALU throughput at 98% of linear on both steps, and doubles
+memory-bound throughput at ~99% from 1 to 2 cores but only ~69-73% from 2 to 4.
+Whatever else is true, a pipeline whose per-record cost is partly memory traffic
+cannot return 100% of linear from 2 to 4 cores on this machine.
+
+Scope: this is a proxy workload, not the pipeline. It bounds the explanation; it does
+not measure the pipeline's own share of memory traffic, and no number here is used to
+explain a specific percentage of the pipeline's shortfall.

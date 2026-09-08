@@ -36,4 +36,60 @@ and back-pressure for both cases — is enough for an agent to act on.
 
 ## Response
 
-*(written after the run)*
+**The gate worked, the diagnosis was actionable, and the run found the
+mechanism nobody here had.** Chain 49 min 31 s, zero refusals, zero ceilings,
+`FAIL at report` on the claim. Raw results in [run-24/](run-24/).
+
+| step | ratio | interval | of linear (low) | claim |
+|---|---:|---|---:|---|
+| 1→2 | 2.040 | [2.016, 2.094] | 100.8% | **met** |
+| 2→4 | 1.906 | [1.822, 1.991] | 91.1% | **missed** |
+
+| cores | records/s | passes | spread | % of cap | GC |
+|---:|---:|---:|---:|---:|---:|
+| 1 | 130,179 | 3 | 2.3% | 100.1% | 5.8% |
+| 2 | 265,573 | 2 | 1.8% | 97.3% | 1.3% |
+| 4 | 506,286 | 2 | 2.7% | 98.2% | 0.7% |
+
+## The agent moved its own pipeline
+
+Given the failing diagnosis, it changed two things, one at a time, and
+measured each:
+
+| change | effect |
+|---|---|
+| `tmMemoryBase` 768m → 2048m | baseline GC 10.6% → 5.0%, baseline rate **+1.8%** — so the 1-core case was *not* heap-starved. Kept because it makes the baseline faster, which is the harder direction |
+| cut ~2.4 KB/record of allocation on the hot path (byte-buffer encoder for identical bytes out) | 4-core throughput **+6.9%**, spreads roughly halved, 2→4 from 1.861 → **1.906**, and 1→2 from missing to meeting |
+
+It declined two changes it judged self-serving: rebalancing memory to hand the
+broker's page cache back only in the 4-core case, and re-rolling the same build
+for a friendlier pair of passes.
+
+## What it found that we had not
+
+Before offering any mechanism it probed the host itself — one binary, one
+variable, two arms, repeated:
+
+```
+        per-core ops/s              of linear
+cores   alu           mem           alu 2→4   mem 2→4
+1       624,104,821   522,968,792
+2       612,242,598   526,617,068
+4       599,613,923   356,597,412     0.980     0.690
+```
+
+**Register-only work doubles at 98% of linear on this host; memory-bound work
+returns 69% on the second doubling.** That bounds every 2→4 number in this
+record: a pipeline that touches memory cannot reach 95% here, and the days
+spent on broker caps, checkpoint intervals, partition counts, network buffers,
+compression and fetch sizes were spent inside a range the hardware had already
+fixed. It does not attribute a percentage to this pipeline, and the agent said
+so.
+
+## Measured, not explained
+
+The residual 4.7% per-core loss at 4 cores; a 4.5% disagreement between the two
+2→4 passes on one unchanged build; cap use wandering 95.3–100.4%; and where the
+ceiling is — the broker sits at 20% of its CPU cap, so `prove.py ceiling`,
+which starves broker CPU, would not find it.
+

@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Twenty-three runs of the same problem, each by a fresh agent in an empty directory, barred
+Twenty-four runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -37,6 +37,7 @@ way to tell them apart.
 | [21](clean-room-run-21.md) | DataStream | 1.82 h | — | 88 | 198,906 | 726,636 | 3.65× | **98%** |
 | [22](clean-room-run-22.md) | DataStream | 1.28 h | — | 389 | — | — | **no table** | — |
 | [23](clean-room-run-23.md) | DataStream | 1.78 h | — | 72 | 178,387 | 668,253 | 3.75× | **100%** |
+| [24](clean-room-run-24.md) | DataStream | 2.68 h | — | 87 | 130,179 | 506,286 | 3.89× | **98%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
