@@ -127,6 +127,18 @@ morning — 9.4% away, with its 2-core figure down 5.6% and its 4-core up 3.3%.
 Tight pairs next to a ratio that moved between sessions locate the movement
 outside the suite. What moves it is not known.
 
+**A case that is not the constraint is a ceiling, not a refusal.** When the
+worker sits below its cap, the source idles past the ceiling, or the broker
+hits its memory limit while the worker is off its cap, the case is measured,
+kept, reported as `CEILING` with its rate — and excluded from every ratio,
+because a ratio built on it is not a statement about the component under test.
+This repository's own demo publishes exactly such a row (8 units: 4.98 of 8
+cores, 1.18x) and the harness used to delete it instead of saying what it
+shows. `record/cases.json` holds the classifications whose answer is known —
+run 5's retracted 94% case, the 2 GiB starved broker, run 23's 1-core case that
+hit the broker limit at 99.6% of cap with no rate effect — and `replay` checks
+them, because the suite record carries no cap fractions and cannot.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```

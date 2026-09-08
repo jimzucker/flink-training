@@ -37,6 +37,35 @@ from lib import (T, Refusal, CaseRefused, cfg, log, sh, rest, save_json, load_js
 
 # ---------------------------------------------------------------------- replay
 
+def replay_cases():
+    """Case verdicts against classifications whose answer is already known.
+    The suite record has no cap fractions or broker counters, so a change to
+    what makes a case a scaling claim cannot be replayed against it."""
+    path = os.path.join(L.HERE, "record", "cases.json")
+    if not os.path.exists(path):
+        return 0
+    doc = json.load(open(path))
+    base = dict(boundaries=6, recordsConsumed=10_000_000, elapsedS=60.0, recordsPerSec=166_666.7,
+                rateSource="kafka committed offsets", vantageSinkRecords=10_010_000.0,
+                vantageDisagreement=0.001, backlogRemaining=50_000_000, headroomS=300.0,
+                sourceIdle=0.0, tmCapFrac=0.99, bpSamples=6, brokerLimitHits=0, brokerRefaults=0)
+    bad = 0
+    for entry in doc["cases"]:
+        rec = dict(base); rec.update(entry["rec"])
+        got = "claim"
+        try:
+            L.check_case(rec, 4, False)
+        except L.Ceiling:
+            got = "ceiling"
+        except Refusal:
+            got = "invalid"
+        if got != entry["expect"]:
+            bad += 1
+            print(f"  DISAGREES: {entry['name']}: expected {entry['expect']}, got {got}")
+    print(f"replayed {len(doc['cases'])} recorded case verdicts" + ("" if not bad else f" — {bad} DISAGREE"))
+    return 1 if bad else 0
+
+
 def replay_configs():
     """Config guards against configurations whose verdict we already know.
 
@@ -82,7 +111,7 @@ def cmd_replay():
     import glob
     rec_dir = os.path.join(L.HERE, "record")
     files = [f for f in sorted(glob.glob(os.path.join(rec_dir, "*.json")))
-             if os.path.basename(f) != "configs.json"]
+             if os.path.basename(f) not in ("configs.json", "cases.json")]
     bad, n = [], 0
     for f in files:
         d = json.load(open(f))
@@ -108,7 +137,7 @@ def cmd_replay():
     if bad:
         print("REPLAY FAILED: a threshold disagrees with the record. Fix the threshold, not the record.")
         return 1
-    if replay_configs():
+    if replay_cases() or replay_configs():
         print("REPLAY FAILED: a guard disagrees with a recorded configuration. Fix the guard, not the record.")
         return 1
     print("REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, "
@@ -125,10 +154,13 @@ def cmd_selftest(live=True, topic=None):
     results = []
     t_self = time.time()
 
-    def expect(name, fn, needle, should_fire=True):
+    def expect(name, fn, needle, should_fire=True, ceiling=False):
         try:
             fn()
             res = dict(guard=name, ok=not should_fire, result="DID NOT FIRE")
+        except L.Ceiling as e:
+            res = dict(guard=name, ok=should_fire and ceiling and needle.lower() in e.msg.lower(),
+                       result="CEILING", message=e.msg[:200])
         except (Refusal, CaseRefused) as e:
             msg = e.msg if isinstance(e, Refusal) else e.refusal.msg
             res = dict(guard=name, ok=should_fire and needle.lower() in msg.lower(), result="REFUSED", message=msg[:200])
@@ -155,13 +187,13 @@ def cmd_selftest(live=True, topic=None):
     expect("backlog lacks headroom at close", case(backlogRemaining=1000, headroomS=0.006), "headroom")
     expect("external-boundary samples missing", case(sourceIdle=None), "samples")
     expect("too few reporter samples in the window", case(bpSamples=2), "samples")
-    expect("worker is not the constraint (baseline, run 5\'s 94%)", case(tmCapFrac=0.94, _baseline=True), "not the constraint")
+    expect("worker is not the constraint (baseline, run 5\'s 94%)", case(tmCapFrac=0.94, _baseline=True), "not the constraint", ceiling=True)
     expect("baseline at 95.9% is the constraint (run 12 p3; must not fire)",
            case(tmCapFrac=0.959, _baseline=True), "", should_fire=False)
-    expect("worker is not the constraint (other)", case(tmCapFrac=0.90), "not the constraint")
-    expect("source idle past the ceiling", case(sourceIdle=0.4), "waited on input")
+    expect("worker is not the constraint (other)", case(tmCapFrac=0.90), "not the constraint", ceiling=True)
+    expect("source idle past the ceiling", case(sourceIdle=0.4), "waited on input", ceiling=True)
     expect("the broker was starved of page cache (worker off its cap)",
-           case(brokerLimitHits=310423, brokerRefaults=6270562, tmCapFrac=0.964), "memory limit")
+           case(brokerLimitHits=310423, brokerRefaults=6270562, tmCapFrac=0.964), "memory limit", ceiling=True)
     expect("broker limit hits while the worker is pinned (must not fire)",
            case(brokerLimitHits=9437, brokerRefaults=572000, tmCapFrac=0.996), "", should_fire=False)
     expect("a broker that never hit its limit (must not fire)",
@@ -874,8 +906,10 @@ def cmd_suite():
                     f"headroom {rec['headroomS']:.0f}s  vantage {rec['vantageDisagreement']:.2%}")
             except CaseRefused as e:
                 out["runs"].append(e.rec)
-                out["refusals"].append({"case": cores, "pass": pass_id, "scope": e.refusal.scope, "message": e.refusal.msg})
-                log(f"  REFUSED ({e.refusal.scope}): {e.refusal.msg}")
+                kind = "CEILING" if e.refusal.scope == "ceiling" else "REFUSED"
+                out.setdefault("ceilings" if kind == "CEILING" else "refusals", []).append(
+                    {"case": cores, "pass": pass_id, "scope": e.refusal.scope, "message": e.refusal.msg})
+                log(f"  {kind}: {e.refusal.msg}")
                 if e.refusal.scope == "rig":
                     stop = ("rig refusal", e.refusal.msg)
             save()
