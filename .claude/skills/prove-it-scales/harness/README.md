@@ -96,6 +96,16 @@ repository's own demo, which reads 1.99x from 2 to 4 cores on the same laptop,
 less the +-3% a two-pass ratio carries. Replayed against the record before it
 shipped: 1->2 meets it in 11 of 12 recorded runs, 2->4 in three.
 
+When a step misses, the report prints both cases side by side — per-core rate,
+cap, source idle, GC, back-pressure — and what this rig has already shown costs
+what: worker memory that does not scale per subtask, about 14%; a broker
+starved of page cache, about 13%; four subtasks instead of two on the same
+cores, about 8%, of which roughly 3 points is the source idling. Partition
+count (8 against 16) and network buffer fraction (0.15 against 0.30) were each
+tested with the cases interleaved and changed nothing: 16 partitions refused
+every parallelism-4 case for an unstable warm-up, and the buffers moved the
+per-core rate 0.6%.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```

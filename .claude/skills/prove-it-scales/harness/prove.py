@@ -948,10 +948,24 @@ def cmd_report():
     save_json("suite.json", out)
     print("wrote results/suite.txt and results/suite.md")
     if short:
+        t = out["table"]
         for r in short:
             print(f"CLAIM NOT MET: {r['step']} returned {r['ratio']:.3f}x of an ideal {r['idealRatio']:.0f}x "
                   f"— {r['efficiency']:.1%} of linear, floor {T['scalingFloor']:.0%}. The table stands; "
                   f"the pipeline did not scale on this rig.")
+            a, b = t["cases"].get(r["from"]), t["cases"].get(r["to"])
+            if a and b:
+                pa = a["meanRecordsPerSec"] / r["from"]
+                pb = b["meanRecordsPerSec"] / r["to"]
+                print(f"  per core        {pa:>12,.0f} -> {pb:>12,.0f}   ({pb / pa - 1:+.1%})")
+                for k, label in (("tmCapFrac", "% of cap"), ("sourceIdle", "source idle"),
+                                 ("gcFracOfCapacity", "GC"), ("sourceBackpressured", "back-pressure")):
+                    if a.get(k) is not None and b.get(k) is not None:
+                        print(f"  {label:<15} {a[k]:>11.1%} -> {b[k]:>11.1%}")
+        print("  What this rig has shown: worker memory that does not scale per subtask costs about 14%;"
+              "\n  a broker starved of page cache costs about 13%; four subtasks instead of two costs about"
+              "\n  8% on the same cores, of which ~3 points is the source idling. Partition count and network"
+              "\n  buffers were tested and changed nothing. See harness/README.md.")
         return 1
     return 0
 
