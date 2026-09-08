@@ -652,6 +652,21 @@ def cmd_preflight():
     check("slots >= parallelism x jobs", slots)
     check("partitions divide evenly by every parallelism", partitions_per_subtask)
     check("worker memory is per subtask, not per container", memory_per_subtask)
+
+    def host_ceiling():
+        """No pipeline beats its machine. Measured here so a missed claim can be
+        read against what this host does at all (run 24: alu 2->4 = 0.980,
+        mem 2->4 = 0.690 -- a memory-touching pipeline could not reach 95%)."""
+        h = L.host_scaling(seconds=5.0, cases=sorted(set(c.cases)))
+        out["hostScaling"] = h
+        if not h or h.get("error"):
+            return f"not measured ({(h or {}).get('error', 'no probe')})"
+        parts = []
+        for mode in ("alu", "mem"):
+            steps = h["ofLinear"].get(mode, {})
+            parts.append(mode + " " + ", ".join(f"{k} {v:.0%}" for k, v in steps.items()))
+        return "; ".join(parts)
+    check("what this host's own cores do", host_ceiling)
     check("backlog covers warm-up, window and headroom", backlog_sizing_hint)
     check("worker, broker and job manager against the VM (reported)", memory_budget)
     check("group / txn-id prefix scoped per run", scoping)
@@ -996,6 +1011,16 @@ def cmd_report():
                                  ("gcFracOfCapacity", "GC"), ("sourceBackpressured", "back-pressure")):
                     if a.get(k) is not None and b.get(k) is not None:
                         print(f"  {label:<15} {a[k]:>11.1%} -> {b[k]:>11.1%}")
+        try:
+            h = load_json("preflight.json").get("hostScaling") or {}
+            for mode, label in (("alu", "register-only"), ("mem", "memory-bound")):
+                steps = (h.get("ofLinear") or {}).get(mode) or {}
+                if steps:
+                    print(f"  this host, {label:<13} " + "  ".join(f"{k} {v:.0%}" for k, v in steps.items()))
+            if h:
+                print("  A pipeline cannot beat its machine: judge the shortfall against those two bounds.")
+        except Exception:
+            pass
         print("  What this rig has shown: worker memory that does not scale per subtask costs about 14%;"
               "\n  a broker starved of page cache costs about 13%; four subtasks instead of two costs about"
               "\n  8% on the same cores, of which ~3 points is the source idling. Partition count and network"

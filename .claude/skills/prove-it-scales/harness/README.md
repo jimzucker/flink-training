@@ -139,6 +139,18 @@ run 5's retracted 94% case, the 2 GiB starved broker, run 23's 1-core case that
 hit the broker limit at 99.6% of cap with no rate effect — and `replay` checks
 them, because the suite record carries no cap fractions and cannot.
 
+**Preflight measures what this host's own cores do.** `probe/Spin.java` runs
+in the same image and under the same caps as the worker, in two arms: a
+register-only loop and a random read-modify-write over 4 MB per thread. The
+figures go into `preflight.json` as `hostScaling` and are printed beside any
+missed claim, because a pipeline cannot beat its machine. This machine,
+measured twice on different days: register-only 1→2 = 98%, 2→4 = 97%;
+memory-bound 1→2 = 90%, 2→4 = **69-78%**. Every 2→4 figure in this record sits
+between those bounds, and the days spent on broker caps, checkpoint intervals,
+partition counts, network buffers, compression and fetch sizes were spent
+inside a range the hardware had already fixed. The probe came from the agent of
+clean-room run 24, which ran it before offering any mechanism of its own.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
