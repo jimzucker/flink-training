@@ -105,6 +105,9 @@ T = {
     # returns less than 95% of that is a result about the pipeline, not noise.
     # Set from the demo's measured 1.99x and the +-3% a two-pass ratio carries.
     "scalingFloor": 0.95,
+    # when a step has one pair and no spread of its own, assume the wander this
+    # rig showed over an hour on an unchanged build: sd 2.8% across 13 pairs
+    "ratioSdFallback": 0.028,
     # --quick measures each case twice, not once. Measured 2026-09-06: a
     # one-pass ratio compounds the error of both cases and wandered 8.3% low on
     # run 18's build (1.539x against 1.678x from three passes) and 3.2% low on
@@ -1437,12 +1440,23 @@ def build_table(runs, cases_order=None, quick=False):
         entry = {"step": f"{a}->{b}", "from": a, "to": b, "idealRatio": b / a}
         if ca["reportable"] and cb["reportable"]:
             r = cb["meanRecordsPerSec"] / ca["meanRecordsPerSec"]
+            import statistics as _st, math as _math
             pairs = sorted(adjacent.get(entry["step"], []))
             if pairs:
                 mid = pairs[len(pairs) // 2] if len(pairs) % 2 else (pairs[len(pairs) // 2 - 1] + pairs[len(pairs) // 2]) / 2
                 entry.update(adjacentPairs=[round(x, 3) for x in pairs],
                              ratioAdjacent=round(mid, 3),
                              adjacentSpread=round((pairs[-1] - pairs[0]) / mid, 4) if mid else None)
+                # How far the ratio could be from what this many pairs measured.
+                # Measured 2026-09-08, one build, 14 cases in an hour, nothing
+                # changed: 13 adjacent pairs gave 1.849 with sd 2.8%, so two
+                # pairs -- what --quick buys -- carry +-3.9% at 95%. The claim is
+                # judged against the near edge of that interval, not the point.
+                sd = _st.stdev(pairs) / mid if len(pairs) > 1 else T["ratioSdFallback"]
+                half = 1.96 * sd / _math.sqrt(max(len(pairs), 1))
+                entry.update(ratioHalfWidth=round(half, 4),
+                             ratioLowCI=round(mid * (1 - half), 3),
+                             ratioHighCI=round(mid * (1 + half), 3))
             entry.update(ratio=round(r, 3),
                          ratioLow=round(cb["minRecordsPerSec"] / ca["maxRecordsPerSec"], 3),
                          ratioHigh=round(cb["maxRecordsPerSec"] / ca["minRecordsPerSec"], 3),
@@ -1477,9 +1491,17 @@ def build_table(runs, cases_order=None, quick=False):
                         "lastRecordsPerSec": l, "drift": round((l - f) / ((f + l) / 2), 4)}
     for r in ratios:
         if r.get("reportable") and r.get("efficiency") is not None:
-            r["meetsClaim"] = r["efficiency"] >= T["scalingFloor"]
+            # judge the claim on the interval, not the point: a two-pass ratio
+            # carries about +-4% here, so a point estimate decides on noise
+            # The burden is on the claim, so the *whole* interval must clear the
+            # floor: a ratio that might be linear has not been shown to be.
+            lo = r.get("ratioLowCI")
+            eff_lo = (lo / r["idealRatio"]) if lo else r["efficiency"]
+            r["meetsClaim"] = eff_lo >= T["scalingFloor"]
+            r["claimJudgedOn"] = "lower bound of the ratio's interval" if lo else "point estimate"
+            r["claimEfficiencyLow"] = round(eff_lo, 4)
             if not r["meetsClaim"]:
-                r["claimShortfall"] = round(1 - r["efficiency"], 4)
+                r["claimShortfall"] = round(1 - eff_lo, 4)
     return {"cases": cases, "stepRatios": ratios, "orderEffect": order, "sentinel": sentinel,
             "quickLook": quick, "publishable": not quick}
 
