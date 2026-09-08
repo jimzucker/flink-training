@@ -490,12 +490,18 @@ def cmd_preflight():
         broker = L._mib(c.kafka_mem)
         jm = 1024.0
         need = worker + broker + jm
-        if vm and need > (vm / 1048576.0) - 1024:
-            raise Exception(f"worker {worker:.0f}m at {top} cores + broker {broker:.0f}m + job manager "
-                            f"{jm:.0f}m = {need:.0f}m, and the VM has {vm / 1048576:.0f}m: leave 1 GB "
-                            f"for the VM itself or the broker's cache and the worker's heap fight")
+        # Reported, not enforced. A rule refusing need > VM - 1 GB was added on
+        # 2026-09-07 and removed the same day: runs 20 and 21 both passed with a
+        # 6,144m broker on a 7,838 MiB VM, which that rule refuses, and run 22
+        # spent two chains discovering that it contradicts the broker-memory
+        # hint (which asked for 5,632m where the rule allowed 3,613m). The
+        # broker's page cache is elastic; over-committing it against the VM is
+        # normal and the cases that matter are caught by the cap floor and the
+        # broker's own limit-hit guard.
+        over = " (over-committed, which is normal — the broker's cache is elastic)" if vm and need > vm / 1048576.0 else ""
         return (f"worker {worker:.0f}m at {top} cores + broker {broker:.0f}m + job manager {jm:.0f}m "
-                f"= {need:.0f}m of {vm / 1048576:.0f}m VM" if vm else f"{need:.0f}m requested, VM size unknown")
+                f"= {need:.0f}m of {vm / 1048576:.0f}m VM{over}" if vm
+                else f"{need:.0f}m requested, VM size unknown")
 
     def backlog_sizing_hint():
         """Preflight cannot know the rate yet, but it can say what the guess must
@@ -570,7 +576,7 @@ def cmd_preflight():
     check("partitions divide evenly by every parallelism", partitions_per_subtask)
     check("worker memory is per subtask, not per container", memory_per_subtask)
     check("backlog covers warm-up, window and headroom", backlog_sizing_hint)
-    check("worker, broker and job manager fit the VM", memory_budget)
+    check("worker, broker and job manager against the VM (reported)", memory_budget)
     check("group / txn-id prefix scoped per run", scoping)
     check("back-pressure counters exist on the endpoint read", bp_endpoint)
     check("the VM trim command is known", trim)
