@@ -99,6 +99,12 @@ T = {
     # replaces was set below the band and voided six valid tables in run 9.
     "spreadCeil": 0.20,
     "minPasses": 2,
+    # the claim, as opposed to the measurement. A table can be beyond reproach
+    # and still say the pipeline does not scale: the demo's own job reads 1.99x
+    # from 2 to 4 cores on this host, so a step that doubles the resource and
+    # returns less than 95% of that is a result about the pipeline, not noise.
+    # Set from the demo's measured 1.99x and the +-3% a two-pass ratio carries.
+    "scalingFloor": 0.95,
     # --quick measures each case twice, not once. Measured 2026-09-06: a
     # one-pass ratio compounds the error of both cases and wandered 8.3% low on
     # run 18's build (1.539x against 1.678x from three passes) and 3.2% low on
@@ -1447,6 +1453,11 @@ def build_table(runs, cases_order=None, quick=False):
             f, l = first["recordsPerSec"], last["recordsPerSec"]
             sentinel = {"cores": int(last["cores"]), "firstPass": first.get("pass"), "firstRecordsPerSec": f,
                         "lastRecordsPerSec": l, "drift": round((l - f) / ((f + l) / 2), 4)}
+    for r in ratios:
+        if r.get("reportable") and r.get("efficiency") is not None:
+            r["meetsClaim"] = r["efficiency"] >= T["scalingFloor"]
+            if not r["meetsClaim"]:
+                r["claimShortfall"] = round(1 - r["efficiency"], 4)
     return {"cases": cases, "stepRatios": ratios, "orderEffect": order, "sentinel": sentinel,
             "quickLook": quick, "publishable": not quick}
 
