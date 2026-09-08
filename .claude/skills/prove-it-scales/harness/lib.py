@@ -150,6 +150,20 @@ T = {
 
 # ---------------------------------------------------------------------- config
 
+class Ceiling(Exception):
+    """The component under test stopped being the constraint. Not a broken
+    measurement: the case is measured and reported as where scaling stops, and
+    is excluded from the ratios, because a ratio built on it is not a statement
+    about the component. The demo's own 8-unit row -- 4.98 of 8 cores, 1.18x --
+    is exactly this, and the harness used to delete such cases instead of
+    saying what they show."""
+
+    def __init__(self, msg, rec=None):
+        super().__init__(msg)
+        self.msg = msg
+        self.rec = rec or {}
+
+
 class Refusal(Exception):
     def __init__(self, scope, msg):
         super().__init__(msg)
@@ -1214,8 +1228,9 @@ def check_case(rec, cores, is_baseline):
                               f"(< {T['minBpSamples']}): the external-boundary guard would not have been evaluated")
     floor = T["capFloorBaseline"] if is_baseline else T["capFloorOther"]
     if rec["tmCapFrac"] < floor:
-        raise Refusal("case", f"task manager used {rec['tmCapFrac']:.1%} of its {cores}-core cap "
-                              f"(floor {floor:.0%}) — it is not the constraint")
+        raise Ceiling(f"task manager used {rec['tmCapFrac']:.1%} of its {cores}-core cap "
+                      f"(floor {floor:.0%}) — it is not the constraint, so this case is where "
+                      f"scaling stops rather than a point on the curve", rec)
     # A worker at its cap is not waiting on the broker, whatever the broker's
     # cgroup is doing. Measured twice: run 23's 1-core case hit the limit 9,437
     # times at 99.6% of cap with no rate effect, while its 4-core case hit it
@@ -1228,12 +1243,13 @@ def check_case(rec, cores, is_baseline):
         # so the step that worked was x1.6. Named here so the next run raises it once.
         hint = (f" — raise caps.kafkaMemory from {lim / 1048576:.0f}m to about "
                 f"{int(lim * 1.6 / 268435456) * 256:.0f}m") if lim else ""
-        raise Refusal("case", f"the broker hit its memory limit {rec['brokerLimitHits']:,} times inside the window "
-                              f"({rec.get('brokerRefaults', 0):,} file-page refaults): it was reading the backlog off "
-                              f"disk, so the worker is not the constraint{hint}")
+        raise Ceiling(f"the broker hit its memory limit {rec['brokerLimitHits']:,} times inside the window "
+                      f"({rec.get('brokerRefaults', 0):,} file-page refaults): it was reading the backlog off "
+                      f"disk, so the broker is the constraint here, not the worker{hint}", rec)
     if rec["sourceIdle"] > T["sourceIdleCeil"]:
-        raise Refusal("case", f"source idle {rec['sourceIdle']:.1%} > {T['sourceIdleCeil']:.0%}: "
-                              f"the source waited on input for more of the window than any at-cap case on record")
+        raise Ceiling(f"source idle {rec['sourceIdle']:.1%} > {T['sourceIdleCeil']:.0%}: the source waited on "
+                      f"input for more of the window than any at-cap case on record, so the input side is "
+                      f"the constraint here", rec)
 
 
 def check_shape(shape, shape_ref):
@@ -1365,6 +1381,12 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
         check_case(rec, cores, is_baseline)
         rec["status"] = "OK"
         return rec, shape
+    except Ceiling as e:
+        # measured, kept, and excluded from the ratios: this case is where
+        # scaling stopped, which is a finding rather than a broken measurement
+        rec["status"] = "CEILING"
+        rec["ceiling"] = e.msg
+        raise CaseRefused(rec, Refusal("ceiling", e.msg))
     except Refusal as e:
         rec["status"] = "REFUSED"
         rec["refusalScope"] = e.scope
@@ -1390,9 +1412,14 @@ def build_table(runs, cases_order=None, quick=False):
     """Pure: per-case means, spreads, reportability, step ratios, order effect.
     Fed by the suite, by `selftest`, and by `replay` over the record."""
     ok = {}
+    ceilings = []
     for r in runs:
         if r.get("status", "OK") == "OK":
             ok.setdefault(int(r["cores"]), []).append(r)
+        elif r.get("status") == "CEILING":
+            ceilings.append({"cores": int(r["cores"]), "pass": r.get("pass"),
+                             "recordsPerSec": r.get("recordsPerSec"),
+                             "tmCapFrac": r.get("tmCapFrac"), "why": r.get("ceiling")})
     cases = {}
     for cores, rs in sorted(ok.items()):
         rates = [r["recordsPerSec"] for r in rs]
@@ -1503,6 +1530,7 @@ def build_table(runs, cases_order=None, quick=False):
             if not r["meetsClaim"]:
                 r["claimShortfall"] = round(1 - eff_lo, 4)
     return {"cases": cases, "stepRatios": ratios, "orderEffect": order, "sentinel": sentinel,
+            "ceilings": ceilings,
             "quickLook": quick, "publishable": not quick}
 
 
