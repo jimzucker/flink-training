@@ -1,0 +1,1116 @@
+{
+ "axis": "one worker growing: one task manager container capped at N cores, parallelism N, N slots",
+ "apiLevel": "Flink DataStream API, hand-written operators (no SQL, no Table API)",
+ "guarantee": {
+  "state": "exactly-once checkpointing",
+  "sink": "at-least-once, idempotent by emitting the absolute position per key with a per-key sequence number"
+ },
+ "checkpointIntervalMs": 10000,
+ "buildHash": "ecd91ca64b6e7938",
+ "completenessBuild": "ecd91ca64b6e7938",
+ "passesPerCase": 2,
+ "quickLook": true,
+ "publishable": false,
+ "cases": [
+  1,
+  2,
+  4
+ ],
+ "baseline": 1,
+ "backlogRecords": 300000000,
+ "partitions": 8,
+ "outputsPerInput": 5.0,
+ "heldStill": {
+  "kafkaCap": 2.5,
+  "jobManagerCap": 0.5,
+  "partitions": 8,
+  "checkpointMs": 10000,
+  "sinkRetentionBytesPerPartition": 2147483648,
+  "tmProcessMemory": "4096m"
+ },
+ "thresholds": {
+  "capFloorBaseline": 0.95,
+  "capFloorOther": 0.95,
+  "brokerLimitHits": 0,
+  "brokerHitsCapExempt": 0.99,
+  "sourceIdleCeil": 0.2,
+  "vantageTol": 0.05,
+  "spreadCeil": 0.2,
+  "minPasses": 2,
+  "scalingFloor": 0.95,
+  "ratioSdFallback": 0.028,
+  "quickPasses": 2,
+  "warmupIntervals": 4,
+  "warmupFlatTol": 0.1,
+  "warmupScatterTol": 0.2,
+  "warmupMinS": 90.0,
+  "warmupMaxS": 240.0,
+  "minBoundaries": 6,
+  "minWindowS": 60.0,
+  "windowMaxS": 300.0,
+  "reporterS": 10,
+  "minBpSamples": 3,
+  "tinyRatioLo": 1.5,
+  "tinyRatioHi": 2.5,
+  "diskFloorBytes": 20000000000.0,
+  "sinkRetentionBytes": 2147483648
+ },
+ "harness": {
+  "lib.py": "edf29762b620b43b",
+  "prove.py": "d3c88fac36e4cbb1"
+ },
+ "startedAt": "2026-09-08 16:55:18 EDT",
+ "runs": [
+  {
+   "cores": 1,
+   "pass": "p1-asc",
+   "group": "bt25-09081655-c1-p1-asc",
+   "hostFreeGB": 122.8,
+   "nanoCpus": 1000000000,
+   "reporterS": 10,
+   "parallelism": 1,
+   "slotsTotal": 1,
+   "tSubmit": 1788900941.5721788,
+   "jobId": "c922d0ab29661cb89a49b16d0ced87df",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "position-by-account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "position-by-symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     128246.00957701517,
+     130745.23690773066,
+     124767.1383021124,
+     126865.44983044086
+    ],
+    "mean": 127655.95865432477,
+    "drift": 0.0238,
+    "scatter": 0.0468,
+    "warmupS": 90.4
+   },
+   "tSteady": 1788901044.433381,
+   "tOpen": 1788901049.933086,
+   "open": {
+    "ts": 1788901047666,
+    "committed": 10919684,
+    "committedParts": [
+     1185057,
+     1299432,
+     1406794,
+     1413628,
+     1398064,
+     1403777,
+     1405206,
+     1407726
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 10924256,
+    "end_positions-by-account": 43698227
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 144034,
+   "brokerFileCacheBytes": 2300289024,
+   "brokerLimitBytes": 6442450944,
+   "tClose": 1788901110.274451,
+   "close": {
+    "ts": 1788901107838,
+    "committed": 18702100,
+    "committedParts": [
+     2156480,
+     2266335,
+     2387179,
+     2385675,
+     2367976,
+     2377070,
+     2376636,
+     2384749
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 18720374,
+    "end_positions-by-account": 74880855
+   },
+   "boundaries": 6,
+   "elapsedS": 60.17,
+   "recordsConsumed": 7782416,
+   "rateSource": "kafka committed offsets on block-trades",
+   "recordsPerSec": 129336.2,
+   "outputRecsPerSec": 646680.8,
+   "vantageSinkRecords": 7795749.2,
+   "vantageDisagreement": 0.0017,
+   "backlogRemaining": 281297900,
+   "headroomS": 2174.9,
+   "tmCores": 1.003,
+   "tmCapFrac": 1.0026,
+   "tmThrottledPeriodsPct": 99.8,
+   "kafkaCores": 0.113,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0452,
+   "gcMsInWindow": 3742.0,
+   "gcFracOfCapacity": 0.0622,
+   "sourceIdle": 0.0,
+   "sourceBusy": 0.5075,
+   "sourceBackpressured": 0.4925,
+   "bpSamples": 6,
+   "backpressure": {
+    "Source: kafka-source -> allocate": {
+     "busy": 0.5075,
+     "backPressured": 0.4925,
+     "idle": 0.0,
+     "samples": 6
+    },
+    "position-by-symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "busy": 0.2132,
+     "idle": 0.7868,
+     "backPressured": 0.0,
+     "samples": 6
+    },
+    "position-by-account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "busy": 0.9702,
+     "idle": 0.0298,
+     "backPressured": 0.0,
+     "samples": 6
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 167
+  },
+  {
+   "cores": 2,
+   "pass": "p1-asc",
+   "group": "bt25-09081655-c2-p1-asc",
+   "hostFreeGB": 129.2,
+   "nanoCpus": 2000000000,
+   "reporterS": 10,
+   "parallelism": 2,
+   "slotsTotal": 2,
+   "tSubmit": 1788901180.857766,
+   "jobId": "2cc601693fe6ffb200776492bb255106",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "position-by-account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "position-by-symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     267892.63996645,
+     255629.7405189621,
+     259158.86638060072,
+     262733.49925335986
+    ],
+    "mean": 261353.68652984317,
+    "drift": 0.0137,
+    "scatter": 0.0469,
+    "warmupS": 90.2
+   },
+   "tSteady": 1788901283.8013482,
+   "tOpen": 1788901285.860917,
+   "open": {
+    "ts": 1788901282937,
+    "committed": 21248861,
+    "committedParts": [
+     2585756,
+     2593205,
+     2652069,
+     2621925,
+     2688886,
+     2703270,
+     2698485,
+     2705265
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 21289189,
+    "end_positions-by-account": 85139614
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 85457,
+   "brokerFileCacheBytes": 1855848448,
+   "brokerLimitBytes": 6442450944,
+   "tClose": 1788901345.599235,
+   "close": {
+    "ts": 1788901343073,
+    "committed": 37077467,
+    "committedParts": [
+     4549287,
+     4568271,
+     4649078,
+     4602620,
+     4674017,
+     4680441,
+     4667252,
+     4686501
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 37149928,
+    "end_positions-by-account": 148596728
+   },
+   "boundaries": 6,
+   "elapsedS": 60.14,
+   "recordsConsumed": 15828606,
+   "rateSource": "kafka committed offsets on block-trades",
+   "recordsPerSec": 263213.5,
+   "outputRecsPerSec": 1316067.4,
+   "vantageSinkRecords": 15863570.6,
+   "vantageDisagreement": 0.0022,
+   "backlogRemaining": 262922533,
+   "headroomS": 998.9,
+   "tmCores": 1.985,
+   "tmCapFrac": 0.9924,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.234,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0934,
+   "gcMsInWindow": 1586.0,
+   "gcFracOfCapacity": 0.0132,
+   "sourceIdle": 0.0079,
+   "sourceBusy": 0.6325,
+   "sourceBackpressured": 0.3596,
+   "bpSamples": 12,
+   "backpressure": {
+    "Source: kafka-source -> allocate": {
+     "busy": 0.6325,
+     "idle": 0.0079,
+     "backPressured": 0.3596,
+     "samples": 12
+    },
+    "position-by-symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "idle": 0.6708,
+     "busy": 0.3292,
+     "backPressured": 0.0,
+     "samples": 12
+    },
+    "position-by-account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "idle": 0.0797,
+     "busy": 0.9203,
+     "backPressured": 0.0,
+     "samples": 12
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 166
+  },
+  {
+   "cores": 4,
+   "pass": "p1-asc",
+   "group": "bt25-09081655-c4-p1-asc",
+   "hostFreeGB": 124.4,
+   "nanoCpus": 4000000000,
+   "reporterS": 10,
+   "parallelism": 4,
+   "slotsTotal": 4,
+   "tSubmit": 1788901411.207402,
+   "jobId": "1c161ce92a4b2d7e3b67013c594b9232",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "position-by-account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "position-by-symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     512704.2281611488,
+     521737.71308942273,
+     497112.2418437594,
+     520313.44177227817
+    ],
+    "mean": 512966.90621665225,
+    "drift": 0.0011,
+    "scatter": 0.048,
+    "warmupS": 90.0
+   },
+   "tSteady": 1788901513.70914,
+   "tOpen": 1788901515.8855171,
+   "open": {
+    "ts": 1788901510699,
+    "committed": 41894318,
+    "committedParts": [
+     5196918,
+     5211744,
+     5212322,
+     5209668,
+     5275142,
+     5265294,
+     5258830,
+     5264400
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 42149700,
+    "end_positions-by-account": 168617414
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 117260,
+   "brokerFileCacheBytes": 1514434560,
+   "brokerLimitBytes": 6442450944,
+   "tClose": 1788901582.8247628,
+   "close": {
+    "ts": 1788901580339,
+    "committed": 77634205,
+    "committedParts": [
+     9650282,
+     9670342,
+     9682440,
+     9674165,
+     9755665,
+     9744468,
+     9733322,
+     9723521
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 77698580,
+    "end_positions-by-account": 310772053
+   },
+   "boundaries": 7,
+   "elapsedS": 69.64,
+   "recordsConsumed": 35739887,
+   "rateSource": "kafka committed offsets on block-trades",
+   "recordsPerSec": 513209.2,
+   "outputRecsPerSec": 2566045.9,
+   "vantageSinkRecords": 35540703.8,
+   "vantageDisagreement": 0.0056,
+   "backlogRemaining": 222365795,
+   "headroomS": 433.3,
+   "tmCores": 3.843,
+   "tmCapFrac": 0.9608,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.491,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.1962,
+   "gcMsInWindow": 1932.0,
+   "gcFracOfCapacity": 0.0069,
+   "sourceIdle": 0.0189,
+   "sourceBusy": 0.7499,
+   "sourceBackpressured": 0.2312,
+   "bpSamples": 28,
+   "backpressure": {
+    "position-by-symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "idle": 0.565,
+     "backPressured": 0.0,
+     "busy": 0.435,
+     "samples": 28
+    },
+    "position-by-account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "idle": 0.0423,
+     "backPressured": 0.0,
+     "busy": 0.9577,
+     "samples": 28
+    },
+    "Source: kafka-source -> allocate": {
+     "backPressured": 0.2312,
+     "busy": 0.7499,
+     "idle": 0.0189,
+     "samples": 28
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 181
+  },
+  {
+   "cores": 4,
+   "pass": "p2-desc",
+   "group": "bt25-09081655-c4-p2-desc",
+   "hostFreeGB": 114.2,
+   "nanoCpus": 4000000000,
+   "reporterS": 10,
+   "parallelism": 4,
+   "slotsTotal": 4,
+   "tSubmit": 1788901651.130122,
+   "jobId": "ece64afa74946786921e5e742bfc64d8",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "position-by-account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "position-by-symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     521528.9664598886,
+     510521.47852147854,
+     504845.00149805256,
+     504482.4797843666
+    ],
+    "mean": 510344.4815659466,
+    "drift": 0.0334,
+    "scatter": 0.0334,
+    "warmupS": 90.5
+   },
+   "tSteady": 1788901752.7678778,
+   "tOpen": 1788901759.0079439,
+   "open": {
+    "ts": 1788901756670,
+    "committed": 45637010,
+    "committedParts": [
+     5662635,
+     5655362,
+     5651429,
+     5642639,
+     5753955,
+     5755221,
+     5757990,
+     5757779
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 45718926,
+    "end_positions-by-account": 182871629
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 82859,
+   "brokerFileCacheBytes": 485642240,
+   "brokerLimitBytes": 6442450944,
+   "tClose": 1788901819.411189,
+   "close": {
+    "ts": 1788901816828,
+    "committed": 75677687,
+    "committedParts": [
+     9430668,
+     9439348,
+     9469118,
+     9445630,
+     9521635,
+     9461064,
+     9456809,
+     9453415
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 75839075,
+    "end_positions-by-account": 303344110
+   },
+   "boundaries": 6,
+   "elapsedS": 60.16,
+   "recordsConsumed": 30040677,
+   "rateSource": "kafka committed offsets on block-trades",
+   "recordsPerSec": 499363.0,
+   "outputRecsPerSec": 2496814.8,
+   "vantageSinkRecords": 30118526.0,
+   "vantageDisagreement": 0.0026,
+   "backlogRemaining": 224322313,
+   "headroomS": 449.2,
+   "tmCores": 4.014,
+   "tmCapFrac": 1.0036,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.488,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.195,
+   "gcMsInWindow": 1436.0,
+   "gcFracOfCapacity": 0.006,
+   "sourceIdle": 0.0187,
+   "sourceBusy": 0.731,
+   "sourceBackpressured": 0.2503,
+   "bpSamples": 24,
+   "backpressure": {
+    "position-by-symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "busy": 0.4265,
+     "backPressured": 0.0,
+     "idle": 0.5735,
+     "samples": 24
+    },
+    "position-by-account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "idle": 0.0414,
+     "busy": 0.9586,
+     "backPressured": 0.0,
+     "samples": 24
+    },
+    "Source: kafka-source -> allocate": {
+     "busy": 0.731,
+     "backPressured": 0.2503,
+     "idle": 0.0187,
+     "samples": 24
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 168
+  },
+  {
+   "cores": 2,
+   "pass": "p2-desc",
+   "group": "bt25-09081655-c2-p2-desc",
+   "hostFreeGB": 114.7,
+   "nanoCpus": 2000000000,
+   "reporterS": 10,
+   "parallelism": 2,
+   "slotsTotal": 2,
+   "tSubmit": 1788901897.364065,
+   "jobId": "53800d7d8631045325caf74522cd7163",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "position-by-account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "position-by-symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     265118.981018981,
+     262789.4579215334,
+     266768.6470294558,
+     266968.21126058797
+    ],
+    "mean": 265411.32430763956,
+    "drift": 0.0108,
+    "scatter": 0.0157,
+    "warmupS": 90.4
+   },
+   "tSteady": 1788901998.634989,
+   "tOpen": 1788902000.720661,
+   "open": {
+    "ts": 1788901995373,
+    "committed": 20958720,
+    "committedParts": [
+     2585756,
+     2593205,
+     2606859,
+     2598913,
+     2586886,
+     2596014,
+     2698485,
+     2692602
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 21093572,
+    "end_positions-by-account": 84363976
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 75328,
+   "brokerFileCacheBytes": 2047967232,
+   "brokerLimitBytes": 6442450944,
+   "tClose": 1788902067.108876,
+   "close": {
+    "ts": 1788902065002,
+    "committed": 39614654,
+    "committedParts": [
+     4871779,
+     4891688,
+     4952549,
+     4903508,
+     4994911,
+     5000454,
+     4991344,
+     5008421
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 39640967,
+    "end_positions-by-account": 158564551
+   },
+   "boundaries": 7,
+   "elapsedS": 69.63,
+   "recordsConsumed": 18655934,
+   "rateSource": "kafka committed offsets on block-trades",
+   "recordsPerSec": 267933.4,
+   "outputRecsPerSec": 1339666.9,
+   "vantageSinkRecords": 18549594.0,
+   "vantageDisagreement": 0.0057,
+   "backlogRemaining": 260385346,
+   "headroomS": 971.8,
+   "tmCores": 1.907,
+   "tmCapFrac": 0.9533,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.228,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.091,
+   "gcMsInWindow": 1760.0,
+   "gcFracOfCapacity": 0.0126,
+   "sourceIdle": 0.0088,
+   "sourceBusy": 0.6434,
+   "sourceBackpressured": 0.3478,
+   "bpSamples": 14,
+   "backpressure": {
+    "Source: kafka-source -> allocate": {
+     "idle": 0.0088,
+     "backPressured": 0.3478,
+     "busy": 0.6434,
+     "samples": 14
+    },
+    "position-by-account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "idle": 0.0759,
+     "busy": 0.9241,
+     "backPressured": 0.0,
+     "samples": 14
+    },
+    "position-by-symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "backPressured": 0.0,
+     "idle": 0.6868,
+     "busy": 0.3132,
+     "samples": 14
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 179
+  },
+  {
+   "cores": 1,
+   "pass": "p2-desc",
+   "group": "bt25-09081655-c1-p2-desc",
+   "hostFreeGB": 123.8,
+   "nanoCpus": 1000000000,
+   "reporterS": 10,
+   "parallelism": 1,
+   "slotsTotal": 1,
+   "tSubmit": 1788902133.82145,
+   "jobId": "1bcd8696e78f2314dbc4ed1500ef43c0",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "position-by-account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "position-by-symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     124759.19465762982,
+     126919.7807673144,
+     125799.10224438903,
+     123811.62744315914
+    ],
+    "mean": 125322.4262781231,
+    "drift": 0.0095,
+    "scatter": 0.0248,
+    "warmupS": 90.0
+   },
+   "tSteady": 1788902235.791044,
+   "tOpen": 1788902242.248472,
+   "open": {
+    "ts": 1788902239941,
+    "committed": 10660332,
+    "committedParts": [
+     1185057,
+     1283290,
+     1299939,
+     1301954,
+     1373383,
+     1403777,
+     1405206,
+     1407726
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 10679236,
+    "end_positions-by-account": 42715171
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 135358,
+   "brokerFileCacheBytes": 2292293632,
+   "brokerLimitBytes": 6442450944,
+   "tClose": 1788902302.243048,
+   "close": {
+    "ts": 1788902300071,
+    "committed": 18425065,
+    "committedParts": [
+     2156480,
+     2253404,
+     2279718,
+     2277394,
+     2319614,
+     2377070,
+     2376636,
+     2384749
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 18466025,
+    "end_positions-by-account": 73860055
+   },
+   "boundaries": 6,
+   "elapsedS": 60.13,
+   "recordsConsumed": 7764733,
+   "rateSource": "kafka committed offsets on block-trades",
+   "recordsPerSec": 129132.4,
+   "outputRecsPerSec": 645662.1,
+   "vantageSinkRecords": 7786334.6,
+   "vantageDisagreement": 0.0028,
+   "backlogRemaining": 281574935,
+   "headroomS": 2180.5,
+   "tmCores": 0.997,
+   "tmCapFrac": 0.9974,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.112,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0446,
+   "gcMsInWindow": 3442.0,
+   "gcFracOfCapacity": 0.0572,
+   "sourceIdle": 0.0,
+   "sourceBusy": 0.5897,
+   "sourceBackpressured": 0.4103,
+   "bpSamples": 6,
+   "backpressure": {
+    "position-by-account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "idle": 0.0493,
+     "backPressured": 0.0,
+     "busy": 0.9507,
+     "samples": 6
+    },
+    "position-by-symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "backPressured": 0.0,
+     "busy": 0.2408,
+     "idle": 0.7592,
+     "samples": 6
+    },
+    "Source: kafka-source -> allocate": {
+     "backPressured": 0.4103,
+     "busy": 0.5897,
+     "idle": 0.0,
+     "samples": 6
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 166
+  },
+  {
+   "cores": 1,
+   "pass": "sentinel",
+   "group": "bt25-09081655-c1-sentinel",
+   "hostFreeGB": 129.3,
+   "nanoCpus": 1000000000,
+   "reporterS": 10,
+   "parallelism": 1,
+   "slotsTotal": 1,
+   "tSubmit": 1788902375.258173,
+   "jobId": "e228404f2f16fc8047a539b49070826d",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: kafka-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "position-by-account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "position-by-symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     126782.69537480063,
+     128490.47381546134,
+     131972.73360533387,
+     127664.40339490763
+    ],
+    "mean": 128727.57654762587,
+    "drift": 0.0143,
+    "scatter": 0.0403,
+    "warmupS": 90.5
+   },
+   "tSteady": 1788902477.174556,
+   "tOpen": 1788902484.057866,
+   "open": {
+    "ts": 1788902481892,
+    "committed": 11090871,
+    "committedParts": [
+     1264852,
+     1390824,
+     1406794,
+     1413628,
+     1398064,
+     1403777,
+     1405206,
+     1407726
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 11115904,
+    "end_positions-by-account": 44457120
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 114594,
+   "brokerFileCacheBytes": 2333380608,
+   "brokerLimitBytes": 6442450944,
+   "tClose": 1788902544.3593888,
+   "close": {
+    "ts": 1788902542050,
+    "committed": 19035993,
+    "committedParts": [
+     2265093,
+     2360658,
+     2387179,
+     2385675,
+     2367976,
+     2377070,
+     2400792,
+     2491550
+    ],
+    "endIn": 300000000,
+    "end_positions-by-symbol": 19097117,
+    "end_positions-by-account": 76379223
+   },
+   "boundaries": 6,
+   "elapsedS": 60.16,
+   "recordsConsumed": 7945122,
+   "rateSource": "kafka committed offsets on block-trades",
+   "recordsPerSec": 132070.9,
+   "outputRecsPerSec": 660354.6,
+   "vantageSinkRecords": 7980663.2,
+   "vantageDisagreement": 0.0045,
+   "backlogRemaining": 280964007,
+   "headroomS": 2127.4,
+   "tmCores": 1.002,
+   "tmCapFrac": 1.002,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.109,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0436,
+   "gcMsInWindow": 3244.0,
+   "gcFracOfCapacity": 0.0539,
+   "sourceIdle": 0.0,
+   "sourceBusy": 0.4808,
+   "sourceBackpressured": 0.5192,
+   "bpSamples": 6,
+   "backpressure": {
+    "position-by-symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "backPressured": 0.0,
+     "busy": 0.229,
+     "idle": 0.771,
+     "samples": 6
+    },
+    "position-by-account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "idle": 0.0192,
+     "busy": 0.9808,
+     "backPressured": 0.0,
+     "samples": 6
+    },
+    "Source: kafka-source -> allocate": {
+     "backPressured": 0.5192,
+     "busy": 0.4808,
+     "idle": 0.0,
+     "samples": 6
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 167
+  }
+ ],
+ "refusals": [],
+ "savedAt": "2026-09-08 17:23:10 EDT",
+ "table": {
+  "cases": {
+   "1": {
+    "cores": 1,
+    "passes": 3,
+    "meanRecordsPerSec": 130179.8,
+    "minRecordsPerSec": 129132.4,
+    "maxRecordsPerSec": 132070.9,
+    "spread": 0.0226,
+    "reportable": true,
+    "quickLook": true,
+    "publishable": false,
+    "tmCores": 1.0007,
+    "tmCapFrac": 1.0007,
+    "tmThrottledPeriodsPct": 99.9333,
+    "kafkaCores": 0.1113,
+    "sourceIdle": 0.0,
+    "sourceBackpressured": 0.474,
+    "headroomS": 2160.9333,
+    "gcFracOfCapacity": 0.0578,
+    "vantageDisagreementMax": 0.0045
+   },
+   "2": {
+    "cores": 2,
+    "passes": 2,
+    "meanRecordsPerSec": 265573.5,
+    "minRecordsPerSec": 263213.5,
+    "maxRecordsPerSec": 267933.4,
+    "spread": 0.0178,
+    "reportable": true,
+    "quickLook": true,
+    "publishable": false,
+    "tmCores": 1.946,
+    "tmCapFrac": 0.9728,
+    "tmThrottledPeriodsPct": 100.0,
+    "kafkaCores": 0.231,
+    "sourceIdle": 0.0083,
+    "sourceBackpressured": 0.3537,
+    "headroomS": 985.35,
+    "gcFracOfCapacity": 0.0129,
+    "vantageDisagreementMax": 0.0057
+   },
+   "4": {
+    "cores": 4,
+    "passes": 2,
+    "meanRecordsPerSec": 506286.1,
+    "minRecordsPerSec": 499363.0,
+    "maxRecordsPerSec": 513209.2,
+    "spread": 0.0273,
+    "reportable": true,
+    "quickLook": true,
+    "publishable": false,
+    "tmCores": 3.9285,
+    "tmCapFrac": 0.9822,
+    "tmThrottledPeriodsPct": 100.0,
+    "kafkaCores": 0.4895,
+    "sourceIdle": 0.0188,
+    "sourceBackpressured": 0.2408,
+    "headroomS": 441.25,
+    "gcFracOfCapacity": 0.0065,
+    "vantageDisagreementMax": 0.0056
+   }
+  },
+  "stepRatios": [
+   {
+    "step": "1->2",
+    "from": 1,
+    "to": 2,
+    "idealRatio": 2.0,
+    "adjacentPairs": [
+     2.035,
+     2.075
+    ],
+    "ratioAdjacent": 2.055,
+    "adjacentSpread": 0.0193,
+    "ratioHalfWidth": 0.019,
+    "ratioLowCI": 2.016,
+    "ratioHighCI": 2.094,
+    "ratio": 2.04,
+    "ratioLow": 1.993,
+    "ratioHigh": 2.075,
+    "efficiency": 1.02,
+    "reportable": true,
+    "meetsClaim": true,
+    "claimJudgedOn": "lower bound of the ratio's interval",
+    "claimEfficiencyLow": 1.008
+   },
+   {
+    "step": "2->4",
+    "from": 2,
+    "to": 4,
+    "idealRatio": 2.0,
+    "adjacentPairs": [
+     1.864,
+     1.95
+    ],
+    "ratioAdjacent": 1.907,
+    "adjacentSpread": 0.0451,
+    "ratioHalfWidth": 0.0442,
+    "ratioLowCI": 1.822,
+    "ratioHighCI": 1.991,
+    "ratio": 1.906,
+    "ratioLow": 1.864,
+    "ratioHigh": 1.95,
+    "efficiency": 0.9532,
+    "reportable": true,
+    "meetsClaim": false,
+    "claimJudgedOn": "lower bound of the ratio's interval",
+    "claimEfficiencyLow": 0.911,
+    "claimShortfall": 0.089
+   }
+  ],
+  "orderEffect": {
+   "1": {
+    "ascendingMean": 129336.2,
+    "descendingMean": 129132.4,
+    "descOverAsc": 0.9984
+   },
+   "2": {
+    "ascendingMean": 263213.5,
+    "descendingMean": 267933.4,
+    "descOverAsc": 1.0179
+   },
+   "4": {
+    "ascendingMean": 513209.2,
+    "descendingMean": 499363.0,
+    "descOverAsc": 0.973
+   }
+  },
+  "sentinel": {
+   "cores": 1,
+   "firstPass": "p1-asc",
+   "firstRecordsPerSec": 129336.2,
+   "lastRecordsPerSec": 132070.9,
+   "drift": 0.0209
+  },
+  "quickLook": true,
+  "publishable": false
+ }
+}

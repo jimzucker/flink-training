@@ -1,0 +1,53 @@
+[2026-09-08 16:33:39] phase=all start
+[2026-09-08 16:33:39] phase=up start
+[2026-09-08 16:33:57] stack up: bt25-kafka (cap 2.5), bt25-jm (cap 0.5); task manager is started per case
+[2026-09-08 16:33:57] phase=up end rc=0 18s
+[2026-09-08 16:33:57] phase=preflight start
+[2026-09-08 16:35:06] phase=preflight end rc=0 69s
+[2026-09-08 16:35:06] phase=completeness start
+[2026-09-08 16:35:10] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-25/job/target/positions-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=10000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-25/results/manifest-small.json
+[2026-09-08 16:35:19] fill done: produce: 10,000,000 block trades, seed 20260910, manifest ~/code/GitHub/flink-skill-test-25/results/manifest-small.json, 9.5s
+[2026-09-08 16:35:20] backlog block-trades-small: 10,000,000 records read back over 8 partitions
+[2026-09-08 16:37:51] drained to the last record in 113.9s
+[2026-09-08 16:40:25] KILL: committed=4370971, killing the task manager mid-drain
+[2026-09-08 16:41:13] KILL: job RUNNING again on the replacement worker
+[2026-09-08 16:42:30] drained to the last record in 170.3s (worker killed mid-drain)
+[2026-09-08 16:43:14] phase=completeness end rc=0 488s
+[2026-09-08 16:43:14] phase=tinyproof start
+[2026-09-08 16:43:18] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-25/job/target/positions-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=120000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-25/results/manifest-tiny.json
+[2026-09-08 16:44:45] fill done: produce: 120,000,000 block trades, seed 20260909, manifest ~/code/GitHub/flink-skill-test-25/results/manifest-tiny.json, 86.8s
+[2026-09-08 16:44:46] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-08 16:44:46] ---- tiny case 1 cores ----
+[2026-09-08 16:47:39]   1c: 137,630 rec/s, tm 99.9% of cap, vantage 0.44%
+[2026-09-08 16:47:39] ---- tiny case 4 cores ----
+[2026-09-08 16:50:41]   4c: 505,826 rec/s, tm 97.6% of cap, vantage 1.47%
+[2026-09-08 16:50:41]   disk: input 75 B/record x 300,000,000 = 22.4 GB; sinks 260 B/input -> 78.0 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 76.8 GB incl. the 20 GB floor, 136.0 GB free now + 20.5 GB the tiny proof gives back = 156.5 GB: FITS
+[2026-09-08 16:50:41]   backlog: 300,000,000 configured, 60,699,168 needed at the measured 505,826 rec/s
+[2026-09-08 16:51:27] phase=tinyproof end rc=0 493s
+[2026-09-08 16:51:27] phase=fill start
+[2026-09-08 16:51:30] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-25/job/target/positions-1.0.jar blocktrades.GenerateBacklog --mode=produce --count=300000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-25/results/manifest.json
+[2026-09-08 16:55:17] fill done: produce: 300,000,000 block trades, seed 20260908, manifest ~/code/GitHub/flink-skill-test-25/results/manifest.json, 226.1s
+[2026-09-08 16:55:18] backlog block-trades: 300,000,000 records read back over 8 partitions
+[2026-09-08 16:55:18] phase=fill end rc=0 231s
+[2026-09-08 16:55:18] phase=suite start
+[2026-09-08 16:55:18] ---- case 1 cores, pass p1-asc ----
+[2026-09-08 16:59:20]   1c p1-asc: 129,336 rec/s  tm 1.00/1 (100.3%)  kafka 0.11/2.5  srcIdle 0.0%  srcBP 49.2%  headroom 2175s  vantage 0.17%
+[2026-09-08 16:59:20] ---- case 2 cores, pass p1-asc ----
+[2026-09-08 17:03:10]   2c p1-asc: 263,214 rec/s  tm 1.99/2 (99.2%)  kafka 0.23/2.5  srcIdle 0.8%  srcBP 36.0%  headroom 999s  vantage 0.22%
+[2026-09-08 17:03:10] ---- case 4 cores, pass p1-asc ----
+[2026-09-08 17:07:09]   4c p1-asc: 513,209 rec/s  tm 3.84/4 (96.1%)  kafka 0.49/2.5  srcIdle 1.9%  srcBP 23.1%  headroom 433s  vantage 0.56%
+[2026-09-08 17:07:09] ---- case 4 cores, pass p2-desc ----
+[2026-09-08 17:11:17]   4c p2-desc: 499,363 rec/s  tm 4.01/4 (100.4%)  kafka 0.49/2.5  srcIdle 1.9%  srcBP 25.0%  headroom 449s  vantage 0.26%
+[2026-09-08 17:11:17] ---- case 2 cores, pass p2-desc ----
+[2026-09-08 17:15:10]   2c p2-desc: 267,933 rec/s  tm 1.91/2 (95.3%)  kafka 0.23/2.5  srcIdle 0.9%  srcBP 34.8%  headroom 972s  vantage 0.57%
+[2026-09-08 17:15:10] ---- case 1 cores, pass p2-desc ----
+[2026-09-08 17:19:12]   1c p2-desc: 129,132 rec/s  tm 1.00/1 (99.7%)  kafka 0.11/2.5  srcIdle 0.0%  srcBP 41.0%  headroom 2180s  vantage 0.28%
+[2026-09-08 17:19:12] ---- case 1 cores, pass sentinel ----
+[2026-09-08 17:23:10]   1c sentinel: 132,071 rec/s  tm 1.00/1 (100.2%)  kafka 0.11/2.5  srcIdle 0.0%  srcBP 51.9%  headroom 2127s  vantage 0.45%
+[2026-09-08 17:23:10] phase=suite end rc=0 1673s
+[2026-09-08 17:23:10] phase=report start
+[2026-09-08 17:23:10] the chain measured a valid table whose step ratios do not meet the claim
+[2026-09-08 17:23:10] phase=report end rc=1 0s
+[2026-09-08 17:23:10] phase=all end FAIL at report 49.5 min
+[2026-09-08 17:25:17] fstrim: /var/lib/docker: 23.1 GiB (24804982784 bytes) trimmed
+[2026-09-08 17:25:17] stack down; nothing with prefix bt25 survives

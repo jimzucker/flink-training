@@ -1,0 +1,16 @@
+{
+ "tradeCount": 300000000,
+ "seed": 20260908,
+ "partitions": 8,
+ "accountsPerBlock": 4,
+ "outputsPerInput": 5,
+ "distinctSymbols": 4096,
+ "distinctAccounts": 8192,
+ "totalNet": 274646200,
+ "totalGross": 15015482479000,
+ "totalNotional": 21882168801900,
+ "symbolUpdates": 300000000,
+ "accountUpdates": 1200000000,
+ "symbolPositions": "<4096 entries stripped>",
+ "accountPositions": "<8192 entries stripped>"
+}
