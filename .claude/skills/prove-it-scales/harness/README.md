@@ -106,6 +106,19 @@ tested with the cases interleaved and changed nothing: 16 partitions refused
 every parallelism-4 case for an unstable warm-up, and the buffers moved the
 per-core rate 0.6%.
 
+**The claim is judged on the interval, not the point, and the burden is on the
+claim.** Each step carries `ratioLowCI`/`ratioHighCI` from the spread of its
+adjacent pairs, and `meetsClaim` is true only when the *lower* bound clears
+`scalingFloor`: a ratio that might be linear has not been shown to be. The
+interval width comes from measurement, not assumption — 14 cases on one
+unchanged build in an hour gave 13 pairs at 1.849 with sd 2.8%, so the two
+pairs `--quick` buys carry about ±3.9% at 95% confidence, and `ratioSdFallback`
+holds that figure for a step with a single pair.
+
+Replayed against the record: of twelve recorded runs, one (run 12) has a 2→4
+whose whole interval clears 95% of linear. That is the honest state of these
+pipelines, not a reason to move the floor.
+
 **Each step ratio also carries its adjacent pairs.** `ratioAdjacent` is the
 median of the ratios between cases measured next to each other in time, with
 `adjacentPairs` and `adjacentSpread` beside it. It is a diagnostic, not a cure:
