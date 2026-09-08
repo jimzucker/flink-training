@@ -1,0 +1,168 @@
+QUICK LOOK: 2 passes per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+[21:05:53] phase=all start
+[21:05:53] phase=up start
+[21:06:11] stack up: bt24-kafka (cap 2.5), bt24-jm (cap 0.5); task manager is started per case
+[21:06:11] phase=up end rc=0 18s
+[21:06:11] phase=preflight start
+PASS  every image is native to the host arch               host=arm64 apache/kafka=arm64 flink=arm64
+PASS  the JDK the engine needs resolves, pinned            host openjdk version "17.0.20" 2026-07-21 | image openjdk version "17.0.15" 2025-04-15
+PASS  the engine can write its state directory             uid 9999 (flink) can mkdir under /ckpt
+PASS  the metrics reporter is not duplicated               no reporter jar copied into lib/; slf4j reporter used from plugins/
+PASS  disk budget on the HOST, not the container           host free 158.9 GB >= budget 76.0 GB (backlog 28.8 + sinks at retention 34.4 + ckpt 2 + slack 10)
+PASS  retention on every topic written but never drained   retention.bytes=2147483648 set and read back on ['positions-by-symbol', 'positions-by-account'] (a periodic sweep, not a bound)
+PASS  the generator is deterministic                       identical sha256=c131d352449a for 200,000 records at seed 20260907
+PASS  CPU cap mechanism chosen once                        --cpus throughout; read back NanoCpus=2000000000 and cgroup cpu.max = 2.0 cores
+PASS  slots >= parallelism x jobs                          slots-total=4 >= parallelism 4 x 1 job
+PASS  partitions divide evenly by every parallelism        8 partitions / parallelism [1, 2, 4] = 8 per subtask at 1, 4 per subtask at 2, 2 per subtask at 4
+PASS  worker memory is per subtask, not per container      1024m base + 768m per subtask: 1792m at 1, 2560m at 2, 4096m at 4
+PASS  backlog covers warm-up, window and headroom          backlog 240,000,000 covers 180s x 1.5 at the 4-core rate, so up to 888,889 rec/s; the tiny proof checks this against the measured rate
+PASS  worker, broker and job manager against the VM (reported) worker 4096m at 4 cores + broker 6144m + job manager 1024m = 11264m of 7838m VM (over-committed, which is normal — the broker's cache is elastic)
+PASS  group / txn-id prefix scoped per run                 consumer group = bt24-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)
+PASS  back-pressure counters exist on the endpoint read    Flink 1.20.1: busy/idle/backPressured read from the worker's slf4j reporter; REST path deprecated
+PASS  the VM trim command is known                         docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker
+PASS  the job jar exists and hashes                        build 1b997db5c993ca54
+
+17/17 PASS
+[21:07:14] phase=preflight end rc=0 64s
+[21:07:14] phase=completeness start
+[21:07:18] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-24/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=20000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-24/results/manifest-small.json
+[21:07:32] fill done: {"mode":"produce","count":20000000,"seed":20260909,"seconds":13.851}
+[21:07:33] backlog block-trades-small: 20,000,000 records read back over 8 partitions
+[21:10:38] drained to the last record in 148.2s
+read 4,096 distinct symbol keys and 8,192 distinct account keys off the sinks
+symbols: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 20,000,000
+accounts: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 80,000,000
+manifest: net qty 51,030,517,282  net notional 1,326,897,507,205,252  trades 20,000,000
+COMPLETENESS OK — every assertion held with no tolerance
+
+[21:13:20] KILL: committed=7791043, killing the task manager mid-drain
+[21:14:05] KILL: job RUNNING again on the replacement worker
+[21:15:51] drained to the last record in 202.0s (worker killed mid-drain)
+read 4,096 distinct symbol keys and 8,192 distinct account keys off the sinks
+symbols: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 20,000,000
+accounts: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 80,000,000
+manifest: net qty 51,030,517,282  net notional 1,326,897,507,205,252  trades 20,000,000
+COMPLETENESS OK — every assertion held with no tolerance
+
+COMPLETENESS PASSED FOR BUILD 1b997db5c993ca54 (clean drain, and a worker killed at 35%)
+[21:16:51] phase=completeness end rc=0 577s
+[21:16:51] phase=tinyproof start
+[21:16:54] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-24/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=120000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-24/results/manifest-tiny.json
+[21:18:09] fill done: {"mode":"produce","count":120000000,"seed":20260908,"seconds":74.731}
+[21:18:10] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[21:18:10] ---- tiny case 1 cores ----
+[21:21:00]   1c: 182,256 rec/s, tm 100.2% of cap, vantage 0.30%
+[21:21:00] ---- tiny case 4 cores ----
+[21:23:19]   4c: 701,341 rec/s, tm 100.0% of cap, vantage 0.08%
+[21:23:20]   disk: input 77 B/record x 240,000,000 = 18.6 GB; sinks 255 B/input -> 61.1 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 72.9 GB incl. the 20 GB floor, 134.5 GB free now + 22.9 GB the tiny proof gives back = 157.3 GB: FITS
+[21:23:20]   backlog: 240,000,000 configured, 84,160,956 needed at the measured 701,341 rec/s
+
+tiny proof 1 -> 4 ratio: 3.848x (bounds 3.00-5.00)
+
+guard self-test:
+pure guards (synthetic case records through check_case):
+  ok  window has < 3 commit boundaries               -> REFUSED | only 2 commit boundaries inside the window
+  ok  measured rate is zero                          -> REFUSED | measured rate is not positive: 0 records in 60.0s
+  ok  rate came from the engine                      -> REFUSED | rate came from the engine, not the transport
+  ok  two vantage points disagree                    -> REFUSED | vantage points disagree by 12.0% (source committed 10000000, sinks imply 10010000) > tolerance 5%
+  ok  backlog lacks headroom at close                -> REFUSED | backlog headroom at close is 1000 records (0.0s) < one checkpoint interval at the measured rate
+  ok  external-boundary samples missing              -> REFUSED | 6 source back-pressure samples inside the window (< 3): the external-boundary guard would not have b
+  ok  too few reporter samples in the window         -> REFUSED | 2 source back-pressure samples inside the window (< 3): the external-boundary guard would not have b
+  ok  worker is not the constraint (baseline, run 5's 94%) -> REFUSED | task manager used 94.0% of its 4-core cap (floor 95%) — it is not the constraint
+  ok  baseline at 95.9% is the constraint (run 12 p3; must not fire) -> DID NOT FIRE
+  ok  worker is not the constraint (other)           -> REFUSED | task manager used 90.0% of its 4-core cap (floor 95%) — it is not the constraint
+  ok  source idle past the ceiling                   -> REFUSED | source idle 40.0% > 20%: the source waited on input for more of the window than any at-cap case on r
+  ok  the broker was starved of page cache           -> REFUSED | the broker hit its memory limit 310,423 times inside the window (6,270,562 file-page refaults): it w
+  ok  a broker that never hit its limit (must not fire) -> DID NOT FIRE
+  ok  job graph differs across cases                 -> REFUSED | job graph shape differs from the other cases:
+{'vertexCount': 3, 'signature': [['a', ['HASH']]]}
+vs
+
+  ok  a case's passes spread past the ceiling        -> REFUSED | spread 26.1% > 20% ceiling
+  ok  a case measured only once                      -> REFUSED | 1 pass(es) < 2
+  ok  a commit that lands in two pieces (must not fire) -> DID NOT FIRE
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported
+  ok  quick look: the flag reaches neither the record nor the guards (must not fire) -> DID NOT FIRE
+  ok  quick look: two passes, so every case has a spread (must not fire) -> DID NOT FIRE
+  ok  quick look: one pass computes a ratio, stamped unpublishable (must not fire) -> DID NOT FIRE
+  ok  sentinel: rig drifted across the suite         -> REFUSED | sentinel drift -28.6%: spread 27.4% > 20% ceiling
+  ok  sentinel: drift inside the noise floor (must not fire) -> DID NOT FIRE
+  ok  a host-side watcher outlives the run           -> REFUSED | host processes watching this run were found and killed: [48104, 48105, 48107]
+  ok  disk: run 11's build A fitted (must not fire)  -> DID NOT FIRE
+  ok  disk: the suite would not fit                  -> REFUSED | the suite would not fit on disk: input 42.1 GB + sinks 34.4 GB (retention-capped at 34.4 GB) + check
+  ok  all: the chain stops at the first failing step -> REFUSED | chain stopped at c, d never ran, DONE says 'FAIL at c 0.0 min'
+  ok  warm-up accepts a noisy ramp                   -> REFUSED | scatter 34%
+  ok  warm-up accepts a flat plateau (must not fire) -> DID NOT FIRE
+  ok  a valid case record passes (must not fire)     -> DID NOT FIRE
+live guards (the rig, broken on purpose):
+  ok  resource cap was not applied                   -> REFUSED | cpu cap did not apply on bt24-tm: NanoCpus=2000000000, wanted 4000000000
+  ok  cluster still busy from the last case          -> REFUSED | a task manager from the last case is still registered: {'taskmanagers': 1, 'slots-total': 2, 'slots-
+  ok  backlog does not match its manifest            -> REFUSED | backlog on block-trades-tiny is 120000000 records, manifest says 119999999
+  ok  disk: broker and volume sizes read (must not fire) -> DID NOT FIRE
+  ok  monitor launched unattended is dead            -> REFUSED | offset sampler died at startup:
+nope
+
+  ok  no job is actually running                     -> REFUSED | job never reached RUNNING
+35/35 guards fired as expected
+TINY PROOF PASSED
+[21:24:00] phase=tinyproof end rc=0 429s
+[21:24:00] phase=fill start
+[21:24:03] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx3g -cp ~/code/GitHub/flink-skill-test-24/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=240000000 --seed=20260907 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-24/results/manifest.json
+[21:26:35] fill done: {"mode":"produce","count":240000000,"seed":20260907,"seconds":151.434}
+[21:26:36] backlog block-trades: 240,000,000 records read back over 8 partitions
+backlog 240,000,000 records on block-trades; manifest results/manifest.json
+[21:26:36] phase=fill end rc=0 156s
+[21:26:36] phase=suite start
+[21:26:36] ---- case 1 cores, pass p1-asc ----
+[21:30:20]   1c p1-asc: 176,355 rec/s  tm 1.00/1 (99.6%)  kafka 0.10/2.5  srcIdle 0.1%  srcBP 40.5%  headroom 1215s  vantage 0.23%
+[21:30:20] ---- case 2 cores, pass p1-asc ----
+[21:34:13]   2c p1-asc: 373,500 rec/s  tm 2.00/2 (99.9%)  kafka 0.24/2.5  srcIdle 2.4%  srcBP 30.8%  headroom 494s  vantage 0.15%
+[21:34:13] ---- case 4 cores, pass p1-asc ----
+[21:38:25]   4c p1-asc: 665,759 rec/s  tm 4.01/4 (100.3%)  kafka 0.50/2.5  srcIdle 3.2%  srcBP 23.7%  headroom 208s  vantage 0.25%
+[21:38:25] ---- case 4 cores, pass p2-desc ----
+[21:42:30]   4c p2-desc: 670,749 rec/s  tm 4.01/4 (100.4%)  kafka 0.48/2.5  srcIdle 3.1%  srcBP 20.5%  headroom 208s  vantage 0.20%
+[21:42:30] ---- case 2 cores, pass p2-desc ----
+[21:46:45]   2c p2-desc: 371,797 rec/s  tm 2.01/2 (100.3%)  kafka 0.24/2.5  srcIdle 2.2%  srcBP 29.8%  headroom 485s  vantage 0.45%
+[21:46:45] ---- case 1 cores, pass p2-desc ----
+[21:50:55]   1c p2-desc: 175,176 rec/s  tm 1.00/1 (99.6%)  kafka 0.12/2.5  srcIdle 0.0%  srcBP 41.1%  headroom 1226s  vantage 0.32%
+[21:50:55] ---- case 1 cores, pass sentinel ----
+[21:54:55]   1c sentinel: 183,630 rec/s  tm 0.99/1 (99.5%)  kafka 0.11/2.5  srcIdle 0.2%  srcBP 43.4%  headroom 1167s  vantage 0.24%
+wrote results/suite.txt and results/suite.md
+======================================================================================================================
+!! QUICK LOOK — two passes per case, not the configured number: enough for a spread, not enough to publish. A one-pass version of this table read 2->4 = 1.645 where the same build measured 1.910 with the memory it needed, and 1.539 where three passes read 1.678. Quote the spread with the ratio, or do not quote it.
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent by emitting the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : 1b997db5c993ca54  (completeness passed for 1b997db5c993ca54)
+passes per case      : 2
+backlog              : 240,000,000 records, 8 partitions, 5 outputs per input
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     176,355     881,775   1.00/1   99.6%   100   0.10/2.5    0.1%  40.5%  1215s  0.2%       OK
+    2   p1-asc     373,500   1,867,502   2.00/2   99.9%   100   0.24/2.5    2.4%  30.8%   494s  0.1%       OK
+    4   p1-asc     665,759   3,328,794   4.01/4   100.3%   100   0.50/2.5    3.2%  23.7%   208s  0.2%       OK
+    4  p2-desc     670,749   3,353,745   4.01/4   100.4%   100   0.48/2.5    3.1%  20.5%   208s  0.2%       OK
+    2  p2-desc     371,797   1,858,986   2.01/2   100.3%   100   0.24/2.5    2.2%  29.8%   485s  0.4%       OK
+    1  p2-desc     175,176     875,882   1.00/1   99.6%   100   0.12/2.5    0.0%  41.1%  1226s  0.3%       OK
+    1 sentinel     183,630     918,149   0.99/1   99.5%   100   0.11/2.5    0.2%  43.4%  1167s  0.2%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     178,387     891,936   1.00/1   99.6%   100   0.11/2.5    0.1%  41.7%  1203s  0.3%   spread 4.7%
+    2     MEAN     372,649   1,863,244   2.00/2   100.1%   100   0.24/2.5    2.3%  30.3%   489s  0.4%   spread 0.5%
+    4     MEAN     668,254   3,341,270   4.01/4   100.3%   100   0.49/2.5    3.2%  22.1%   208s  0.2%   spread 0.8%
+======================================================================================================================
+STEP 1->2 cores: 2.089x  (ideal 2x, efficiency 104.5%, range across passes 2.025x-2.132x)
+STEP 2->4 cores: 1.793x  (ideal 2x, efficiency 89.7%, range across passes 1.782x-1.804x)
+order effect (descending / ascending): {1: 0.9933, 2: 0.9954, 4: 1.0075}
+sentinel: 1c first 176,355 -> last 183,630 rec/s, drift +4.0% across the suite (counted in the 1c spread)
+======================================================================================================================
+[21:54:55] phase=suite end rc=0 1698s
+[21:54:55] phase=report start
+wrote results/suite.txt and results/suite.md
+[21:54:55] phase=report end rc=0 0s
+[21:54:55] phase=all end PASS 49.0 min

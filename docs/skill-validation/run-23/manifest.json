@@ -1,0 +1,15 @@
+{
+ "tradeCount": 240000000,
+ "seed": 20260907,
+ "symbols": 4096,
+ "accounts": 8192,
+ "accountsPerTrade": 4,
+ "distinctSymbolKeys": 4096,
+ "distinctAccountKeys": 8192,
+ "symbolUpdates": 240000000,
+ "accountUpdates": 960000000,
+ "totalNetQty": 612009182533,
+ "totalNetNotionalCents": 15916201810663821,
+ "bySymbol": "<4096 entries stripped>",
+ "byAccount": "<8192 entries stripped>"
+}

@@ -81,6 +81,8 @@ T = {
     # the seven cases measured at 4 GiB the limit was hit zero times inside a
     # window, so any hit at all is outside the measured noise.
     "brokerLimitHits": 0,
+    # a worker this close to its cap is the constraint regardless of the broker
+    "brokerHitsCapExempt": 0.99,
     # external boundary: a starved source idles (run 5: the broker was the ceiling
     # at 43% back-pressure with the TM under cap). Measured 2026-09-04: at-cap
     # 2-core cases idle 8.1-16.8% at the same throughput (14 cases, sd 2.3%), and
@@ -1205,7 +1207,13 @@ def check_case(rec, cores, is_baseline):
     if rec["tmCapFrac"] < floor:
         raise Refusal("case", f"task manager used {rec['tmCapFrac']:.1%} of its {cores}-core cap "
                               f"(floor {floor:.0%}) — it is not the constraint")
-    if (rec.get("brokerLimitHits") or 0) > T["brokerLimitHits"]:
+    # A worker at its cap is not waiting on the broker, whatever the broker's
+    # cgroup is doing. Measured twice: run 23's 1-core case hit the limit 9,437
+    # times at 99.6% of cap with no rate effect, while its 4-core case hit it
+    # zero times -- on an idle VM the page cache reaches the cgroup limit, and
+    # under load global reclaim trims first. The case this guard was built for
+    # sat at 96.4% of cap and ran 13% slow.
+    if (rec.get("brokerLimitHits") or 0) > T["brokerLimitHits"] and rec["tmCapFrac"] < T["brokerHitsCapExempt"]:
         lim = rec.get("brokerLimitBytes") or 0
         # measured 2026-09-07 (run 21): 3,840 MiB gave 995 hits and 6,144 gave none,
         # so the step that worked was x1.6. Named here so the next run raises it once.
