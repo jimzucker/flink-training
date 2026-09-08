@@ -1,0 +1,23 @@
+{
+ "build": "1b997db5c993ca54",
+ "records": 20000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt24-complete-clean",
+   "killed": false,
+   "drainS": 148.2,
+   "killedAtCommitted": null,
+   "verify": "read 4,096 distinct symbol keys and 8,192 distinct account keys off the sinks\nsymbols: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 20,000,000\naccounts: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 80,000,000\nmanifest: net qty 51,030,517,282  net notional 1,326,897,507,205,252  trades 20,000,000\nCOMPLETENESS OK \u2014 every assertion held with no tolerance\n"
+  },
+  {
+   "group": "bt24-complete-kill",
+   "killed": true,
+   "drainS": 202.0,
+   "killedAtCommitted": 7791043,
+   "verify": "read 4,096 distinct symbol keys and 8,192 distinct account keys off the sinks\nsymbols: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 20,000,000\naccounts: net qty 51,030,517,282  net notional 1,326,897,507,205,252  updates 80,000,000\nmanifest: net qty 51,030,517,282  net notional 1,326,897,507,205,252  trades 20,000,000\nCOMPLETENESS OK \u2014 every assertion held with no tolerance\n"
+  }
+ ],
+ "at": "2026-09-07 21:07:33",
+ "result": "PASS"
+}

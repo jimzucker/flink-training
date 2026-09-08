@@ -4,34 +4,117 @@
     {
       "name": "run 20 (accepted, 2->4 = 1.930x)",
       "expect": "accept",
-      "cases": [1, 2, 4], "partitions": 8,
-      "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemoryBase": "768m", "tmMemoryPerCore": "640m", "tmMemoryLimitPerCore": "800m", "kafkaMemory": "5g", "kafkaHeap": "768m"}
+      "cases": [
+        1,
+        2,
+        4
+      ],
+      "partitions": 8,
+      "caps": {
+        "kafka": 2.5,
+        "jobmanager": 0.5,
+        "tmMemoryBase": "768m",
+        "tmMemoryPerCore": "640m",
+        "tmMemoryLimitPerCore": "800m",
+        "kafkaMemory": "5g",
+        "kafkaHeap": "768m"
+      }
     },
     {
       "name": "run 21 (accepted, 2->4 = 1.865x, over-committed broker on a 7.8 GB VM)",
       "expect": "accept",
-      "cases": [1, 2, 4], "partitions": 8,
-      "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemoryBase": "1216m", "tmMemoryPerCore": "448m", "tmMemoryLimitPerCore": "560m", "kafkaMemory": "6144m", "kafkaHeap": "1024M"}
+      "cases": [
+        1,
+        2,
+        4
+      ],
+      "partitions": 8,
+      "caps": {
+        "kafka": 2.5,
+        "jobmanager": 0.5,
+        "tmMemoryBase": "1216m",
+        "tmMemoryPerCore": "448m",
+        "tmMemoryLimitPerCore": "560m",
+        "kafkaMemory": "6144m",
+        "kafkaHeap": "1024M"
+      }
     },
     {
       "name": "the rig after #63 (accepted, 2->4 = 2.114x)",
       "expect": "accept",
-      "cases": [1, 2, 4], "partitions": 8,
-      "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemoryBase": "768m", "tmMemoryPerCore": "1280m", "tmMemoryLimitPerCore": "1600m", "kafkaMemory": "6g", "kafkaHeap": "1G"}
+      "cases": [
+        1,
+        2,
+        4
+      ],
+      "partitions": 8,
+      "caps": {
+        "kafka": 2.5,
+        "jobmanager": 0.5,
+        "tmMemoryBase": "768m",
+        "tmMemoryPerCore": "1280m",
+        "tmMemoryLimitPerCore": "1600m",
+        "kafkaMemory": "6g",
+        "kafkaHeap": "1G"
+      }
     },
     {
       "name": "runs 13-19 (flat worker memory: refused on purpose since #62)",
       "expect": "refuse",
       "why": "a flat figure divides across each case's subtasks, so the 4-core case ran on a quarter of what each 2-core subtask had",
-      "cases": [1, 2, 4], "partitions": 8,
-      "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemory": "2560m", "tmMemoryLimit": "3g", "kafkaMemory": "4g", "kafkaHeap": "1200M"}
+      "cases": [
+        1,
+        2,
+        4
+      ],
+      "partitions": 8,
+      "caps": {
+        "kafka": 2.5,
+        "jobmanager": 0.5,
+        "tmMemory": "2560m",
+        "tmMemoryLimit": "3g",
+        "kafkaMemory": "4g",
+        "kafkaHeap": "1200M"
+      }
     },
     {
       "name": "six partitions with a four-core case (refused since #57)",
       "expect": "refuse",
       "why": "2/2/1/1 per subtask, so the busiest subtask sets the pace and the case cannot reach its cap",
-      "cases": [1, 2, 4], "partitions": 6,
-      "caps": {"kafka": 2.5, "jobmanager": 0.5, "tmMemoryBase": "768m", "tmMemoryPerCore": "640m", "tmMemoryLimitPerCore": "800m", "kafkaMemory": "5g", "kafkaHeap": "768m"}
+      "cases": [
+        1,
+        2,
+        4
+      ],
+      "partitions": 6,
+      "caps": {
+        "kafka": 2.5,
+        "jobmanager": 0.5,
+        "tmMemoryBase": "768m",
+        "tmMemoryPerCore": "640m",
+        "tmMemoryLimitPerCore": "800m",
+        "kafkaMemory": "5g",
+        "kafkaHeap": "768m"
+      }
+    },
+    {
+      "name": "run 23 (accepted, chain clean first attempt, 2->4 = 1.793x)",
+      "expect": "accept",
+      "cases": [
+        1,
+        2,
+        4
+      ],
+      "partitions": 8,
+      "caps": {
+        "kafka": 2.5,
+        "jobmanager": 0.5,
+        "tmMemoryBase": "1024m",
+        "tmMemoryPerCore": "768m",
+        "tmMemoryLimitPerCore": "1024m",
+        "kafkaMemory": "6g",
+        "kafkaHeap": "1G"
+      }
     }
   ]
 }
