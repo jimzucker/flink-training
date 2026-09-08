@@ -106,6 +106,14 @@ tested with the cases interleaved and changed nothing: 16 partitions refused
 every parallelism-4 case for an unstable warm-up, and the buffers moved the
 per-core rate 0.6%.
 
+**Each step ratio also carries its adjacent pairs.** `ratioAdjacent` is the
+median of the ratios between cases measured next to each other in time, with
+`adjacentPairs` and `adjacentSpread` beside it. It is a diagnostic, not a cure:
+run 23's pairs were 1.782 and 1.804 while the same build read 1.962 the next
+morning — 9.4% away, with its 2-core figure down 5.6% and its 4-core up 3.3%.
+Tight pairs next to a ratio that moved between sessions locate the movement
+outside the suite. What moves it is not known.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```

@@ -1413,6 +1413,22 @@ def build_table(runs, cases_order=None, quick=False):
         vd = [r["vantageDisagreement"] for r in rs if r.get("vantageDisagreement") is not None]
         entry["vantageDisagreementMax"] = round(max(vd), 4) if vd else None
         cases[cores] = entry
+    # A ratio pairs two cases measured minutes apart, and this rig moves between
+    # sessions by more than any case's own spread: the same build read 2->4 =
+    # 1.793 one evening and 1.962 the next morning, 9.4% apart, while the suites
+    # that produced them reported per-case spreads of 0.5-4.7%. Pair each case
+    # with its *neighbour in time* and take the median of those pairs, so drift
+    # that is slower than one case cancels instead of landing in the answer.
+    adjacent = {}
+    ordered = [r for r in runs if r.get("status", "OK") == "OK"]
+    for a, b in zip(ordered, ordered[1:]):
+        lo, hi = sorted((int(a["cores"]), int(b["cores"])))
+        if lo == hi:
+            continue
+        ra = a if int(a["cores"]) == lo else b
+        rb = b if int(b["cores"]) == hi else a
+        adjacent.setdefault(f"{lo}->{hi}", []).append(rb["recordsPerSec"] / ra["recordsPerSec"])
+
     ratios = []
     ks = sorted(cases)
     for i in range(len(ks) - 1):
@@ -1421,6 +1437,12 @@ def build_table(runs, cases_order=None, quick=False):
         entry = {"step": f"{a}->{b}", "from": a, "to": b, "idealRatio": b / a}
         if ca["reportable"] and cb["reportable"]:
             r = cb["meanRecordsPerSec"] / ca["meanRecordsPerSec"]
+            pairs = sorted(adjacent.get(entry["step"], []))
+            if pairs:
+                mid = pairs[len(pairs) // 2] if len(pairs) % 2 else (pairs[len(pairs) // 2 - 1] + pairs[len(pairs) // 2]) / 2
+                entry.update(adjacentPairs=[round(x, 3) for x in pairs],
+                             ratioAdjacent=round(mid, 3),
+                             adjacentSpread=round((pairs[-1] - pairs[0]) / mid, 4) if mid else None)
             entry.update(ratio=round(r, 3),
                          ratioLow=round(cb["minRecordsPerSec"] / ca["maxRecordsPerSec"], 3),
                          ratioHigh=round(cb["maxRecordsPerSec"] / ca["minRecordsPerSec"], 3),
