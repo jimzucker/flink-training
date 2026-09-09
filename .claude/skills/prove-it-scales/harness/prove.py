@@ -909,6 +909,9 @@ def cmd_suite():
     out = {"axis": c.axis, "apiLevel": c.api_level, "guarantee": c.guarantee,
            "checkpointIntervalMs": c.ckpt_ms, "buildHash": bh, "completenessBuild": comp.get("build"),
            "passesPerCase": c.passes, "quickLook": L.QUICK, "publishable": not L.QUICK,
+           "study": ("capacity curve: each case configured separately, declared before the run"
+                     if c.per_case else "scaling: every case configured identically"),
+           "perCase": c.per_case or None,
            "cases": c.cases, "baseline": c.baseline,
            "backlogRecords": int(man[c.count_field]), "partitions": c.partitions,
            "outputsPerInput": c.out_per_in,

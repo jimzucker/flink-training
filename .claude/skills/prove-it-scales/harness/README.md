@@ -151,6 +151,18 @@ partition counts, network buffers, compression and fetch sizes were spent
 inside a range the hardware had already fixed. The probe came from the agent of
 clean-room run 24, which ran it before offering any mechanism of its own.
 
+**Two studies, and the table says which.** By default every case is
+configured identically, so the ratio is a property of the component: that is a
+scaling proof. Declaring `perCase` in `pipeline.json` — `{"4": {"tmMemory":
+"7168m"}}` — tunes a case separately and the table is stamped *capacity curve:
+each case configured separately, declared before the run*. Both are legitimate
+and they answer different questions: an operator buys against the best
+configuration at each size, while a scaling claim needs everything but the
+component held still. `perCase` must be in the file before the run, because
+tuning after seeing the number turns a curve into a story. (This repository's
+own demo sidesteps the question: its task manager has no memory limit at all,
+so memory is never its constraint.)
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
