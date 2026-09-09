@@ -1,0 +1,40 @@
+QUICK LOOK: 2 passes per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+replayed 6 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[20:16:52] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+QUICK LOOK: 2 passes per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+replayed 6 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[20:16:58] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=12000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[20:17:08] fill done: produce: 12,000,000 trades, seed 20260910, 6 threads, 9.7s (1,240,951 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[20:17:09] backlog block-trades-small: 12,000,000 records read back over 8 partitions
+[20:19:12] drained to the last record in 89.6s
+read both sinks in 42.9s
+12,000,000 trades | 64 symbol keys, 512 account keys | net qty 18,293,384 | notional 1,020,162,812,036
+COMPLETENESS OK — every assertion held exactly, no tolerances
+
+[20:22:01] KILL: committed=6138207, killing the task manager mid-drain
+[20:22:52] KILL: job RUNNING again on the replacement worker
+[20:23:56] drained to the last record in 151.1s (worker killed mid-drain)
+read both sinks in 43.3s
+12,000,000 trades | 64 symbol keys, 512 account keys | net qty 18,293,384 | notional 1,020,162,812,036
+COMPLETENESS OK — every assertion held exactly, no tolerances
+
+COMPLETENESS PASSED FOR BUILD 5793551a234b0cf6 (clean drain, and a worker killed at 35%)
+QUICK LOOK: 2 passes per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+replayed 6 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[20:25:27] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=120000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[20:26:53] fill done: produce: 120,000,000 trades, seed 20260909, 6 threads, 85.3s (1,406,651 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[20:26:54] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[20:26:54] ---- tiny case 1 cores ----
+[20:29:41]   1c: 219,764 rec/s, tm 99.9% of cap, vantage 0.27%
+[20:29:41] ---- tiny case 4 cores ----
+[20:32:11]   REFUSED (ceiling): task manager used 92.7% of its 4-core cap (floor 95%) — it is not the constraint, so this case is where scaling stops rather than a point on the curve
+TINY PROOF FAILED

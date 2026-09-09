@@ -1,0 +1,83 @@
+[2026-09-08 20:02:19] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+[2026-09-08 20:02:27] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=1000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[2026-09-08 20:02:28] fill done: produce: 1,000,000 trades, seed 20260910, 6 threads, 1.4s (730,994 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[2026-09-08 20:02:29] backlog block-trades-small: 1,000,000 records read back over 8 partitions
+[2026-09-08 20:03:34] drained to the last record in 32.0s
+[2026-09-08 20:04:53] KILL: committed=806660, killing the task manager mid-drain
+[2026-09-08 20:05:47] KILL: job RUNNING again on the replacement worker
+[2026-09-08 20:06:11] drained to the last record in 85.8s (worker killed mid-drain)
+[2026-09-08 20:09:48] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=20000000 --seed=777 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-probe --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-probe.json
+[2026-09-08 20:10:04] fill done: produce: 20,000,000 trades, seed 777, 6 threads, 15.6s (1,280,164 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-probe.json
+[2026-09-08 20:10:05] backlog block-trades-probe: 20,000,000 records read back over 8 partitions
+[2026-09-08 20:13:13] phase=all start
+[2026-09-08 20:13:13] phase=up start
+[2026-09-08 20:13:15] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+[2026-09-08 20:13:15] phase=up end rc=0 2s
+[2026-09-08 20:13:15] phase=preflight start
+[2026-09-08 20:14:55] phase=preflight end rc=1 100s
+[2026-09-08 20:14:55] phase=all end FAIL at preflight 1.7 min
+[2026-09-08 20:16:52] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+[2026-09-08 20:16:58] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=12000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[2026-09-08 20:17:08] fill done: produce: 12,000,000 trades, seed 20260910, 6 threads, 9.7s (1,240,951 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[2026-09-08 20:17:09] backlog block-trades-small: 12,000,000 records read back over 8 partitions
+[2026-09-08 20:19:12] drained to the last record in 89.6s
+[2026-09-08 20:22:01] KILL: committed=6138207, killing the task manager mid-drain
+[2026-09-08 20:22:52] KILL: job RUNNING again on the replacement worker
+[2026-09-08 20:23:56] drained to the last record in 151.1s (worker killed mid-drain)
+[2026-09-08 20:25:27] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=120000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[2026-09-08 20:26:53] fill done: produce: 120,000,000 trades, seed 20260909, 6 threads, 85.3s (1,406,651 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[2026-09-08 20:26:54] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-08 20:26:54] ---- tiny case 1 cores ----
+[2026-09-08 20:29:41]   1c: 219,764 rec/s, tm 99.9% of cap, vantage 0.27%
+[2026-09-08 20:29:41] ---- tiny case 4 cores ----
+[2026-09-08 20:32:11]   REFUSED (ceiling): task manager used 92.7% of its 4-core cap (floor 95%) — it is not the constraint, so this case is where scaling stops rather than a point on the curve
+[2026-09-08 20:36:10] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=110000000 --seed=4242 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-ck --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-ck.json
+[2026-09-08 20:37:38] fill done: produce: 110,000,000 trades, seed 4242, 6 threads, 87.9s (1,251,963 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-ck.json
+[2026-09-08 20:37:39] backlog block-trades-ck: 110,000,000 records read back over 8 partitions
+[2026-09-08 20:43:21] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+[2026-09-08 20:43:25] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=120000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[2026-09-08 20:45:05] fill done: produce: 120,000,000 trades, seed 20260909, 6 threads, 99.6s (1,204,638 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[2026-09-08 20:45:06] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-08 20:45:06] ---- tiny case 1 cores ----
+[2026-09-08 20:48:01]   1c: 215,998 rec/s, tm 99.2% of cap, vantage 1.05%
+[2026-09-08 20:48:01] ---- tiny case 4 cores ----
+[2026-09-08 20:51:12]   REFUSED (ceiling): task manager used 92.9% of its 4-core cap (floor 95%) — it is not the constraint, so this case is where scaling stops rather than a point on the curve
+[2026-09-08 20:53:02] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+[2026-09-08 20:53:07] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=12000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[2026-09-08 20:53:17] fill done: produce: 12,000,000 trades, seed 20260910, 6 threads, 9.4s (1,275,917 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-small.json
+[2026-09-08 20:53:18] backlog block-trades-small: 12,000,000 records read back over 8 partitions
+[2026-09-08 20:55:13] drained to the last record in 81.0s
+[2026-09-08 20:57:18] KILL: committed=4915375, killing the task manager mid-drain
+[2026-09-08 20:58:01] KILL: job RUNNING again on the replacement worker
+[2026-09-08 20:59:01] drained to the last record in 133.9s (worker killed mid-drain)
+[2026-09-08 20:59:52] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=120000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[2026-09-08 21:01:19] fill done: produce: 120,000,000 trades, seed 20260909, 6 threads, 86.6s (1,386,450 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[2026-09-08 21:01:20] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[2026-09-08 21:01:20] ---- tiny case 1 cores ----
+[2026-09-08 21:04:12]   1c: 235,575 rec/s, tm 97.7% of cap, vantage 2.04%
+[2026-09-08 21:04:12] ---- tiny case 4 cores ----
+[2026-09-08 21:06:48]   4c: 920,060 rec/s, tm 98.8% of cap, vantage 0.15%
+[2026-09-08 21:06:49]   disk: input 97 B/record x 280,000,000 = 27.3 GB; sinks 264 B/input -> 74.0 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 81.6 GB incl. the 20 GB floor, 123.4 GB free now + 32.7 GB the tiny proof gives back = 156.0 GB: FITS
+[2026-09-08 21:06:49]   backlog: 280,000,000 configured, 110,407,164 needed at the measured 920,060 rec/s
+[2026-09-08 21:07:32] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=280000000 --seed=20260908 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-26/results/manifest.json
+[2026-09-08 21:10:51] fill done: produce: 280,000,000 trades, seed 20260908, 6 threads, 198.5s (1,410,302 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest.json
+[2026-09-08 21:10:52] backlog block-trades: 280,000,000 records read back over 8 partitions
+[2026-09-08 21:10:52] ---- case 1 cores, pass p1-asc ----
+[2026-09-08 21:14:41]   1c p1-asc: 234,427 rec/s  tm 0.97/1 (97.3%)  kafka 0.12/2.5  srcIdle 0.0%  srcBP 48.5%  headroom 1052s  vantage 0.30%
+[2026-09-08 21:14:41] ---- case 2 cores, pass p1-asc ----
+[2026-09-08 21:18:42]   2c p1-asc: 529,504 rec/s  tm 1.99/2 (99.6%)  kafka 0.32/2.5  srcIdle 1.3%  srcBP 40.0%  headroom 374s  vantage 0.44%
+[2026-09-08 21:18:42] ---- case 4 cores, pass p1-asc ----
+[2026-09-08 21:22:29]   4c p1-asc: 912,459 rec/s  tm 3.87/4 (96.7%)  kafka 0.61/2.5  srcIdle 1.7%  srcBP 32.4%  headroom 150s  vantage 0.17%
+[2026-09-08 21:22:29] ---- case 4 cores, pass p2-desc ----
+[2026-09-08 21:26:29]   4c p2-desc: 914,166 rec/s  tm 3.81/4 (95.4%)  kafka 0.61/2.5  srcIdle 2.0%  srcBP 30.3%  headroom 156s  vantage 0.15%
+[2026-09-08 21:26:29] ---- case 2 cores, pass p2-desc ----
+[2026-09-08 21:30:12]   2c p2-desc: 506,144 rec/s  tm 1.95/2 (97.2%)  kafka 0.32/2.5  srcIdle 0.0%  srcBP 36.7%  headroom 409s  vantage 0.19%
+[2026-09-08 21:30:12] ---- case 1 cores, pass p2-desc ----
+[2026-09-08 21:34:02]   1c p2-desc: 224,970 rec/s  tm 0.99/1 (99.4%)  kafka 0.14/2.5  srcIdle 0.0%  srcBP 47.1%  headroom 1098s  vantage 0.29%
+[2026-09-08 21:34:02] ---- case 1 cores, pass sentinel ----
+[2026-09-08 21:38:13]   1c sentinel: 202,760 rec/s  tm 1.00/1 (99.9%)  kafka 0.13/2.5  srcIdle 0.0%  srcBP 43.3%  headroom 1226s  vantage 0.20%
+[2026-09-08 21:39:06] fstrim: /var/lib/docker: 64.8 GiB (69626281984 bytes) trimmed
+[2026-09-08 21:39:06] stack down; nothing with prefix bt26 survives
+[2026-09-08 21:39:57] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+[2026-09-08 21:41:37] fstrim: /var/lib/docker: 840.3 MiB (881098752 bytes) trimmed
+[2026-09-08 21:41:37] stack down; nothing with prefix bt26 survives
