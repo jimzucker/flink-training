@@ -68,6 +68,12 @@ recorded runs every case that behaved sat at 0.7-9.6%, and every case above 11%
 came with a distorted one — run 21's 1-core case at 26.4%, run 25's at 15.5%
 with a 14.3% spread and -14.5% sentinel drift, run 18's at 12.9%.
 
+The example pipeline ships **no worker memory keys at all**, so a pipeline
+copied from it inherits the uncapped default. Run 27's agent capped anyway
+(`2048m + 256m` per core) because the example still carried those keys and it
+copied them — which is how a default that exists only in the code fails to
+reach the people using it.
+
 Cap it deliberately if the study is about memory: `tmMemoryPerCore` (with
 `tmMemoryBase`) gives every subtask the same, and `perCase` gives a case its
 own. A flat `tmMemory` across more than one case is still refused, because it
