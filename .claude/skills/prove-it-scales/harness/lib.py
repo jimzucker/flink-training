@@ -107,6 +107,16 @@ T = {
     # returns less than 95% of that is a result about the pipeline, not noise.
     # Set from the demo's measured 1.99x and the +-3% a two-pass ratio carries.
     "scalingFloor": 0.95,
+    # Memory is not capped by default: this repository's own demo caps none and
+    # reads 1.99x, while every memory cap we chose starved something. What the
+    # claim needs is that CPU is the constraint, so instead of fixing memory's
+    # size the harness checks it was not the constraint. Measured across 14
+    # recorded runs: cases that behaved sat at 0.7-9.6% of capacity in GC, and
+    # every case above 11% came with a distorted result -- run 21's 1-core case
+    # at 26.4%, run 25's at 15.5% with a 14.3% spread and -14.5% sentinel drift,
+    # run 18's at 12.9% with a 7.5% spread. Ceiling: 11%, just above the worst
+    # well-behaved case on record.
+    "gcCeil": 0.11,
     # when a step has one pair and no spread of its own, assume the wander this
     # rig showed over an hour on an unchanged build: sd 2.8% across 13 pairs
     "ratioSdFallback": 0.028,
@@ -285,7 +295,13 @@ class Cfg:
         self.api_level = c["apiLevel"]
         self.guarantee = c["guarantee"]
         self.log_path = os.path.join(self.results, "harness.log")
-        if (self.tm_mem_per_core is None and len(set(self.cases)) > 1
+        # Three ways to run: no worker memory settings at all (the default, and
+        # what the demo does -- memory can never be the thing that runs out),
+        # tmMemoryPerCore so every subtask gets the same, or perCase. A flat
+        # tmMemory across more than one case is still refused: it divides across
+        # each case's subtasks, which cost 14% at four cores before #62 found it.
+        if (caps.get("tmMemory") and self.tm_mem_per_core is None
+                and len(set(self.cases)) > 1
                 and not all(n in self.per_case for n in self.cases)):
             raise Refusal("rig", "caps.tmMemoryPerCore is not set: a flat taskmanager memory divides "
                                  f"across the subtasks of each case, so {self.cases} would run with "
@@ -932,7 +948,11 @@ def start_tm(cores, slots=None, reporter_s=None):
     c = cfg()
     slots = slots if slots is not None else cores
     over = c.per_case.get(cores, {})
-    if over.get("tmMemory"):
+    if not (over.get("tmMemory") or c.tm_mem_per_core or c.raw["caps"].get("tmMemory")):
+        # the demo's behaviour: no process size, no container limit, so memory
+        # can never be the thing that runs out first
+        tm_mem = tm_mem_limit = None
+    elif over.get("tmMemory"):
         tm_mem = over["tmMemory"]
     else:
         tm_mem = mem_for(c.tm_mem_per_core, cores, c.tm_mem_base) if c.tm_mem_per_core else c.tm_mem
@@ -949,7 +969,8 @@ def start_tm(cores, slots=None, reporter_s=None):
     stop_tm()
     props = (f"jobmanager.rpc.address: {c.jm}\n"
              f"taskmanager.numberOfTaskSlots: {slots}\n"
-             f"taskmanager.memory.process.size: {tm_mem}\n"
+             + (f"taskmanager.memory.process.size: {tm_mem}\n" if tm_mem else
+                "taskmanager.memory.flink.size: 2g\n") +
              f"taskmanager.memory.managed.fraction: 0.1\n"
              f"taskmanager.memory.network.fraction: 0.15\n"
              f"taskmanager.memory.network.max: 512m\n"
@@ -962,7 +983,7 @@ def start_tm(cores, slots=None, reporter_s=None):
              f"metrics.reporter.slf4j.interval: {reporter_s} SECONDS\n"
              f"metrics.reporter.slf4j.scope.variables.excludes: job_id;task_id;task_attempt_id;tm_id\n")
     sh(f"docker run -d --name {c.tm} --hostname {c.tm} --network {c.net} --user 0:0 "
-       f"--cpus {cores} --memory {tm_mem_limit} "
+       f"--cpus {cores} " + (f"--memory {tm_mem_limit} " if tm_mem_limit else "") +
        f"-v {c.ckpt_vol}:/ckpt -v {c.jar_dir}:/jobs:ro "
        f"-e FLINK_PROPERTIES=$'{props}' {c.flink_img} taskmanager")
     nano = assert_cap(c.tm, cores)
@@ -1302,6 +1323,10 @@ def check_case(rec, cores, is_baseline):
         raise Ceiling(f"the broker hit its memory limit {rec['brokerLimitHits']:,} times inside the window "
                       f"({rec.get('brokerRefaults', 0):,} file-page refaults): it was reading the backlog off "
                       f"disk, so the broker is the constraint here, not the worker{hint}", rec)
+    if (rec.get("gcFracOfCapacity") or 0) > T["gcCeil"]:
+        raise Ceiling(f"garbage collection took {rec['gcFracOfCapacity']:.1%} of this case's capacity "
+                      f"(ceiling {T['gcCeil']:.0%}): memory is the constraint here, not cores — give the "
+                      f"worker more memory rather than capping it", rec)
     if rec["sourceIdle"] > T["sourceIdleCeil"]:
         raise Ceiling(f"source idle {rec['sourceIdle']:.1%} > {T['sourceIdleCeil']:.0%}: the source waited on "
                       f"input for more of the window than any at-cap case on record, so the input side is "

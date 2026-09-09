@@ -2,34 +2,97 @@
   "why": "Case verdicts whose classification is already known. The suite record holds rates and step verdicts but no cap fractions or broker counters, so a change to what makes a case valid cannot be replayed against it. These can. A case is either a scaling claim (the component under test was the constraint), a ceiling observation (something else was, which is a finding and not a defect), or invalid (the measurement itself cannot be trusted).",
   "cases": [
     {
-      "name": "run 5's 4-core case, 94% of cap — published a 2.82x that was retracted",
+      "name": "run 5's 4-core case, 94% of cap \u2014 published a 2.82x that was retracted",
       "expect": "ceiling",
-      "rec": {"tmCapFrac": 0.94, "sourceIdle": 0.43, "brokerLimitHits": 0, "tmThrottledPeriodsPct": 61}
+      "rec": {
+        "tmCapFrac": 0.94,
+        "sourceIdle": 0.43,
+        "brokerLimitHits": 0,
+        "tmThrottledPeriodsPct": 61
+      }
     },
     {
       "name": "the 2 GiB broker, 4 cores at 96.4% of cap, 30,927 limit hits, 13% slow",
       "expect": "ceiling",
-      "rec": {"tmCapFrac": 0.964, "sourceIdle": 0.03, "brokerLimitHits": 30927, "brokerRefaults": 520575}
+      "rec": {
+        "tmCapFrac": 0.964,
+        "sourceIdle": 0.03,
+        "brokerLimitHits": 30927,
+        "brokerRefaults": 520575
+      }
     },
     {
       "name": "run 19's 4-core pass at 94.1% of cap",
       "expect": "ceiling",
-      "rec": {"tmCapFrac": 0.941, "sourceIdle": 0.035, "brokerLimitHits": 0}
+      "rec": {
+        "tmCapFrac": 0.941,
+        "sourceIdle": 0.035,
+        "brokerLimitHits": 0
+      }
     },
     {
       "name": "run 23's 1-core case: broker hit its limit 9,437 times at 99.6% of cap, no rate effect",
       "expect": "claim",
-      "rec": {"tmCapFrac": 0.996, "sourceIdle": 0.001, "brokerLimitHits": 9437, "brokerRefaults": 572000}
+      "rec": {
+        "tmCapFrac": 0.996,
+        "sourceIdle": 0.001,
+        "brokerLimitHits": 9437,
+        "brokerRefaults": 572000
+      }
     },
     {
       "name": "a healthy 4-core case",
       "expect": "claim",
-      "rec": {"tmCapFrac": 0.999, "sourceIdle": 0.019, "brokerLimitHits": 0}
+      "rec": {
+        "tmCapFrac": 0.999,
+        "sourceIdle": 0.019,
+        "brokerLimitHits": 0
+      }
     },
     {
       "name": "source idle past the ceiling with the worker off its cap",
       "expect": "ceiling",
-      "rec": {"tmCapFrac": 0.80, "sourceIdle": 0.40, "brokerLimitHits": 0}
+      "rec": {
+        "tmCapFrac": 0.8,
+        "sourceIdle": 0.4,
+        "brokerLimitHits": 0
+      }
+    },
+    {
+      "name": "run 21's 1-core case: GC 26.4% of capacity",
+      "expect": "ceiling",
+      "rec": {
+        "tmCapFrac": 0.995,
+        "sourceIdle": 0.006,
+        "gcFracOfCapacity": 0.264
+      }
+    },
+    {
+      "name": "run 25's 1-core case: GC 15.5%, spread 14.3%, sentinel -14.5%",
+      "expect": "ceiling",
+      "rec": {
+        "tmCapFrac": 0.989,
+        "sourceIdle": 0.019,
+        "gcFracOfCapacity": 0.155
+      }
+    },
+    {
+      "name": "run 13's 1-core case: GC 9.6%, the worst that behaved",
+      "expect": "claim",
+      "rec": {
+        "tmCapFrac": 1.001,
+        "sourceIdle": 0.0,
+        "gcFracOfCapacity": 0.096
+      }
+    },
+    {
+      "name": "run 24's 4-core case: GC 0.7%",
+      "expect": "claim",
+      "rec": {
+        "tmCapFrac": 0.982,
+        "sourceIdle": 0.019,
+        "gcFracOfCapacity": 0.007
+      }
     }
   ]
 }

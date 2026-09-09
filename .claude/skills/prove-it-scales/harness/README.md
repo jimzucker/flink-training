@@ -57,7 +57,23 @@ refused with 30,927 hits at 562,907 rec/s and **96.4% of cap** — above the
 cap floor, so nothing else would have caught it — and 4 GiB clean with zero
 hits at 646,423 rec/s. A 264M-record backlog wanted 4 GiB here.
 
-**Worker memory is a fixed base plus a per-subtask share.**
+**Worker memory is not capped by default.** This repository's own demo caps
+none — only CPU — and reads 1.99x from 2 to 4 units; every cap this harness
+chose starved something instead, and runs 14, 18, 21, 23 and 25 each lost time
+to it. What a scaling claim needs is that *CPU* is the constraint, so the
+harness no longer fixes memory's size: it checks memory was not the constraint.
+A case whose garbage collection takes more than 11% of its capacity is a
+ceiling, not a result. That figure is measured, not chosen: across fourteen
+recorded runs every case that behaved sat at 0.7-9.6%, and every case above 11%
+came with a distorted one — run 21's 1-core case at 26.4%, run 25's at 15.5%
+with a 14.3% spread and -14.5% sentinel drift, run 18's at 12.9%.
+
+Cap it deliberately if the study is about memory: `tmMemoryPerCore` (with
+`tmMemoryBase`) gives every subtask the same, and `perCase` gives a case its
+own. A flat `tmMemory` across more than one case is still refused, because it
+divides across each case's subtasks.
+
+**When capped, worker memory is a fixed base plus a per-subtask share.**
 `caps.tmMemoryBase` covers what does not scale with cores — metaspace, JVM
 overhead, the network buffer floor — and `caps.tmMemoryPerCore` (with optional
 `tmMemoryLimitPerCore`) is multiplied by the case's core count, so every case
