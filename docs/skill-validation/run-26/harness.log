@@ -1,0 +1,69 @@
+[2026-09-09 09:11:59] stack up: bt27-kafka (cap 2.5), bt27-jm (cap 0.5); task manager is started per case
+[2026-09-09 09:12:44] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-27/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=3000000 --seed=1 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-27/results/manifest-smoke.json
+[2026-09-09 09:12:47] fill done: {"mode":"produce","count":3000000,"seed":1,"seconds":2.652,"recordsPerSec":1131222,"distinctSymbols":64,"distinctAccountSymbolPairs":8192,"manifest":"~/code/GitHub/flink-skill-test-27/results/manifest-smoke.json"}
+[2026-09-09 09:12:48] backlog block-trades-smoke: 3,000,000 records read back over 8 partitions
+[2026-09-09 09:15:29] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-27/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=60000000 --seed=1 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-smoke --manifest=~/code/GitHub/flink-skill-test-27/results/manifest-smoke.json
+[2026-09-09 09:16:28] fill done: {"mode":"produce","count":60000000,"seed":1,"seconds":58.514,"recordsPerSec":1025396,"distinctSymbols":64,"distinctAccountSymbolPairs":8192,"manifest":"~/code/GitHub/flink-skill-test-27/results/manifest-smoke.json"}
+[2026-09-09 09:16:29] backlog block-trades-smoke: 60,000,000 records read back over 8 partitions
+[2026-09-09 09:28:14] stack up: bt27-kafka (cap 2.5), bt27-jm (cap 0.5); task manager is started per case
+[2026-09-09 09:39:47] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-27/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=10000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-27/results/manifest-small.json
+[2026-09-09 09:39:55] fill done: {"mode":"produce","count":10000000,"seed":20260911,"seconds":6.907,"recordsPerSec":1447807,"distinctSymbols":64,"distinctAccountSymbolPairs":8192,"manifest":"~/code/GitHub/flink-skill-test-27/results/manifest-small.json"}
+[2026-09-09 09:39:56] backlog block-trades-small: 10,000,000 records read back over 8 partitions
+[2026-09-09 09:42:06] drained to the last record in 97.7s
+[2026-09-09 09:44:37] KILL: committed=4814715, killing the task manager mid-drain
+[2026-09-09 09:45:40] KILL: job RUNNING again on the replacement worker
+[2026-09-09 09:46:46] drained to the last record in 168.9s (worker killed mid-drain)
+[2026-09-09 09:49:30] phase=all start
+[2026-09-09 09:49:30] phase=up start
+[2026-09-09 09:49:32] stack up: bt27-kafka (cap 2.5), bt27-jm (cap 0.5); task manager is started per case
+[2026-09-09 09:49:32] phase=up end rc=0 2s
+[2026-09-09 09:49:32] phase=preflight start
+[2026-09-09 09:50:51] phase=preflight end rc=0 78s
+[2026-09-09 09:50:51] phase=completeness start
+[2026-09-09 09:50:56] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-27/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=10000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/flink-skill-test-27/results/manifest-small.json
+[2026-09-09 09:51:03] fill done: {"mode":"produce","count":10000000,"seed":20260911,"seconds":6.556,"recordsPerSec":1525320,"distinctSymbols":64,"distinctAccountSymbolPairs":8192,"manifest":"~/code/GitHub/flink-skill-test-27/results/manifest-small.json"}
+[2026-09-09 09:51:04] backlog block-trades-small: 10,000,000 records read back over 8 partitions
+[2026-09-09 09:53:15] drained to the last record in 98.3s
+[2026-09-09 09:55:35] KILL: committed=4302359, killing the task manager mid-drain
+[2026-09-09 09:56:10] KILL: job RUNNING again on the replacement worker
+[2026-09-09 09:57:21] drained to the last record in 140.6s (worker killed mid-drain)
+[2026-09-09 09:58:28] phase=completeness end rc=0 457s
+[2026-09-09 09:58:28] phase=tinyproof start
+[2026-09-09 09:58:31] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-27/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=130000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-27/results/manifest-tiny.json
+[2026-09-09 09:59:39] fill done: {"mode":"produce","count":130000000,"seed":20260910,"seconds":67.38,"recordsPerSec":1929356,"distinctSymbols":64,"distinctAccountSymbolPairs":8192,"manifest":"~/code/GitHub/flink-skill-test-27/results/manifest-tiny.json"}
+[2026-09-09 09:59:40] backlog block-trades-tiny: 130,000,000 records read back over 8 partitions
+[2026-09-09 09:59:40] ---- tiny case 1 cores ----
+[2026-09-09 10:02:30]   1c: 140,208 rec/s, tm 100.2% of cap, vantage 1.17%
+[2026-09-09 10:02:30] ---- tiny case 4 cores ----
+[2026-09-09 10:05:12]   4c: 518,503 rec/s, tm 99.5% of cap, vantage 0.21%
+[2026-09-09 10:05:12]   disk: input 67 B/record x 200,000,000 = 13.5 GB; sinks 168 B/input -> 33.5 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 67.0 GB incl. the 20 GB floor, 142.1 GB free now + 15.2 GB the tiny proof gives back = 157.2 GB: FITS
+[2026-09-09 10:05:12]   backlog: 200,000,000 configured, 62,220,324 needed at the measured 518,503 rec/s
+[2026-09-09 10:06:22] phase=tinyproof end rc=0 475s
+[2026-09-09 10:06:22] phase=fill start
+[2026-09-09 10:06:25] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-27/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=200000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --manifest=~/code/GitHub/flink-skill-test-27/results/manifest.json
+[2026-09-09 10:08:09] fill done: {"mode":"produce","count":200000000,"seed":20260909,"seconds":102.936,"recordsPerSec":1942955,"distinctSymbols":64,"distinctAccountSymbolPairs":8192,"manifest":"~/code/GitHub/flink-skill-test-27/results/manifest.json"}
+[2026-09-09 10:08:10] backlog block-trades: 200,000,000 records read back over 8 partitions
+[2026-09-09 10:08:10] phase=fill end rc=0 108s
+[2026-09-09 10:08:10] phase=suite start
+[2026-09-09 10:08:10] ---- case 1 cores, pass p1-asc ----
+[2026-09-09 10:11:48]   1c p1-asc: 142,429 rec/s  tm 1.00/1 (100.2%)  kafka 0.10/2.5  srcIdle 0.0%  srcBP 57.1%  headroom 1258s  vantage 0.33%
+[2026-09-09 10:11:48] ---- case 2 cores, pass p1-asc ----
+[2026-09-09 10:15:31]   2c p1-asc: 314,768 rec/s  tm 2.00/2 (99.8%)  kafka 0.20/2.5  srcIdle 0.0%  srcBP 45.8%  headroom 492s  vantage 0.21%
+[2026-09-09 10:15:31] ---- case 4 cores, pass p1-asc ----
+[2026-09-09 10:19:18]   4c p1-asc: 501,184 rec/s  tm 4.01/4 (100.3%)  kafka 0.34/2.5  srcIdle 0.0%  srcBP 31.5%  headroom 238s  vantage 0.51%
+[2026-09-09 10:19:18] ---- case 4 cores, pass p2-desc ----
+[2026-09-09 10:23:42]   4c p2-desc: 580,362 rec/s  tm 4.00/4 (100.1%)  kafka 0.38/2.5  srcIdle 0.0%  srcBP 31.7%  headroom 174s  vantage 0.21%
+[2026-09-09 10:23:42] ---- case 2 cores, pass p2-desc ----
+[2026-09-09 10:27:42]   2c p2-desc: 317,317 rec/s  tm 1.90/2 (95.1%)  kafka 0.19/2.5  srcIdle 0.0%  srcBP 46.8%  headroom 488s  vantage 0.17%
+[2026-09-09 10:27:42] ---- case 1 cores, pass p2-desc ----
+[2026-09-09 10:31:32]   CEILING: the broker hit its memory limit 3,146 times inside the window (87,591 file-page refaults): it was reading the backlog off disk, so the broker is the constraint here, not the worker — raise caps.kafkaMemory from 4096m to about 6400m
+[2026-09-09 10:31:32] ---- case 1 cores, pass sentinel ----
+[2026-09-09 10:35:32]   1c sentinel: 136,082 rec/s  tm 1.00/1 (100.0%)  kafka 0.10/2.5  srcIdle 0.0%  srcBP 56.7%  headroom 1324s  vantage 0.28%
+[2026-09-09 10:35:32] phase=suite end rc=0 1642s
+[2026-09-09 10:35:32] phase=report start
+[2026-09-09 10:35:32] the chain measured a valid table whose step ratios do not meet the claim
+[2026-09-09 10:35:32] phase=report end rc=1 0s
+[2026-09-09 10:35:32] phase=all end FAIL at report 46.0 min
+[2026-09-09 10:40:02] removed 2 anonymous volume(s) left by containers removed without -v
+[2026-09-09 10:40:04] fstrim: /var/lib/docker: 17 GiB (18237550592 bytes) trimmed
+[2026-09-09 10:40:04] stack down; nothing with prefix bt27 survives

@@ -1,0 +1,42 @@
+{
+ "build": "ee216783b7e9c827",
+ "steps": [
+  {
+   "step": "up",
+   "rc": 0,
+   "seconds": 1.9
+  },
+  {
+   "step": "preflight",
+   "rc": 0,
+   "seconds": 78.4
+  },
+  {
+   "step": "completeness",
+   "rc": 0,
+   "seconds": 457.2
+  },
+  {
+   "step": "tinyproof",
+   "rc": 0,
+   "seconds": 474.5
+  },
+  {
+   "step": "fill",
+   "rc": 0,
+   "seconds": 107.5
+  },
+  {
+   "step": "suite",
+   "rc": 0,
+   "seconds": 1642.5
+  },
+  {
+   "step": "report",
+   "rc": 1,
+   "seconds": 0.0
+  }
+ ],
+ "verdict": "FAIL at report",
+ "seconds": 2762.1
+}
