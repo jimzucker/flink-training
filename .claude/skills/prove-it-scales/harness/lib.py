@@ -256,6 +256,20 @@ class Cfg:
         # measured 2026-09-07 on the rig, 1280m per core read GC 17.4% at one
         # core against 3.4% at two and 1.1% at four. The base term covers the
         # fixed part; only the rest is per subtask.
+        # Two different studies, and the table must say which it is.
+        # "does this component scale" holds everything else constant and varies
+        # only cores and parallelism -- the ratio is then a property of the
+        # component. "what is the best configuration at each size" tunes each
+        # case, and the ratio is best-at-2 against best-at-4, which is a
+        # capacity curve an operator buys against and not a scaling proof.
+        # perCase declares the second up front, before any number is seen,
+        # because tuning after the result turns a curve into a story. The
+        # demo in this repository avoids the question by capping no memory at
+        # all, so memory is never its constraint.
+        self.per_case = {int(k): v for k, v in (c.get("perCase") or {}).items()}
+        for n in self.per_case:
+            if n not in self.cases:
+                raise Refusal("rig", f"perCase names case {n}, which is not in cases {self.cases}")
         self.tm_mem_base = caps.get("tmMemoryBase", "0m")
         self.tm_mem_per_core = caps.get("tmMemoryPerCore")
         self.tm_mem_limit_per_core = caps.get("tmMemoryLimitPerCore")
@@ -271,7 +285,8 @@ class Cfg:
         self.api_level = c["apiLevel"]
         self.guarantee = c["guarantee"]
         self.log_path = os.path.join(self.results, "harness.log")
-        if self.tm_mem_per_core is None and len(set(self.cases)) > 1:
+        if (self.tm_mem_per_core is None and len(set(self.cases)) > 1
+                and not all(n in self.per_case for n in self.cases)):
             raise Refusal("rig", "caps.tmMemoryPerCore is not set: a flat taskmanager memory divides "
                                  f"across the subtasks of each case, so {self.cases} would run with "
                                  "different memory per subtask and the cases would not be comparable "
@@ -916,8 +931,14 @@ def mem_for(spec, cores, base="0m"):
 def start_tm(cores, slots=None, reporter_s=None):
     c = cfg()
     slots = slots if slots is not None else cores
-    tm_mem = mem_for(c.tm_mem_per_core, cores, c.tm_mem_base) if c.tm_mem_per_core else c.tm_mem
-    if c.tm_mem_limit_per_core:
+    over = c.per_case.get(cores, {})
+    if over.get("tmMemory"):
+        tm_mem = over["tmMemory"]
+    else:
+        tm_mem = mem_for(c.tm_mem_per_core, cores, c.tm_mem_base) if c.tm_mem_per_core else c.tm_mem
+    if over.get("tmMemoryLimit"):
+        tm_mem_limit = over["tmMemoryLimit"]
+    elif c.tm_mem_limit_per_core:
         tm_mem_limit = mem_for(c.tm_mem_limit_per_core, cores, c.tm_mem_base)
     elif c.tm_mem_per_core:
         m = re.match(r"^(\d+)([kmg])$", tm_mem)
@@ -1553,6 +1574,7 @@ def build_table(runs, cases_order=None, quick=False):
                         "lastRecordsPerSec": l, "drift": round((l - f) / ((f + l) / 2), 4)}
     for r in ratios:
         if r.get("reportable") and r.get("efficiency") is not None:
+            r["study"] = "capacity" if cfg().per_case else "scaling"
             # judge the claim on the interval, not the point: a two-pass ratio
             # carries about +-4% here, so a point estimate decides on noise
             # The burden is on the claim, so the *whole* interval must clear the
@@ -1585,6 +1607,7 @@ def render_table(out):
     L.append(f"checkpoint interval  : {out['checkpointIntervalMs']} ms")
     L.append(f"build hash           : {out['buildHash']}  (completeness passed for {out['completenessBuild']})")
     L.append(f"passes per case      : {out['passesPerCase']}")
+    L.append(f"study                : {out.get('study', 'scaling: every case configured identically')}")
     L.append(f"backlog              : {out['backlogRecords']:,} records, {out['partitions']} partitions, "
              f"{c.out_per_in:g} outputs per input")
     L.append("=" * 118)
@@ -1643,6 +1666,7 @@ def render_markdown(out):
          f"| checkpoint interval | {out['checkpointIntervalMs']} ms |",
          f"| build hash | `{out['buildHash']}` (completeness passed for `{out['completenessBuild']}`) |",
          f"| passes per case | {out['passesPerCase']} |",
+         f"| study | {out.get('study', 'scaling: every case configured identically')} |",
          f"| rate source | committed broker offsets on `{c.topic_in}` |",
          f"| CPU source | cgroup `cpu.stat usage_usec` |", ""]
     for r in t["stepRatios"]:
