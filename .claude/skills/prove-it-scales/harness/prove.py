@@ -37,6 +37,20 @@ from lib import (T, Refusal, CaseRefused, cfg, log, sh, rest, save_json, load_js
 
 # ---------------------------------------------------------------------- replay
 
+def replay_names():
+    """Names that only exist in another scope. The pure self-test and the replay
+    both pass without ever running preflight, so a defect like that reaches the
+    rig; one did on 2026-09-08 and cost a chain attempt."""
+    import namecheck
+    bad = []
+    for f in ("prove.py", "lib.py"):
+        bad += [(f,) + b for b in namecheck.undefined(os.path.join(L.HERE, f))]
+    for f, line, scope, name in bad:
+        print(f"  UNDEFINED: {f}:{line} {scope}() reads {name!r}")
+    print(f"checked 2 harness files for undefined names" + ("" if not bad else f" — {len(bad)} FOUND"))
+    return 1 if bad else 0
+
+
 def replay_cases():
     """Case verdicts against classifications whose answer is already known.
     The suite record has no cap fractions or broker counters, so a change to
@@ -137,7 +151,7 @@ def cmd_replay():
     if bad:
         print("REPLAY FAILED: a threshold disagrees with the record. Fix the threshold, not the record.")
         return 1
-    if replay_cases() or replay_configs():
+    if replay_names() or replay_cases() or replay_configs():
         print("REPLAY FAILED: a guard disagrees with a recorded configuration. Fix the guard, not the record.")
         return 1
     print("REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, "
@@ -479,6 +493,7 @@ def cmd_selftest(live=True, topic=None):
 def cmd_preflight():
     c = cfg()
     rows = []
+    extra = {}
 
     def check(name, fn):
         try:
@@ -658,7 +673,7 @@ def cmd_preflight():
         read against what this host does at all (run 24: alu 2->4 = 0.980,
         mem 2->4 = 0.690 -- a memory-touching pipeline could not reach 95%)."""
         h = L.host_scaling(seconds=5.0, cases=sorted(set(c.cases)))
-        out["hostScaling"] = h
+        extra["hostScaling"] = h
         if not h or h.get("error"):
             return f"not measured ({(h or {}).get('error', 'no probe')})"
         parts = []
@@ -673,7 +688,8 @@ def cmd_preflight():
     check("back-pressure counters exist on the endpoint read", bp_endpoint)
     check("the VM trim command is known", trim)
     check("the job jar exists and hashes", jar)
-    save_json("preflight.json", [{"check": a, "result": b, "detail": d} for a, b, d in rows])
+    save_json("preflight.json", {"checks": [{"check": a, "result": b, "detail": d} for a, b, d in rows],
+                                 **extra})
     fails = [r for r in rows if r[1] == "FAIL"]
     print(f"\n{len(rows)-len(fails)}/{len(rows)} PASS")
     return 1 if fails else 0
@@ -1012,7 +1028,8 @@ def cmd_report():
                     if a.get(k) is not None and b.get(k) is not None:
                         print(f"  {label:<15} {a[k]:>11.1%} -> {b[k]:>11.1%}")
         try:
-            h = load_json("preflight.json").get("hostScaling") or {}
+            pf = load_json("preflight.json")
+            h = (pf.get("hostScaling") if isinstance(pf, dict) else None) or {}
             for mode, label in (("alu", "register-only"), ("mem", "memory-bound")):
                 steps = (h.get("ofLinear") or {}).get(mode) or {}
                 if steps:

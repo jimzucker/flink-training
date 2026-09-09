@@ -192,6 +192,13 @@ self-test) and `completeness` have passed **for the same build hash**.
 ## What the harness owns, and the agent does not change
 
 The thresholds in `lib.py` (`T`), each with the measurement it was set from.
+`replay` also checks the harness for names that only exist in another scope.
+Nothing else can: the pure self-test and the suite replay never run preflight,
+which needs Docker, so on 2026-09-08 a host-probe check that wrote to a name
+belonging to a different function reached the rig and failed a chain at
+preflight in 1.7 minutes. `namecheck.py` uses Python's own scope analysis, takes
+milliseconds, and reports that defect exactly.
+
 Config guards are replayed too: `record/configs.json` holds configurations
 whose verdict is already known — run 20's and run 21's, the rig's, plus two
 that must be refused (flat worker memory, six partitions with a four-core
