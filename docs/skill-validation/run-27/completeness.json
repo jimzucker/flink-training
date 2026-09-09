@@ -1,0 +1,23 @@
+{
+ "build": "8c010e5c57edcca4",
+ "records": 6000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "blk28-complete-clean",
+   "killed": false,
+   "drainS": 89.4,
+   "killedAtCommitted": null,
+   "verify": "completeness: 6000000 block trades, 18000000 allocations, 32 symbols, 64 accounts, 12 ten-second windows expected\nread 18000000 records from positions-by-symbol, 32 distinct keys\nread 18000000 records from positions-by-account, 64 distinct keys\nread 384 records from mv-by-symbol, 384 distinct (key, window) pairs, 0 contradictory repeats\nread 763 records from mv-by-account, 763 distinct (key, window) pairs, 0 contradictory repeats\n\n  PASS  distinct symbol keys in positions-by-symbol \u2014 32 (wanted 32)\n  PASS  distinct account keys in positions-by-account \u2014 64 (wanted 64)\n  PASS  records in positions-by-symbol >= allocations (at-least-once sink) \u2014 observed 18000000 >= 18000000\n  PASS  records in positions-by-account >= allocations (at-least-once sink) \u2014 observed 18000000 >= 18000000\n  PASS  final position exact for every symbol \u2014 0 wrong\n  PASS  final position exact for every account \u2014 0 wrong\n  PASS  two paths agree: sum of symbol positions == sum of account positions == the blocks' signed quantity \u2014 760368 / 760368 / 760368\n  PASS  windows in the expectation \u2014 12 (wanted 12)\n  PASS  distinct (symbol, window) keys in mv-by-symbol \u2014 384 (wanted 384)\n  PASS  distinct (account, window) keys in mv-by-account \u2014 763 (wanted 763)\n  PASS  every repeated (symbol, window) record is byte-identical \u2014 0 contradictory repeats\n  PASS  every repeated (account, window) record is byte-identical \u2014 0 contradictory repeats\n  PASS  market value at close exact for every (symbol, window): position at the close x last price at or before the boundary \u2014 0 wrong\n  PASS  market value at close exact for every (account, window) \u2014 0 wrong\n  PASS  the two windowed paths agree in every window, read off Kafka alone \u2014 0 windows disagree\n  PASS  windows present on both windowed topics \u2014 12 / 12 of 12\nCOMPLETENESS OK: 16 assertions, no tolerances\n"
+  },
+  {
+   "group": "blk28-complete-kill",
+   "killed": true,
+   "drainS": 141.3,
+   "killedAtCommitted": 3287711,
+   "verify": "completeness: 6000000 block trades, 18000000 allocations, 32 symbols, 64 accounts, 12 ten-second windows expected\nread 18203554 records from positions-by-symbol, 32 distinct keys\nread 18183981 records from positions-by-account, 64 distinct keys\nread 416 records from mv-by-symbol, 384 distinct (key, window) pairs, 0 contradictory repeats\nread 827 records from mv-by-account, 763 distinct (key, window) pairs, 0 contradictory repeats\n\n  PASS  distinct symbol keys in positions-by-symbol \u2014 32 (wanted 32)\n  PASS  distinct account keys in positions-by-account \u2014 64 (wanted 64)\n  PASS  records in positions-by-symbol >= allocations (at-least-once sink) \u2014 observed 18203554 >= 18000000\n  PASS  records in positions-by-account >= allocations (at-least-once sink) \u2014 observed 18183981 >= 18000000\n  PASS  final position exact for every symbol \u2014 0 wrong\n  PASS  final position exact for every account \u2014 0 wrong\n  PASS  two paths agree: sum of symbol positions == sum of account positions == the blocks' signed quantity \u2014 760368 / 760368 / 760368\n  PASS  windows in the expectation \u2014 12 (wanted 12)\n  PASS  distinct (symbol, window) keys in mv-by-symbol \u2014 384 (wanted 384)\n  PASS  distinct (account, window) keys in mv-by-account \u2014 763 (wanted 763)\n  PASS  every repeated (symbol, window) record is byte-identical \u2014 0 contradictory repeats\n  PASS  every repeated (account, window) record is byte-identical \u2014 0 contradictory repeats\n  PASS  market value at close exact for every (symbol, window): position at the close x last price at or before the boundary \u2014 0 wrong\n  PASS  market value at close exact for every (account, window) \u2014 0 wrong\n  PASS  the two windowed paths agree in every window, read off Kafka alone \u2014 0 windows disagree\n  PASS  windows present on both windowed topics \u2014 12 / 12 of 12\nCOMPLETENESS OK: 16 assertions, no tolerances\n"
+  }
+ ],
+ "at": "2026-09-09 17:10:34",
+ "result": "PASS"
+}

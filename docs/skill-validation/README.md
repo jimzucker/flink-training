@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Twenty-six runs of the same problem, each by a fresh agent in an empty directory, barred
+Twenty-seven runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.
@@ -40,8 +40,11 @@ way to tell them apart.
 | [24](clean-room-run-24.md) | DataStream | 2.68 h | — | 87 | 130,179 | 506,286 | 3.89× | **98%** |
 | [25](clean-room-run-25.md) | DataStream | 1.87 h | — | — | 220,719 | **913,312** | 4.14× | **96%** |
 | [26](clean-room-run-26.md) | DataStream | 1.67 h | — | 67 | 139,255 | 540,772 | 3.88× | **100%** |
+| [27](clean-room-run-27.md)† | DataStream | 2.13 h | — | 115 | 108,886 | 489,595 | 4.50× | **100%** |
 
 Human time was **0 h** and human prompts **1** in every row.
+
+† Run 27 is the only run since 17 asked for the **whole** project — positions *and* market value at close on a ten-second window, with the windowed outputs proved exactly under a killed worker. Runs 18–26 built the positions half only, which is why their rates are not comparable with the demo's.
 
 ¶ Run 14 was a **one-pass quick look** (`prove.py all --quick`): every case measured once, so its ratios are stamped unpublishable by the harness and are shown here in italics. It is in the table for its clock, not its numbers.
 
