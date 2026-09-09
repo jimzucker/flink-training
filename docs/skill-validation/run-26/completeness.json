@@ -1,0 +1,23 @@
+{
+ "build": "ee216783b7e9c827",
+ "records": 10000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt27-complete-clean",
+   "killed": false,
+   "drainS": 98.3,
+   "killedAtCommitted": null,
+   "verify": "read 10000000 records from positions-by-symbol and 40000000 from positions-by-account in 15.908s; 64 symbol keys, 8192 (account,symbol) keys, 10000000 trades against a manifest of 10000000\nCOMPLETENESS OK \u2014 every assertion held with no tolerance\n"
+  },
+  {
+   "group": "bt27-complete-kill",
+   "killed": true,
+   "drainS": 140.6,
+   "killedAtCommitted": 4302359,
+   "verify": "read 10068262 records from positions-by-symbol and 40271345 from positions-by-account in 15.645s; 64 symbol keys, 8192 (account,symbol) keys, 10000000 trades against a manifest of 10000000\nCOMPLETENESS OK \u2014 every assertion held with no tolerance\n"
+  }
+ ],
+ "at": "2026-09-09 09:51:04",
+ "result": "PASS"
+}
