@@ -1,0 +1,87 @@
+[2026-09-09 16:03:49] stack up: blk28-kafka (cap 2.5), blk28-jm (cap 0.5); task manager is started per case
+[2026-09-09 16:05:50] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=6000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest-small.json
+[2026-09-09 16:05:54] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest-small.json written in 0.387s for 6000000 trades
+[2026-09-09 16:05:55] backlog block-trades-small: 6,000,000 records read back over 8 partitions
+[2026-09-09 16:08:19] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=6000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest-small.json
+[2026-09-09 16:08:23] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest-small.json written in 0.412s for 6000000 trades
+[2026-09-09 16:08:24] backlog block-trades-small: 6,000,000 records read back over 8 partitions
+[2026-09-09 16:10:39] drained to the last record in 86.2s
+[2026-09-09 16:12:45] KILL: committed=2936695, killing the task manager mid-drain
+[2026-09-09 16:13:33] KILL: job RUNNING again on the replacement worker
+[2026-09-09 16:14:34] drained to the last record in 145.6s (worker killed mid-drain)
+[2026-09-09 16:44:16] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=6000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest-small.json
+[2026-09-09 16:44:20] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest-small.json written in 0.409s for 6000000 trades
+[2026-09-09 16:44:21] backlog block-trades-small: 6,000,000 records read back over 8 partitions
+[2026-09-09 16:46:37] drained to the last record in 89.9s
+[2026-09-09 16:48:40] KILL: committed=2482759, killing the task manager mid-drain
+[2026-09-09 16:49:40] KILL: job RUNNING again on the replacement worker
+[2026-09-09 16:50:44] drained to the last record in 155.3s (worker killed mid-drain)
+[2026-09-09 16:52:41] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=60000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --pricesTopic=block-trades-tiny-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest-tiny.json
+[2026-09-09 16:53:08] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest-tiny.json written in 3.42s for 60000000 trades
+[2026-09-09 16:53:09] backlog block-trades-tiny: 60,000,000 records read back over 8 partitions
+[2026-09-09 16:53:09] ---- tiny case 1 cores ----
+[2026-09-09 16:55:58]   REFUSED (ceiling): garbage collection took 11.8% of this case's capacity (ceiling 11%): memory is the constraint here, not cores — give the worker more memory rather than capping it
+[2026-09-09 16:55:58] ---- tiny case 4 cores ----
+[2026-09-09 16:59:12]   4c: 423,155 rec/s, tm 99.2% of cap, vantage 0.94%
+[2026-09-09 17:00:45] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=70000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --pricesTopic=block-trades-tiny-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest-tiny.json
+[2026-09-09 17:01:13] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest-tiny.json written in 3.935s for 70000000 trades
+[2026-09-09 17:01:14] backlog block-trades-tiny: 70,000,000 records read back over 8 partitions
+[2026-09-09 17:01:14] ---- tiny case 1 cores ----
+[2026-09-09 17:03:58]   1c: 111,656 rec/s, tm 100.1% of cap, vantage 0.44%
+[2026-09-09 17:03:58] ---- tiny case 4 cores ----
+[2026-09-09 17:07:08]   4c: 488,979 rec/s, tm 98.8% of cap, vantage 0.26%
+[2026-09-09 17:07:08]   disk: input 26 B/record x 160,000,000 = 4.1 GB; sinks 64 B/input -> 10.3 GB, retention caps them at 68.7 GB; checkpoints 0.00 GB; need 34.3 GB incl. the 20 GB floor, 152.6 GB free now + 4.2 GB the tiny proof gives back = 156.8 GB: FITS
+[2026-09-09 17:07:08]   backlog: 160,000,000 configured, 58,677,480 needed at the measured 488,979 rec/s
+[2026-09-09 17:08:42] phase=all start
+[2026-09-09 17:08:42] phase=up start
+[2026-09-09 17:08:44] stack up: blk28-kafka (cap 2.5), blk28-jm (cap 0.5); task manager is started per case
+[2026-09-09 17:08:44] phase=up end rc=0 2s
+[2026-09-09 17:08:44] phase=preflight start
+[2026-09-09 17:10:23] phase=preflight end rc=0 99s
+[2026-09-09 17:10:23] phase=completeness start
+[2026-09-09 17:10:29] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=6000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest-small.json
+[2026-09-09 17:10:32] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest-small.json written in 0.4s for 6000000 trades
+[2026-09-09 17:10:34] backlog block-trades-small: 6,000,000 records read back over 8 partitions
+[2026-09-09 17:12:49] drained to the last record in 89.4s
+[2026-09-09 17:15:00] KILL: committed=3287711, killing the task manager mid-drain
+[2026-09-09 17:15:44] KILL: job RUNNING again on the replacement worker
+[2026-09-09 17:16:42] drained to the last record in 141.3s (worker killed mid-drain)
+[2026-09-09 17:17:37] phase=completeness end rc=0 434s
+[2026-09-09 17:17:37] phase=tinyproof start
+[2026-09-09 17:17:40] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=70000000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --pricesTopic=block-trades-tiny-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest-tiny.json
+[2026-09-09 17:18:12] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest-tiny.json written in 4.02s for 70000000 trades
+[2026-09-09 17:18:13] backlog block-trades-tiny: 70,000,000 records read back over 8 partitions
+[2026-09-09 17:18:13] ---- tiny case 1 cores ----
+[2026-09-09 17:21:22]   1c: 104,844 rec/s, tm 100.0% of cap, vantage 0.29%
+[2026-09-09 17:21:22] ---- tiny case 4 cores ----
+[2026-09-09 17:24:22]   4c: 419,409 rec/s, tm 99.1% of cap, vantage 0.44%
+[2026-09-09 17:24:23]   disk: input 26 B/record x 160,000,000 = 4.1 GB; sinks 65 B/input -> 10.3 GB, retention caps them at 68.7 GB; checkpoints 0.00 GB; need 34.4 GB incl. the 20 GB floor, 153.1 GB free now + 3.7 GB the tiny proof gives back = 156.8 GB: FITS
+[2026-09-09 17:24:23]   backlog: 160,000,000 configured, 50,329,044 needed at the measured 419,409 rec/s
+[2026-09-09 17:25:39] phase=tinyproof end rc=0 482s
+[2026-09-09 17:25:39] phase=fill start
+[2026-09-09 17:25:42] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-28/job/target/blockmv-1.0.jar blockmv.GenerateBacklog --mode=produce --count=160000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades --pricesTopic=block-trades-prices --manifest=~/code/GitHub/flink-skill-test-28/results/manifest.json
+[2026-09-09 17:26:51] fill done: manifest ~/code/GitHub/flink-skill-test-28/results/manifest.json written in 9.217s for 160000000 trades
+[2026-09-09 17:26:52] backlog block-trades: 160,000,000 records read back over 8 partitions
+[2026-09-09 17:26:52] phase=fill end rc=0 73s
+[2026-09-09 17:26:52] phase=suite start
+[2026-09-09 17:26:52] ---- case 1 cores, pass p1-asc ----
+[2026-09-09 17:30:48]   1c p1-asc: 104,628 rec/s  tm 1.00/1 (100.0%)  kafka 0.06/2.5  srcIdle 0.0%  srcBP 47.7%  headroom 1382s  vantage 0.21%
+[2026-09-09 17:30:48] ---- case 2 cores, pass p1-asc ----
+[2026-09-09 17:34:38]   2c p1-asc: 255,216 rec/s  tm 1.99/2 (99.7%)  kafka 0.15/2.5  srcIdle 1.4%  srcBP 33.0%  headroom 479s  vantage 0.21%
+[2026-09-09 17:34:38] ---- case 4 cores, pass p1-asc ----
+[2026-09-09 17:39:09]   4c p1-asc: 469,146 rec/s  tm 4.01/4 (100.4%)  kafka 0.23/2.5  srcIdle 2.6%  srcBP 22.5%  headroom 185s  vantage 0.47%
+[2026-09-09 17:39:09] ---- case 4 cores, pass p2-desc ----
+[2026-09-09 17:43:29]   4c p2-desc: 510,046 rec/s  tm 4.00/4 (100.0%)  kafka 0.25/2.5  srcIdle 3.4%  srcBP 22.8%  headroom 166s  vantage 0.37%
+[2026-09-09 17:43:29] ---- case 2 cores, pass p2-desc ----
+[2026-09-09 17:48:03]   2c p2-desc: 273,149 rec/s  tm 1.99/2 (99.5%)  kafka 0.14/2.5  srcIdle 1.2%  srcBP 31.5%  headroom 418s  vantage 0.31%
+[2026-09-09 17:48:03] ---- case 1 cores, pass p2-desc ----
+[2026-09-09 17:51:59]   CEILING: the broker hit its memory limit 323 times inside the window (17,195 file-page refaults): it was reading the backlog off disk, so the broker is the constraint here, not the worker — raise caps.kafkaMemory from 3072m to about 4864m
+[2026-09-09 17:51:59] ---- case 1 cores, pass sentinel ----
+[2026-09-09 17:55:49]   1c sentinel: 113,145 rec/s  tm 1.00/1 (99.7%)  kafka 0.06/2.5  srcIdle 0.0%  srcBP 42.3%  headroom 1278s  vantage 0.35%
+[2026-09-09 17:55:49] phase=suite end rc=0 1736s
+[2026-09-09 17:55:49] phase=report start
+[2026-09-09 17:55:49] the chain measured a valid table whose step ratios do not meet the claim
+[2026-09-09 17:55:49] phase=report end rc=1 0s
+[2026-09-09 17:55:49] phase=all end FAIL at report 47.1 min
+[2026-09-09 18:00:16] fstrim: /var/lib/docker: 7.9 GiB (8518815744 bytes) trimmed
+[2026-09-09 18:00:16] stack down; nothing with prefix blk28 survives
