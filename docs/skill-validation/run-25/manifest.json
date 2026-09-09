@@ -1,0 +1,337 @@
+{
+ "tradeCount": 280000000,
+ "seed": 20260908,
+ "allocsPerTrade": 4,
+ "outputsPerInput": 5,
+ "predictedSymbols": 64,
+ "predictedAccounts": 512,
+ "distinctSymbols": 64,
+ "distinctAccounts": 512,
+ "symbolUpdates": 280000000,
+ "accountUpdates": 1120000000,
+ "totalNetQty": -102399669,
+ "totalNetNotional": -17197487045265,
+ "symbols": {
+  "SYM0000": {
+   "netQty": 24928646,
+   "netNotional": 2795642473901,
+   "updates": 4374833
+  },
+  "SYM0001": {
+   "netQty": -25553659,
+   "netNotional": -1841578938492,
+   "updates": 4378730
+  },
+  "SYM0002": {
+   "netQty": 3899775,
+   "netNotional": 423327041921,
+   "updates": 4374131
+  },
+  "SYM0003": {
+   "netQty": -6355960,
+   "netNotional": -508990048440,
+   "updates": 4378837
+  },
+  "SYM0004": {
+   "netQty": 23680745,
+   "netNotional": 1866156664951,
+   "updates": 4375325
+  },
+  "SYM0005": {
+   "netQty": -10700517,
+   "netNotional": -1395115465278,
+   "updates": 4375961
+  },
+  "SYM0006": {
+   "netQty": 24907923,
+   "netNotional": 1636344974426,
+   "updates": 4378163
+  },
+  "SYM0007": {
+   "netQty": -9790093,
+   "netNotional": -759198715620,
+   "updates": 4375883
+  },
+  "SYM0008": {
+   "netQty": -3015405,
+   "netNotional": 1801605631969,
+   "updates": 4373684
+  },
+  "SYM0009": {
+   "netQty": -15622463,
+   "netNotional": -2161228837482,
+   "updates": 4376932
+  },
+  "SYM0010": {
+   "netQty": -7620667,
+   "netNotional": -305570880588,
+   "updates": 4373886
+  },
+  "SYM0011": {
+   "netQty": -2203300,
+   "netNotional": -526630521284,
+   "updates": 4372960
+  },
+  "SYM0012": {
+   "netQty": -2016644,
+   "netNotional": 701656525500,
+   "updates": 4375125
+  },
+  "SYM0013": {
+   "netQty": -398827,
+   "netNotional": 512657670359,
+   "updates": 4372189
+  },
+  "SYM0014": {
+   "netQty": 6865854,
+   "netNotional": 1102273731157,
+   "updates": 4374618
+  },
+  "SYM0015": {
+   "netQty": -7194092,
+   "netNotional": -1705497047271,
+   "updates": 4371161
+  },
+  "SYM0016": {
+   "netQty": -1526271,
+   "netNotional": -955959283646,
+   "updates": 4375776
+  },
+  "SYM0017": {
+   "netQty": -251066,
+   "netNotional": 1009463891309,
+   "updates": 4372473
+  },
+  "SYM0018": {
+   "netQty": -4060835,
+   "netNotional": -1734601913240,
+   "updates": 4375023
+  },
+  "SYM0019": {
+   "netQty": -18915581,
+   "netNotional": -3012304845453,
+   "updates": 4375651
+  },
+  "SYM0020": {
+   "netQty": -11024351,
+   "netNotional": -938878585565,
+   "updates": 4375030
+  },
+  "SYM0021": {
+   "netQty": -15378942,
+   "netNotional": -2644433664573,
+   "updates": 4378218
+  },
+  "SYM0022": {
+   "netQty": -5432238,
+   "netNotional": -664130723862,
+   "updates": 4373951
+  },
+  "SYM0023": {
+   "netQty": 12919299,
+   "netNotional": 1541300577037,
+   "updates": 4376971
+  },
+  "SYM0024": {
+   "netQty": -12392965,
+   "netNotional": -1272724912025,
+   "updates": 4373427
+  },
+  "SYM0025": {
+   "netQty": -12309264,
+   "netNotional": -1952163008082,
+   "updates": 4379713
+  },
+  "SYM0026": {
+   "netQty": -11321204,
+   "netNotional": -1122118575990,
+   "updates": 4373626
+  },
+  "SYM0027": {
+   "netQty": 7212356,
+   "netNotional": -912179498506,
+   "updates": 4376518
+  },
+  "SYM0028": {
+   "netQty": -8833878,
+   "netNotional": -231718532046,
+   "updates": 4376203
+  },
+  "SYM0029": {
+   "netQty": 8653488,
+   "netNotional": 1023875178520,
+   "updates": 4377926
+  },
+  "SYM0030": {
+   "netQty": 19760097,
+   "netNotional": 1919931342595,
+   "updates": 4374396
+  },
+  "SYM0031": {
+   "netQty": -31008884,
+   "netNotional": -3900902617206,
+   "updates": 4377400
+  },
+  "SYM0032": {
+   "netQty": -3397472,
+   "netNotional": 892194424712,
+   "updates": 4372628
+  },
+  "SYM0033": {
+   "netQty": -373942,
+   "netNotional": -451251940452,
+   "updates": 4374233
+  },
+  "SYM0034": {
+   "netQty": 6099693,
+   "netNotional": -352520022102,
+   "updates": 4374983
+  },
+  "SYM0035": {
+   "netQty": 12745527,
+   "netNotional": 741293544301,
+   "updates": 4374891
+  },
+  "SYM0036": {
+   "netQty": 14305433,
+   "netNotional": 2452501173873,
+   "updates": 4372723
+  },
+  "SYM0037": {
+   "netQty": 4624329,
+   "netNotional": 505319651360,
+   "updates": 4374024
+  },
+  "SYM0038": {
+   "netQty": -8603680,
+   "netNotional": -1899467869838,
+   "updates": 4371376
+  },
+  "SYM0039": {
+   "netQty": -24903545,
+   "netNotional": -1985605296438,
+   "updates": 4375344
+  },
+  "SYM0040": {
+   "netQty": -47618539,
+   "netNotional": -5688150743861,
+   "updates": 4375553
+  },
+  "SYM0041": {
+   "netQty": 4133492,
+   "netNotional": 786968720123,
+   "updates": 4374440
+  },
+  "SYM0042": {
+   "netQty": 725834,
+   "netNotional": 16936383376,
+   "updates": 4374274
+  },
+  "SYM0043": {
+   "netQty": 17704791,
+   "netNotional": 2282866404801,
+   "updates": 4377887
+  },
+  "SYM0044": {
+   "netQty": -8693383,
+   "netNotional": -426122040561,
+   "updates": 4378769
+  },
+  "SYM0045": {
+   "netQty": -18921515,
+   "netNotional": -1681829385817,
+   "updates": 4375354
+  },
+  "SYM0046": {
+   "netQty": -27447666,
+   "netNotional": -3782880767137,
+   "updates": 4372844
+  },
+  "SYM0047": {
+   "netQty": 3795301,
+   "netNotional": -936161357624,
+   "updates": 4370718
+  },
+  "SYM0048": {
+   "netQty": 17816604,
+   "netNotional": 2043627310146,
+   "updates": 4375009
+  },
+  "SYM0049": {
+   "netQty": -18903381,
+   "netNotional": -2747515844084,
+   "updates": 4377265
+  },
+  "SYM0050": {
+   "netQty": 4802289,
+   "netNotional": 873233580236,
+   "updates": 4375453
+  },
+  "SYM0051": {
+   "netQty": 19034283,
+   "netNotional": 1519482381930,
+   "updates": 4374060
+  },
+  "SYM0052": {
+   "netQty": 6643022,
+   "netNotional": 299541731467,
+   "updates": 4374688
+  },
+  "SYM0053": {
+   "netQty": 21504168,
+   "netNotional": 2902194207651,
+   "updates": 4378719
+  },
+  "SYM0054": {
+   "netQty": -10058229,
+   "netNotional": -988666166990,
+   "updates": 4375696
+  },
+  "SYM0055": {
+   "netQty": 2427874,
+   "netNotional": -178288702826,
+   "updates": 4377313
+  },
+  "SYM0056": {
+   "netQty": 5669373,
+   "netNotional": 989474836762,
+   "updates": 4374159
+  },
+  "SYM0057": {
+   "netQty": 4121061,
+   "netNotional": 194931165226,
+   "updates": 4374182
+  },
+  "SYM0058": {
+   "netQty": -2314836,
+   "netNotional": -692547301368,
+   "updates": 4370234
+  },
+  "SYM0059": {
+   "netQty": -3855271,
+   "netNotional": -1986339369100,
+   "updates": 4375117
+  },
+  "SYM0060": {
+   "netQty": -3408780,
+   "netNotional": -66708095984,
+   "updates": 4372833
+  },
+  "SYM0061": {
+   "netQty": -6845114,
+   "netNotional": -119963999860,
+   "updates": 4374470
+  },
+  "SYM0062": {
+   "netQty": 17339247,
+   "netNotional": 1650993852868,
+   "updates": 4372910
+  },
+  "SYM0063": {
+   "netQty": 9552286,
+   "netNotional": 846663400949,
+   "updates": 4373131
+  }
+ },
+ "accounts": "<512 entries stripped>"
+}

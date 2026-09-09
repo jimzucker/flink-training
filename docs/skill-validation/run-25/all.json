@@ -1,0 +1,17 @@
+{
+ "build": "5793551a234b0cf6",
+ "steps": [
+  {
+   "step": "up",
+   "rc": 0,
+   "seconds": 1.9
+  },
+  {
+   "step": "preflight",
+   "rc": 1,
+   "seconds": 99.6
+  }
+ ],
+ "verdict": "FAIL at preflight",
+ "seconds": 101.5
+}

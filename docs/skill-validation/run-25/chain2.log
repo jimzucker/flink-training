@@ -1,0 +1,19 @@
+QUICK LOOK: 2 passes per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+replayed 6 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[20:43:21] stack up: bt26-kafka (cap 2.5), bt26-jm (cap 0.5); task manager is started per case
+QUICK LOOK: 2 passes per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+replayed 6 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[20:43:25] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-26/job/target/positions-1.0.jar bt.GenerateBacklog --mode=produce --count=120000000 --seed=20260909 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[20:45:05] fill done: produce: 120,000,000 trades, seed 20260909, 6 threads, 99.6s (1,204,638 rec/s); manifest ~/code/GitHub/flink-skill-test-26/results/manifest-tiny.json
+[20:45:06] backlog block-trades-tiny: 120,000,000 records read back over 8 partitions
+[20:45:06] ---- tiny case 1 cores ----
+[20:48:01]   1c: 215,998 rec/s, tm 99.2% of cap, vantage 1.05%
+[20:48:01] ---- tiny case 4 cores ----
+[20:51:12]   REFUSED (ceiling): task manager used 92.9% of its 4-core cap (floor 95%) — it is not the constraint, so this case is where scaling stops rather than a point on the curve
+TINY PROOF FAILED

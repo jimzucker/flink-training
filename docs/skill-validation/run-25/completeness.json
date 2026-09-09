@@ -1,0 +1,23 @@
+{
+ "build": "ffc01f5c36588ad1",
+ "records": 12000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt26-complete-clean",
+   "killed": false,
+   "drainS": 81.0,
+   "killedAtCommitted": null,
+   "verify": "read both sinks in 20.5s\n12,000,000 trades | 64 symbol keys, 512 account keys | net qty 18,293,384 | notional 1,020,162,812,036\nCOMPLETENESS OK \u2014 every assertion held exactly, no tolerances\n"
+  },
+  {
+   "group": "bt26-complete-kill",
+   "killed": true,
+   "drainS": 133.9,
+   "killedAtCommitted": 4915375,
+   "verify": "read both sinks in 20.2s\n12,000,000 trades | 64 symbol keys, 512 account keys | net qty 18,293,384 | notional 1,020,162,812,036\nCOMPLETENESS OK \u2014 every assertion held exactly, no tolerances\n"
+  }
+ ],
+ "at": "2026-09-08 20:53:18",
+ "result": "PASS"
+}

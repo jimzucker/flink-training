@@ -1,0 +1,25 @@
+2026-09-08 20:16:51 phase=up start
+2026-09-08 20:16:52 phase=up end rc=0 1s
+2026-09-08 20:16:52 phase=completeness start
+2026-09-08 20:25:24 phase=completeness end rc=0 512s
+2026-09-08 20:25:24 phase=tinyproof start
+2026-09-08 20:32:14 phase=tinyproof end rc=1 410s
+2026-09-08 20:32:14 phase=chain end FAIL at tinyproof 15 min
+2026-09-08 20:43:19 phase=up start
+2026-09-08 20:43:21 phase=up end rc=0 2s
+2026-09-08 20:43:21 phase=tinyproof start
+2026-09-08 20:51:16 phase=tinyproof end rc=1 475s
+2026-09-08 20:51:16 phase=chain end FAIL at tinyproof 7 min
+2026-09-08 20:53:00 phase=up start
+2026-09-08 20:53:02 phase=up end rc=0 2s
+2026-09-08 20:53:02 phase=completeness start
+2026-09-08 20:59:49 phase=completeness end rc=0 407s
+2026-09-08 20:59:49 phase=tinyproof start
+2026-09-08 21:07:29 phase=tinyproof end rc=0 460s
+2026-09-08 21:07:29 phase=fill start
+2026-09-08 21:10:52 phase=fill end rc=0 203s
+2026-09-08 21:10:52 phase=suite start
+2026-09-08 21:38:13 phase=suite end rc=0 1641s
+2026-09-08 21:38:13 phase=report start
+2026-09-08 21:38:13 phase=report end rc=1 0s
+2026-09-08 21:38:13 phase=chain end FAIL at report 45 min
