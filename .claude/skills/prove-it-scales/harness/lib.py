@@ -1643,6 +1643,7 @@ def render_table(out):
     L.append(f"build hash           : {out['buildHash']}  (completeness passed for {out['completenessBuild']})")
     L.append(f"passes per case      : {out['passesPerCase']}")
     L.append(f"study                : {out.get('study', 'scaling: every case configured identically')}")
+    L.append(f"workload             : {workload_line(out)}")
     L.append(f"backlog              : {out['backlogRecords']:,} records, {out['partitions']} partitions, "
              f"{c.out_per_in:g} outputs per input")
     L.append("=" * 118)
@@ -1689,6 +1690,18 @@ def render_table(out):
     return "\n".join(L)
 
 
+def workload_line(out):
+    """The generator's own key counts, so two runs of "the same" workload can be
+    told apart. Runs 27 and 28 differed by 32 symbol keys against 8, and runs 21
+    and 26 by 32,768 against 64, with nothing in the table saying so."""
+    w = out.get("workload") or {}
+    keys = [f"{k} {v:,}" for k, v in w.items()
+            if isinstance(v, int) and any(t in k.lower() for t in ("symbol", "account", "key"))]
+    return (f"{out.get('backlogRecords', 0):,} records"
+            + (", " + ", ".join(keys) if keys else "")
+            + f", {out.get('outputsPerInput', 0):g} outputs per input")
+
+
 def render_markdown(out):
     """The same table for a report."""
     t = out["table"]
@@ -1702,6 +1715,7 @@ def render_markdown(out):
          f"| build hash | `{out['buildHash']}` (completeness passed for `{out['completenessBuild']}`) |",
          f"| passes per case | {out['passesPerCase']} |",
          f"| study | {out.get('study', 'scaling: every case configured identically')} |",
+         f"| workload | {workload_line(out)} |",
          f"| rate source | committed broker offsets on `{c.topic_in}` |",
          f"| CPU source | cgroup `cpu.stat usage_usec` |", ""]
     for r in t["stepRatios"]:

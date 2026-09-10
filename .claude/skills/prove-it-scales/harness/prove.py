@@ -916,6 +916,13 @@ def cmd_suite():
                      if c.per_case else "scaling: every case configured identically"),
            "perCase": c.per_case or None,
            "cases": c.cases, "baseline": c.baseline,
+           # Every scalar the generator's own manifest declares. Agents name these
+           # differently -- distinctSymbols, symbolUniverse, numSymbols, symbolCount
+           # -- so the harness keeps them all rather than guessing a schema. Without
+           # this, two runs of "the same" workload can differ by 4 keys against
+           # 32,768 and nothing in the results says so: comparing their step ratios
+           # for days is then comparing two different problems.
+           "workload": {k: v for k, v in man.items() if isinstance(v, (int, float, str))},
            "backlogRecords": int(man[c.count_field]), "partitions": c.partitions,
            "outputsPerInput": c.out_per_in,
            "heldStill": {"kafkaCap": c.kafka_cap, "jobManagerCap": c.jm_cap, "partitions": c.partitions,
