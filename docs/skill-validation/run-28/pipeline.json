@@ -1,0 +1,54 @@
+{
+  "project": "mvs29",
+  "topics": {
+    "in": "block-trades",
+    "out": ["positions-by-symbol", "positions-by-account", "mv-by-symbol", "mv-by-account"]
+  },
+  "partitions": 8,
+  "outputsPerInput": 5,
+  "checkpointMs": 10000,
+  "job": {
+    "jar": "job/target/positions-1.0.jar",
+    "mainClass": "mvscale.MarketValueJob",
+    "args": "--bootstrap={bootstrap} --topicIn={in} --topicPrices={in}-prices --topicPosSym={out0} --topicPosAcct={out1} --topicMvSym={out2} --topicMvAcct={out3} --group={group} --parallelism={par} --checkpointMs={ckptMs}",
+    "sourceVertexMatch": "trades-kafka-source"
+  },
+  "generator": {
+    "cmd": "{java} -Xmx3g -cp {jar} mvscale.GenerateBacklog --mode=produce --count={count} --seed={seed} --partitions={partitions} --bootstrap={bootstrapExt} --topic={topic} --topicPrices={topic}-prices --manifest={manifest}",
+    "manifestCmd": "{java} -Xmx3g -cp {jar} mvscale.GenerateBacklog --mode=manifest --count={count} --seed={seed} --partitions={partitions} --manifest={manifest}",
+    "manifestCountField": "tradeCount"
+  },
+  "verifier": {
+    "cmd": "{java} -Xmx2g -cp {jar} mvscale.VerifyCompleteness --bootstrap={bootstrapExt} --topicPosSym={out0} --topicPosAcct={out1} --topicMvSym={out2} --topicMvAcct={out3} --manifest={manifest}"
+  },
+  "cases": [1, 2, 4],
+  "baseline": 1,
+  "passes": 3,
+  "backlog": {
+    "count": 300040000,
+    "seed": 20260909,
+    "smallCount": 12040000,
+    "tinyCount": 160040000,
+    "killAtFraction": 0.35
+  },
+  "caps": {
+    "kafka": 2.5,
+    "jobmanager": 0.5,
+    "kafkaMemory": "4g",
+    "kafkaHeap": "1G",
+    "tmMemoryBase": "3072m",
+    "tmMemoryPerCore": "512m"
+  },
+  "images": {
+    "flink": "flink:1.20.1-scala_2.12-java17",
+    "kafka": "apache/kafka:3.9.0"
+  },
+  "ports": {"kafka": 19092, "rest": 18081},
+  "jdk": "/opt/homebrew/opt/openjdk@17",
+  "axis": "one worker growing: one task manager container capped at N cores, parallelism N, N slots",
+  "apiLevel": "Flink DataStream API, hand-written operators (ProcessFunction, KeyedCoProcessFunction, event-time timers) — no SQL, no Table API",
+  "guarantee": {
+    "state": "exactly-once checkpointing (10 s), hashmap state backend, filesystem checkpoint storage",
+    "sink": "at-least-once, idempotent by emitting the absolute position per key and the absolute market value per key per window"
+  }
+}
