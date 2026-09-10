@@ -1,0 +1,118 @@
+{
+ "checks": [
+  {
+   "check": "every image is native to the host arch",
+   "result": "PASS",
+   "detail": "host=arm64 apache/kafka=arm64 flink=arm64"
+  },
+  {
+   "check": "the JDK the engine needs resolves, pinned",
+   "result": "PASS",
+   "detail": "host openjdk version \"17.0.20\" 2026-07-21 | image openjdk version \"17.0.15\" 2025-04-15"
+  },
+  {
+   "check": "the engine can write its state directory",
+   "result": "PASS",
+   "detail": "uid 9999 (flink) can mkdir under /ckpt"
+  },
+  {
+   "check": "the metrics reporter is not duplicated",
+   "result": "PASS",
+   "detail": "no reporter jar copied into lib/; slf4j reporter used from plugins/"
+  },
+  {
+   "check": "disk budget on the HOST, not the container",
+   "result": "PASS",
+   "detail": "host free 136.3 GB >= budget 117.6 GB (backlog 36.0 + sinks at retention 68.7 + ckpt 2 + slack 10)"
+  },
+  {
+   "check": "retention on every topic written but never drained",
+   "result": "PASS",
+   "detail": "retention.bytes=2147483648 set and read back on ['positions-by-symbol', 'positions-by-account', 'mv-by-symbol', 'mv-by-account'] (a periodic sweep, not a bound)"
+  },
+  {
+   "check": "the generator is deterministic",
+   "result": "PASS",
+   "detail": "identical sha256=ffacd3ea3781 for 200,000 records at seed 20260909"
+  },
+  {
+   "check": "CPU cap mechanism chosen once",
+   "result": "PASS",
+   "detail": "--cpus throughout; read back NanoCpus=2000000000 and cgroup cpu.max = 2.0 cores"
+  },
+  {
+   "check": "slots >= parallelism x jobs",
+   "result": "PASS",
+   "detail": "slots-total=4 >= parallelism 4 x 1 job"
+  },
+  {
+   "check": "partitions divide evenly by every parallelism",
+   "result": "PASS",
+   "detail": "8 partitions / parallelism [1, 2, 4] = 8 per subtask at 1, 4 per subtask at 2, 2 per subtask at 4"
+  },
+  {
+   "check": "worker memory is per subtask, not per container",
+   "result": "PASS",
+   "detail": "3072m base + 512m per subtask: 3584m at 1, 4096m at 2, 5120m at 4"
+  },
+  {
+   "check": "what this host's own cores do",
+   "result": "PASS",
+   "detail": "alu 1->2 96%, 2->4 98%; mem 1->2 90%, 2->4 76%"
+  },
+  {
+   "check": "backlog covers warm-up, window and headroom",
+   "result": "PASS",
+   "detail": "backlog 300,040,000 covers 180s x 1.5 at the 4-core rate, so up to 1,111,259 rec/s; the tiny proof checks this against the measured rate"
+  },
+  {
+   "check": "worker, broker and job manager against the VM (reported)",
+   "result": "PASS",
+   "detail": "worker 5120m at 4 cores + broker 4096m + job manager 1024m = 10240m of 7838m VM (over-committed, which is normal \u2014 the broker's cache is elastic)"
+  },
+  {
+   "check": "group / txn-id prefix scoped per run",
+   "result": "PASS",
+   "detail": "consumer group = mvs29-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)"
+  },
+  {
+   "check": "back-pressure counters exist on the endpoint read",
+   "result": "PASS",
+   "detail": "Flink 1.20.1: busy/idle/backPressured read from the worker's slf4j reporter; REST path deprecated"
+  },
+  {
+   "check": "the VM trim command is known",
+   "result": "PASS",
+   "detail": "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker"
+  },
+  {
+   "check": "the job jar exists and hashes",
+   "result": "PASS",
+   "detail": "build 437a14a2910b1df8"
+  }
+ ],
+ "hostScaling": {
+  "perCore": {
+   "alu": {
+    "1": 631289031.0,
+    "2": 608791275.0,
+    "4": 597515012.0
+   },
+   "mem": {
+    "1": 522493995.0,
+    "2": 471545236.0,
+    "4": 358614892.0
+   }
+  },
+  "ofLinear": {
+   "alu": {
+    "1->2": 0.964,
+    "2->4": 0.981
+   },
+   "mem": {
+    "1->2": 0.902,
+    "2->4": 0.761
+   }
+  }
+ }
+}

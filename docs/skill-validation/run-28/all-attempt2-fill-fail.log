@@ -1,0 +1,120 @@
+QUICK LOOK: 2 passes per case; the table it writes is marked unpublishable
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 10 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[21:33:57] phase=all start
+[21:33:57] phase=up start
+[21:33:58] stack up: mvs29-kafka (cap 2.5), mvs29-jm (cap 0.5); task manager is started per case
+[21:33:58] phase=up end rc=0 2s
+[21:33:58] phase=preflight start
+PASS  every image is native to the host arch               host=arm64 apache/kafka=arm64 flink=arm64
+PASS  the JDK the engine needs resolves, pinned            host openjdk version "17.0.20" 2026-07-21 | image openjdk version "17.0.15" 2025-04-15
+PASS  the engine can write its state directory             uid 9999 (flink) can mkdir under /ckpt
+PASS  the metrics reporter is not duplicated               no reporter jar copied into lib/; slf4j reporter used from plugins/
+PASS  disk budget on the HOST, not the container           host free 154.0 GB >= budget 117.6 GB (backlog 36.0 + sinks at retention 68.7 + ckpt 2 + slack 10)
+PASS  retention on every topic written but never drained   retention.bytes=2147483648 set and read back on ['positions-by-symbol', 'positions-by-account', 'mv-by-symbol', 'mv-by-account'] (a periodic sweep, not a bound)
+PASS  the generator is deterministic                       identical sha256=ffacd3ea3781 for 200,000 records at seed 20260909
+PASS  CPU cap mechanism chosen once                        --cpus throughout; read back NanoCpus=2000000000 and cgroup cpu.max = 2.0 cores
+PASS  slots >= parallelism x jobs                          slots-total=4 >= parallelism 4 x 1 job
+PASS  partitions divide evenly by every parallelism        8 partitions / parallelism [1, 2, 4] = 8 per subtask at 1, 4 per subtask at 2, 2 per subtask at 4
+PASS  worker memory is per subtask, not per container      3072m base + 512m per subtask: 3584m at 1, 4096m at 2, 5120m at 4
+PASS  what this host's own cores do                        alu 1->2 96%, 2->4 97%; mem 1->2 88%, 2->4 81%
+PASS  backlog covers warm-up, window and headroom          backlog 300,040,000 covers 180s x 1.5 at the 4-core rate, so up to 1,111,259 rec/s; the tiny proof checks this against the measured rate
+PASS  worker, broker and job manager against the VM (reported) worker 5120m at 4 cores + broker 4096m + job manager 1024m = 10240m of 7838m VM (over-committed, which is normal — the broker's cache is elastic)
+PASS  group / txn-id prefix scoped per run                 consumer group = mvs29-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)
+PASS  back-pressure counters exist on the endpoint read    Flink 1.20.1: busy/idle/backPressured read from the worker's slf4j reporter; REST path deprecated
+PASS  the VM trim command is known                         docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker
+PASS  the job jar exists and hashes                        build e7c9740ca70ffaff
+
+18/18 PASS
+[21:35:45] phase=preflight end rc=0 106s
+[21:35:45] phase=completeness start
+[21:35:50] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-29/job/target/positions-1.0.jar mvscale.GenerateBacklog --mode=produce --count=12040000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --topicPrices=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-29/results/manifest-small.json
+[21:36:02] fill done: produced 12040000 trades and 12520 prices in 10s, read back off the broker
+[21:36:03] backlog block-trades-small: 12,040,000 records read back over 8 partitions
+[21:38:28] drained to the last record in 97.7s
+  OK   positions-by-symbol: exactly 8 distinct keys, as predicted
+  OK   positions-by-symbol: no gap in any per-key update sequence (0 replay rewind(s) after a checkpoint restore, which is what an at-least-once sink is allowed to do)
+  OK   positions-by-symbol: every per-key update count and every final position equals the manifest exactly
+  OK   positions-by-account: exactly 128 distinct keys, as predicted
+  OK   positions-by-account: no gap in any per-key update sequence (0 replay rewind(s) after a checkpoint restore, which is what an at-least-once sink is allowed to do)
+  OK   positions-by-account: every per-key update count and every final position equals the manifest exactly
+  OK   mv-by-symbol: exactly 8 distinct keys, as predicted
+  OK   mv-by-symbol: 1200 (key, window) values, the exact set expected, every one equal to the manifest
+  OK   mv-by-account: exactly 16 distinct keys, as predicted
+  OK   mv-by-account: 2400 (key, window) values, the exact set expected, every one equal to the manifest
+  OK   two paths agree: positions-by-symbol == sum of positions-by-account, for all 8 symbols
+  OK   two paths agree: total market value by symbol == total market value by account, in each of 150 windows
+  OK   records read: positions 60,200,000 (a clean drain writes exactly 60,200,000; more means a replay after the worker was killed, which the seq walk accounts for), market value 3,600 (clean 3,600)
+COMPLETENESS: every assertion held exactly, no tolerances
+
+[21:41:04] KILL: committed=4392657, killing the task manager mid-drain
+[21:41:42] KILL: job RUNNING again on the replacement worker
+[21:42:54] drained to the last record in 140.1s (worker killed mid-drain)
+  OK   positions-by-symbol: exactly 8 distinct keys, as predicted
+  OK   positions-by-symbol: no gap in any per-key update sequence (8 replay rewind(s) after a checkpoint restore, which is what an at-least-once sink is allowed to do)
+  OK   positions-by-symbol: every per-key update count and every final position equals the manifest exactly
+  OK   positions-by-account: exactly 128 distinct keys, as predicted
+  OK   positions-by-account: no gap in any per-key update sequence (128 replay rewind(s) after a checkpoint restore, which is what an at-least-once sink is allowed to do)
+  OK   positions-by-account: every per-key update count and every final position equals the manifest exactly
+  OK   mv-by-symbol: exactly 8 distinct keys, as predicted
+  OK   mv-by-symbol: 1200 (key, window) values, the exact set expected, every one equal to the manifest (8 repeat(s) after the kill, all identical)
+  OK   mv-by-account: exactly 16 distinct keys, as predicted
+  OK   mv-by-account: 2400 (key, window) values, the exact set expected, every one equal to the manifest (16 repeat(s) after the kill, all identical)
+  OK   two paths agree: positions-by-symbol == sum of positions-by-account, for all 8 symbols
+  OK   two paths agree: total market value by symbol == total market value by account, in each of 150 windows
+  OK   records read: positions 60,553,260 (a clean drain writes exactly 60,200,000; more means a replay after the worker was killed, which the seq walk accounts for), market value 3,624 (clean 3,600)
+COMPLETENESS: every assertion held exactly, no tolerances
+
+COMPLETENESS PASSED FOR BUILD e7c9740ca70ffaff (clean drain, and a worker killed at 35%)
+[21:43:32] phase=completeness end rc=0 468s
+[21:43:32] phase=tinyproof start
+[21:43:35] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-29/job/target/positions-1.0.jar mvscale.GenerateBacklog --mode=produce --count=160040000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --topicPrices=block-trades-tiny-prices --manifest=~/code/GitHub/flink-skill-test-29/results/manifest-tiny.json
+[21:46:52] REFUSED (rig): command failed (1): /opt/homebrew/opt/openjdk@17/bin/java -Xmx1g -cp ~/code/GitHub/flink-skill-test-29/job/target/positions-1.0.jar mvscale.GenerateBacklog --mode=produce --count=160040000 --seed=20260910 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --topicPrices=block-trades-tiny-prices --manifest=~/code/GitHub/flink-skill-test-29/results/manifest-tiny.json
+stdout: manifest: 160040000 trades, span 20005000 ms, 2000 closed windows -> ~/code/GitHub/flink-skill-test-29/results/manifest-tiny.json
+
+stderr:  100
+	sasl.oauthbearer.jwks.endpoint.url = null
+	sasl.oauthbearer.scope.claim.name = scope
+	sasl.oauthbearer.sub.claim.name = sub
+	sasl.oauthbearer.token.endpoint.url = null
+	security.protocol = PLAINTEXT
+	security.providers = null
+	send.buffer.bytes = 131072
+	socket.connection.setup.timeout.max.ms = 30000
+	socket.connection.setup.timeout.ms = 10000
+	ssl.cipher.suites = null
+	ssl.enabled.protocols = [TLSv1.2, TLSv1.3]
+	ssl.endpoint.identification.algorithm = https
+	ssl.engine.factory.class = null
+	ssl.key.password = null
+	ssl.keymanager.algorithm = SunX509
+	ssl.keystore.certificate.chain = null
+	ssl.keystore.key = null
+	ssl.keystore.location = null
+	ssl.keystore.password = null
+	ssl.keystore.type = JKS
+	ssl.protocol = TLSv1.3
+	ssl.provider = null
+	ssl.secure.random.implementation = null
+	ssl.trustmanager.algorithm = PKIX
+	ssl.truststore.certificates = null
+	ssl.truststore.location = null
+	ssl.truststore.password = null
+	ssl.truststore.type = JKS
+
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka version: 3.9.0
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka commitId: 84caaa6e9da06435
+[main] INFO org.apache.kafka.common.utils.AppInfoParser - Kafka startTimeMs: 1789004812093
+[kafka-admin-client-thread | adminclient-2] INFO org.apache.kafka.common.utils.AppInfoParser - App info kafka.admin.client for adminclient-2 unregistered
+[kafka-admin-client-thread | adminclient-2] INFO org.apache.kafka.common.metrics.Metrics - Metrics scheduler closed
+[kafka-admin-client-thread | adminclient-2] INFO org.apache.kafka.common.metrics.Metrics - Closing reporter org.apache.kafka.common.metrics.JmxReporter
+[kafka-admin-client-thread | adminclient-2] INFO org.apache.kafka.common.metrics.Metrics - Metrics reporters closed
+Exception in thread "main" java.lang.IllegalStateException: block-trades-tiny holds 151268997 records, wanted 160040000
+	at mvscale.GenerateBacklog.produce(GenerateBacklog.java:267)
+	at mvscale.GenerateBacklog.main(GenerateBacklog.java:69)
+
+[21:46:52] phase=tinyproof end rc=1 200s
+[21:46:52] phase=all end FAIL at tinyproof 12.9 min

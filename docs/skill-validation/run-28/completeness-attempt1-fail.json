@@ -1,0 +1,17 @@
+{
+ "build": "96c61efe992e99c6",
+ "records": 12040000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "mvs29-complete-clean",
+   "killed": false,
+   "drainS": 98.9,
+   "killedAtCommitted": null,
+   "verify": "  OK   positions-by-symbol: exactly 8 distinct keys, as predicted\n  OK   positions-by-symbol: no gap in any per-key update sequence (0 replay rewind(s) after a checkpoint restore, which is what an at-least-once sink is allowed to do)\n  OK   positions-by-symbol: every per-key update count and every final position equals the manifest exactly\n  OK   positions-by-account: exactly 128 distinct keys, as predicted\n  OK   positions-by-account: no gap in any per-key update sequence (0 replay rewind(s) after a checkpoint restore, which is what an at-least-once sink is allowed to do)\n  OK   positions-by-account: every per-key update count and every final position equals the manifest exactly\n  OK   mv-by-symbol: exactly 8 distinct keys, as predicted\n  OK   mv-by-symbol: 1200 (key, window) values, the exact set expected, every one equal to the manifest\n  OK   mv-by-account: exactly 16 distinct keys, as predicted\n  OK   mv-by-account: 2400 (key, window) values, the exact set expected, every one equal to the manifest\n  OK   two paths agree: positions-by-symbol == sum of positions-by-account, for all 8 symbols\n  OK   two paths agree: total market value by symbol == total market value by account, in each of 150 windows\n  OK   records read: positions 60,200,000 (a clean drain writes exactly 60,200,000; more means a replay after the worker was killed, which the seq walk accounts for), market value 3,600 (clean 3,600)\nCOMPLETENESS: every assertion held exactly, no tolerances\n"
+  }
+ ],
+ "at": "2026-09-09 21:24:08",
+ "result": "FAIL",
+ "error": "COMPLETENESS FAILED (worker killed): verifier exit 1"
+}
