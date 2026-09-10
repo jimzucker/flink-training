@@ -62,11 +62,19 @@ none — only CPU — and reads 1.99x from 2 to 4 units; every cap this harness
 chose starved something instead, and runs 14, 18, 21, 23 and 25 each lost time
 to it. What a scaling claim needs is that *CPU* is the constraint, so the
 harness no longer fixes memory's size: it checks memory was not the constraint.
-A case whose garbage collection takes more than 11% of its capacity is a
+A case whose garbage collection takes more than 5.5% of its capacity is a
 ceiling, not a result. That figure is measured, not chosen: across fourteen
-recorded runs every case that behaved sat at 0.7-9.6%, and every case above 11%
-came with a distorted one — run 21's 1-core case at 26.4%, run 25's at 15.5%
-with a 14.3% spread and -14.5% sentinel drift, run 18's at 12.9%.
+recorded runs every case that behaved sat at 0.35-4.8%, and every case above
+5.5% came with a distorted one — run 21's 1-core case at 13.2%, run 25's at
+7.75% with a 14.3% spread and -14.5% sentinel drift, run 18's at 6.45%.
+
+Those numbers are half what this repository recorded before 2026-09-09, when
+run 28's agent noticed the harness was double-counting: Flink 1.20 reports an
+`All` collector alongside each real one, and summing every `.Time` counts the
+same milliseconds twice. Confirmed on a running task manager — `All.Time 15`,
+`G1 Young Generation.Time 15`, `G1 Old Generation.Time 0` — so the harness now
+takes `All` when it is present, and the ceiling was re-derived from the halved
+record rather than left at a figure that no longer meant anything.
 
 The example pipeline ships **no worker memory keys at all**, so a pipeline
 copied from it inherits the uncapped default. Run 27's agent capped anyway

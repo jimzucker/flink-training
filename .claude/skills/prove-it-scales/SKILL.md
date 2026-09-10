@@ -253,7 +253,7 @@ for it.
 | the job graph differs from the other cases | vertex count and edge ship strategies read off the running plan |
 | the component under test is not the constraint | ≥95% of cap at every case, baseline included; external-boundary back-pressure not material; the broker never hits its own memory limit inside a window (a starved page cache depresses the rate while the worker still reads 96% of cap) . A case that misses is a **ceiling**: measured, reported with its rate as where scaling stops, and excluded from the ratios — never deleted |
 | the input divides evenly across subtasks | partition count divisible by every parallelism under test (8 partitions serves 1, 2, 4; 6 would leave the 4-core case reading 2/2/1/1 and never reaching its cap) |
-| memory is not the constraint | worker memory uncapped by default (the demo caps none); a case whose GC exceeds 11% of its capacity is a ceiling, not a result. Cap deliberately with `tmMemoryPerCore` or `perCase` when the study is about memory |
+| memory is not the constraint | worker memory uncapped by default (the demo caps none); a case whose GC exceeds 5.5% of its capacity is a ceiling, not a result. Cap deliberately with `tmMemoryPerCore` or `perCase` when the study is about memory |
 | the claim itself | each step returns ≥95% of linear, or the chain fails with the per-core, idle, GC and cap figures for both cases — a valid table that does not scale is a result about the pipeline, not a table to publish |
 | a refused case still owns the cluster | job torn down on **every** exit path |
 | no job is actually running | engine reports RUNNING with the expected parallelism |
