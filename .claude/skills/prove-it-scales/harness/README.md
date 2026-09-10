@@ -193,6 +193,15 @@ tuning after seeing the number turns a curve into a story. (This repository's
 own demo sidesteps the question: its task manager has no memory limit at all,
 so memory is never its constraint.)
 
+**The table names the workload, not just the backlog.** `suite.json` keeps
+every scalar the generator's manifest declares, and the rendered table shows
+the key counts beside the record count. Without it two runs of "the same"
+workload are indistinguishable in the results: runs 27 and 28 differed by 32
+symbol keys against 8, runs 21 and 26 by 32,768 against 64, and their step
+ratios were compared for days as though they were the same problem. Agents name
+these fields differently, so the harness keeps them all rather than assuming a
+schema.
+
 Type the steps yourself only when one of them needs re-running:
 
 ```
