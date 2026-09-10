@@ -116,7 +116,11 @@ T = {
     # at 26.4%, run 25's at 15.5% with a 14.3% spread and -14.5% sentinel drift,
     # run 18's at 12.9% with a 7.5% spread. Ceiling: 11%, just above the worst
     # well-behaved case on record.
-    "gcCeil": 0.11,
+    # halved with the double count: the cases that behaved sat at 0.35-4.8% of
+    # capacity and every distorted one was above 6% -- run 21's 1-core case at
+    # 13.2%, run 25's at 7.75%, run 18's at 6.45%. Ceiling: 5.5%, just above the
+    # worst well-behaved case on record.
+    "gcCeil": 0.055,
     # when a step has one pair and no spread of its own, assume the wander this
     # rig showed over an hour on an unchanged build: sd 2.8% across 13 pairs
     "ratioSdFallback": 0.028,
@@ -1448,7 +1452,13 @@ def run_case(cores, pass_id, run_id, shape_ref, is_baseline, manifest,
         rec["kafkaCapFrac"] = round(k_cores / kafka_cap, 4)
 
         gcm = bp.pop("_gc", {})
-        gc_ms = sum(v for k, v in gcm.items() if k.endswith(".Time"))
+        # Flink 1.20 reports an "All" collector alongside each real one, so
+        # summing every .Time counts the same milliseconds twice. Measured
+        # 2026-09-09 on a running task manager: All.Time 15, G1 Young 15,
+        # G1 Old 0. Every GC figure recorded before this was double, including
+        # the ones gcCeil was derived from.
+        gc_ms = (gcm.get("All.Time") if "All.Time" in gcm
+                 else sum(v for k, v in gcm.items() if k.endswith(".Time")))
         rec["gcMsInWindow"] = round(gc_ms, 1)
         rec["gcFracOfCapacity"] = round(gc_ms / 1000.0 / (elapsed * cores), 4)
         src_name = [n for n in bp if c.source_match.lower() in n.lower()]

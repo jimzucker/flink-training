@@ -206,9 +206,9 @@ def cmd_selftest(live=True, topic=None):
            case(tmCapFrac=0.959, _baseline=True), "", should_fire=False)
     expect("worker is not the constraint (other)", case(tmCapFrac=0.90), "not the constraint", ceiling=True)
     expect("source idle past the ceiling", case(sourceIdle=0.4), "waited on input", ceiling=True)
-    expect("garbage collection is the constraint", case(gcFracOfCapacity=0.26), "garbage collection", ceiling=True)
-    expect("GC at the worst level that behaved (must not fire)",
-           case(gcFracOfCapacity=0.096), "", should_fire=False)
+    expect("garbage collection is the constraint", case(gcFracOfCapacity=0.13), "garbage collection", ceiling=True)
+    expect("GC at the worst level that behaved, 4.8% (must not fire)",
+           case(gcFracOfCapacity=0.048), "", should_fire=False)
     expect("the broker was starved of page cache (worker off its cap)",
            case(brokerLimitHits=310423, brokerRefaults=6270562, tmCapFrac=0.964), "memory limit", ceiling=True)
     expect("broker limit hits while the worker is pinned (must not fire)",

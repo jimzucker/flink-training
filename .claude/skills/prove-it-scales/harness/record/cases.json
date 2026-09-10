@@ -59,39 +59,39 @@
       }
     },
     {
-      "name": "run 21's 1-core case: GC 26.4% of capacity",
+      "name": "run 21's 1-core case: GC 13.2% (was recorded 26.4% before the double count was found) of capacity",
       "expect": "ceiling",
       "rec": {
         "tmCapFrac": 0.995,
         "sourceIdle": 0.006,
-        "gcFracOfCapacity": 0.264
+        "gcFracOfCapacity": 0.132
       }
     },
     {
-      "name": "run 25's 1-core case: GC 15.5%, spread 14.3%, sentinel -14.5%",
+      "name": "run 25's 1-core case: GC 7.75% (recorded 15.5%), spread 14.3%, sentinel -14.5%",
       "expect": "ceiling",
       "rec": {
         "tmCapFrac": 0.989,
         "sourceIdle": 0.019,
-        "gcFracOfCapacity": 0.155
+        "gcFracOfCapacity": 0.0775
       }
     },
     {
-      "name": "run 13's 1-core case: GC 9.6%, the worst that behaved",
+      "name": "run 13's 1-core case: GC 4.8% (recorded 9.6%), the worst that behaved",
       "expect": "claim",
       "rec": {
         "tmCapFrac": 1.001,
         "sourceIdle": 0.0,
-        "gcFracOfCapacity": 0.096
+        "gcFracOfCapacity": 0.048
       }
     },
     {
-      "name": "run 24's 4-core case: GC 0.7%",
+      "name": "run 24's 4-core case: GC 0.35% (recorded 0.7%)",
       "expect": "claim",
       "rec": {
         "tmCapFrac": 0.982,
         "sourceIdle": 0.019,
-        "gcFracOfCapacity": 0.007
+        "gcFracOfCapacity": 0.0035
       }
     }
   ]
