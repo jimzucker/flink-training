@@ -1,0 +1,301 @@
+{
+ "build": "6036a8f0b26de5d4",
+ "records": 80000000,
+ "cases": [
+  {
+   "cores": 1,
+   "pass": "tiny",
+   "group": "bt30-tiny-c1-tiny",
+   "hostFreeGB": 149.5,
+   "nanoCpus": 1000000000,
+   "reporterS": 2,
+   "parallelism": 1,
+   "slotsTotal": 1,
+   "tSubmit": 1789044671.737309,
+   "jobId": "b742457f3f9afb993977ed2a28e9d399",
+   "shape": {
+    "vertexCount": 4,
+    "signature": [
+     [
+      "Source: prices-source<br/>+- price-fanout<br/>",
+      []
+     ],
+     [
+      "Source: trades-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "account-positions<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-mv-by-account: Writer<br/>   +- sink-mv-by-account: Committer<br/>",
+      [
+       "HASH",
+       "HASH"
+      ]
+     ],
+     [
+      "symbol-positions<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-mv-by-symbol: Writer<br/>   +- sink-mv-by-symbol: Committer<br/>",
+      [
+       "HASH",
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     154956.62602438536,
+     169025.33918595372,
+     157621.15768463074,
+     161211.28164241576
+    ],
+    "mean": 160703.6011343464,
+    "drift": 0.0137,
+    "scatter": 0.0875,
+    "warmupS": 42.1
+   },
+   "tSteady": 1789044725.6894789,
+   "tOpen": 1789044727.278461,
+   "open": {
+    "ts": 1789044725208,
+    "committed": 5250918,
+    "committedParts": [
+     651152,
+     654431,
+     652995,
+     650384,
+     655960,
+     663822,
+     659714,
+     662460
+    ],
+    "endIn": 80000000,
+    "end_positions-by-symbol": 5281316,
+    "end_positions-by-account": 21106190,
+    "end_mv-by-symbol": 2096,
+    "end_mv-by-account": 8320
+   },
+   "brokerLimitHits": 2646,
+   "brokerRefaults": 98560,
+   "brokerFileCacheBytes": 2918461440,
+   "brokerLimitBytes": 4294967296,
+   "tClose": 1789044757.075783,
+   "close": {
+    "ts": 1789044755269,
+    "committed": 10300562,
+    "committedParts": [
+     1286102,
+     1287703,
+     1286411,
+     1285118,
+     1284514,
+     1291974,
+     1288103,
+     1290637
+    ],
+    "endIn": 80000000,
+    "end_positions-by-symbol": 10352526,
+    "end_positions-by-account": 41403788,
+    "end_mv-by-symbol": 4112,
+    "end_mv-by-account": 16448
+   },
+   "boundaries": 6,
+   "elapsedS": 30.06,
+   "recordsConsumed": 5049644,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 167979.9,
+   "outputRecsPerSec": 839899.5,
+   "vantageSinkRecords": 5075790.4,
+   "vantageDisagreement": 0.0052,
+   "backlogRemaining": 69699438,
+   "headroomS": 414.9,
+   "tmCores": 0.989,
+   "tmCapFrac": 0.9891,
+   "tmThrottledPeriodsPct": 99.7,
+   "kafkaCores": 0.157,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0628,
+   "gcMsInWindow": 1314.0,
+   "gcFracOfCapacity": 0.0437,
+   "sourceIdle": 0.0056,
+   "sourceBusy": 0.5186,
+   "sourceBackpressured": 0.4757,
+   "bpSamples": 14,
+   "backpressure": {
+    "Source: prices-source -> price-fanout": {
+     "backPressured": 0.1326,
+     "idle": 0.8046,
+     "busy": 0.0627,
+     "samples": 14
+    },
+    "symbol-positions -> (sink-positions-by-symbol: Writer -> sink-positions-by-symbol: Committer, sink-mv-by-symbol: Writer -> sink-mv-by-symbol: Committer)": {
+     "busy": 0.3525,
+     "backPressured": 0.0,
+     "idle": 0.6475,
+     "samples": 14
+    },
+    "Source: trades-source -> allocate": {
+     "idle": 0.0056,
+     "busy": 0.5186,
+     "backPressured": 0.4757,
+     "samples": 14
+    },
+    "account-positions -> (sink-positions-by-account: Writer -> sink-positions-by-account: Committer, sink-mv-by-account: Writer -> sink-mv-by-account: Committer)": {
+     "backPressured": 0.0,
+     "busy": 0.8819,
+     "idle": 0.1181,
+     "samples": 14
+    }
+   },
+   "status": "CEILING",
+   "ceiling": "the broker hit its memory limit 2,646 times inside the window (98,560 file-page refaults): it was reading the backlog off disk, so the broker is the constraint here, not the worker \u2014 raise caps.kafkaMemory from 4096m to about 6400m",
+   "ticksRecorded": 106
+  },
+  {
+   "cores": 4,
+   "pass": "tiny",
+   "group": "bt30-tiny-c4-tiny",
+   "hostFreeGB": 147.4,
+   "nanoCpus": 4000000000,
+   "reporterS": 2,
+   "parallelism": 4,
+   "slotsTotal": 4,
+   "tSubmit": 1789044823.643411,
+   "jobId": "fd78ab60ce776f024e634d2767091908",
+   "shape": {
+    "vertexCount": 4,
+    "signature": [
+     [
+      "Source: prices-source<br/>+- price-fanout<br/>",
+      []
+     ],
+     [
+      "Source: trades-source<br/>+- allocate<br/>",
+      []
+     ],
+     [
+      "account-positions<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-mv-by-account: Writer<br/>   +- sink-mv-by-account: Committer<br/>",
+      [
+       "HASH",
+       "HASH"
+      ]
+     ],
+     [
+      "symbol-positions<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-mv-by-symbol: Writer<br/>   +- sink-mv-by-symbol: Committer<br/>",
+      [
+       "HASH",
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     681625.9984025559,
+     670674.1214057507,
+     664356.4435564436,
+     683258.2966813275
+    ],
+    "mean": 674978.7150115194,
+    "drift": 0.0006,
+    "scatter": 0.028,
+    "warmupS": 32.2
+   },
+   "tSteady": 1789044867.040011,
+   "tOpen": 1789044868.718251,
+   "open": {
+    "ts": 1789044866548,
+    "committed": 18428575,
+    "committedParts": [
+     2295362,
+     2298179,
+     2298779,
+     2302289,
+     2302054,
+     2305963,
+     2306629,
+     2319320
+    ],
+    "endIn": 80000000,
+    "end_positions-by-symbol": 18658588,
+    "end_positions-by-account": 74649110,
+    "end_mv-by-symbol": 7412,
+    "end_mv-by-account": 29628
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 313430,
+   "brokerFileCacheBytes": 1154150400,
+   "brokerLimitBytes": 4294967296,
+   "tClose": 1789044898.4932091,
+   "close": {
+    "ts": 1789044896603,
+    "committed": 39691566,
+    "committedParts": [
+     4954234,
+     4958229,
+     4962470,
+     4957252,
+     4960496,
+     4971766,
+     4955889,
+     4971230
+    ],
+    "endIn": 80000000,
+    "end_positions-by-symbol": 39980350,
+    "end_positions-by-account": 159976252,
+    "end_mv-by-symbol": 15952,
+    "end_mv-by-account": 63808
+   },
+   "boundaries": 6,
+   "elapsedS": 30.05,
+   "recordsConsumed": 21262991,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 707469.3,
+   "outputRecsPerSec": 3537346.7,
+   "vantageSinkRecords": 21338324.8,
+   "vantageDisagreement": 0.0035,
+   "backlogRemaining": 40308434,
+   "headroomS": 57.0,
+   "tmCores": 3.965,
+   "tmCapFrac": 0.9912,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.636,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.2543,
+   "gcMsInWindow": 897.0,
+   "gcFracOfCapacity": 0.0075,
+   "sourceIdle": 0.0154,
+   "sourceBusy": 0.6807,
+   "sourceBackpressured": 0.3039,
+   "bpSamples": 56,
+   "backpressure": {
+    "Source: trades-source -> allocate": {
+     "idle": 0.0154,
+     "busy": 0.6807,
+     "backPressured": 0.3039,
+     "samples": 56
+    },
+    "symbol-positions -> (sink-positions-by-symbol: Writer -> sink-positions-by-symbol: Committer, sink-mv-by-symbol: Writer -> sink-mv-by-symbol: Committer)": {
+     "backPressured": 0.0,
+     "idle": 0.5118,
+     "busy": 0.4883,
+     "samples": 56
+    },
+    "Source: prices-source -> price-fanout": {
+     "busy": 0.061,
+     "backPressured": 0.0594,
+     "idle": 0.8797,
+     "samples": 56
+    },
+    "account-positions -> (sink-positions-by-account: Writer -> sink-positions-by-account: Committer, sink-mv-by-account: Writer -> sink-mv-by-account: Committer)": {
+     "backPressured": 0.0,
+     "busy": 0.9259,
+     "idle": 0.0741,
+     "samples": 56
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 108
+  }
+ ],
+ "at": "2026-09-10 08:50:36",
+ "result": "FAIL"
+}

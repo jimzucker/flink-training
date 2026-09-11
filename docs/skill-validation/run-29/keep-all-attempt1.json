@@ -1,0 +1,27 @@
+{
+ "build": "6036a8f0b26de5d4",
+ "steps": [
+  {
+   "step": "up",
+   "rc": 0,
+   "seconds": 1.8
+  },
+  {
+   "step": "preflight",
+   "rc": 0,
+   "seconds": 92.6
+  },
+  {
+   "step": "completeness",
+   "rc": 0,
+   "seconds": 361.8
+  },
+  {
+   "step": "tinyproof",
+   "rc": 1,
+   "seconds": 318.5
+  }
+ ],
+ "verdict": "FAIL at tinyproof",
+ "seconds": 774.7
+}

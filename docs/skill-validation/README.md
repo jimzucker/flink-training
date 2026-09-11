@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Twenty-eight runs of the same problem, each by a fresh agent in an empty directory, barred
+Twenty-nine runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](../../.claude/skills/prove-it-scales/SKILL.md), given one prompt and
 no human input.

@@ -37,4 +37,59 @@ may be the whole difference between the demo's 2.08× and these runs' 1.88×.
 
 ## Response
 
-*(written after the run)*
+**The harness refused the demo's input, and the refusal is the result.**
+
+```
+REFUSED (rig): backlog 50,000,000 is short of the 72,817,104 records the 4-core
+case needs at its measured 746,842 rec/s (warm-up + window + headroom, x1.5);
+set backlog.count to at least that
+```
+
+At the four-core rate the 50M backlog is **67 seconds of drain**, and one
+measured case needs a ≥90 s warm-up to a flat trend plus a ≥60 s window plus
+headroom. Nothing but the backlog can fix that, the backlog was fixed by the
+prompt, and the agent stopped rather than substituting a size — which is what
+it was asked to do.
+
+This is an instrument difference, not a pipeline one: the demo drains the same
+50M inside a 60 s window with no warm-up rule and no headroom requirement.
+
+## What it measured before stopping
+
+| cores | rec/s | % of cap | µs CPU per record | GC |
+|---:|---:|---:|---:|---:|
+| 1 | 181,115 | 100.4% | 5.54 | 3.8% |
+| 4 | 746,842 | 98.7% | 5.29 | 0.8% |
+
+1→4 = 4.124× from the tiny proof's single passes. The 2-core case never ran.
+
+## Correctness passed, both arms
+
+No tolerances, clean drain and worker killed at 733,463 of 1,500,000: the exact
+set of (key, window-end) pairs — 149 windows × 4 symbol keys and × 16 account
+keys — and every field of *every copy* of every record (position, price in
+cents, market value in cents) equal to the generator manifest. Zero duplicates
+clean; 44 and 176 after the kill, each carrying the identical exact triple.
+
+## Key skew at four cores: none, because the agent removed it
+
+Per-subtask rates agreed to four significant figures (117,439 / 117,432 /
+117,436 / 117,435 on symbol positions). That is a chosen property: with Flink's
+default maxParallelism of 128 the four symbols land 1/1/1/1 but the sixteen
+account keys land **2/4/7/3**, so the job fixes maxParallelism at 1616 — the
+smallest value that divides both key sets evenly across 1, 2 and 4. A pipeline
+that did not do this would have measured skew, not scaling.
+
+## Four defects found before any chain
+
+Event-time Kafka timestamps let retention delete the backlog mid-run; windows
+read the current position instead of the position at the boundary; 8 MB fetches
+left the source 1.3M records ahead of its own watermark; and a restored split
+parked at its end offset pins the watermark at `MIN_VALUE` after a kill — the
+same class runs 27 and 28 found independently.
+
+## Cost
+
+2 h 53 m, of which the accepted chain is 17.0 min; 37 min in two re-run chain
+attempts and 1 h 20 m of correctness work before any chain started.
+
