@@ -1,0 +1,23 @@
+{
+ "build": "6036a8f0b26de5d4",
+ "records": 1500000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "bt30-complete-clean",
+   "killed": false,
+   "drainS": 32.3,
+   "killedAtCommitted": null,
+   "verify": "  sinks quiet after 36s\n  read 7,502,980 of 7,502,980 records from 32 partitions\n  positions-by-symbol   1,500,000 records, 4 keys, 0 duplicates\n  positions-by-account  6,000,000 records, 16 keys, 0 duplicates\n  mv-by-symbol          596 records, 596 (key,window) pairs expected, 0 duplicates\n  mv-by-account         2,384 records, 2384 (key,window) pairs expected, 0 duplicates\n  windows per key       149 of 10 s, last window ends at 1735691090000\n  expected per key      375,000 position records (1,500,000 trades / 4 symbols)\nCOMPLETENESS OK: every assertion is an exact equality against the manifest; no tolerances used\n"
+  },
+  {
+   "group": "bt30-complete-kill",
+   "killed": true,
+   "drainS": 88.4,
+   "killedAtCommitted": 733463,
+   "verify": "  sinks quiet after 36s\n  read 8,054,038 of 8,054,038 records from 32 partitions\n  positions-by-symbol   1,605,804 records, 4 keys, 105,804 duplicates\n  positions-by-account  6,445,034 records, 16 keys, 445,034 duplicates\n  mv-by-symbol          640 records, 596 (key,window) pairs expected, 44 duplicates\n  mv-by-account         2,560 records, 2384 (key,window) pairs expected, 176 duplicates\n  windows per key       149 of 10 s, last window ends at 1735691090000\n  expected per key      375,000 position records (1,500,000 trades / 4 symbols)\nCOMPLETENESS OK: every assertion is an exact equality against the manifest; no tolerances used\n"
+  }
+ ],
+ "at": "2026-09-10 09:00:06",
+ "result": "PASS"
+}

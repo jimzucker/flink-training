@@ -1,0 +1,33 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 10 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[08:14:03] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-skill-test-30/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=1500000 --seed=20260912 --partitions=8 --bootstrap=localhost:19230 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-30/results/manifest-small.json
+[08:14:05] fill done: {"mode":"produce","tradeCount":1500000,"priceCount":15000,"windowCount":149,"manifest":"~/code/GitHub/flink-skill-test-30/results/manifest-small.json"}
+[08:14:06] backlog block-trades-small: 1,500,000 records read back over 8 partitions
+[08:15:24] drained to the last record in 33.4s
+  sinks quiet after 36s
+  read 7,502,980 of 7,502,980 records from 32 partitions
+  positions-by-symbol   1,500,000 records, 4 keys, 0 duplicates
+  positions-by-account  6,000,000 records, 16 keys, 0 duplicates
+  mv-by-symbol          596 records, 596 (key,window) pairs expected, 0 duplicates
+  mv-by-account         2,384 records, 2384 (key,window) pairs expected, 0 duplicates
+  windows per key       149 of 10 s, last window ends at 1735691090000
+  expected per key      375,000 position records (1,500,000 trades / 4 symbols)
+COMPLETENESS OK: every assertion is an exact equality against the manifest; no tolerances used
+
+[08:17:52] KILL: committed=527800, killing the task manager mid-drain
+[08:18:40] KILL: job RUNNING again on the replacement worker
+[08:19:07] drained to the last record in 83.7s (worker killed mid-drain)
+  sinks quiet after 36s
+  read 7,778,141 of 7,778,141 records from 32 partitions
+  positions-by-symbol   1,555,665 records, 4 keys, 55,665 duplicates
+  positions-by-account  6,219,456 records, 16 keys, 219,456 duplicates
+  mv-by-symbol          604 records, 596 (key,window) pairs expected, 8 duplicates
+  mv-by-account         2,416 records, 2384 (key,window) pairs expected, 32 duplicates
+  windows per key       149 of 10 s, last window ends at 1735691090000
+  expected per key      375,000 position records (1,500,000 trades / 4 symbols)
+COMPLETENESS OK: every assertion is an exact equality against the manifest; no tolerances used
+
+COMPLETENESS PASSED FOR BUILD 6036a8f0b26de5d4 (clean drain, and a worker killed at 35%)

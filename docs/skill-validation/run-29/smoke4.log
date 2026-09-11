@@ -1,0 +1,34 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 10 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[07:53:16] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-skill-test-30/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=1500000 --seed=20260912 --partitions=8 --bootstrap=localhost:19230 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-30/results/manifest-small.json
+[07:53:18] fill done: {"mode":"produce","tradeCount":1500000,"priceCount":15000,"windowCount":149,"manifest":"~/code/GitHub/flink-skill-test-30/results/manifest-small.json"}
+[07:53:19] backlog block-trades-small: 1,500,000 records read back over 8 partitions
+[07:55:07] drained to the last record in 62.2s
+  sinks quiet after 24s
+  read 7,811,810 of 7,811,810 records from 32 partitions
+  positions-by-symbol   1,561,182 records, 4 keys, 61,182 duplicates
+  positions-by-account  6,244,728 records, 16 keys, 244,728 duplicates
+  mv-by-symbol          1,180 records, 596 (key,window) pairs expected, 584 duplicates
+  mv-by-account         4,720 records, 2384 (key,window) pairs expected, 2,336 duplicates
+  windows per key       149 of 10 s, last window ends at 1735691090000
+  expected per key      375,000 position records (1,500,000 trades / 4 symbols)
+FAIL: mv-by-symbol: MSFT@1735689630000 is position=4056577 price=20079 mv=81452009583, the input says position=4095792 price=20079 mv=82239407568
+FAIL: mv-by-symbol: MSFT@1735689640000 is position=5254947 price=20070 mv=105466786290, the input says position=5469646 price=20070 mv=109775795220
+FAIL: mv-by-symbol: MSFT@1735689650000 is position=6468008 price=20105 mv=130039300840, the input says position=6854032 price=20105 mv=137800313360
+FAIL: mv-by-symbol: MSFT@1735689660000 is position=7668991 price=20119 mv=154292429929, the input says position=8233376 price=20119 mv=165647291744
+FAIL: mv-by-symbol: MSFT@1735689670000 is position=8851325 price=20147 mv=178327644775, the input says position=9594991 price=20147 mv=193310283677
+FAIL: mv-by-account: ACC3/SUB1|AMZN@1735689630000 is position=1022649 price=39978 mv=40883461722, the input says position=1032154 price=39978 mv=41263452612
+FAIL: mv-by-account: ACC3/SUB1|MSFT@1735689630000 is position=1013194 price=20079 mv=20343922326, the input says position=1022990 price=20079 mv=20540616210
+FAIL: mv-by-account: ACC3/SUB1|GOOG@1735689630000 is position=1020295 price=29956 mv=30563957020, the input says position=1030295 price=29956 mv=30863517020
+FAIL: mv-by-account: ACC3/SUB1|AAPL@1735689630000 is position=1018493 price=10011 mv=10196133423, the input says position=1029214 price=10011 mv=10303461354
+FAIL: mv-by-account: ACC3/SUB1|AAPL@1735689640000 is position=1315861 price=9994 mv=13150714834, the input says position=1370397 price=9994 mv=13695747618
+COMPLETENESS FAILED: 10 assertion(s)
+
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+
+COMPLETENESS FAILED: COMPLETENESS FAILED (clean drain): verifier exit 1

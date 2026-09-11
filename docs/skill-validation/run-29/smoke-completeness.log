@@ -1,0 +1,37 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 10 recorded case verdicts
+replayed 6 recorded configurations
+REPLAY OK: no recorded valid table would be refused, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[07:21:39] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp ~/code/GitHub/flink-skill-test-30/job/target/positions-1.0.jar scaletest.GenerateBacklog --mode=produce --count=1500000 --seed=20260912 --partitions=8 --bootstrap=localhost:19230 --topic=block-trades-small --pricesTopic=block-trades-small-prices --manifest=~/code/GitHub/flink-skill-test-30/results/manifest-small.json
+[07:21:41] fill done: {"mode":"produce","tradeCount":1500000,"priceCount":15000,"windowCount":149,"manifest":"~/code/GitHub/flink-skill-test-30/results/manifest-small.json"}
+[07:21:42] backlog block-trades-small: 1,500,000 records read back over 8 partitions
+[07:23:04] drained to the last record in 32.8s
+  read 7,502,980 of 7,502,980 records from 32 partitions
+  positions-by-symbol   1,500,000 records, 4 keys, 0 duplicates
+  positions-by-account  6,000,000 records, 16 keys, 0 duplicates
+  mv-by-symbol          596 records, 596 (key,window) pairs expected, 0 duplicates
+  mv-by-account         2,384 records, 2384 (key,window) pairs expected, 0 duplicates
+  windows per key       149 of 10 s, last window ends at 1735691090000
+  expected per key      375,000 position records (1,500,000 trades / 4 symbols)
+COMPLETENESS OK: every assertion is an exact equality against the manifest; no tolerances used
+
+[07:24:37] KILL: committed=1171198, killing the task manager mid-drain
+[07:25:28] KILL: job RUNNING again on the replacement worker
+[07:25:50] drained to the last record in 87.2s (worker killed mid-drain)
+  read 7,961,021 of 7,961,021 records from 32 partitions
+  positions-by-symbol   1,589,618 records, 4 keys, 89,618 duplicates
+  positions-by-account  6,371,403 records, 16 keys, 371,403 duplicates
+  mv-by-symbol          0 records, 596 (key,window) pairs expected, 0 duplicates
+  mv-by-account         0 records, 2384 (key,window) pairs expected, 0 duplicates
+  windows per key       149 of 10 s, last window ends at 1735691090000
+  expected per key      375,000 position records (1,500,000 trades / 4 symbols)
+FAIL: mv-by-symbol: 0 of 596 (key, window) pairs were emitted; missing e.g. [AAPL@1735690710000, MSFT@1735690610000, AAPL@1735690550000, MSFT@1735690530000, GOOG@1735690510000]
+FAIL: mv-by-account: 0 of 2384 (key, window) pairs were emitted; missing e.g. [ACC2/SUB1|AAPL@1735689640000, ACC4/SUB1|AAPL@1735689750000, ACC4/SUB1|GOOG@1735689710000, ACC3/SUB1|MSFT@1735690390000, ACC1/SUB1|MSFT@1735690280000]
+COMPLETENESS FAILED: 2 assertion(s)
+
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+
+COMPLETENESS FAILED: COMPLETENESS FAILED (worker killed): verifier exit 1
