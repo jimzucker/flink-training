@@ -973,8 +973,11 @@ def start_tm(cores, slots=None, reporter_s=None):
     stop_tm()
     props = (f"jobmanager.rpc.address: {c.jm}\n"
              f"taskmanager.numberOfTaskSlots: {slots}\n"
-             + (f"taskmanager.memory.process.size: {tm_mem}\n" if tm_mem else
-                "taskmanager.memory.flink.size: 2g\n") +
+             # Uncapped means uncapped: no process size of ours either, so the
+             # image's own default applies -- which is what this repository's
+             # demo runs with. Setting flink.size here instead collided with
+             # that default and killed the task manager at startup.
+             + (f"taskmanager.memory.process.size: {tm_mem}\n" if tm_mem else "") +
              f"taskmanager.memory.managed.fraction: 0.1\n"
              f"taskmanager.memory.network.fraction: 0.15\n"
              f"taskmanager.memory.network.max: 512m\n"
