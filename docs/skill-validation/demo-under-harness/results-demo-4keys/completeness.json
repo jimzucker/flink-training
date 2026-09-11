@@ -1,0 +1,23 @@
+{
+ "build": "d465a077bb70b189",
+ "records": 4000000,
+ "cores": 1,
+ "arms": [
+  {
+   "group": "duh1-complete-clean",
+   "killed": false,
+   "drainS": 84.4,
+   "killedAtCommitted": null,
+   "verify": "  OK   positions-by-symbol: 4 keys, every net quantity exact\n  OK   positions-by-account: 16 keys, every net quantity exact\n  OK   both paths net to -38,400, as the manifest predicts\nCOMPLETENESS OK: every assertion held with no tolerance\n"
+  },
+  {
+   "group": "duh1-complete-kill",
+   "killed": true,
+   "drainS": 142.8,
+   "killedAtCommitted": 1568138,
+   "verify": "  OK   positions-by-symbol: 4 keys, every net quantity exact\n  OK   positions-by-account: 16 keys, every net quantity exact\n  OK   both paths net to -38,400, as the manifest predicts\nCOMPLETENESS OK: every assertion held with no tolerance\n"
+  }
+ ],
+ "at": "2026-09-10 10:06:09",
+ "result": "PASS"
+}

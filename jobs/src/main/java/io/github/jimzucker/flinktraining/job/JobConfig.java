@@ -70,6 +70,42 @@ public record JobConfig(
     /** The demo raises this from 2 to 4 to show throughput scaling with it. */
     public static final int DEFAULT_PARALLELISM = 2;
 
+    /**
+     * Command-line overlay over {@link #fromEnvironment()}, so this job can be
+     * submitted by a harness that passes {@code --key=value} rather than setting
+     * the environment. With no arguments the result is identical to the
+     * environment path the demo uses, which is what keeps the demo unchanged.
+     */
+    public static JobConfig fromArgs(String[] args) {
+        java.util.Map<String, String> a = new java.util.LinkedHashMap<>();
+        for (String arg : args == null ? new String[0] : args) {
+            int eq = arg.indexOf('=');
+            if (arg.startsWith("--") && eq > 0) {
+                a.put(arg.substring(2, eq), arg.substring(eq + 1));
+            }
+        }
+        if (a.isEmpty()) {
+            return fromEnvironment();
+        }
+        JobConfig base = fromEnvironment();
+        return new JobConfig(
+                a.getOrDefault("bootstrap", base.bootstrapServers()),
+                a.getOrDefault("topicIn", base.ordersTopic()),
+                a.getOrDefault("topicSym", base.positionsBySymbolTopic()),
+                a.getOrDefault("topicAcct", base.positionsByAccountTopic()),
+                a.getOrDefault("topicPrices", base.pricesTopic()),
+                a.getOrDefault("topicMvSym", base.mvBySymbolTopic()),
+                a.getOrDefault("topicMvAcct", base.mvByAccountTopic()),
+                a.getOrDefault("group", base.consumerGroup()),
+                Integer.parseInt(a.getOrDefault("parallelism", Integer.toString(base.parallelism()))),
+                Long.parseLong(a.getOrDefault("checkpointMs", Long.toString(base.checkpointIntervalMillis()))),
+                base.transactionTimeoutMillis(),
+                Long.parseLong(a.getOrDefault("windowMs", Long.toString(base.windowMillis()))),
+                base.idlenessMillis(),
+                base.outOfOrdernessMillis(),
+                base.logEvery());
+    }
+
     public static JobConfig fromEnvironment() {
         return new JobConfig(
                 env("BOOTSTRAP_SERVERS", DEFAULT_BOOTSTRAP),

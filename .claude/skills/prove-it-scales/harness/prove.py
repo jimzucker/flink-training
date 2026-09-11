@@ -612,8 +612,11 @@ def cmd_preflight():
         measures memory pressure rather than cores (2026-09-07: a flat 2048m read
         2->4 = 1.645 with GC at 9.3%; the same build with memory scaled per core
         read 1.910 with GC at 2.3%, and the 2-core figure did not move)."""
+        if not (c.tm_mem_per_core or c.raw["caps"].get("tmMemory") or c.per_case):
+            return ("uncapped: no process size and no container limit, so memory cannot be "
+                    "the thing that runs out; the GC ceiling checks it was not the constraint")
         if not c.tm_mem_per_core:
-            raise Exception("caps.tmMemoryPerCore is not set")
+            return f"per case: {', '.join(f'{k}c {v}' for k, v in sorted(c.per_case.items()))}"
         return (f"{c.tm_mem_base} base + {c.tm_mem_per_core} per subtask: "
                 + ", ".join(f"{L.mem_for(c.tm_mem_per_core, n, c.tm_mem_base)} at {n}"
                             for n in sorted(c.cases)))

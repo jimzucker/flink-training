@@ -1,0 +1,10 @@
+2026-09-10 11:25:43 phase=all start
+2026-09-10 11:25:43 phase=up start
+2026-09-10 11:26:00 phase=up end rc=0 18s
+2026-09-10 11:26:00 phase=preflight start
+2026-09-10 11:27:41 phase=preflight end rc=0 101s
+2026-09-10 11:27:41 phase=completeness start
+2026-09-10 11:36:21 phase=completeness end rc=0 520s
+2026-09-10 11:36:21 phase=tinyproof start
+2026-09-10 11:45:57 phase=tinyproof end rc=1 576s
+2026-09-10 11:45:57 phase=all end FAIL at tinyproof 20.2 min

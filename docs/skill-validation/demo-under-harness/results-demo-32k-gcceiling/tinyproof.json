@@ -1,0 +1,269 @@
+{
+ "build": "d465a077bb70b189",
+ "records": 60000000,
+ "cases": [
+  {
+   "cores": 1,
+   "pass": "tiny",
+   "group": "duh2-tiny-c1-tiny",
+   "hostFreeGB": 152.5,
+   "nanoCpus": 1000000000,
+   "reporterS": 2,
+   "parallelism": 1,
+   "slotsTotal": 1,
+   "tSubmit": 1789054831.090501,
+   "jobId": "f40aa09ea16e7121431ab3651117fd4a",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: orders<br/>:- by symbol<br/>+- split by allocation<br/>",
+      []
+     ],
+     [
+      "aggregate by account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "aggregate by symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     42566.873339238264,
+     41435.04171632897,
+     42223.24098066573,
+     43262.17079010375
+    ],
+    "mean": 42371.83170658418,
+    "drift": 0.0203,
+    "scatter": 0.0431,
+    "warmupS": 34.0
+   },
+   "tSteady": 1789054877.376517,
+   "tOpen": 1789054878.928084,
+   "open": {
+    "ts": 1789054877032,
+    "committed": 1086705,
+    "committedParts": [
+     127434,
+     127491,
+     127453,
+     127255,
+     159371,
+     159664,
+     127731,
+     130306
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 1102806,
+    "end_positions-by-account": 4409287
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 0,
+   "brokerFileCacheBytes": 2685685760,
+   "brokerLimitBytes": 4294967296,
+   "tClose": 1789054908.638996,
+   "close": {
+    "ts": 1789054907117,
+    "committed": 2363417,
+    "committedParts": [
+     286706,
+     287764,
+     288030,
+     287153,
+     319196,
+     319749,
+     287597,
+     287222
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 2384738,
+    "end_positions-by-account": 9539904
+   },
+   "boundaries": 6,
+   "elapsedS": 30.09,
+   "recordsConsumed": 1276712,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 42436.8,
+   "outputRecsPerSec": 212184.1,
+   "vantageSinkRecords": 1282509.8,
+   "vantageDisagreement": 0.0045,
+   "backlogRemaining": 57636583,
+   "headroomS": 1358.2,
+   "tmCores": 0.987,
+   "tmCapFrac": 0.9872,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.068,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0271,
+   "gcMsInWindow": 3066.0,
+   "gcFracOfCapacity": 0.1019,
+   "sourceIdle": 0.0066,
+   "sourceBusy": 0.4905,
+   "sourceBackpressured": 0.5029,
+   "bpSamples": 14,
+   "backpressure": {
+    "Source: orders -> (by symbol, split by allocation)": {
+     "busy": 0.4905,
+     "backPressured": 0.5029,
+     "idle": 0.0066,
+     "samples": 14
+    },
+    "aggregate by account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "backPressured": 0.0,
+     "idle": 0.0016,
+     "busy": 0.9984,
+     "samples": 14
+    },
+    "aggregate by symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "idle": 0.7085,
+     "busy": 0.2915,
+     "backPressured": 0.0,
+     "samples": 14
+    }
+   },
+   "status": "CEILING",
+   "ceiling": "garbage collection took 10.2% of this case's capacity (ceiling 6%): memory is the constraint here, not cores \u2014 give the worker more memory rather than capping it",
+   "ticksRecorded": 110
+  },
+  {
+   "cores": 4,
+   "pass": "tiny",
+   "group": "duh2-tiny-c4-tiny",
+   "hostFreeGB": 152.6,
+   "nanoCpus": 4000000000,
+   "reporterS": 2,
+   "parallelism": 4,
+   "slotsTotal": 4,
+   "tSubmit": 1789054983.8721678,
+   "jobId": "3a967fb9b00c579ae41233d3238fb1ca",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: orders<br/>:- by symbol<br/>+- split by allocation<br/>",
+      []
+     ],
+     [
+      "aggregate by account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "aggregate by symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     190810.38961038963,
+     192741.16237267826,
+     188215.6705976414,
+     189677.85771382894
+    ],
+    "mean": 190361.27007363454,
+    "drift": 0.0125,
+    "scatter": 0.0238,
+    "warmupS": 58.2
+   },
+   "tSteady": 1789055054.141338,
+   "tOpen": 1789055055.77231,
+   "open": {
+    "ts": 1789055053728,
+    "committed": 9906554,
+    "committedParts": [
+     1226495,
+     1230403,
+     1231856,
+     1229556,
+     1247885,
+     1246578,
+     1245886,
+     1247895
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 9940557,
+    "end_positions-by-account": 39744517
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 45728,
+   "brokerFileCacheBytes": 2266066944,
+   "brokerLimitBytes": 4294967296,
+   "tClose": 1789055085.433565,
+   "close": {
+    "ts": 1789055083791,
+    "committed": 15707362,
+    "committedParts": [
+     1948171,
+     1949841,
+     1951129,
+     1950285,
+     1975989,
+     1976227,
+     1977144,
+     1978576
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 15758652,
+    "end_positions-by-account": 63021650
+   },
+   "boundaries": 6,
+   "elapsedS": 30.06,
+   "recordsConsumed": 5800808,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 192955.1,
+   "outputRecsPerSec": 964775.3,
+   "vantageSinkRecords": 5819045.6,
+   "vantageDisagreement": 0.0031,
+   "backlogRemaining": 44292638,
+   "headroomS": 229.5,
+   "tmCores": 3.948,
+   "tmCapFrac": 0.9871,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.286,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.1144,
+   "gcMsInWindow": 3529.0,
+   "gcFracOfCapacity": 0.0293,
+   "sourceIdle": 0.0012,
+   "sourceBusy": 0.5516,
+   "sourceBackpressured": 0.4472,
+   "bpSamples": 60,
+   "backpressure": {
+    "aggregate by symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "backPressured": 0.0,
+     "idle": 0.6409,
+     "busy": 0.3591,
+     "samples": 60
+    },
+    "aggregate by account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "backPressured": 0.0,
+     "busy": 0.9783,
+     "idle": 0.0217,
+     "samples": 60
+    },
+    "Source: orders -> (by symbol, split by allocation)": {
+     "busy": 0.5516,
+     "idle": 0.0012,
+     "backPressured": 0.4472,
+     "samples": 60
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 141
+  }
+ ],
+ "at": "2026-09-10 11:40:08",
+ "result": "FAIL"
+}

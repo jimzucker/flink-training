@@ -1,0 +1,294 @@
+{
+ "build": "d465a077bb70b189",
+ "records": 60000000,
+ "cases": [
+  {
+   "cores": 1,
+   "pass": "tiny",
+   "group": "duhc-tiny-c1-tiny",
+   "hostFreeGB": 147.9,
+   "nanoCpus": 1000000000,
+   "reporterS": 2,
+   "parallelism": 1,
+   "slotsTotal": 1,
+   "tSubmit": 1789078798.884711,
+   "jobId": "df4f8441c2162b9902dac32874e08869",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: orders<br/>:- by symbol<br/>+- split by allocation<br/>",
+      []
+     ],
+     [
+      "aggregate by account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "aggregate by symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     57036.16383616384,
+     53622.92790093869,
+     55677.451567805074,
+     54333.86581469649
+    ],
+    "mean": 55167.602279901024,
+    "drift": 0.0329,
+    "scatter": 0.0619,
+    "warmupS": 50.1
+   },
+   "tSteady": 1789078861.5130932,
+   "tOpen": 1789078863.063976,
+   "open": {
+    "ts": 1789078861300,
+    "committed": 2359172,
+    "committedParts": [
+     295850,
+     296865,
+     285289,
+     296612,
+     295770,
+     296113,
+     296203,
+     296470
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 2362991,
+    "end_positions-by-account": 9447867
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 3626,
+   "brokerFileCacheBytes": 2585989120,
+   "brokerLimitBytes": 4294967296,
+   "tClose": 1789078893.252555,
+   "close": {
+    "ts": 1789078891381,
+    "committed": 4057642,
+    "committedParts": [
+     493805,
+     493687,
+     494054,
+     494510,
+     527014,
+     526338,
+     500623,
+     527611
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 4070159,
+    "end_positions-by-account": 16274665
+   },
+   "boundaries": 6,
+   "elapsedS": 30.08,
+   "recordsConsumed": 1698470,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 56463.2,
+   "outputRecsPerSec": 282316.1,
+   "vantageSinkRecords": 1706793.2,
+   "vantageDisagreement": 0.0049,
+   "backlogRemaining": 55942358,
+   "headroomS": 990.8,
+   "tmCores": 1.003,
+   "tmCapFrac": 1.0029,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.082,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.0329,
+   "gcMsInWindow": 1139.0,
+   "gcFracOfCapacity": 0.0379,
+   "sourceIdle": 0.0035,
+   "sourceBusy": 0.5565,
+   "sourceBackpressured": 0.4399,
+   "bpSamples": 15,
+   "backpressure": {
+    "Source: orders -> (by symbol, split by allocation)": {
+     "idle": 0.0035,
+     "busy": 0.5565,
+     "backPressured": 0.4399,
+     "samples": 15
+    },
+    "aggregate by account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "backPressured": 0.0,
+     "busy": 0.9985,
+     "idle": 0.0015,
+     "samples": 15
+    },
+    "aggregate by symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "idle": 0.7629,
+     "busy": 0.2371,
+     "backPressured": 0.0,
+     "samples": 15
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 113
+  },
+  {
+   "cores": 4,
+   "pass": "tiny",
+   "group": "duhc-tiny-c4-tiny",
+   "hostFreeGB": 147.7,
+   "nanoCpus": 4000000000,
+   "reporterS": 2,
+   "parallelism": 4,
+   "slotsTotal": 4,
+   "tSubmit": 1789078971.344428,
+   "jobId": "a8381e3d7cc8d677f9f452546f324fab",
+   "shape": {
+    "vertexCount": 3,
+    "signature": [
+     [
+      "Source: orders<br/>:- by symbol<br/>+- split by allocation<br/>",
+      []
+     ],
+     [
+      "aggregate by account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ],
+     [
+      "aggregate by symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+      [
+       "HASH"
+      ]
+     ]
+    ]
+   },
+   "warmup": {
+    "rates": [
+     203680.44737367687,
+     204631.44226927686,
+     220364.1630043947,
+     218142.37288135596
+    ],
+    "mean": 211704.6063821761,
+    "drift": 0.0838,
+    "scatter": 0.0788,
+    "warmupS": 28.0
+   },
+   "tSteady": 1789079012.360137,
+   "tOpen": 1789079014.00593,
+   "open": {
+    "ts": 1789079012269,
+    "committed": 5204529,
+    "committedParts": [
+     644454,
+     641254,
+     641515,
+     641570,
+     658826,
+     658426,
+     658784,
+     659700
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 5309757,
+    "end_positions-by-account": 21226473
+   },
+   "brokerLimitHits": 0,
+   "brokerRefaults": 51768,
+   "brokerFileCacheBytes": 1119236096,
+   "brokerLimitBytes": 4294967296,
+   "tClose": 1789079044.274367,
+   "close": {
+    "ts": 1789079042331,
+    "committed": 11909173,
+    "committedParts": [
+     1482460,
+     1480417,
+     1484381,
+     1483564,
+     1497473,
+     1495407,
+     1493133,
+     1492338
+    ],
+    "endIn": 60000000,
+    "end_positions-by-symbol": 12031182,
+    "end_positions-by-account": 48117622
+   },
+   "boundaries": 6,
+   "elapsedS": 30.06,
+   "recordsConsumed": 6704644,
+   "rateSource": "kafka committed offsets on block-trades-tiny",
+   "recordsPerSec": 223027.2,
+   "outputRecsPerSec": 1115136.1,
+   "vantageSinkRecords": 6722514.8,
+   "vantageDisagreement": 0.0027,
+   "backlogRemaining": 48090827,
+   "headroomS": 215.6,
+   "tmCores": 4.027,
+   "tmCapFrac": 1.0067,
+   "tmThrottledPeriodsPct": 100.0,
+   "kafkaCores": 0.331,
+   "kafkaCap": 2.5,
+   "kafkaCapFrac": 0.1325,
+   "gcMsInWindow": 407.0,
+   "gcFracOfCapacity": 0.0034,
+   "sourceIdle": 0.0057,
+   "sourceBusy": 0.5561,
+   "sourceBackpressured": 0.4381,
+   "bpSamples": 60,
+   "backpressure": {
+    "aggregate by account -> positions-by-account: Writer -> positions-by-account: Committer": {
+     "busy": 0.98,
+     "backPressured": 0.0,
+     "idle": 0.02,
+     "samples": 60
+    },
+    "Source: orders -> (by symbol, split by allocation)": {
+     "idle": 0.0057,
+     "backPressured": 0.4381,
+     "busy": 0.5561,
+     "samples": 60
+    },
+    "aggregate by symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+     "backPressured": 0.0,
+     "busy": 0.3459,
+     "idle": 0.6541,
+     "samples": 60
+    }
+   },
+   "status": "OK",
+   "ticksRecorded": 134
+  }
+ ],
+ "at": "2026-09-10 18:19:36",
+ "disk": {
+  "hostFreeBytes": 150600630272,
+  "inputBytesPerRecord": 31.6,
+  "inputBytes": 4735498240,
+  "sinkBytesPerInput": 299.0,
+  "sinkBytesUnbounded": 44849619835,
+  "sinkRetentionCapBytes": 34359738368,
+  "sinkBytes": 34359738368,
+  "sinkBoundedByRetention": true,
+  "checkpointBytes": 53248,
+  "floorBytes": 20000000000,
+  "neededBytes": 59095289856,
+  "fits": true,
+  "hostFreeBytesNow": 145145618432,
+  "reclaimableBytes": 5455011840,
+  "measuredOn": {
+   "tinyTopicRecords": 60000000,
+   "tinyTopicBytes": 1894199296,
+   "sinkRecordsConsumed": 11909173,
+   "sinkBytesOnDisk": 3560812544
+  }
+ },
+ "backlogNeeded": 21745152,
+ "backlogConfigured": 150000000,
+ "ratio": 3.95,
+ "result": "PASS",
+ "selftest": "PASS"
+}
