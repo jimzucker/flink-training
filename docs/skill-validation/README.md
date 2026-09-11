@@ -45,6 +45,13 @@ way to tell them apart.
 
 Human time was **0 h** and human prompts **1** in every row.
 
+The runs above measure pipelines the skill produced. [The demo's own job under
+the same harness](demo-under-harness.md) is the control: at 4,096 symbol keys it
+reads 1→2 = 2.059 and 2→4 = 1.988, meeting both claims, against 1.906 and 1.793
+for the skill's pipelines at the same cardinality on the same instrument — while
+those run about three times faster in absolute throughput. At 32,768 keys
+neither can be measured on this machine: both are garbage-collection bound.
+
 † Run 27 is the only run since 17 asked for the **whole** project — positions *and* market value at close on a ten-second window, with the windowed outputs proved exactly under a killed worker. Runs 18–26 built the positions half only, which is why their rates are not comparable with the demo's.
 
 ¶ Run 14 was a **one-pass quick look** (`prove.py all --quick`): every case measured once, so its ratios are stamped unpublishable by the harness and are shown here in italics. It is in the table for its clock, not its numbers.

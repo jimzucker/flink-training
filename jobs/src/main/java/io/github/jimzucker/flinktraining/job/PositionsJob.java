@@ -37,7 +37,7 @@ public final class PositionsJob {
     private static final Logger LOG = LoggerFactory.getLogger(PositionsJob.class);
 
     public static void main(String[] args) throws Exception {
-        JobConfig config = JobConfig.fromEnvironment();
+        JobConfig config = JobConfig.fromArgs(args);
         LOG.info("positions job: bootstrap={} orders={} -> {} , {}",
                 config.bootstrapServers(), config.ordersTopic(),
                 config.positionsBySymbolTopic(), config.positionsByAccountTopic());

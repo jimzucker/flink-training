@@ -612,8 +612,11 @@ def cmd_preflight():
         measures memory pressure rather than cores (2026-09-07: a flat 2048m read
         2->4 = 1.645 with GC at 9.3%; the same build with memory scaled per core
         read 1.910 with GC at 2.3%, and the 2-core figure did not move)."""
+        if not (c.tm_mem_per_core or c.raw["caps"].get("tmMemory") or c.per_case):
+            return ("uncapped: no process size and no container limit, so memory cannot be "
+                    "the thing that runs out; the GC ceiling checks it was not the constraint")
         if not c.tm_mem_per_core:
-            raise Exception("caps.tmMemoryPerCore is not set")
+            return f"per case: {', '.join(f'{k}c {v}' for k, v in sorted(c.per_case.items()))}"
         return (f"{c.tm_mem_base} base + {c.tm_mem_per_core} per subtask: "
                 + ", ".join(f"{L.mem_for(c.tm_mem_per_core, n, c.tm_mem_base)} at {n}"
                             for n in sorted(c.cases)))
@@ -916,6 +919,13 @@ def cmd_suite():
                      if c.per_case else "scaling: every case configured identically"),
            "perCase": c.per_case or None,
            "cases": c.cases, "baseline": c.baseline,
+           # Every scalar the generator's own manifest declares. Agents name these
+           # differently -- distinctSymbols, symbolUniverse, numSymbols, symbolCount
+           # -- so the harness keeps them all rather than guessing a schema. Without
+           # this, two runs of "the same" workload can differ by 4 keys against
+           # 32,768 and nothing in the results says so: comparing their step ratios
+           # for days is then comparing two different problems.
+           "workload": {k: v for k, v in man.items() if isinstance(v, (int, float, str))},
            "backlogRecords": int(man[c.count_field]), "partitions": c.partitions,
            "outputsPerInput": c.out_per_in,
            "heldStill": {"kafkaCap": c.kafka_cap, "jobManagerCap": c.jm_cap, "partitions": c.partitions,
