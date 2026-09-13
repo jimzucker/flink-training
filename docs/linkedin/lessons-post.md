@@ -2,7 +2,7 @@
 
 Draft of a public lessons-learned post about the 24-day autonomous build
 experiment recorded in this directory. Figures come from the runs table in
-[README.md](README.md) and the `suite.json` files under the run directories.
+[the validation README](../skill-validation/README.md) and the `suite.json` files under the run directories.
 Graphic: [lessons-card.html](lessons-card.html), published at
 https://claude.ai/code/artifact/dbcb5be3-f448-4792-bc26-7fb8c53b8811
 
@@ -48,7 +48,7 @@ had.
 |---|---|---|
 | span | 2026-08-19 - 2026-09-12, 24 days | session transcripts |
 | timed test runs | 156 | `suite.json` `runs[]` across the recorded builds - runs 1-10 kept none, so this is a floor |
-| full builds with a complete record | 29 | [README.md](README.md) runs table |
+| full builds with a complete record | 29 | [the validation README](../skill-validation/README.md) runs table |
 | machine time | 55.9 h | sum of the `wall` column, same table |
 | useful / wasted | 25.9 h / 30.0 h | itemisation below |
 | cloud spend, wasted | $184 | AWS bill for the rented cluster ([step 11](../steps/step-11/aws.md)); abandoned, and the demo rebuilt on the laptop in [step 12](../steps/step-12/scaling-demo.md) |

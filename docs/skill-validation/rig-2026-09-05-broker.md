@@ -1,6 +1,6 @@
 # Diagnosis, 2026-09-05 — run 14's 1.35× was a starved broker
 
-[Run 14](clean-room-run-14.md) reported **2→4 = 1.35×** on one pass per case,
+[Run 14](clean-room/clean-room-run-14.md) reported **2→4 = 1.35×** on one pass per case,
 against 1.85–2.15× in every earlier run. This is the controlled comparison
 that explains it. No agent, no skill: the agent's own build and backlog from
 run 14, re-measured on the same rig with one variable changed at a time.

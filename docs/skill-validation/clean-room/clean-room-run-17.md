@@ -1,6 +1,6 @@
 # Clean-room validation, run 17 — the demo's workload, as a prediction test
 
-[Why 2→4 falls short](why-2to4-falls-short.md) concluded that the skill's
+[Why 2→4 falls short](../why-2to4-falls-short.md) concluded that the skill's
 1.8× step ratios and the demo's 1.99× are the same rig measuring two jobs of
 different weight: the parallelism overhead is a fixed **0.70 µs per record**,
 which is ~10% of the agents' 4.2–6.8 µs records and ~3% of the demo's 24.5 µs
@@ -61,7 +61,7 @@ forbidden-path reads, 11:14 → 13:07. Raw results in [run-17/](run-17/).
 `quickLook` / `publishable: false`. Four cases, no suite refusals, zero broker
 memory-limit hits, sentinel −1.5%.
 
-## What this does to the explanation in [why-2to4-falls-short](why-2to4-falls-short.md)
+## What this does to the explanation in [why-2to4-falls-short](../why-2to4-falls-short.md)
 
 That page argued the demo scales better because its records are heavier: a
 fixed ~0.70 µs parallelism overhead is ~3% of a 24 µs record and ~10% of a

@@ -56,7 +56,7 @@ model working unattended.
 The method that produced the scaling result was extracted into
 [`.claude/skills/prove-it-scales`](.claude/skills/prove-it-scales/SKILL.md) and
 then validated against a fresh agent that rebuilt the measurement from nothing —
-see [`docs/skill-validation/`](docs/skill-validation/clean-room-run-1.md).
+see [`docs/skill-validation/`](docs/skill-validation/clean-room/clean-room-run-1.md).
 
 ---
 

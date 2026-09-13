@@ -3,7 +3,7 @@
 > **Superseded in part, 2026-09-06.** The explanation below — that the demo
 > scales better because its records are heavier, so a fixed per-record
 > parallelism overhead costs it proportionally less — was tested by
-> [run 17](clean-room-run-17.md) and **refuted**. That run's records are as
+> [run 17](clean-room/clean-room-run-17.md) and **refuted**. That run's records are as
 > light as run 16's (4.79 µs of CPU each at four cores) and it still lost only
 > 2.7% per core from 2 to 4, against run 16's 9.6%. The measurements on this
 > page stand; the mechanism drawn from them does not. What determines the

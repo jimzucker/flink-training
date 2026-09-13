@@ -5,7 +5,7 @@ brings to the skill, on the harness as it stands at #59. This is the first run
 to exercise the partitions guard (#57), which was merged after run 17's mirror
 was taken.
 
-Same conditions as [runs 1–17](README.md): fresh agent, empty directory, barred
+Same conditions as [runs 1–17](../README.md): fresh agent, empty directory, barred
 from this repository and every other test directory, one prompt, no human
 input. Run 16's prompt verbatim — positions by symbol and by account, the two
 step ratios, `prove.py all --quick`.

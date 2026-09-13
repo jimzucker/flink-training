@@ -4,7 +4,7 @@ The first run against the skill after it was cut from 11,286 words to 3,546 —
 guards, preflight and interview kept; the run anecdotes removed. The question:
 **does the shorter skill still carry the method, and does 2→4 scale linearly?**
 
-Same conditions as [runs 1–8](README.md): fresh agent, empty directory, barred
+Same conditions as [runs 1–8](../README.md): fresh agent, empty directory, barred
 from this repository, every earlier test directory and the preserved results,
 allowed only the skill, one prompt, no human input. **DataStream pinned.** The
 prompt asked for the 2→4 step ratio with its spread as the headline.

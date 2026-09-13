@@ -1,6 +1,6 @@
 # Plan 12 — stable runs, a true 1→2 and 2→4, a harness with no open defects, and a shorter clock
 
-Written 2026-09-04 after [run 11](../clean-room-run-11.md), before any of it
+Written 2026-09-04 after [run 11](../clean-room/clean-room-run-11.md), before any of it
 ran. Each phase below carries its **prompt** — objective and pass criterion,
 written before launch — and its **response** — the verbatim captured output
 and the verdict, written after. A phase does not start until the one before
@@ -69,7 +69,7 @@ spread and 1c/p=1 → 2c/p=2 does not, the one-core case is redefined at the
 suite's parallelism (phase 2.5); if neither reads 2.0 ± spread, 1→2 stays
 unreported and the reason is written down as unknown.
 
-**Response.** Nine cases, seven valid, two refused by the 98% baseline cap floor ([raw](phase1/phase1c.json), [driver](phase1c.py)). `run_case` gained a `parallelism` argument for this arm (slots and job parallelism decoupled from the core count; the slots == parallelism guard reads back the override).
+**Response.** Nine cases, seven valid, two refused by the 98% baseline cap floor ([raw](phase1/phase1c.json), [driver](phase1/phase1c.py)). `run_case` gained a `parallelism` argument for this arm (slots and job parallelism decoupled from the core count; the slots == parallelism guard reads back the override).
 
 | case | pass | rec/s | TM % of cap | src idle | src back-pressured | GC % of cap | status |
 |---|---|---:|---:|---:|---:|---:|---|
@@ -118,7 +118,7 @@ Stack down at 06:50, nothing with the prefix survived, fstrim returned 52.5 GiB.
 ### Phase 2 responses
 
 **2.1 — PASS** (shipped inside #38). Pure self-test passes; replay OK. Recomputed
-from run 11's [ceiling.json](../run-11/ceiling.json): the k0.6 step recorded
+from run 11's [ceiling.json](../clean-room/run-11/ceiling.json): the k0.6 step recorded
 `kafkaCores` 0.527 and `kafkaCapFrac` 0.2109 (divided by the host's cores);
 0.527 / 0.6 = **0.88** against the step's own cap, and the refused record now
 carries `brokerCapFrac` instead of `null`.
@@ -313,8 +313,8 @@ Criteria, written before launch:
 
 Run 12 launched 10:14:36 on the merged #43 harness, one prompt (run 11's with
 the headline changed to "1→2 and 2→4, each with its spread"), Opus, no human
-input. Record: [clean-room-run-12.md](../clean-room-run-12.md), raw results
-under [run-12/](../run-12/).
+input. Record: [clean-room-run-12.md](../clean-room/clean-room-run-12.md), raw results
+under [run-12/](../clean-room/run-12/).
 
 | criterion | result |
 |---|---|
@@ -346,6 +346,6 @@ chain.
 | run time | the chain: 118 min (run 11) → 50.6 min (rig) → 64.4 min (run 12, three cases); the run: 1.97 h → 4.53 h, all of the growth before the chain |
 
 What the record leaves open is written at the end of
-[clean-room-run-12.md](../clean-room-run-12.md): a criterion that separates
+[clean-room-run-12.md](../clean-room/clean-room-run-12.md): a criterion that separates
 the chain's clock from the agent's; whether the 98% baseline floor is set
 from measured noise; a sentinel that the floor cannot refuse.
