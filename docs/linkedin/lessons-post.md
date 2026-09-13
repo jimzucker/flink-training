@@ -53,7 +53,6 @@ The biggest waste: roughly 27 hours went into runs started before the previous p
 | full builds with a complete record | 29 | [the validation README](../skill-validation/README.md) runs table |
 | machine time | 55.9 h | sum of the `wall` column, same table |
 | useful / wasted | 25.9 h / 30.0 h | itemisation below |
-| cloud spend, wasted | $184 | AWS bill for the rented cluster ([step 11](../steps/step-11/aws.md)); abandoned, and the demo rebuilt on the laptop in [step 12](../steps/step-12/scaling-demo.md) |
 | metered-equivalent API value | ~$2,400 | $1,994 orchestration transcripts + $400 recorded agent cost on runs 1-8; subscription, so not out of pocket |
 | model turns | 6,542 | session transcripts |
 
@@ -69,14 +68,3 @@ The biggest waste: roughly 27 hours went into runs started before the previous p
 
 27.2 of those 30.0 hours - everything but the idle waiting - are runs started
 before the previous problem was understood, which is lesson 1.
-
-### The cluster detour
-
-| | laptop | AWS `c5.2xlarge` + 3-broker MSK |
-|---|---:|---:|
-| orders/sec | **142,340** | 83,031 |
-| bottleneck | broker at ~95% of capacity | client CPU, 92% user |
-
-Source: [step 11](../steps/step-11/aws.md). Step 12 discarded the cluster and
-rebuilt the demo on one laptop, where it showed 2.15x and 1.96x on successive
-doublings - the result the cluster was rented to produce.
