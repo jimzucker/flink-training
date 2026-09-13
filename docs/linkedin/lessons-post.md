@@ -8,37 +8,39 @@ https://claude.ai/code/artifact/dbcb5be3-f448-4792-bc26-7fb8c53b8811
 
 ---
 
-**I let AI build the same system 29 times, working alone — 156 test runs over
-24 days. It wasted half the budget: 30 of 55.9 hours produced nothing. Here is
-what I would tell anyone about to do the same.**
+I let Claude build the same system 29 times over 24 days.
 
-None of these lessons are advanced. They are what an experienced engineer does
-without thinking about it. The AI didn't, and never told me, because it never
-noticed. Another attempt costs it nothing. Knowing when to stop is still a
-manager's job. Half my spend bought nothing; the other half built a working
-system in 24 days with almost none of my time. Same tool — the difference was
-supervision.
+156 test runs. 55.9 hours of machine time. And 30 of those hours produced work I had to throw away.
 
-**1. Stop at the first failure.** Don't blindly run a battery of tests. If one fails, stop, fix it, then move forward.
+My takeaway: autonomous execution still needs experienced engineering supervision. The AI could build the system, but I had to recognize when it was repeating mistakes, testing the wrong thing or spending time without making progress.
 
-**2. Analyze before you experiment.** We wasted a lot of time with trial and error. Compare the configs before you start guessing. Every parameter of every component — data generation, Kafka, the runtime. If they're identical, the results should be too, so something you're not comparing is different. Ensure comparisons are apples to apples, including test conditions.
+None of these lessons are advanced. They're habits experienced engineers develop from seeing what goes wrong. In this experiment, the AI repeatedly missed those signals. I had to catch them and turn the lessons into controls.
 
-**3. Unit test all changes.** When you fix a defect, unit test it before a full rerun.
+Experienced supervision made the difference in how much useful work came out of each run.
 
-**4. When the shape of the data changes, check front to back.** Cardinality, record size, key format — every limit, expectation and test was set for the old shape. Re-check the whole chain, not just the part you changed.
+Deciding whether another run is worth doing—and building that judgment into the workflow—is part of the job.
 
-**5. Verify initiation of tests and monitor them.** Confirm the job is actually running when launched and monitor its health, so you're not waiting for a job that died and will never complete.
+The supervision it needed came down to six habits an experienced engineer brings to the work:
 
-**6. If a rule matters, make the tool enforce it.** When a rule is put in place, codify it so it is enforced — don't rely on AI memory to enforce it.
+**1. Stop at the first failure.**
+Fix and verify the problem before running the rest of the test suite. Start with the case most likely to expose it.
 
-Rule 1 cost the most: 27 of the 30 wasted hours are runs started before the
-previous problem was understood. AI runs the whole battery on code that is
-already broken, and it starts with the easiest case, so it takes hours to reach
-a failure the hardest case would have shown in minutes.
+**2. Analyze before you experiment.**
+Compare configurations, parameters and test conditions before trying another variation. Make sure you're measuring the same thing.
 
-There was also $184 of cloud spend that bought nothing: the AI's answer to a
-hardware limit was to rent a cluster, which ran the job slower than the laptop
-had.
+**3. Unit test every fix.**
+A small test can catch a mistake before another full run burns hours.
+
+**4. When the data changes, check the whole system.**
+Record size, cardinality and key format affect assumptions throughout the pipeline.
+
+**5. Confirm tests started—and keep monitoring them.**
+I spent 2.8 hours waiting on jobs that had already died.
+
+**6. Make important rules enforceable.**
+Put them in the tools and workflow. Remembering an instruction isn't a reliable control.
+
+The biggest waste: roughly 27 hours went into runs started before the previous problem was understood.
 
 ---
 

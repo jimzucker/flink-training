@@ -144,16 +144,16 @@
 
   <header>
     <h1>Six rules for letting AI build something.</h1>
-    <p class="sub">I let it build the same system 29 times, working alone — 156 test runs over 24 days. It wasted half the budget: 30 of the 55.9 hours produced nothing. Every one of those hours came from breaking one of these — mistakes an inexperienced engineer makes, and I caught every one of them, not the AI.</p>
+    <p class="sub">I let Claude build the same system 29 times over 24 days. 156 test runs, 55.9 hours of machine time — and 30 of those hours produced work I had to throw away. Autonomous execution still needs experienced engineering supervision.</p>
   </header>
 
   <section class="rules">
     <div class="rule"><span class="n">1</span><span class="t">Stop at the first failure.</span></div>
     <div class="rule"><span class="n">2</span><span class="t">Analyze before you experiment.</span></div>
-    <div class="rule"><span class="n">3</span><span class="t">Unit test all changes.</span></div>
-    <div class="rule"><span class="n">4</span><span class="t">When the shape of the data changes, check front to back.</span></div>
-    <div class="rule"><span class="n">5</span><span class="t">Verify initiation of tests and monitor them.</span></div>
-    <div class="rule"><span class="n">6</span><span class="t">If a rule matters, make the tool enforce it.</span></div>
+    <div class="rule"><span class="n">3</span><span class="t">Unit test every fix.</span></div>
+    <div class="rule"><span class="n">4</span><span class="t">When the data changes, check the whole system.</span></div>
+    <div class="rule"><span class="n">5</span><span class="t">Confirm tests started—and keep monitoring them.</span></div>
+    <div class="rule"><span class="n">6</span><span class="t">Make important rules enforceable.</span></div>
   </section>
 
   <section class="meter">
@@ -173,12 +173,11 @@
   </section>
 
   <footer class="foot">
-    <p class="kicker">Another attempt costs the AI nothing. Knowing when to stop is still the manager's job.</p>
+    <p class="kicker">Deciding whether another run is worth doing — and building that judgment into the workflow — is part of the job.</p>
     <div class="figures">
       <div class="fig"><span class="v">156</span><span class="k">Test runs</span></div>
       <div class="fig"><span class="v">24</span><span class="k">Days</span></div>
       <div class="fig"><span class="v">55.9 h</span><span class="k">Computer time</span></div>
-      <div class="fig"><span class="v">$184</span><span class="k">Cloud spend, wasted</span></div>
     </div>
   </footer>
 
