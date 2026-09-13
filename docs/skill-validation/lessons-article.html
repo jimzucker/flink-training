@@ -1,0 +1,267 @@
+<title>The Wasted Half</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ground:#14161a;
+    --panel:#1a1d23;
+    --rule:#2b3039;
+    --ink:#e9eaee;
+    --muted:#9aa1aa;
+    --dim:#636974;
+    --keep:#4fa3a5;
+    --w1:#cf7040;
+    --w2:#bd643d;
+    --w3:#a95939;
+    --w4:#944f36;
+    --w5:#7d4533;
+    --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --cond:"IBM Plex Sans Condensed","IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--sans);
+    display:flex;
+    justify-content:center;
+    padding:30px 20px 70px;
+  }
+  .page{width:100%;max-width:1120px;display:flex;flex-direction:column;gap:44px}
+
+  /* ---------- the card ---------- */
+  .card{display:flex;flex-direction:column;gap:30px}
+  .card h1{
+    font-family:var(--cond);
+    font-weight:700;
+    font-size:clamp(34px,5.2vw,60px);
+    line-height:1.02;
+    letter-spacing:-.015em;
+    margin:0;
+    text-wrap:balance;
+  }
+  .sub{margin:12px 0 0;max-width:62ch;font-size:16px;line-height:1.5;color:var(--muted)}
+  .meter{display:flex;flex-direction:column;gap:11px}
+  .split{display:flex;font-family:var(--mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase}
+  .split b{font-weight:500}
+  .split .keep{color:var(--keep)}
+  .split .lost{color:var(--w1);text-align:right}
+  .bar{display:flex;height:70px;border-radius:3px;overflow:hidden;background:var(--panel)}
+  .seg{
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:14px;font-weight:600;
+    font-variant-numeric:tabular-nums;color:#10120f;
+    box-shadow:inset -1px 0 0 rgba(20,22,26,.55);
+  }
+  .seg:last-child{box-shadow:none}
+  .seg.sm{color:transparent}
+  .ticks{display:flex;font-family:var(--mono);font-size:11px;color:var(--dim);font-variant-numeric:tabular-nums}
+  .ticks div{border-left:1px solid var(--rule);padding:5px 0 0 7px}
+  .ticks div:first-child{border-left:0;padding-left:0}
+  .strap{
+    margin:0;max-width:74ch;font-size:15px;line-height:1.5;color:var(--muted);
+    border-left:3px solid var(--w1);padding-left:14px;
+  }
+  .strap b{color:var(--ink);font-weight:600}
+  .legend{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(178px,1fr));
+    gap:1px;background:var(--rule);
+    border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  }
+  .item{background:var(--ground);padding:16px 18px 18px 0;display:flex;flex-direction:column;gap:7px}
+  .item:not(:first-child){padding-left:18px}
+  .hrs{
+    font-family:var(--mono);font-size:27px;font-weight:500;
+    font-variant-numeric:tabular-nums;line-height:1;
+    display:flex;align-items:baseline;gap:5px;
+  }
+  .hrs small{font-size:13px;color:var(--dim);font-weight:400}
+  .what{font-size:13.5px;line-height:1.38;color:var(--muted);max-width:22ch}
+  .chip{width:26px;height:4px;border-radius:2px}
+  .foot{display:flex;flex-wrap:wrap;gap:20px 56px;align-items:flex-end;justify-content:space-between}
+  .figures{display:flex;flex-wrap:wrap;gap:30px}
+  .fig{display:flex;flex-direction:column;gap:5px}
+  .fig .v{font-family:var(--mono);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums}
+  .fig .k{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .kicker{
+    font-family:var(--cond);font-size:24px;font-weight:600;line-height:1.3;
+    max-width:34ch;color:var(--ink);border-left:3px solid var(--keep);padding-left:14px;margin:0;
+  }
+
+  /* ---------- the article ---------- */
+  hr.div{border:0;border-top:1px solid var(--rule);margin:0}
+  article{max-width:64ch;display:flex;flex-direction:column;gap:20px}
+  article p{margin:0;font-size:17px;line-height:1.62;color:#d3d7dc}
+  article p.lede{
+    font-family:var(--cond);
+    font-size:23px;
+    line-height:1.32;
+    font-weight:600;
+    color:var(--ink);
+    max-width:30ch;
+  }
+  article p b{color:var(--ink);font-weight:600}
+  .costs{display:flex;flex-direction:column;gap:0;margin:4px 0}
+  .cost{display:flex;gap:16px;padding:14px 0;border-top:1px solid var(--rule);align-items:baseline}
+  .cost:last-child{border-bottom:1px solid var(--rule)}
+  .cost .n{
+    font-family:var(--mono);font-weight:600;font-size:17px;color:var(--w1);
+    font-variant-numeric:tabular-nums;flex:0 0 4.6em;
+  }
+  .cost .t{font-size:16px;line-height:1.5;color:#d3d7dc}
+  .cost .t b{color:var(--ink)}
+
+  /* ---------- the appendix ---------- */
+  section.data{display:flex;flex-direction:column;gap:16px}
+  h2{
+    font-family:var(--mono);font-size:11px;font-weight:500;
+    letter-spacing:.18em;text-transform:uppercase;color:var(--dim);
+    margin:0;padding-bottom:2px;
+  }
+  .scroll{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:14px;min-width:520px}
+  th{
+    text-align:left;font-family:var(--mono);font-weight:500;font-size:10.5px;
+    letter-spacing:.14em;text-transform:uppercase;color:var(--dim);
+    border-bottom:1px solid var(--rule);padding:0 14px 8px 0;
+  }
+  td{padding:11px 14px 11px 0;border-bottom:1px solid #23262c;color:var(--muted);line-height:1.45}
+  td.k{color:var(--ink);white-space:nowrap}
+  td.n{font-family:var(--mono);color:var(--ink);font-variant-numeric:tabular-nums;white-space:nowrap}
+  td.src{font-size:13px}
+  ol.lessons{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:13px}
+  ol.lessons li{font-size:16px;line-height:1.55;color:var(--muted)}
+  ol.lessons b{color:var(--ink);font-weight:600}
+  .note{
+    font-family:var(--mono);font-size:11.5px;line-height:1.55;color:var(--dim);
+    border-left:2px solid var(--rule);padding-left:12px;margin:0;max-width:74ch;
+  }
+
+  /* ---------- rules ---------- */
+  .top h1{
+    font-family:var(--cond);font-weight:700;
+    font-size:clamp(34px,5.2vw,58px);line-height:1.03;
+    letter-spacing:-.015em;margin:0;text-wrap:balance;
+  }
+  .rules{display:flex;flex-direction:column;gap:0}
+  .rule{display:flex;gap:20px;padding:18px 0;border-top:1px solid var(--rule);align-items:baseline}
+  .rules .rule:last-child{border-bottom:1px solid var(--rule)}
+  .rule .n{
+    font-family:var(--mono);font-weight:600;font-size:18px;color:var(--w1);
+    font-variant-numeric:tabular-nums;flex:0 0 1.6em;
+  }
+  .rule .t{font-size:17px;line-height:1.55;color:#d3d7dc;max-width:70ch}
+  .rule .t b{color:var(--ink);font-weight:600}
+</style>
+
+<div class="page">
+
+  <header class="top">
+    <h1>Six rules for letting AI build something.</h1>
+    <p class="sub">I let it build the same system 29 times, working alone — 156 test runs over 24 days. It wasted half the budget: 30 of the 55.9 hours produced nothing. Every one of those hours came from breaking one of these.</p>
+  </header>
+
+  <section class="rules">
+    <div class="rule">
+      <span class="n">1</span>
+      <div class="t"><b>Stop at the first failure.</b> Don't blindly run a battery of tests. If one fails, stop, fix it, then move forward.</div>
+    </div>
+    <div class="rule">
+      <span class="n">2</span>
+      <div class="t"><b>Analyze before you experiment.</b> We wasted a lot of time with trial and error. Compare the configs before you start guessing. Every parameter of every component — data generation, Kafka, the runtime. If they're identical, the results should be too, so something you're not comparing is different. Ensure comparisons are apples to apples, including test conditions.</div>
+    </div>
+    <div class="rule">
+      <span class="n">3</span>
+      <div class="t"><b>Unit test all changes.</b> When you fix a defect, unit test it before a full rerun.</div>
+    </div>
+    <div class="rule">
+      <span class="n">4</span>
+      <div class="t"><b>When the shape of the data changes, check front to back.</b> Cardinality, record size, key format — every limit, expectation and test was set for the old shape. Re-check the whole chain, not just the part you changed.</div>
+    </div>
+    <div class="rule">
+      <span class="n">5</span>
+      <div class="t"><b>Verify initiation of tests and monitor them.</b> Confirm the job is actually running when launched and monitor its health, so you're not waiting for a job that died and will never complete.</div>
+    </div>
+    <div class="rule">
+      <span class="n">6</span>
+      <div class="t"><b>If a rule matters, make the tool enforce it.</b> When a rule is put in place, codify it so it is enforced — don't rely on AI memory to enforce it.</div>
+    </div>
+  </section>
+
+  <article>
+    <p>Rule 1 cost the most. 27 of the 30 wasted hours are runs started before the previous problem was understood — AI runs the whole battery on code that is already broken, and it starts with the easiest case, so it takes hours to reach a failure the hardest case would have shown in minutes. There was also $184 of cloud spend that bought nothing: its answer to a hardware limit was to rent a cluster, and the cluster ran the job slower than the laptop had.</p>
+    <p>None of these rules are advanced. They are what an experienced engineer does without thinking about it. The AI didn't, and never told me, because it never noticed. Another attempt costs it nothing. Knowing when to stop is still a manager's job.</p>
+  </article>
+
+  <hr class="div">
+
+  <section class="data">
+    <h2>Where the 55.9 hours went</h2>
+    <div class="meter">
+      <div class="split">
+        <b class="keep" style="flex:25.9">Work I could use — 25.9 h</b>
+        <b class="lost" style="flex:30.0">Work I had to throw out — 30.0 h</b>
+      </div>
+      <div class="bar">
+        <div class="seg" style="flex:25.9;background:var(--keep)">25.9 h</div>
+        <div class="seg" style="flex:16.9;background:var(--w1)">16.9</div>
+        <div class="seg" style="flex:5.0;background:var(--w2)">5.0</div>
+        <div class="seg" style="flex:4.0;background:var(--w3)">4.0</div>
+        <div class="seg sm" style="flex:2.8;background:var(--w4)">2.8</div>
+        <div class="seg sm" style="flex:1.3;background:var(--w5)">1.3</div>
+      </div>
+      <div class="ticks">
+        <div style="flex:25.9">0 h</div>
+        <div style="flex:30.0">25.9 h</div>
+        <div style="flex:0 0 auto">55.9 h</div>
+      </div>
+    </div>
+    <div class="legend">
+      <div class="item"><span class="chip" style="background:var(--w1)"></span><span class="hrs">16.9 <small>h</small></span><span class="what">Runs that measured the wrong thing</span></div>
+      <div class="item"><span class="chip" style="background:var(--w2)"></span><span class="hrs">5.0 <small>h</small></span><span class="what">Guessing instead of checking the facts</span></div>
+      <div class="item"><span class="chip" style="background:var(--w3)"></span><span class="hrs">4.0 <small>h</small></span><span class="what">A new quality check that rejected good work</span></div>
+      <div class="item"><span class="chip" style="background:var(--w4)"></span><span class="hrs">2.8 <small>h</small></span><span class="what">Waiting on work that had already stopped</span></div>
+      <div class="item"><span class="chip" style="background:var(--w5)"></span><span class="hrs">1.3 <small>h</small></span><span class="what">A whole build lost to an untested rule</span></div>
+    </div>
+    <div class="figures">
+      <div class="fig"><span class="v">156</span><span class="k">Test runs</span></div>
+      <div class="fig"><span class="v">29</span><span class="k">Builds</span></div>
+      <div class="fig"><span class="v">24</span><span class="k">Days</span></div>
+      <div class="fig"><span class="v">$184</span><span class="k">Cloud spend, wasted</span></div>
+    </div>
+  </section>
+
+  <section class="data">
+    <h2>The figures, and where they come from</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Figure</th><th>Value</th><th>Source</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Span</td><td class="n">24 days</td><td class="src">2026-08-19 → 2026-09-12, session transcripts</td></tr>
+          <tr><td class="k">Timed test runs</td><td class="n">156</td><td class="src"><code>suite.json</code> run entries across the recorded builds; runs 1–10 kept none, so this is a floor</td></tr>
+          <tr><td class="k">Builds with a full record</td><td class="n">29</td><td class="src">runs table in the validation README</td></tr>
+          <tr><td class="k">Machine time</td><td class="n">55.9 h</td><td class="src">sum of the wall-clock column, same table</td></tr>
+          <tr><td class="k">Useful / wasted</td><td class="n">25.9 / 30.0 h</td><td class="src">the bar above</td></tr>
+          <tr><td class="k">Cloud spend, wasted</td><td class="n">$184</td><td class="src">AWS bill for the rented cluster; abandoned, and the demo rebuilt on the laptop</td></tr>
+          <tr><td class="k">Metered API value</td><td class="n">~$2,400</td><td class="src">$1,994 orchestration transcripts plus $400 recorded agent cost on runs 1–8; on a subscription, so never spent</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="data">
+    <h2>The cluster detour</h2>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>&nbsp;</th><th>Laptop</th><th>Rented cluster</th></tr></thead>
+        <tbody>
+          <tr><td class="k">Orders per second</td><td class="n">142,340</td><td class="n">83,031</td></tr>
+          <tr><td class="k">What limited it</td><td class="src">the message broker, at ~95% of capacity</td><td class="src">the client machine's own CPU, at 92%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Three brokers and 32 cores, rented to get past a laptop limit, ran the job slower than the laptop. The demo was rebuilt on one laptop instead, where it showed 2.15× and 1.96× on successive doublings — the result the cluster was rented to produce.</p>
+  </section>
+
+</div>
