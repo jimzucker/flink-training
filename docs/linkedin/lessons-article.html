@@ -147,16 +147,6 @@
   .lede-close{
     margin:0;max-width:62ch;font-size:17px;line-height:1.6;color:#d3d7dc;
   }
-  article.lead{max-width:66ch;display:flex;flex-direction:column;gap:17px}
-  article.lead p{margin:0;font-size:17px;line-height:1.62;color:#d3d7dc}
-  article.lead p:first-child{
-    font-family:var(--cond);font-size:26px;font-weight:600;
-    line-height:1.25;color:var(--ink);max-width:34ch;
-  }
-  .biggest{
-    margin:0;max-width:70ch;font-size:17px;line-height:1.55;color:var(--ink);
-    border-left:3px solid var(--w1);padding-left:16px;
-  }
   .rules{display:flex;flex-direction:column;gap:0}
   .rule{display:flex;gap:20px;padding:18px 0;border-top:1px solid var(--rule);align-items:baseline}
   .rules .rule:last-child{border-bottom:1px solid var(--rule)}
@@ -172,46 +162,41 @@
 
   <header class="top">
     <h1>Six rules for letting AI build something.</h1>
+    <p class="sub">I let it build the same system 29 times, working alone — 156 test runs over 24 days. It wasted half the budget: 30 of the 55.9 hours produced nothing. Every one of those hours came from breaking one of these — mistakes an inexperienced engineer makes, and I caught every one of them, not the AI.</p>
   </header>
 
-  <article class="lead">
-    <p>I let Claude build the same system 29 times over 24 days.</p>
-    <p>156 test runs. 55.9 hours of machine time. And 30 of those hours produced work I had to throw away.</p>
-    <p>My takeaway: autonomous execution still needs experienced engineering supervision. The AI could build the system, but I had to recognize when it was repeating mistakes, testing the wrong thing or spending time without making progress.</p>
-    <p>None of these lessons are advanced. They're habits experienced engineers develop from seeing what goes wrong. In this experiment, the AI repeatedly missed those signals. I had to catch them and turn the lessons into controls.</p>
-    <p>Experienced supervision made the difference in how much useful work came out of each run.</p>
-    <p>Deciding whether another run is worth doing—and building that judgment into the workflow—is part of the job.</p>
-    <p>The supervision it needed came down to six habits an experienced engineer brings to the work:</p>
-  </article>
+  <p class="lede-close">None of these rules are advanced. They are what an experienced engineer does without thinking about it. The AI didn't, and never told me, because it never noticed. Another attempt costs it nothing. Knowing when to stop is still a manager's job. Half my spend bought nothing; the other half built a working system in 24 days with almost none of my time. Same tool — the difference was supervision.</p>
 
   <section class="rules">
     <div class="rule">
       <span class="n">1</span>
-      <div class="t"><b>Stop at the first failure.</b> Fix and verify the problem before running the rest of the test suite. Start with the case most likely to expose it.</div>
+      <div class="t"><b>Stop at the first failure.</b> Don't blindly run a battery of tests. If one fails, stop, fix it, then move forward.</div>
     </div>
     <div class="rule">
       <span class="n">2</span>
-      <div class="t"><b>Analyze before you experiment.</b> Compare configurations, parameters and test conditions before trying another variation. Make sure you're measuring the same thing.</div>
+      <div class="t"><b>Analyze before you experiment.</b> We wasted a lot of time with trial and error. Compare the configs before you start guessing. Every parameter of every component — data generation, Kafka, the runtime. If they're identical, the results should be too, so something you're not comparing is different. Ensure comparisons are apples to apples, including test conditions.</div>
     </div>
     <div class="rule">
       <span class="n">3</span>
-      <div class="t"><b>Unit test every fix.</b> A small test can catch a mistake before another full run burns hours.</div>
+      <div class="t"><b>Unit test all changes.</b> When you fix a defect, unit test it before a full rerun.</div>
     </div>
     <div class="rule">
       <span class="n">4</span>
-      <div class="t"><b>When the data changes, check the whole system.</b> Record size, cardinality and key format affect assumptions throughout the pipeline.</div>
+      <div class="t"><b>When the shape of the data changes, check front to back.</b> Cardinality, record size, key format — every limit, expectation and test was set for the old shape. Re-check the whole chain, not just the part you changed.</div>
     </div>
     <div class="rule">
       <span class="n">5</span>
-      <div class="t"><b>Confirm tests started—and keep monitoring them.</b> I spent 2.8 hours waiting on jobs that had already died.</div>
+      <div class="t"><b>Verify initiation of tests and monitor them.</b> Confirm the job is actually running when launched and monitor its health, so you're not waiting for a job that died and will never complete.</div>
     </div>
     <div class="rule">
       <span class="n">6</span>
-      <div class="t"><b>Make important rules enforceable.</b> Put them in the tools and workflow. Remembering an instruction isn't a reliable control.</div>
+      <div class="t"><b>If a rule matters, make the tool enforce it.</b> When a rule is put in place, codify it so it is enforced — don't rely on AI memory to enforce it.</div>
     </div>
   </section>
 
-  <p class="biggest">The biggest waste: roughly 27 hours went into runs started before the previous problem was understood.</p>
+  <article>
+    <p>Rule 1 cost the most. 27 of the 30 wasted hours are runs started before the previous problem was understood — AI runs the whole battery on code that is already broken, and it starts with the easiest case, so it takes hours to reach a failure the hardest case would have shown in minutes.</p>
+  </article>
 
   <hr class="div">
 
@@ -247,7 +232,6 @@
       <div class="fig"><span class="v">156</span><span class="k">Test runs</span></div>
       <div class="fig"><span class="v">29</span><span class="k">Builds</span></div>
       <div class="fig"><span class="v">24</span><span class="k">Days</span></div>
-      <div class="fig"><span class="v">$184</span><span class="k">Cloud spend, wasted</span></div>
     </div>
   </section>
 
@@ -262,25 +246,10 @@
           <tr><td class="k">Builds with a full record</td><td class="n">29</td><td class="src">runs table in the validation README</td></tr>
           <tr><td class="k">Machine time</td><td class="n">55.9 h</td><td class="src">sum of the wall-clock column, same table</td></tr>
           <tr><td class="k">Useful / wasted</td><td class="n">25.9 / 30.0 h</td><td class="src">the bar above</td></tr>
-          <tr><td class="k">Cloud spend, wasted</td><td class="n">$184</td><td class="src">AWS bill for the rented cluster; abandoned, and the demo rebuilt on the laptop</td></tr>
           <tr><td class="k">Metered API value</td><td class="n">~$2,400</td><td class="src">$1,994 orchestration transcripts plus $400 recorded agent cost on runs 1–8; on a subscription, so never spent</td></tr>
         </tbody>
       </table>
     </div>
-  </section>
-
-  <section class="data">
-    <h2>The cluster detour</h2>
-    <div class="scroll">
-      <table>
-        <thead><tr><th>&nbsp;</th><th>Laptop</th><th>Rented cluster</th></tr></thead>
-        <tbody>
-          <tr><td class="k">Orders per second</td><td class="n">142,340</td><td class="n">83,031</td></tr>
-          <tr><td class="k">What limited it</td><td class="src">the message broker, at ~95% of capacity</td><td class="src">the client machine's own CPU, at 92%</td></tr>
-        </tbody>
-      </table>
-    </div>
-    <p class="note">Three brokers and 32 cores, rented to get past a laptop limit, ran the job slower than the laptop. The demo was rebuilt on one laptop instead, where it showed 2.15× and 1.96× on successive doublings — the result the cluster was rented to produce.</p>
   </section>
 
 </div>
