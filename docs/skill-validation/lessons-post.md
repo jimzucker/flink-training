@@ -12,6 +12,13 @@ https://claude.ai/code/artifact/dbcb5be3-f448-4792-bc26-7fb8c53b8811
 24 days. It wasted half the budget: 30 of 55.9 hours produced nothing. Here is
 what I would tell anyone about to do the same.**
 
+None of these lessons are advanced. They are what an experienced engineer does
+without thinking about it. The AI didn't, and never told me, because it never
+noticed. Another attempt costs it nothing. Knowing when to stop is still a
+manager's job. Half my spend bought nothing; the other half built a working
+system in 24 days with almost none of my time. Same tool — the difference was
+supervision.
+
 **1. Stop at the first failure.** Don't blindly run a battery of tests. If one fails, stop, fix it, then move forward.
 
 **2. Analyze before you experiment.** We wasted a lot of time with trial and error. Compare the configs before you start guessing. Every parameter of every component — data generation, Kafka, the runtime. If they're identical, the results should be too, so something you're not comparing is different. Ensure comparisons are apples to apples, including test conditions.
@@ -32,13 +39,6 @@ a failure the hardest case would have shown in minutes.
 There was also $184 of cloud spend that bought nothing: the AI's answer to a
 hardware limit was to rent a cluster, which ran the job slower than the laptop
 had.
-
-None of these lessons are advanced. They are what an experienced engineer does
-without thinking about it. The AI didn't, and never told me, because it never
-noticed. Another attempt costs it nothing. Knowing when to stop is still a
-manager's job. Half my spend bought nothing; the other half built a working
-system in 24 days with almost none of my time. Same tool — the difference was
-supervision.
 
 ---
 

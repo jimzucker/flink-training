@@ -144,6 +144,10 @@
     font-size:clamp(34px,5.2vw,58px);line-height:1.03;
     letter-spacing:-.015em;margin:0;text-wrap:balance;
   }
+  .lede-close{
+    margin:0;max-width:72ch;font-size:17px;line-height:1.6;color:#d3d7dc;
+    border-left:3px solid var(--keep);padding-left:16px;
+  }
   .rules{display:flex;flex-direction:column;gap:0}
   .rule{display:flex;gap:20px;padding:18px 0;border-top:1px solid var(--rule);align-items:baseline}
   .rules .rule:last-child{border-bottom:1px solid var(--rule)}
@@ -161,6 +165,8 @@
     <h1>Six rules for letting AI build something.</h1>
     <p class="sub">I let it build the same system 29 times, working alone — 156 test runs over 24 days. It wasted half the budget: 30 of the 55.9 hours produced nothing. Every one of those hours came from breaking one of these — mistakes an inexperienced engineer makes, and I caught every one of them, not the AI.</p>
   </header>
+
+  <p class="lede-close">None of these rules are advanced. They are what an experienced engineer does without thinking about it. The AI didn't, and never told me, because it never noticed. Another attempt costs it nothing. Knowing when to stop is still a manager's job. Half my spend bought nothing; the other half built a working system in 24 days with almost none of my time. Same tool — the difference was supervision.</p>
 
   <section class="rules">
     <div class="rule">
@@ -191,7 +197,6 @@
 
   <article>
     <p>Rule 1 cost the most. 27 of the 30 wasted hours are runs started before the previous problem was understood — AI runs the whole battery on code that is already broken, and it starts with the easiest case, so it takes hours to reach a failure the hardest case would have shown in minutes. There was also $184 of cloud spend that bought nothing: its answer to a hardware limit was to rent a cluster, and the cluster ran the job slower than the laptop had.</p>
-    <p>None of these rules are advanced. They are what an experienced engineer does without thinking about it. The AI didn't, and never told me, because it never noticed. Another attempt costs it nothing. Knowing when to stop is still a manager's job. Half my spend bought nothing; the other half built a working system in 24 days with almost none of my time. Same tool — the difference was supervision.</p>
   </article>
 
   <hr class="div">
