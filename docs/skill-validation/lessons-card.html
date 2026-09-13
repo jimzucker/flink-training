@@ -28,47 +28,60 @@
     justify-content:center;
     padding:28px 20px 44px;
   }
-  .card{
-    width:100%;
-    max-width:1120px;
-    display:flex;
-    flex-direction:column;
-    gap:30px;
-  }
+  .card{width:100%;max-width:1120px;display:flex;flex-direction:column;gap:28px}
 
-  /* ---- head ---- */
-  .eyebrow{
-    font-family:var(--mono);
-    font-size:12px;
-    letter-spacing:.16em;
-    text-transform:uppercase;
-    color:var(--dim);
-    display:flex;
-    flex-wrap:wrap;
-    gap:0 14px;
-  }
-  .eyebrow span::after{content:" ·";color:var(--rule)}
-  .eyebrow span:last-child::after{content:""}
   h1{
     font-family:var(--cond);
     font-weight:700;
-    font-size:clamp(34px,5.2vw,60px);
-    line-height:1.02;
+    font-size:clamp(32px,4.8vw,54px);
+    line-height:1.03;
     letter-spacing:-.015em;
-    margin:10px 0 0;
+    margin:0;
     text-wrap:balance;
   }
-  h1 em{font-style:normal;color:var(--w1)}
   .sub{
     margin:12px 0 0;
-    max-width:62ch;
+    max-width:70ch;
     font-size:16px;
     line-height:1.5;
     color:var(--muted);
   }
 
+  /* ---- the six ---- */
+  .rules{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
+    gap:1px;
+    background:var(--rule);
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+  }
+  .rule{
+    background:var(--ground);
+    padding:15px 20px 16px 0;
+    display:flex;
+    gap:13px;
+    align-items:baseline;
+  }
+  .rules .rule:nth-child(even){padding-left:20px}
+  .rule .n{
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:600;
+    color:var(--w1);
+    font-variant-numeric:tabular-nums;
+    flex:0 0 auto;
+  }
+  .rule .t{
+    font-family:var(--cond);
+    font-size:19px;
+    font-weight:600;
+    line-height:1.25;
+    color:var(--ink);
+  }
+
   /* ---- bar ---- */
-  .meter{display:flex;flex-direction:column;gap:11px}
+  .meter{display:flex;flex-direction:column;gap:10px}
   .split{
     display:flex;
     font-family:var(--mono);
@@ -79,67 +92,22 @@
   .split b{font-weight:500}
   .split .keep{color:var(--keep)}
   .split .lost{color:var(--w1);text-align:right}
-  .bar{
-    display:flex;
-    height:70px;
-    border-radius:3px;
-    overflow:hidden;
-    background:var(--panel);
-  }
+  .bar{display:flex;height:62px;border-radius:3px;overflow:hidden;background:var(--panel)}
   .seg{
-    position:relative;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-family:var(--mono);
-    font-size:14px;
-    font-weight:600;
-    font-variant-numeric:tabular-nums;
-    color:#10120f;
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:14px;font-weight:600;
+    font-variant-numeric:tabular-nums;color:#10120f;
     box-shadow:inset -1px 0 0 rgba(20,22,26,.55);
   }
   .seg:last-child{box-shadow:none}
   .seg.sm{color:transparent}
-  .ticks{
-    display:flex;
+  .caption{
+    margin:0;
     font-family:var(--mono);
-    font-size:11px;
+    font-size:11.5px;
+    line-height:1.5;
     color:var(--dim);
-    font-variant-numeric:tabular-nums;
   }
-  .ticks div{border-left:1px solid var(--rule);padding:5px 0 0 7px}
-  .ticks div:first-child{border-left:0;padding-left:0}
-
-  /* ---- legend ---- */
-  .legend{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(178px,1fr));
-    gap:1px;
-    background:var(--rule);
-    border-top:1px solid var(--rule);
-    border-bottom:1px solid var(--rule);
-  }
-  .item{
-    background:var(--ground);
-    padding:16px 18px 18px 0;
-    display:flex;
-    flex-direction:column;
-    gap:7px;
-  }
-  .item:not(:first-child){padding-left:18px}
-  .hrs{
-    font-family:var(--mono);
-    font-size:27px;
-    font-weight:500;
-    font-variant-numeric:tabular-nums;
-    line-height:1;
-    display:flex;
-    align-items:baseline;
-    gap:5px;
-  }
-  .hrs small{font-size:13px;color:var(--dim);font-weight:400}
-  .what{font-size:13.5px;line-height:1.38;color:var(--muted);max-width:22ch}
-  .chip{width:26px;height:4px;border-radius:2px}
 
   /* ---- footer ---- */
   .foot{
@@ -151,12 +119,7 @@
   }
   .figures{display:flex;flex-wrap:wrap;gap:30px}
   .fig{display:flex;flex-direction:column;gap:5px}
-  .fig .v{
-    font-family:var(--mono);
-    font-size:21px;
-    font-weight:500;
-    font-variant-numeric:tabular-nums;
-  }
+  .fig .v{font-family:var(--mono);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums}
   .fig .k{
     font-family:var(--mono);
     font-size:10.5px;
@@ -164,51 +127,40 @@
     text-transform:uppercase;
     color:var(--dim);
   }
-  .note{
-    margin:14px 0 0;
-    max-width:70ch;
-    font-family:var(--mono);
-    font-size:11.5px;
-    line-height:1.5;
-    color:var(--dim);
-    border-left:2px solid var(--rule);
-    padding-left:11px;
-  }
-  .strap{
-    margin:0;
-    max-width:74ch;
-    font-size:15px;
-    line-height:1.5;
-    color:var(--muted);
-    border-left:3px solid var(--w1);
-    padding-left:14px;
-  }
-  .strap b{color:var(--ink);font-weight:600}
   .kicker{
     font-family:var(--cond);
-    font-size:24px;
+    font-size:23px;
     font-weight:600;
     line-height:1.3;
     max-width:34ch;
     color:var(--ink);
     border-left:3px solid var(--keep);
     padding-left:14px;
+    margin:0;
   }
 </style>
 
 <div class="card">
 
   <header>
-    <h1 style="margin-top:0">Half the work Claude did, I threw away.</h1>
-    <p class="sub">Claude could build the system. What Claude could not recognize was when it was wasting time. A test fails, so Claude runs it again. And again. Brute force, instead of stopping to find out why. The hours below went to five mistakes an inexperienced engineer makes — and I caught every one of them, not Claude.</p>
+    <h1>Six rules for letting AI build something.</h1>
+    <p class="sub">I let it build the same system 29 times, working alone — 156 test runs over 24 days. It wasted half the budget: 30 of the 55.9 hours produced nothing. Every one of those hours came from breaking one of these.</p>
   </header>
+
+  <section class="rules">
+    <div class="rule"><span class="n">1</span><span class="t">Stop at the first failure.</span></div>
+    <div class="rule"><span class="n">2</span><span class="t">Analyze before you experiment.</span></div>
+    <div class="rule"><span class="n">3</span><span class="t">Unit test all changes.</span></div>
+    <div class="rule"><span class="n">4</span><span class="t">When the shape of the data changes, check front to back.</span></div>
+    <div class="rule"><span class="n">5</span><span class="t">Verify initiation of tests and monitor them.</span></div>
+    <div class="rule"><span class="n">6</span><span class="t">If a rule matters, make the tool enforce it.</span></div>
+  </section>
 
   <section class="meter">
     <div class="split">
       <b class="keep" style="flex:25.9">Work I could use — 25.9 h</b>
       <b class="lost" style="flex:30.0">Work I had to throw out — 30.0 h</b>
     </div>
-
     <div class="bar">
       <div class="seg" style="flex:25.9;background:var(--keep)">25.9 h</div>
       <div class="seg" style="flex:16.9;background:var(--w1)">16.9</div>
@@ -217,46 +169,11 @@
       <div class="seg sm" style="flex:2.8;background:var(--w4)">2.8</div>
       <div class="seg sm" style="flex:1.3;background:var(--w5)">1.3</div>
     </div>
-
-    <div class="ticks">
-      <div style="flex:25.9">0 h</div>
-      <div style="flex:30.0">25.9 h</div>
-      <div style="flex:0 0 auto">55.9 h</div>
-    </div>
-  </section>
-
-  <p class="strap"><b>Almost all the wasted time — 27 of the 30 hours — came from one habit.</b> Claude ran the full battery of tests every time, even when the first test had already failed. And it always started with the easiest case, so it took hours to reach the failure that the hardest case would have shown in minutes.</p>
-
-  <section class="legend">
-    <div class="item">
-      <span class="chip" style="background:var(--w1)"></span>
-      <span class="hrs">16.9 <small>h</small></span>
-      <span class="what">Runs that measured the wrong thing</span>
-    </div>
-    <div class="item">
-      <span class="chip" style="background:var(--w2)"></span>
-      <span class="hrs">5.0 <small>h</small></span>
-      <span class="what">Guessing instead of checking the facts</span>
-    </div>
-    <div class="item">
-      <span class="chip" style="background:var(--w3)"></span>
-      <span class="hrs">4.0 <small>h</small></span>
-      <span class="what">A new quality check that rejected good work</span>
-    </div>
-    <div class="item">
-      <span class="chip" style="background:var(--w4)"></span>
-      <span class="hrs">2.8 <small>h</small></span>
-      <span class="what">Waiting on work that had already stopped</span>
-    </div>
-    <div class="item">
-      <span class="chip" style="background:var(--w5)"></span>
-      <span class="hrs">1.3 <small>h</small></span>
-      <span class="what">A whole build lost to an untested rule</span>
-    </div>
+    <p class="caption">The wasted half, left to right: 16.9 h of runs that measured the wrong thing · 5.0 h guessing instead of comparing the configs · 4.0 h on a quality check that rejected good work · 2.8 h waiting on jobs that had already died · 1.3 h on a build lost to that same untested rule.</p>
   </section>
 
   <footer class="foot">
-    <p class="kicker">Another attempt costs Claude nothing. Knowing when to stop is still the manager's job.</p>
+    <p class="kicker">Another attempt costs the AI nothing. Knowing when to stop is still the manager's job.</p>
     <div class="figures">
       <div class="fig"><span class="v">156</span><span class="k">Test runs</span></div>
       <div class="fig"><span class="v">24</span><span class="k">Days</span></div>
