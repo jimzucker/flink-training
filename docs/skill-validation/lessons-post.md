@@ -36,7 +36,9 @@ had.
 None of these lessons are advanced. They are what an experienced engineer does
 without thinking about it. The AI didn't, and never told me, because it never
 noticed. Another attempt costs it nothing. Knowing when to stop is still a
-manager's job.
+manager's job. Half my spend bought nothing; the other half built a working
+system in 24 days with almost none of my time. Same tool — the difference was
+supervision.
 
 ---
 
