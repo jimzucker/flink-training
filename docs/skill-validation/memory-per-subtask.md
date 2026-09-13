@@ -32,7 +32,7 @@ explanations were tested and dropped:
 | candidate | verdict |
 |---|---|
 | broker starved of page cache | real, and a separate guard (#54) — it explained run 14's 1.35×, not the rest |
-| records too light to amortise a fixed parallelism overhead | **refuted** by [run 17](clean-room-run-17.md): light records, 2.7% loss |
+| records too light to amortise a fixed parallelism overhead | **refuted** by [run 17](clean-room/clean-room-run-17.md): light records, 2.7% loss |
 | checkpoint interval | untestable as designed — at 60 s the harness has too few commit boundaries to measure at all |
 | GC alone | 5g against 2560m cut GC 6.3% → 2.7% and bought only 2.9%; the cliff is below 2560m |
 

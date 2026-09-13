@@ -45,8 +45,8 @@ Against the skill's pipelines at the same 4,096 keys and the same instrument:
 | | 2→4 |
 |---|---:|
 | demo code | **1.988** |
-| [run 24](clean-room-run-24.md) | 1.906 |
-| [run 23](clean-room-run-23.md) | 1.793 |
+| [run 24](clean-room/clean-room-run-24.md) | 1.906 |
+| [run 23](clean-room/clean-room-run-23.md) | 1.793 |
 
 The skill's pipelines are roughly **3× faster in absolute throughput** — they
 do less per record — and lose more when the cores double. Both facts are
@@ -55,7 +55,7 @@ measured on the same rig with the same guards.
 **Where the demo's code fails**: at 32,768 symbol keys it is garbage-collection
 bound on this host and cannot be measured at all — one subtask holds every key,
 and four cores would need about 10 GB on a 7.8 GB VM. The skill's
-[run 21](clean-room-run-21.md) ran at that cardinality and reported 1.865×, but
+[run 21](clean-room/clean-room-run-21.md) ran at that cardinality and reported 1.865×, but
 its GC was 13.2% of capacity, so under today's ceiling it would be classified
 the same way. **Neither pipeline can be measured at 32,768 keys on this
 machine.**

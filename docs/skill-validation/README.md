@@ -13,35 +13,35 @@ way to tell them apart.
 
 | run | API | wall | cost | tool calls | 1 core | 4 cores | ratio | TM % of cap at 4 |
 |---|---|---:|---:|---:|---:|---:|---:|---:|
-| [1](clean-room-run-1.md) | DataStream | 2.52 h | $166.58 | 863 | 54,029 | 242,983 | 4.50× | — |
-| [2](clean-room-run-2.md) | DataStream | 1.78 h | $43.74 | 110 | 65,027 | 262,599 | 4.04× | 101% |
-| [3](clean-room-run-3.md) | DataStream | 1.74 h | $36.19 | 113 | 82,452 | 288,220 | 3.50× | 98% |
-| [4](clean-room-run-4.md) | **SQL** | 1.61 h | $35.65 | 141 | 43,437 | 164,393 | 3.78× | 104% |
-| [5](clean-room-run-5.md) | DataStream | 1.47 h | $30.24 | 84 | 71,278 | 201,033 | ~~2.82×~~ | **94%** |
-| [6](clean-room-run-6.md) | DataStream | 1.94 h | $38.20 | 120 | 81,651 | 318,868 | **3.91×** | **100%** |
-| [7](clean-room-run-7.md) | DataStream | **0.92 h** | **$22.63** | 98 | 82,530 | 267,734 | 3.24× | **101%** |
-| [8](clean-room-run-8.md) | DataStream | 1.59 h | $26.39 | 92 | 140,308 | **457,264** | 3.26× | **99%** |
-| [9](clean-room-run-9.md) | DataStream | 2.75 h† | — | — | 69,132 | **267,708** | 3.87× | **99%** |
-| [10](clean-room-run-10.md) | DataStream | 2.32 h‡ | — | 104 | — | 394,315 | — | **99%** |
-| [harness, live 1](clean-room-run-10.md) | DataStream | 0.8 h§ | — | — | — | **438,789** | — | **98%** |
-| [11](clean-room-run-11.md) | DataStream | 1.97 h | — | 708 | — | **718,847** | — | **98%** |
-| [12](clean-room-run-12.md) | DataStream | 4.53 h | — | 106 | 74,126 | **321,408** | 4.34× | **100%** |
-| [13](clean-room-run-13.md) | DataStream | **2.08 h** | — | 74 | 147,795 | **593,531** | 4.02× | **100%** |
-| [14](clean-room-run-14.md)¶ | DataStream | **0.93 h** | — | 54 | 186,468 | 539,902 | *2.90×* | **96%** |
-| [15](clean-room-run-15.md)¶ | DataStream | 1.85 h | — | 155 | 245,934 | **964,912** | *3.92×* | **98%** |
-| [16](clean-room-run-16.md)¶ | DataStream | 1.62 h | — | 77 | 153,525 | 584,031 | *3.80×* | **98%** |
-| [17](clean-room-run-17.md)¶ | DataStream | 1.88 h | — | 187 | 157,216 | **832,233** | *5.29×* | **99%** |
-| [18](clean-room-run-18.md)¶ | DataStream | 1.42 h | — | 47 | 259,267 | **889,406** | *3.43×* | **96%** |
-| [19](clean-room-run-19.md)¶ | DataStream | 2.33 h | — | 107 | 183,791 | 718,137 | *3.91×* | **96%** |
-| [20](clean-room-run-20.md) | DataStream | 2.00 h | — | — | 183,812 | **790,259** | **4.30×** | **100%** |
-| [21](clean-room-run-21.md) | DataStream | 1.82 h | — | 88 | 198,906 | 726,636 | 3.65× | **98%** |
-| [22](clean-room-run-22.md) | DataStream | 1.28 h | — | 389 | — | — | **no table** | — |
-| [23](clean-room-run-23.md) | DataStream | 1.78 h | — | 72 | 178,387 | 668,253 | 3.75× | **100%** |
-| [24](clean-room-run-24.md) | DataStream | 2.68 h | — | 87 | 130,179 | 506,286 | 3.89× | **98%** |
-| [25](clean-room-run-25.md) | DataStream | 1.87 h | — | — | 220,719 | **913,312** | 4.14× | **96%** |
-| [26](clean-room-run-26.md) | DataStream | 1.67 h | — | 67 | 139,255 | 540,772 | 3.88× | **100%** |
-| [27](clean-room-run-27.md)† | DataStream | 2.13 h | — | 115 | 108,886 | 489,595 | 4.50× | **100%** |
-| [28](clean-room-run-28.md)† | DataStream | 2.65 h | — | 103 | 186,252 | **757,704** | 4.07× | **100%** |
+| [1](clean-room/clean-room-run-1.md) | DataStream | 2.52 h | $166.58 | 863 | 54,029 | 242,983 | 4.50× | — |
+| [2](clean-room/clean-room-run-2.md) | DataStream | 1.78 h | $43.74 | 110 | 65,027 | 262,599 | 4.04× | 101% |
+| [3](clean-room/clean-room-run-3.md) | DataStream | 1.74 h | $36.19 | 113 | 82,452 | 288,220 | 3.50× | 98% |
+| [4](clean-room/clean-room-run-4.md) | **SQL** | 1.61 h | $35.65 | 141 | 43,437 | 164,393 | 3.78× | 104% |
+| [5](clean-room/clean-room-run-5.md) | DataStream | 1.47 h | $30.24 | 84 | 71,278 | 201,033 | ~~2.82×~~ | **94%** |
+| [6](clean-room/clean-room-run-6.md) | DataStream | 1.94 h | $38.20 | 120 | 81,651 | 318,868 | **3.91×** | **100%** |
+| [7](clean-room/clean-room-run-7.md) | DataStream | **0.92 h** | **$22.63** | 98 | 82,530 | 267,734 | 3.24× | **101%** |
+| [8](clean-room/clean-room-run-8.md) | DataStream | 1.59 h | $26.39 | 92 | 140,308 | **457,264** | 3.26× | **99%** |
+| [9](clean-room/clean-room-run-9.md) | DataStream | 2.75 h† | — | — | 69,132 | **267,708** | 3.87× | **99%** |
+| [10](clean-room/clean-room-run-10.md) | DataStream | 2.32 h‡ | — | 104 | — | 394,315 | — | **99%** |
+| [harness, live 1](clean-room/clean-room-run-10.md) | DataStream | 0.8 h§ | — | — | — | **438,789** | — | **98%** |
+| [11](clean-room/clean-room-run-11.md) | DataStream | 1.97 h | — | 708 | — | **718,847** | — | **98%** |
+| [12](clean-room/clean-room-run-12.md) | DataStream | 4.53 h | — | 106 | 74,126 | **321,408** | 4.34× | **100%** |
+| [13](clean-room/clean-room-run-13.md) | DataStream | **2.08 h** | — | 74 | 147,795 | **593,531** | 4.02× | **100%** |
+| [14](clean-room/clean-room-run-14.md)¶ | DataStream | **0.93 h** | — | 54 | 186,468 | 539,902 | *2.90×* | **96%** |
+| [15](clean-room/clean-room-run-15.md)¶ | DataStream | 1.85 h | — | 155 | 245,934 | **964,912** | *3.92×* | **98%** |
+| [16](clean-room/clean-room-run-16.md)¶ | DataStream | 1.62 h | — | 77 | 153,525 | 584,031 | *3.80×* | **98%** |
+| [17](clean-room/clean-room-run-17.md)¶ | DataStream | 1.88 h | — | 187 | 157,216 | **832,233** | *5.29×* | **99%** |
+| [18](clean-room/clean-room-run-18.md)¶ | DataStream | 1.42 h | — | 47 | 259,267 | **889,406** | *3.43×* | **96%** |
+| [19](clean-room/clean-room-run-19.md)¶ | DataStream | 2.33 h | — | 107 | 183,791 | 718,137 | *3.91×* | **96%** |
+| [20](clean-room/clean-room-run-20.md) | DataStream | 2.00 h | — | — | 183,812 | **790,259** | **4.30×** | **100%** |
+| [21](clean-room/clean-room-run-21.md) | DataStream | 1.82 h | — | 88 | 198,906 | 726,636 | 3.65× | **98%** |
+| [22](clean-room/clean-room-run-22.md) | DataStream | 1.28 h | — | 389 | — | — | **no table** | — |
+| [23](clean-room/clean-room-run-23.md) | DataStream | 1.78 h | — | 72 | 178,387 | 668,253 | 3.75× | **100%** |
+| [24](clean-room/clean-room-run-24.md) | DataStream | 2.68 h | — | 87 | 130,179 | 506,286 | 3.89× | **98%** |
+| [25](clean-room/clean-room-run-25.md) | DataStream | 1.87 h | — | — | 220,719 | **913,312** | 4.14× | **96%** |
+| [26](clean-room/clean-room-run-26.md) | DataStream | 1.67 h | — | 67 | 139,255 | 540,772 | 3.88× | **100%** |
+| [27](clean-room/clean-room-run-27.md)† | DataStream | 2.13 h | — | 115 | 108,886 | 489,595 | 4.50× | **100%** |
+| [28](clean-room/clean-room-run-28.md)† | DataStream | 2.65 h | — | 103 | 186,252 | **757,704** | 4.07× | **100%** |
 
 Human time was **0 h** and human prompts **1** in every row.
 
@@ -77,7 +77,7 @@ passes), one suite, ten of ten passes accepted, the sentinel measured (−2.5%),
 chain 57.7 min and the whole run **2 h 05 m** — the first run on the shipped
 harness to come in under its own clock. The step-ratio criterion became
 one-sided (≥ 1.85) on that run, after its 2.17× was seen; the page says so.
-[Run 13](clean-room-run-13.md) has the criteria and the two things it
+[Run 13](clean-room/clean-room-run-13.md) has the criteria and the two things it
 measured and did not explain.
 
 Run 14 asked the same question the way a user in a hurry would: one pass per
@@ -129,7 +129,7 @@ subtasks, so the 4-core case ran on a quarter of what each 2-core subtask had.
 18's build — flat 2048m read 1.645× with GC at 9.3%, the memory it needed read
 1.910× with GC at 2.3%, and the 2-core figure did not move. #62 made memory per
 subtask, #63 added the fixed base term after per-core scaling starved the
-1-core case. [Run 20](clean-room-run-20.md) is the first run after the fix:
+1-core case. [Run 20](clean-room/clean-room-run-20.md) is the first run after the fix:
 **2→4 = 1.930×** with spreads of 1.1% and 1.9%, against 2.100× on the rig.
 
 Run 11 is the first clean-room run on the shipped harness: **one suite, 2→4 = 1.87×** (1.75–2.06× across passes; spread 4.0% / 12.2%), no harness written. Its 4-core figure is trades/s. The wall clock missed a 1.5 h criterion on a rebuild that re-ran the gates and an optional ceiling run; the suite itself was 23 minutes.

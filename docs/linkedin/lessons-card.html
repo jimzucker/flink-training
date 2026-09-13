@@ -1,0 +1,185 @@
+<title>Where the 56 Hours Went</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ground:#14161a;
+    --panel:#1a1d23;
+    --rule:#2b3039;
+    --ink:#e9eaee;
+    --muted:#8b919b;
+    --dim:#636974;
+    --keep:#4fa3a5;
+    --w1:#cf7040;
+    --w2:#bd643d;
+    --w3:#a95939;
+    --w4:#944f36;
+    --w5:#7d4533;
+    --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --cond:"IBM Plex Sans Condensed","IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--sans);
+    display:flex;
+    justify-content:center;
+    padding:28px 20px 44px;
+  }
+  .card{width:100%;max-width:1120px;display:flex;flex-direction:column;gap:28px}
+
+  h1{
+    font-family:var(--cond);
+    font-weight:700;
+    font-size:clamp(32px,4.8vw,54px);
+    line-height:1.03;
+    letter-spacing:-.015em;
+    margin:0;
+    text-wrap:balance;
+  }
+  .sub{
+    margin:12px 0 0;
+    max-width:70ch;
+    font-size:16px;
+    line-height:1.5;
+    color:var(--muted);
+  }
+
+  /* ---- the six ---- */
+  .rules{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(310px,1fr));
+    gap:1px;
+    background:var(--rule);
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+  }
+  .rule{
+    background:var(--ground);
+    padding:15px 20px 16px 0;
+    display:flex;
+    gap:13px;
+    align-items:baseline;
+  }
+  .rules .rule:nth-child(even){padding-left:20px}
+  .rule .n{
+    font-family:var(--mono);
+    font-size:12px;
+    font-weight:600;
+    color:var(--w1);
+    font-variant-numeric:tabular-nums;
+    flex:0 0 auto;
+  }
+  .rule .t{
+    font-family:var(--cond);
+    font-size:19px;
+    font-weight:600;
+    line-height:1.25;
+    color:var(--ink);
+  }
+
+  /* ---- bar ---- */
+  .meter{display:flex;flex-direction:column;gap:10px}
+  .split{
+    display:flex;
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+  }
+  .split b{font-weight:500}
+  .split .keep{color:var(--keep)}
+  .split .lost{color:var(--w1);text-align:right}
+  .bar{display:flex;height:62px;border-radius:3px;overflow:hidden;background:var(--panel)}
+  .seg{
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);font-size:14px;font-weight:600;
+    font-variant-numeric:tabular-nums;color:#10120f;
+    box-shadow:inset -1px 0 0 rgba(20,22,26,.55);
+  }
+  .seg:last-child{box-shadow:none}
+  .seg.sm{color:transparent}
+  .caption{
+    margin:0;
+    font-family:var(--mono);
+    font-size:11.5px;
+    line-height:1.5;
+    color:var(--dim);
+  }
+
+  /* ---- footer ---- */
+  .foot{
+    display:flex;
+    flex-wrap:wrap;
+    gap:20px 56px;
+    align-items:flex-end;
+    justify-content:space-between;
+  }
+  .figures{display:flex;flex-wrap:wrap;gap:30px}
+  .fig{display:flex;flex-direction:column;gap:5px}
+  .fig .v{font-family:var(--mono);font-size:21px;font-weight:500;font-variant-numeric:tabular-nums}
+  .fig .k{
+    font-family:var(--mono);
+    font-size:10.5px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--dim);
+  }
+  .kicker{
+    font-family:var(--cond);
+    font-size:23px;
+    font-weight:600;
+    line-height:1.3;
+    max-width:34ch;
+    color:var(--ink);
+    border-left:3px solid var(--keep);
+    padding-left:14px;
+    margin:0;
+  }
+</style>
+
+<div class="card">
+
+  <header>
+    <h1>Six rules for letting AI build something.</h1>
+    <p class="sub">I let it build the same system 29 times, working alone — 156 test runs over 24 days. It wasted half the budget: 30 of the 55.9 hours produced nothing. Every one of those hours came from breaking one of these — mistakes an inexperienced engineer makes, and I caught every one of them, not the AI.</p>
+  </header>
+
+  <section class="rules">
+    <div class="rule"><span class="n">1</span><span class="t">Stop at the first failure.</span></div>
+    <div class="rule"><span class="n">2</span><span class="t">Analyze before you experiment.</span></div>
+    <div class="rule"><span class="n">3</span><span class="t">Unit test all changes.</span></div>
+    <div class="rule"><span class="n">4</span><span class="t">When the shape of the data changes, check front to back.</span></div>
+    <div class="rule"><span class="n">5</span><span class="t">Verify initiation of tests and monitor them.</span></div>
+    <div class="rule"><span class="n">6</span><span class="t">If a rule matters, make the tool enforce it.</span></div>
+  </section>
+
+  <section class="meter">
+    <div class="split">
+      <b class="keep" style="flex:25.9">Work I could use — 25.9 h</b>
+      <b class="lost" style="flex:30.0">Work I had to throw out — 30.0 h</b>
+    </div>
+    <div class="bar">
+      <div class="seg" style="flex:25.9;background:var(--keep)">25.9 h</div>
+      <div class="seg" style="flex:16.9;background:var(--w1)">16.9</div>
+      <div class="seg" style="flex:5.0;background:var(--w2)">5.0</div>
+      <div class="seg" style="flex:4.0;background:var(--w3)">4.0</div>
+      <div class="seg sm" style="flex:2.8;background:var(--w4)">2.8</div>
+      <div class="seg sm" style="flex:1.3;background:var(--w5)">1.3</div>
+    </div>
+    <p class="caption">The wasted half, left to right: 16.9 h of runs that measured the wrong thing · 5.0 h guessing instead of comparing the configs · 4.0 h on a quality check that rejected good work · 2.8 h waiting on jobs that had already died · 1.3 h on a build lost to that same untested rule.</p>
+  </section>
+
+  <footer class="foot">
+    <p class="kicker">Another attempt costs the AI nothing. Knowing when to stop is still the manager's job.</p>
+    <div class="figures">
+      <div class="fig"><span class="v">156</span><span class="k">Test runs</span></div>
+      <div class="fig"><span class="v">24</span><span class="k">Days</span></div>
+      <div class="fig"><span class="v">55.9 h</span><span class="k">Computer time</span></div>
+      <div class="fig"><span class="v">$184</span><span class="k">Cloud spend, wasted</span></div>
+    </div>
+  </footer>
+
+</div>

@@ -6,7 +6,7 @@ here is the skill's best time when nothing has to be re-run:
 `prove.py all --quick` — cases 1, 2 and 4, one pass each, the sentinel
 repeating the baseline at the end — on the harness at #50.
 
-Same conditions as [runs 1–13](README.md): fresh agent, empty directory
+Same conditions as [runs 1–13](../README.md): fresh agent, empty directory
 (`flink-skill-test-15`; the 14 directory was consumed by two abandoned
 attempts), barred from this repository and every other test directory, one
 prompt, no human input.

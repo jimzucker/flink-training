@@ -2,7 +2,7 @@
 
 The run plan 12 was written for: `prove.py all` from the shipped harness, three
 cases so both steps are measured, and criteria written before launch. Same
-conditions as [runs 1–11](README.md): fresh agent, empty directory, barred
+conditions as [runs 1–11](../README.md): fresh agent, empty directory, barred
 from this repository, every earlier test directory and the preserved results,
 allowed only the skill directory (SKILL.md and `harness/`), one prompt, no
 human input. The prompt is run 11's with one change: the headline is the two

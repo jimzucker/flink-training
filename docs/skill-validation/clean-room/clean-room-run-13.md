@@ -2,7 +2,7 @@
 
 Run 12 with one number changed in the harness: the baseline cap floor, 98% →
 95%, the floor every other case already used. Same conditions as
-[runs 1–12](README.md): fresh agent, empty directory, barred from this
+[runs 1–12](../README.md): fresh agent, empty directory, barred from this
 repository, every earlier test directory and the preserved results, allowed
 only the skill directory (SKILL.md and `harness/`), run 12's prompt verbatim,
 no human input.

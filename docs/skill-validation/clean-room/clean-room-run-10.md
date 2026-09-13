@@ -2,7 +2,7 @@
 
 The second run against the short skill, with the spread guard re-scoped after
 [run 9](clean-room-run-9.md) — a data refusal now voids the case, not the
-suite. Same conditions as [runs 1–9](README.md): fresh agent, empty directory,
+suite. Same conditions as [runs 1–9](../README.md): fresh agent, empty directory,
 barred from this repository, every earlier test directory and the preserved
 results, only the skill, one prompt, no human input. DataStream pinned; the
 prompt asked for the 2→4 step ratio with its spread as the headline.
@@ -67,7 +67,7 @@ which is why the two runs cannot be compared and why neither could be trusted
 to be stable on the next.
 
 So the harness now ships with the skill —
-[`harness/`](../../.claude/skills/prove-it-scales/harness/README.md) — as
+[`harness/`](../../../.claude/skills/prove-it-scales/harness/README.md) — as
 code: the sampler, the preflight, the tiny proof, the completeness run, the
 suite, every guard with a self-test, and the thresholds with the measurement
 each was set from. `prove.py replay` re-derives the recorded suites against
@@ -83,7 +83,7 @@ too short, a self-test aimed at a topic that did not exist, and a
 completeness backlog one checkpoint interval long so the kill could not land
 where it was asked. Every one of those would have been a refusal a fresh
 agent went off to explain. Then, with nothing else changed, the suite
-([`harness-live-1/`](harness-live-1/suite.md)):
+([`harness-live-1/`](../harness-live-1/suite.md)):
 
 | cores | p1-asc | p2-desc | p3-asc | mean | spread | % of cap |
 |---:|---:|---:|---:|---:|---:|---:|

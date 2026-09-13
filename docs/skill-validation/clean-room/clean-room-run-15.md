@@ -6,7 +6,7 @@ not have: a case is refused if the broker hit its container memory limit
 inside the measurement window.
 
 Run 14 reported **2→4 = 1.35×**. That number was measured on a starved
-broker; the diagnosis is in [rig-2026-09-05-broker.md](rig-2026-09-05-broker.md)
+broker; the diagnosis is in [rig-2026-09-05-broker.md](../rig-2026-09-05-broker.md)
 and the fix in #54. This run asks whether the skill, unaided, now either
 avoids the trap or is refused by it — and what the step ratios read when the
 worker really is the constraint.
@@ -62,7 +62,7 @@ Nothing — which is the point. The agent read the skill, sized the broker at
 every case. [Run 14](clean-room-run-14.md) shipped 2 GiB and published a
 1.35× off a starved 4-core case; with the broker fed, the same step here
 reads 1.836×, and the controlled re-measurement of run 14's own build read
-1.725× ([diagnosis](rig-2026-09-05-broker.md)).
+1.725× ([diagnosis](../rig-2026-09-05-broker.md)).
 
 ## Measured, not explained
 

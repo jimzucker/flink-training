@@ -18,7 +18,7 @@ run 15 landed, and does the whole run come in clean this time.
 | sentinel measured, drift reported | −3.1% (15) |
 | table stamped unpublishable | `quickLook` / `publishable: false` (15) |
 | ratios (recorded, not judged) | 1→2 = 2.137×, 2→4 = 1.836× (15) |
-| **stability**: each step ratio within the run-to-run spread the record already carries | 1→2 has read 2.01–2.17× across runs 12–15; 2→4 has read 1.35–2.15×, and 1.35× is now explained ([broker](rig-2026-09-05-broker.md)). A 2→4 outside 1.72–1.85× is the finding |
+| **stability**: each step ratio within the run-to-run spread the record already carries | 1→2 has read 2.01–2.17× across runs 12–15; 2→4 has read 1.35–2.15×, and 1.35× is now explained ([broker](../rig-2026-09-05-broker.md)). A 2→4 outside 1.72–1.85× is the finding |
 
 Each agent builds its own pipeline, so absolute rates are not comparable
 between runs; the ratios and the clock are.
@@ -65,7 +65,7 @@ pipeline, so only the ratios and the clock compare:
 | broker limit hits | not measured | 0 | 0 |
 
 † measured on a starved broker; the cause is in
-[rig-2026-09-05-broker.md](rig-2026-09-05-broker.md) and is now a guard.
+[rig-2026-09-05-broker.md](../rig-2026-09-05-broker.md) and is now a guard.
 
 With the broker guard live, the two runs that have it read 2→4 within
 **1.5%** of each other (1.836× and 1.809×) and 1→2 within 3.6%. The chain

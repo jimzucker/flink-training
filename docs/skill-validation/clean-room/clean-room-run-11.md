@@ -2,7 +2,7 @@
 
 The first run after the harness moved from prose into code
 ([run 10](clean-room-run-10.md) is why). Same conditions as
-[runs 1–10](README.md): fresh agent, empty directory, barred from this
+[runs 1–10](../README.md): fresh agent, empty directory, barred from this
 repository, every earlier test directory and the preserved results, allowed
 only the skill directory — now SKILL.md *and* `harness/` — one prompt, no human
 input. DataStream pinned; the prompt asked for the 2→4 step ratio with its

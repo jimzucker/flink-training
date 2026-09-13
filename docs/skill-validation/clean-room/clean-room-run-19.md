@@ -59,7 +59,7 @@ moving faster than the effects.
 That last observation is what sent the next day's work at the memory contract:
 the "more worker memory" arm was pointing at the right thing and could not be
 resolved against the drift. The controlled version, interleaved so drift
-cancels, is in [memory-per-subtask](memory-per-subtask.md), and it found the
+cancels, is in [memory-per-subtask](../memory-per-subtask.md), and it found the
 4-core case was starved of heap — flat 2048m read 2→4 = 1.645× against 1.910×
 with the memory it needed.
 
