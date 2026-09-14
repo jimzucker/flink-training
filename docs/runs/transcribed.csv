@@ -1,0 +1,85 @@
+study,run,suite,variant,cores,parallelism,pass,status,input_rate,input_unit,output_rate,output_unit,elapsed_s,tm_cores,tm_cap_frac,kafka_cores,kafka_cap,kafka_cap_frac,busy_frac,backpressure_frac,checkpoint_ms,started_at,source_file,notes
+clean-room,1,suite,,1,,,,54029,trades/s,,,,0.99,,0.32,2,,,,,,docs/skill-validation/clean-room/clean-room-run-1.md,one published value per case
+clean-room,1,suite,,2,,,,128007,trades/s,,,,2.00,,0.55,,,,,,,docs/skill-validation/clean-room/clean-room-run-1.md,one published value per case
+clean-room,1,suite,,3,,,,179827,trades/s,,,,3.01,,0.61,,,,,,,docs/skill-validation/clean-room/clean-room-run-1.md,one published value per case
+clean-room,1,suite,,4,,,,242983,trades/s,,,,4.02,,0.64,,,,,,,docs/skill-validation/clean-room/clean-room-run-1.md,one published value per case
+clean-room,2,suite,,1,,,,65027,orders/s,,,,0.99,0.99,0.08,2,,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,one published value per case
+clean-room,2,suite,,2,,,,130290,orders/s,,,,2.02,1.01,0.19,,,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,one published value per case
+clean-room,2,suite,,3,,,,203914,orders/s,,,,2.99,1.00,0.23,,,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,one published value per case
+clean-room,2,suite,,4,,,,262599,orders/s,,,,4.03,1.01,0.31,,,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,one published value per case
+clean-room,2,broker-squeeze,broker cap 2.00,4,,,,262599,orders/s,,,,4.03,,,2.00,0.16,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,
+clean-room,2,broker-squeeze,broker cap 1.00,4,,,,273953,orders/s,,,,4.03,,,1.00,0.31,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,
+clean-room,2,broker-squeeze,broker cap 0.50,4,,,,272180,orders/s,,,,4.02,,,0.50,0.56,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,
+clean-room,2,broker-squeeze,broker cap 0.25,4,,,,229806,orders/s,,,,4.00,,,0.25,1.00,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,
+clean-room,2,broker-squeeze,broker cap 0.15,4,,,,134811,orders/s,,,,3.30,,,0.15,1.00,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,
+clean-room,2,broker-squeeze,broker cap 0.10,4,,,REFUSED,,orders/s,,,,,,,0.10,,,,,,docs/skill-validation/clean-room/clean-room-run-2.md,refused; no rate published
+clean-room,3,suite,,1,,,,82452,trades/s,824518,position updates/s,,0.98,,0.42,,,,0.54,,,docs/skill-validation/clean-room/clean-room-run-3.md,one published value per case
+clean-room,3,suite,,2,,,,128425,trades/s,1284254,position updates/s,,1.80,,0.84,,,,0.44,,,docs/skill-validation/clean-room/clean-room-run-3.md,one published value per case
+clean-room,3,suite,,4,,,,288220,trades/s,2882207,position updates/s,,3.90,,0.75,,,,0.24,,,docs/skill-validation/clean-room/clean-room-run-3.md,one published value per case
+clean-room,4,suite,,1,,,,43437,orders/s,221295,allocations/s,,1.00,,,,,1.00,0.00,,,docs/skill-validation/clean-room/clean-room-run-4.md,SQL API; one published value per case
+clean-room,4,suite,,2,,,,92268,orders/s,471425,allocations/s,,2.00,,,,,1.00,0.00,,,docs/skill-validation/clean-room/clean-room-run-4.md,SQL API; one published value per case
+clean-room,4,suite,,4,,,,164393,orders/s,856510,allocations/s,,4.14,,,,,1.00,0.00,,,docs/skill-validation/clean-room/clean-room-run-4.md,SQL API; one published value per case
+clean-room,5,suite,,1,1,,,71278,orders/s,,,,1.00,1.00,0.92,8.0,,0.934,0.376,,,docs/skill-validation/clean-room/clean-room-run-5.md,one published value per case
+clean-room,5,suite,,2,2,,,139113,orders/s,,,,2.00,1.00,1.07,8.0,,0.937,0.365,,,docs/skill-validation/clean-room/clean-room-run-5.md,one published value per case
+clean-room,5,suite,,3,3,,,167804,orders/s,,,,2.91,0.97,1.06,8.0,,0.970,0.465,,,docs/skill-validation/clean-room/clean-room-run-5.md,one published value per case
+clean-room,5,suite,,4,4,,,201033,orders/s,,,,3.78,0.94,1.19,8.0,,0.954,0.436,,,docs/skill-validation/clean-room/clean-room-run-5.md,one published value per case; below the 95% cap floor
+clean-room,5,broker-squeeze,broker cap 2.0,4,,,,234809,orders/s,,,,3.79,,,2.0,,,0.354,,,docs/skill-validation/clean-room/clean-room-run-5.md,
+clean-room,5,broker-squeeze,broker cap 1.0,4,,,,198670,orders/s,,,,3.78,,,1.0,,,0.427,,,docs/skill-validation/clean-room/clean-room-run-5.md,
+clean-room,5,broker-squeeze,broker cap 0.5,4,,,,119828,orders/s,,,,3.21,,,0.5,,,0.681,,,docs/skill-validation/clean-room/clean-room-run-5.md,
+clean-room,6,suite,,1,1,asc,,81651,blocks/s,,,,,1.000,,,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,TM % of cap is published once per case; recorded on the asc row
+clean-room,6,suite,,1,1,desc,,85460,blocks/s,,,,,,,,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,
+clean-room,6,suite,,2,2,asc,,182025,blocks/s,,,,,0.999,,,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,TM % of cap is published once per case; recorded on the asc row
+clean-room,6,suite,,2,2,desc,,161299,blocks/s,,,,,,,,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,
+clean-room,6,suite,,3,3,asc,,223091,blocks/s,,,,,0.997,,,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,TM % of cap is published once per case; recorded on the asc row
+clean-room,6,suite,,3,3,desc,,196982,blocks/s,,,,,,,,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,
+clean-room,6,suite,,4,4,asc,,318868,blocks/s,,,,,1.000,0.70,8,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,TM % of cap is published once per case; broker cores from the window table (60 s window)
+clean-room,6,suite,,4,4,desc,,315977,blocks/s,,,,,,,,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,
+clean-room,6,broker-squeeze,broker cap 2.0,4,4,,,306567,blocks/s,,,,,0.999,,2.0,0.384,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,
+clean-room,6,broker-squeeze,broker cap 1.0,4,4,,,323765,blocks/s,,,,,0.992,,1.0,0.651,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,
+clean-room,6,broker-squeeze,broker cap 0.5,4,4,,,253604,blocks/s,,,,,0.950,,0.5,0.956,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,
+clean-room,6,window-length,190 s window,4,4,,,229469,blocks/s,,,,,0.942,0.48,8,,,,,,docs/skill-validation/clean-room/clean-room-run-6.md,same case as the 60 s window row; longer window
+clean-room,7,suite,,1,1,,,82530,trades/s,825294,output records/s,,,1.00,,,,,0.0,,,docs/skill-validation/clean-room/clean-room-run-7.md,one published value per case; vantage disagreement 0.00%
+clean-room,7,suite,,2,2,,,138280,trades/s,1384025,output records/s,,,1.00,,,,,0.0,,,docs/skill-validation/clean-room/clean-room-run-7.md,one published value per case; vantage disagreement 0.09%
+clean-room,7,suite,,3,3,,,178089,trades/s,1783553,output records/s,,,1.02,,,,,0.0,,,docs/skill-validation/clean-room/clean-room-run-7.md,one published value per case; vantage disagreement 0.15%
+clean-room,7,suite,,4,4,,,267734,trades/s,2681017,output records/s,,,1.01,,,,,0.0,,,docs/skill-validation/clean-room/clean-room-run-7.md,one published value per case; vantage disagreement 0.14%
+clean-room,8,suite,,1,1,,,140308,blocks/s,1392525,output records/s,,0.99,0.989,0.15,,,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,one published value per case; internal back-pressure 50-57%; sink back-pressure 0.0
+clean-room,8,suite,,2,2,,,255280,blocks/s,2528446,output records/s,,,,0.36,,,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,one published value per case; TM used 1.94-1.98; 96.8-98.8% of cap; internal back-pressure 36-42%
+clean-room,8,suite,,3,3,,,351299,blocks/s,3498305,output records/s,,,,0.47,,,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,one published value per case; TM used 2.96-2.99; 98.8-99.8% of cap; internal back-pressure 32-39%
+clean-room,8,suite,,4,4,,,457264,blocks/s,4549596,output records/s,,,,0.60,,,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,one published value per case; TM used 3.97-3.99; 99.3-99.8% of cap; internal back-pressure 34-41%
+clean-room,8,naive-baseline,1 vertex fully chained no shuffle,1,1,,,211533,blocks/s,,,,,,,,,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,job graph differs from every other case; not comparable
+clean-room,8,broker-squeeze,broker cap 2.0,4,4,,,400043,blocks/s,,,,,0.996,0.55,2.0,0.28,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,
+clean-room,8,broker-squeeze,broker cap 1.0,4,4,,,435514,blocks/s,,,,,0.969,0.58,1.0,0.58,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,
+clean-room,8,broker-squeeze,broker cap 0.5,4,4,,,378403,blocks/s,,,,,0.981,0.46,0.5,0.92,,,,,docs/skill-validation/clean-room/clean-room-run-8.md,
+step,step-10,catchup,laptop uncapped,,1,,,153846,orders/s,,,52,,,,,,1.00,0.36,11,2026-08-24T14:16:22Z,docs/steps/step-10/catchup.txt,8M-order backlog drained with producer stopped; busy and back-pressure are peaks
+step,step-10,catchup,laptop uncapped,,2,,,166666,orders/s,,,48,,,,,,1.00,0.47,41,2026-08-24T14:16:22Z,docs/steps/step-10/catchup.txt,8M-order backlog drained with producer stopped; busy and back-pressure are peaks
+step,step-10,catchup,laptop uncapped,,4,,,173913,orders/s,,,46,,,,,,1.00,0.66,78,2026-08-24T14:16:22Z,docs/steps/step-10/catchup.txt,8M-order backlog drained with producer stopped; busy and back-pressure are peaks
+step,step-10,paired,4M backlog,1,1,,,148148,orders/s,,,27,,,,,,,0.42,,2026-08-24T14:36:19Z,docs/steps/step-10/paired.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired,4M backlog,2,2,,,190476,orders/s,,,21,,,,,,,0.52,,2026-08-24T14:36:19Z,docs/steps/step-10/paired.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired,4M backlog,4,4,,,173913,orders/s,,,23,,,,,,,0.87,,2026-08-24T14:36:19Z,docs/steps/step-10/paired.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-rep1,4M backlog,2,2,,,200000,orders/s,,,20,,,,,,,0.50,,2026-08-25T09:00:37Z,docs/steps/step-10/paired-rep1.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-rep1,4M backlog,4,4,,,173913,orders/s,,,23,,,,,,,0.89,,2026-08-25T09:00:37Z,docs/steps/step-10/paired-rep1.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-rep2,4M backlog,2,2,,,200000,orders/s,,,20,,,,,,,0.56,,2026-08-25T09:03:45Z,docs/steps/step-10/paired-rep2.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-rep2,4M backlog,4,4,,,173913,orders/s,,,23,,,,,,,0.92,,2026-08-25T09:03:45Z,docs/steps/step-10/paired-rep2.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-rep3,4M backlog,2,2,,,173913,orders/s,,,23,,,,,,,0.49,,2026-08-25T09:06:54Z,docs/steps/step-10/paired-rep3.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-rep3,4M backlog,4,4,,,173913,orders/s,,,23,,,,,,,0.92,,2026-08-25T09:06:54Z,docs/steps/step-10/paired-rep3.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-big1,12M backlog,2,2,,,200000,orders/s,,,60,,,,,,,0.53,,2026-08-25T09:10:23Z,docs/steps/step-10/paired-big1.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-big1,12M backlog,4,4,,,181818,orders/s,,,66,,,,,,,0.80,,2026-08-25T09:10:23Z,docs/steps/step-10/paired-big1.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-big2,12M backlog,2,2,,,206896,orders/s,,,58,,,,,,,0.54,,2026-08-25T09:16:14Z,docs/steps/step-10/paired-big2.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-1v2-1,12M backlog,1,1,,,157894,orders/s,,,76,,,,,,,0.48,,2026-08-25T09:34:07Z,docs/steps/step-10/paired-1v2-1.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-1v2-1,12M backlog,2,2,,,193548,orders/s,,,62,,,,,,,0.59,,2026-08-25T09:34:07Z,docs/steps/step-10/paired-1v2-1.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,paired-1v2-2,12M backlog,1,1,,,166666,orders/s,,,72,,,,,,,0.47,,2026-08-25T09:40:10Z,docs/steps/step-10/paired-1v2-2.txt,cores = partitions = parallelism; back-pressure is peak
+step,step-10,saturation,offered 315854/s,,4,,SATURATED,37419,orders/s,,,91,,,,,,1.00,0.55,,,docs/steps/step-10/saturation.txt,live generators not a drain; rate is sustained under offered load; lag diverging
+step,step-10,saturation,offered 309012/s,,2,,SATURATED,43300,orders/s,,,99,,,,,,0.98,0.42,,,docs/steps/step-10/saturation.txt,live generators not a drain; rate is sustained under offered load; lag diverging
+step,step-11,aws-drain-p4,AWS c5.2xlarge client; 3x kafka.m5.xlarge,,4,,,83031,orders/s,415155,records written/s,1068,6.27,,0.66,,,,,1000,2026-08-26T02:03:39Z,docs/steps/step-11/aws-drain-p4.txt,88678174 orders; 4 partitions; task manager 627% of 800% (8 vCPU); client CPU 92% user; broker cores summed across three brokers
+step,step-11,aws-drain-p16,AWS; 3x kafka.m5.xlarge,,16,,,208654,orders/s,1043270,records written/s,425,,,,,,,,10000,2026-08-26T02:57:03Z,docs/steps/step-11/aws-drain-p16.txt,88678174 orders; 16 partitions; 32 slots; client instance not stated in log; no CPU figures
+step,step-11,aws-drain-p8,AWS; 3x kafka.m5.xlarge,,8,,,260053,orders/s,1300265,records written/s,341,,,,,,,,10000,2026-08-26T03:08:05Z,docs/steps/step-11/aws-drain-p8.txt,88678174 orders; 16 partitions; 16 slots; client instance not stated in log; no CPU figures
+step,step-12,units,laptop,1,1,,,30505,orders/s,,,60,1.00,,0.10,,,,0.241,5000,2026-08-27T10:42:50Z,docs/steps/step-12/units.txt,50M-order backlog; 8 partitions; 60 s window after 240 s warm-up
+step,step-12,units,laptop,2,2,,,65721,orders/s,,,60,2.00,,0.25,,,,0.285,5000,2026-08-27T10:42:50Z,docs/steps/step-12/units.txt,50M-order backlog; 8 partitions; 60 s window after 240 s warm-up
+step,step-12,units,laptop,4,4,,,129056,orders/s,,,60,3.94,,0.39,,,,0.516,5000,2026-08-27T10:42:50Z,docs/steps/step-12/units.txt,50M-order backlog; 8 partitions; 60 s window after 240 s warm-up
+step,step-12,units,laptop,8,8,,,151969,orders/s,,,60,4.98,,0.48,,,,0.727,5000,2026-08-27T10:42:50Z,docs/steps/step-12/units.txt,50M-order backlog; 8 partitions; 60 s window after 240 s warm-up; ceiling
+step,step-12,units-aws,AWS c7i.4xlarge client; 2x kafka.m5.large,1,1,1,,43974,orders/s,,,60,1.00,,0.31,,,,0.199,10000,2026-08-29T13:56:12Z,docs/steps/step-12/units-aws-1.txt,120M-order backlog; 8 partitions; 60 s window after 120 s warm-up
+step,step-12,units-aws,AWS c7i.4xlarge client; 2x kafka.m5.large,1,1,2,,43101,orders/s,,,60,1.00,,0.29,,,,0.209,10000,2026-08-29T14:18:07Z,docs/steps/step-12/units-aws-1b.txt,120M-order backlog; 8 partitions; 60 s window after 120 s warm-up
+step,step-12,units-aws,AWS c7i.4xlarge client; 2x kafka.m5.large,2,2,1,,64669,orders/s,,,60,2.00,,0.43,,,,0.230,10000,2026-08-29T13:49:29Z,docs/steps/step-12/units-aws-2.txt,120M-order backlog; 8 partitions; 60 s window after 120 s warm-up
+step,step-12,units-aws,AWS c7i.4xlarge client; 2x kafka.m5.large,2,2,2,,63543,orders/s,,,60,2.00,,0.35,,,,0.181,10000,2026-08-29T14:06:03Z,docs/steps/step-12/units-aws-2b.txt,120M-order backlog; 8 partitions; 60 s window after 120 s warm-up
+step,step-12,units-aws,AWS c7i.4xlarge client; 2x kafka.m5.large,4,4,1,,104912,orders/s,,,60,3.99,,0.45,,,,0.349,10000,2026-08-29,docs/steps/step-12/units-aws.txt,measured once; per-pass file not kept
+step,step-12,units-aws,AWS c7i.4xlarge client; 2x kafka.m5.large,8,8,1,,181133,orders/s,,,60,7.99,,0.62,,,,0.654,10000,2026-08-29,docs/steps/step-12/units-aws.txt,measured once; per-pass file not kept
