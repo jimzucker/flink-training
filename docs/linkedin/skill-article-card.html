@@ -1,0 +1,191 @@
+<title>What the Harness Proves</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --ground:#14161a;
+    --panel:#1a1d23;
+    --rule:#2b3039;
+    --ink:#e9eaee;
+    --muted:#8b919b;
+    --dim:#636974;
+    --ok:#4fa3a5;
+    --stop:#cf7040;
+    --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --cond:"IBM Plex Sans Condensed","IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  body{
+    background:var(--ground);
+    color:var(--ink);
+    font-family:var(--sans);
+    display:flex;
+    justify-content:center;
+    padding:28px 20px 44px;
+  }
+  .card{width:100%;max-width:1120px;display:flex;flex-direction:column;gap:28px}
+
+  .eyebrow{
+    font-family:var(--mono);font-size:12px;letter-spacing:.16em;
+    text-transform:uppercase;color:var(--dim);margin:0 0 10px;
+  }
+  h1{
+    font-family:var(--cond);font-weight:700;
+    font-size:clamp(32px,4.8vw,54px);line-height:1.03;
+    letter-spacing:-.015em;margin:0;text-wrap:balance;
+  }
+  .sub{margin:12px 0 0;max-width:68ch;font-size:16px;line-height:1.5;color:var(--muted)}
+
+  /* ---- chain ---- */
+  .chain{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+  .step{
+    font-family:var(--mono);font-size:12.5px;font-weight:500;
+    color:var(--ink);background:var(--panel);
+    border:1px solid var(--rule);border-radius:3px;padding:7px 11px;
+  }
+  .step.gate{border-color:var(--ok);color:var(--ok)}
+  .arrow{color:var(--dim);font-family:var(--mono);font-size:13px}
+  .chainnote{
+    margin:10px 0 0;font-family:var(--mono);font-size:11.5px;
+    line-height:1.5;color:var(--dim);
+  }
+  .chainnote b{color:var(--stop);font-weight:500}
+
+  /* ---- result table ---- */
+  .tblwrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:640px}
+  caption{
+    text-align:left;font-family:var(--mono);font-size:11px;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--dim);
+    padding-bottom:10px;
+  }
+  th{
+    text-align:right;font-family:var(--mono);font-weight:500;font-size:10.5px;
+    letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
+    border-bottom:1px solid var(--rule);padding:0 0 9px 16px;white-space:nowrap;
+  }
+  th:first-child{text-align:left;padding-left:0}
+  td{
+    text-align:right;font-family:var(--mono);font-size:15px;
+    font-variant-numeric:tabular-nums;color:var(--ink);
+    border-bottom:1px solid #23262c;padding:12px 0 12px 16px;white-space:nowrap;
+  }
+  td:first-child{text-align:left;padding-left:0;font-family:var(--cond);font-size:17px;font-weight:600}
+  td.ok{color:var(--ok);font-size:12.5px;letter-spacing:.08em}
+
+  /* ---- ratios ---- */
+  .ratios{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:1px;background:var(--rule);
+    border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);
+  }
+  .ratio{background:var(--ground);padding:18px 24px 20px;display:flex;flex-direction:column;gap:6px}
+  .ratio:first-child{padding-left:0}
+  .rk{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+  .rv{font-family:var(--mono);font-size:34px;font-weight:500;font-variant-numeric:tabular-nums;line-height:1.05}
+  .rv.lead{color:var(--ok)}
+  .ri{font-family:var(--mono);font-size:12.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+  /* ---- refusals ---- */
+  .refusals{display:flex;flex-direction:column;gap:12px}
+  .rhead{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .rnum{font-family:var(--mono);font-size:30px;font-weight:600;color:var(--stop);line-height:1}
+  .rtxt{font-family:var(--cond);font-size:20px;font-weight:600}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{
+    font-size:13px;color:var(--muted);background:var(--panel);
+    border-left:2px solid var(--stop);padding:6px 10px 6px 9px;border-radius:0 3px 3px 0;
+  }
+
+  .foot{
+    display:flex;flex-wrap:wrap;gap:12px 40px;
+    justify-content:space-between;align-items:flex-end;
+    font-family:var(--mono);font-size:11px;line-height:1.6;color:var(--dim);
+  }
+  .foot b{color:var(--muted);font-weight:500}
+</style>
+
+<div class="card">
+
+  <header>
+    <p class="eyebrow">prove-it-scales · a Claude Code skill</p>
+    <h1>A scaling benchmark that refuses bad numbers.</h1>
+    <p class="sub">Supply a Flink job, a deterministic generator and a verifier. One command proves nothing is lost, measures every case at least twice, and refuses to publish a result the checks don't support.</p>
+  </header>
+
+  <section>
+    <div class="chain">
+      <span class="step">up</span><span class="arrow">→</span>
+      <span class="step">preflight</span><span class="arrow">→</span>
+      <span class="step gate">completeness</span><span class="arrow">→</span>
+      <span class="step gate">tiny proof</span><span class="arrow">→</span>
+      <span class="step">fill</span><span class="arrow">→</span>
+      <span class="step">suite</span><span class="arrow">→</span>
+      <span class="step">report</span>
+    </div>
+    <p class="chainnote"><b>Stops at the first step that doesn't pass.</b> Completeness drains to the last record and checks every key exactly, then again after a worker is killed mid-drain.</p>
+  </section>
+
+  <div class="tblwrap">
+    <table>
+      <caption>A real result · 4,096 symbol keys · one build · Flink 1.20 on Kafka, one laptop</caption>
+      <thead>
+        <tr>
+          <th scope="col">Cores</th>
+          <th scope="col">Records / s</th>
+          <th scope="col">CPU cap used</th>
+          <th scope="col">GC</th>
+          <th scope="col">Passes</th>
+          <th scope="col">Checks</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>58,326</td><td>98.1%</td><td>3.8%</td><td>3</td><td class="ok">PASS</td></tr>
+        <tr><td>2</td><td>120,115</td><td>96.3%</td><td>0.8%</td><td>2</td><td class="ok">PASS</td></tr>
+        <tr><td>4</td><td>238,804</td><td>96.7%</td><td>0.3%</td><td>2</td><td class="ok">PASS</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <section class="ratios">
+    <div class="ratio">
+      <span class="rk">2 → 4 cores · the step you buy</span>
+      <span class="rv lead">1.988×</span>
+      <span class="ri">interval 1.945 – 2.032</span>
+    </div>
+    <div class="ratio">
+      <span class="rk">1 → 2 cores</span>
+      <span class="rv">2.059×</span>
+      <span class="ri">interval 1.915 – 2.179</span>
+    </div>
+    <div class="ratio">
+      <span class="rk">Claim · ≥95% of linear</span>
+      <span class="rv lead">met</span>
+      <span class="ri">judged on the interval, not the point</span>
+    </div>
+  </section>
+
+  <section class="refusals">
+    <div class="rhead">
+      <span class="rnum">21</span>
+      <span class="rtxt">ways the harness refuses to publish — each one paid for by a run that got it wrong</span>
+    </div>
+    <div class="chips">
+      <span class="chip">worker under 95% of its CPU cap</span>
+      <span class="chip">job graph differs between cases</span>
+      <span class="chip">rate read from the engine, not the broker</span>
+      <span class="chip">broker hit its memory limit mid-window</span>
+      <span class="chip">passes spread more than 10%</span>
+      <span class="chip">garbage collection over 5.5% of capacity</span>
+      <span class="chip">completeness not passed for this build</span>
+      <span class="chip">rows from different builds</span>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <span><b>Result:</b> the hand-written demo's own job, run through the harness — docs/skill-validation/demo-under-harness.md</span>
+    <span><b>github.com/jimzucker/flink-training</b></span>
+  </footer>
+
+</div>
