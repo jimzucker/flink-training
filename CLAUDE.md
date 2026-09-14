@@ -16,6 +16,29 @@ Where the evidence lives:
 | public writing, tone rules, canonical wording | `docs/linkedin/README.md` |
 | what happened in each step, verbatim | `docs/steps/step-NN/transcript.md` |
 
+## Evidence, not recall
+
+Most wrong answers in this project were guesses stated as facts: a speed
+multiple rounded up to "about three times", a rule list presented "as approved"
+after it had been reworded, a run count that undercounted, a search hit read as
+proof. So:
+
+- **Every number, file path, commit, run result or quoted wording comes from
+  reading the committed source in this session** — not from memory, a summary,
+  or an earlier reply. Name the file it came from.
+- **Memory is an index, not evidence.** It goes stale. When memory and the
+  repository disagree, the repository is right — and the memory entry gets
+  corrected.
+- **Approved wording is copied, never reconstructed.** Retrieve it from the
+  committed file or the transcript and paste it verbatim.
+- **Say what a check can and cannot show.** A grep hit does not prove a fact is
+  recorded; a match in a transcript is not a written rule. Label a loose check
+  as loose.
+- **If it is not verified, say "not verified"** — or verify it first. Do not
+  round, extrapolate or fill a gap to make an answer look complete.
+- **Before adding a derived figure or column, recompute what is already
+  published from the same data** and confirm the convention matches.
+
 ## Answering
 
 - **Lead with the answer. Keep it short.** Status is one or two lines. A table
