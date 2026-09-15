@@ -1,0 +1,20 @@
+start 2026-09-15T08:34:41Z
+rep=1 RESULT filler=0 bytesPerOrder=326.5 threads=1 cpus=1 mode=full orders/s=295238 perThread=295238 gcPctOfWall=0.07
+rep=1 RESULT filler=0 bytesPerOrder=326.5 threads=2 cpus=2 mode=full orders/s=600334 perThread=300167 gcPctOfWall=0.25
+rep=1 RESULT filler=0 bytesPerOrder=326.5 threads=4 cpus=4 mode=full orders/s=993482 perThread=248371 gcPctOfWall=0.45
+rep=1 RESULT filler=32 bytesPerOrder=2034.5 threads=1 cpus=1 mode=full orders/s=40987 perThread=40987 gcPctOfWall=0.08
+rep=1 RESULT filler=32 bytesPerOrder=2034.5 threads=2 cpus=2 mode=full orders/s=111648 perThread=55824 gcPctOfWall=0.45
+rep=1 RESULT filler=32 bytesPerOrder=2034.5 threads=4 cpus=4 mode=full orders/s=210027 perThread=52507 gcPctOfWall=0.61
+rep=2 RESULT filler=0 bytesPerOrder=326.5 threads=1 cpus=1 mode=full orders/s=296768 perThread=296768 gcPctOfWall=0.08
+rep=2 RESULT filler=0 bytesPerOrder=326.5 threads=2 cpus=2 mode=full orders/s=609099 perThread=304549 gcPctOfWall=0.26
+rep=2 RESULT filler=0 bytesPerOrder=326.5 threads=4 cpus=4 mode=full orders/s=970655 perThread=242664 gcPctOfWall=0.44
+rep=2 RESULT filler=32 bytesPerOrder=2034.5 threads=1 cpus=1 mode=full orders/s=42567 perThread=42567 gcPctOfWall=0.08
+rep=2 RESULT filler=32 bytesPerOrder=2034.5 threads=2 cpus=2 mode=full orders/s=111299 perThread=55650 gcPctOfWall=0.29
+rep=2 RESULT filler=32 bytesPerOrder=2034.5 threads=4 cpus=4 mode=full orders/s=206696 perThread=51674 gcPctOfWall=0.61
+rep=3 RESULT filler=0 bytesPerOrder=326.5 threads=1 cpus=1 mode=full orders/s=298851 perThread=298851 gcPctOfWall=0.08
+rep=3 RESULT filler=0 bytesPerOrder=326.5 threads=2 cpus=2 mode=full orders/s=544084 perThread=272042 gcPctOfWall=0.36
+rep=3 RESULT filler=0 bytesPerOrder=326.5 threads=4 cpus=4 mode=full orders/s=945639 perThread=236410 gcPctOfWall=0.43
+rep=3 RESULT filler=32 bytesPerOrder=2034.5 threads=1 cpus=1 mode=full orders/s=41892 perThread=41892 gcPctOfWall=0.08
+rep=3 RESULT filler=32 bytesPerOrder=2034.5 threads=2 cpus=2 mode=full orders/s=110989 perThread=55494 gcPctOfWall=0.31
+rep=3 RESULT filler=32 bytesPerOrder=2034.5 threads=4 cpus=4 mode=full orders/s=206264 perThread=51566 gcPctOfWall=0.61
+DONE 2026-09-15T08:44:00Z

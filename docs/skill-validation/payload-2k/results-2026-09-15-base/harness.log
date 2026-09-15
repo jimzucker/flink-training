@@ -1,0 +1,23 @@
+[2026-09-14 22:11:33] stack up: plbase-kafka (cap 2.5), plbase-jm (cap 0.5); task manager is started per case
+[2026-09-14 22:13:16] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp job/generators.jar:job/jobs.jar io.github.jimzucker.flinktraining.generator.HarnessBacklog --mode=produce --count=4000000 --seed=20260912 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-small --manifest=~/code/GitHub/payload-rig/base/results/manifest-small.json
+[2026-09-14 22:13:25] fill done: produced 4,000,000 trades and 40,000 prices in 6.2s (648,403 rec/s); manifest ~/code/GitHub/payload-rig/base/results/manifest-small.json
+[2026-09-14 22:13:26] backlog block-trades-small: 4,000,000 records read back over 8 partitions
+[2026-09-14 22:15:40] drained to the last record in 92.2s
+[2026-09-14 22:19:27] KILL: committed=1539389, killing the task manager mid-drain
+[2026-09-14 22:20:04] KILL: job RUNNING again on the replacement worker
+[2026-09-14 22:21:10] drained to the last record in 135.4s (worker killed mid-drain)
+[2026-09-14 22:23:52] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp job/generators.jar:job/jobs.jar io.github.jimzucker.flinktraining.generator.HarnessBacklog --mode=produce --count=60000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/payload-rig/base/results/manifest-tiny.json
+[2026-09-14 22:26:14] fstrim: /var/lib/docker: 2.4 GiB (2556854272 bytes) trimmed
+[2026-09-14 22:26:14] stack down; nothing with prefix plbase survives
+[2026-09-15 05:01:12] stack up: plbase-kafka (cap 2.5), plbase-jm (cap 0.5); task manager is started per case
+[2026-09-15 05:02:51] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp job/generators.jar:job/jobs.jar io.github.jimzucker.flinktraining.generator.HarnessBacklog --mode=produce --count=60000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/payload-rig/base/results/manifest-tiny.json
+[2026-09-15 05:04:30] fill done: produced 60,000,000 trades and 600,000 prices in 69.9s (858,418 rec/s); manifest ~/code/GitHub/payload-rig/base/results/manifest-tiny.json
+[2026-09-15 05:04:31] backlog block-trades-tiny: 60,000,000 records read back over 8 partitions
+[2026-09-15 05:04:31] ---- tiny case 1 cores ----
+[2026-09-15 05:07:06]   1c: 68,203 rec/s, tm 99.9% of cap, vantage 0.18%
+[2026-09-15 05:07:06] ---- tiny case 4 cores ----
+[2026-09-15 05:09:42]   4c: 294,691 rec/s, tm 100.6% of cap, vantage 0.24%
+[2026-09-15 05:09:42]   disk: input 28 B/record x 150,000,000 = 4.1 GB; sinks 171 B/input -> 25.6 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 49.8 GB incl. the 20 GB floor, 138.3 GB free now + 4.9 GB the tiny proof gives back = 143.1 GB: FITS
+[2026-09-15 05:09:42]   backlog: 150,000,000 configured, 28,732,362 needed at the measured 294,691 rec/s
+[2026-09-15 05:10:57] fstrim: /var/lib/docker: 4.3 GiB (4666138624 bytes) trimmed
+[2026-09-15 05:10:57] stack down; nothing with prefix plbase survives

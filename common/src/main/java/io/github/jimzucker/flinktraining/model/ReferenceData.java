@@ -47,6 +47,26 @@ public final class ReferenceData {
     /** Every block trade is split across all four accounts. */
     public static final int ALLOCATIONS_PER_TRADE = ACCOUNTS.size();
 
+    /**
+     * Filler fields per allocation, from FILLER_FIELDS; zero unless set.
+     *
+     * <p>Exists only to measure how a larger order changes throughput. Unset,
+     * every order is byte-identical to what the demo has always produced.
+     */
+    public static final int FILLER_FIELDS = fillerFields();
+
+    /** The value every filler field carries. */
+    public static final String FILLER_VALUE = "XXXX";
+
+    private static int fillerFields() {
+        String raw = System.getenv("FILLER_FIELDS");
+        int n = raw == null || raw.isBlank() ? 0 : Integer.parseInt(raw.trim());
+        if (n < 0) {
+            throw new IllegalArgumentException("FILLER_FIELDS must not be negative, got " + n);
+        }
+        return n;
+    }
+
     /** Opening price per symbol. Round numbers so market value is easy to check by eye. */
     public static final Map<String, BigDecimal> OPENING_PRICES = openingPrices();
 

@@ -75,6 +75,10 @@ public final class HarnessBacklog {
         out.put("symbolCount", ReferenceData.SYMBOLS.size());
         out.put("accountCount", ReferenceData.ACCOUNTS.size());
         out.put("allocationsPerTrade", ReferenceData.ALLOCATIONS_PER_TRADE);
+        // The input's shape, measured from the generator rather than assumed: a
+        // payload study is only readable if the results say what the payload was.
+        out.put("fillerFieldsPerAllocation", ReferenceData.FILLER_FIELDS);
+        out.put("orderBytes", Json.toBytes(BlockTradeGenerator.at(seed, 0, start)).length);
         out.put("distinctSymbolKeys", bySymbol.size());
         out.put("distinctAccountKeys", byAccount.size());
         out.put("symbolUpdates", count);

@@ -1,0 +1,23 @@
+{
+  "build": "4b4039306a87c0d0",
+  "records": 4000000,
+  "cores": 1,
+  "arms": [
+    {
+      "group": "plf32-complete-clean",
+      "killed": false,
+      "drainS": 202.7,
+      "killedAtCommitted": null,
+      "verify": "  OK   positions-by-symbol: 4 keys, every net quantity exact\n  OK   positions-by-account: 16 keys, every net quantity exact\n  OK   both paths net to -38,400, as the manifest predicts\nCOMPLETENESS OK: every assertion held with no tolerance\n"
+    },
+    {
+      "group": "plf32-complete-kill",
+      "killed": true,
+      "drainS": 273.8,
+      "killedAtCommitted": 1480984,
+      "verify": "  OK   positions-by-symbol: 4 keys, every net quantity exact\n  OK   positions-by-account: 16 keys, every net quantity exact\n  OK   both paths net to -38,400, as the manifest predicts\nCOMPLETENESS OK: every assertion held with no tolerance\n"
+    }
+  ],
+  "at": "2026-09-14 21:46:51",
+  "result": "PASS"
+}
