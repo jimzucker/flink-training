@@ -17,15 +17,33 @@ public class PositionUpdate {
     public String tradeId;
     public long eventTime;
 
+    /**
+     * The allocation's filler fields as alternating name and value, carried
+     * across the shuffle to the aggregation so a larger order costs network and
+     * serialization bytes, not only parsing. Null on the symbol side and for
+     * orders without filler.
+     *
+     * <p>A {@code String[]} rather than a {@code Map}: Flink serializes a string
+     * array natively, while a map field would fall back to Kryo and add a second
+     * variable to any comparison against orders without filler.
+     */
+    public String[] filler;
+
     public PositionUpdate() {
     }
 
     public PositionUpdate(String key, String symbol, long signedQuantity, String tradeId, long eventTime) {
+        this(key, symbol, signedQuantity, tradeId, eventTime, null);
+    }
+
+    public PositionUpdate(String key, String symbol, long signedQuantity, String tradeId, long eventTime,
+                          String[] filler) {
         this.key = key;
         this.symbol = symbol;
         this.signedQuantity = signedQuantity;
         this.tradeId = tradeId;
         this.eventTime = eventTime;
+        this.filler = filler;
     }
 
     @Override

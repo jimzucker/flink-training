@@ -6,8 +6,11 @@ import io.github.jimzucker.flinktraining.model.ReferenceData;
 import io.github.jimzucker.flinktraining.model.Side;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.SplittableRandom;
 import java.util.function.LongSupplier;
 
@@ -86,7 +89,17 @@ public final class BlockTradeGenerator implements Iterator<BlockTrade> {
      * as runs of the same symbol.
      */
     public static BlockTrade at(long seed, long sequence, long eventTime) {
+        return at(seed, sequence, eventTime, ReferenceData.FILLER_FIELDS);
+    }
+
+    /**
+     * The same trade, with {@code fillerFields} padding fields on every
+     * allocation. The filler does not touch the random draws, so symbol, side and
+     * quantity are identical to the trade without it.
+     */
+    public static BlockTrade at(long seed, long sequence, long eventTime, int fillerFields) {
         SplittableRandom random = new SplittableRandom(mix(seed, sequence));
+        Map<String, String> filler = filler(fillerFields);
         String symbol = ReferenceData.SYMBOLS.get(random.nextInt(ReferenceData.SYMBOLS.size()));
         Side side = random.nextBoolean() ? Side.BUY : Side.SELL;
 
@@ -95,12 +108,41 @@ public final class BlockTradeGenerator implements Iterator<BlockTrade> {
         List<Allocation> allocations = new ArrayList<>(ReferenceData.ACCOUNTS.size());
         for (String account : ReferenceData.ACCOUNTS) {
             allocations.add(new Allocation(
-                    account, ReferenceData.SUB_ACCOUNT, QUANTITY_PER_ALLOCATION));
+                    account, ReferenceData.SUB_ACCOUNT, QUANTITY_PER_ALLOCATION, filler));
         }
         long quantity = QUANTITY_PER_ALLOCATION * ReferenceData.ACCOUNTS.size();
 
         return new BlockTrade(
                 tradeId(sequence), symbol, side, quantity, allocations, eventTime);
+    }
+
+    private static volatile Map<String, String> cachedFiller = Map.of();
+    private static volatile int cachedFillerFields = 0;
+
+    /**
+     * {@code f01..fNN}, each set to {@link ReferenceData#FILLER_VALUE}, in order.
+     * One immutable instance per field count, shared by every allocation, so a
+     * large fill does not rebuild it hundreds of millions of times.
+     */
+    static Map<String, String> filler(int fields) {
+        if (fields < 0) {
+            throw new IllegalArgumentException("fillerFields must not be negative, got " + fields);
+        }
+        if (fields == 0) {
+            return Map.of();
+        }
+        if (fields == cachedFillerFields) {
+            return cachedFiller;
+        }
+        int width = Math.max(2, Integer.toString(fields).length());
+        Map<String, String> m = new LinkedHashMap<>();
+        for (int i = 1; i <= fields; i++) {
+            m.put("f" + String.format("%0" + width + "d", i), ReferenceData.FILLER_VALUE);
+        }
+        Map<String, String> built = Collections.unmodifiableMap(m);
+        cachedFiller = built;
+        cachedFillerFields = fields;
+        return built;
     }
 
     /** splitmix64's finalizer: scatters nearby inputs to unrelated outputs. */
