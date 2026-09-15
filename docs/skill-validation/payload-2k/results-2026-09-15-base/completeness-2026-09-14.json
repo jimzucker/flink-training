@@ -1,0 +1,23 @@
+{
+  "build": "4b4039306a87c0d0",
+  "records": 4000000,
+  "cores": 1,
+  "arms": [
+    {
+      "group": "plbase-complete-clean",
+      "killed": false,
+      "drainS": 92.3,
+      "killedAtCommitted": null,
+      "verify": "  OK   positions-by-symbol: 4 keys, every net quantity exact\n  OK   positions-by-account: 16 keys, every net quantity exact\n  OK   both paths net to -38,400, as the manifest predicts\nCOMPLETENESS OK: every assertion held with no tolerance\n"
+    },
+    {
+      "group": "plbase-complete-kill",
+      "killed": true,
+      "drainS": 135.4,
+      "killedAtCommitted": 1539389,
+      "verify": "  OK   positions-by-symbol: 4 keys, every net quantity exact\n  OK   positions-by-account: 16 keys, every net quantity exact\n  OK   both paths net to -38,400, as the manifest predicts\nCOMPLETENESS OK: every assertion held with no tolerance\n"
+    }
+  ],
+  "at": "2026-09-14 22:13:26",
+  "result": "PASS"
+}

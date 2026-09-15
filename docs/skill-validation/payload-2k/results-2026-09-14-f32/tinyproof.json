@@ -1,0 +1,4613 @@
+{
+  "build": "4b4039306a87c0d0",
+  "records": 20000000,
+  "cases": [
+    {
+      "cores": 1,
+      "pass": "tiny",
+      "group": "plf32-tiny-c1-tiny",
+      "hostFreeGB": 134.6,
+      "nanoCpus": 1000000000,
+      "reporterS": 2,
+      "parallelism": 1,
+      "slotsTotal": 1,
+      "tSubmit": 1789437816.027499,
+      "jobId": "44e141151c8e93076d747ed5aa679f0c",
+      "shape": {
+        "vertexCount": 3,
+        "signature": [
+          [
+            "Source: orders<br/>:- by symbol<br/>+- split by allocation<br/>",
+            []
+          ],
+          [
+            "aggregate by account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ],
+          [
+            "aggregate by symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ]
+        ]
+      },
+      "warmup": {
+        "rates": [
+          22396.64469742361,
+          25488.568257491675,
+          24169.83016983017,
+          21973.655523255817
+        ],
+        "mean": 23507.174662000318,
+        "drift": 0.033,
+        "scatter": 0.1495,
+        "warmupS": 40.9
+      },
+      "tSteady": 1789437870.219556,
+      "tOpen": 1789437871.837708,
+      "open": {
+        "ts": 1789437869974,
+        "committed": 789140,
+        "committedParts": [
+          89589,
+          89641,
+          89489,
+          89780,
+          112308,
+          112026,
+          94092,
+          112215
+        ],
+        "endIn": 20000000,
+        "end_positions-by-symbol": 797781,
+        "end_positions-by-account": 3193862
+      },
+      "brokerLimitHits": 0,
+      "brokerRefaults": 0,
+      "brokerFileCacheBytes": 1505775616,
+      "brokerLimitBytes": 4294967296,
+      "tClose": 1789437906.502968,
+      "close": {
+        "ts": 1789437904523,
+        "committed": 1636820,
+        "committedParts": [
+          201958,
+          201943,
+          201878,
+          202291,
+          202094,
+          222551,
+          201902,
+          202203
+        ],
+        "endIn": 20000000,
+        "end_positions-by-symbol": 1637426,
+        "end_positions-by-account": 6552063
+      },
+      "boundaries": 7,
+      "elapsedS": 34.55,
+      "recordsConsumed": 847680,
+      "rateSource": "kafka committed offsets on block-trades-tiny",
+      "recordsPerSec": 24535.6,
+      "outputRecsPerSec": 122677.9,
+      "vantageSinkRecords": 839569.2,
+      "vantageDisagreement": 0.0096,
+      "backlogRemaining": 18363180,
+      "headroomS": 748.4,
+      "tmCores": 1.003,
+      "tmCapFrac": 1.0025,
+      "tmThrottledPeriodsPct": 100.0,
+      "kafkaCores": 0.073,
+      "kafkaCap": 2.5,
+      "kafkaCapFrac": 0.0291,
+      "gcMsInWindow": 483.0,
+      "gcFracOfCapacity": 0.014,
+      "sourceIdle": 0.0068,
+      "sourceBusy": 0.9664,
+      "sourceBackpressured": 0.0269,
+      "bpSamples": 17,
+      "backpressure": {
+        "aggregate by account -> positions-by-account: Writer -> positions-by-account: Committer": {
+          "backPressured": 0.0,
+          "busy": 0.5694,
+          "idle": 0.4306,
+          "samples": 17
+        },
+        "Source: orders -> (by symbol, split by allocation)": {
+          "idle": 0.0068,
+          "busy": 0.9664,
+          "backPressured": 0.0269,
+          "samples": 17
+        },
+        "aggregate by symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+          "backPressured": 0.0,
+          "busy": 0.0862,
+          "idle": 0.9138,
+          "samples": 17
+        }
+      },
+      "status": "OK",
+      "ticks": [
+        {
+          "ts": 1789437851955,
+          "committed": 320261,
+          "committedParts": [
+            44663,
+            44657,
+            22260,
+            30136,
+            44697,
+            44539,
+            44656,
+            44653
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 373159,
+          "end_positions-by-account": 1493847
+        },
+        {
+          "ts": 1789437852456,
+          "committed": 320261,
+          "committedParts": [
+            44663,
+            44657,
+            22260,
+            30136,
+            44697,
+            44539,
+            44656,
+            44653
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 384082,
+          "end_positions-by-account": 1537887
+        },
+        {
+          "ts": 1789437852957,
+          "committed": 320261,
+          "committedParts": [
+            44663,
+            44657,
+            22260,
+            30136,
+            44697,
+            44539,
+            44656,
+            44653
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 395005,
+          "end_positions-by-account": 1582578
+        },
+        {
+          "ts": 1789437853458,
+          "committed": 320261,
+          "committedParts": [
+            44663,
+            44657,
+            22260,
+            30136,
+            44697,
+            44539,
+            44656,
+            44653
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 408227,
+          "end_positions-by-account": 1635419
+        },
+        {
+          "ts": 1789437853959,
+          "committed": 320261,
+          "committedParts": [
+            44663,
+            44657,
+            22260,
+            30136,
+            44697,
+            44539,
+            44656,
+            44653
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 420299,
+          "end_positions-by-account": 1683934
+        },
+        {
+          "ts": 1789437854459,
+          "committed": 320261,
+          "committedParts": [
+            44663,
+            44657,
+            22260,
+            30136,
+            44697,
+            44539,
+            44656,
+            44653
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 432413,
+          "end_positions-by-account": 1731669
+        },
+        {
+          "ts": 1789437854960,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 443335,
+          "end_positions-by-account": 1775016
+        },
+        {
+          "ts": 1789437855461,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 455982,
+          "end_positions-by-account": 1824704
+        },
+        {
+          "ts": 1789437855962,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 467527,
+          "end_positions-by-account": 1871400
+        },
+        {
+          "ts": 1789437856463,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 478403,
+          "end_positions-by-account": 1916219
+        },
+        {
+          "ts": 1789437856964,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 489325,
+          "end_positions-by-account": 1959466
+        },
+        {
+          "ts": 1789437857464,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 500248,
+          "end_positions-by-account": 2002018
+        },
+        {
+          "ts": 1789437857964,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 512320,
+          "end_positions-by-account": 2050362
+        },
+        {
+          "ts": 1789437858464,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 523243,
+          "end_positions-by-account": 2095057
+        },
+        {
+          "ts": 1789437858964,
+          "committed": 432401,
+          "committedParts": [
+            44663,
+            44657,
+            44652,
+            44783,
+            67255,
+            66947,
+            52280,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 535316,
+          "end_positions-by-account": 2143770
+        },
+        {
+          "ts": 1789437859465,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 547241,
+          "end_positions-by-account": 2191254
+        },
+        {
+          "ts": 1789437859965,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 557588,
+          "end_positions-by-account": 2232207
+        },
+        {
+          "ts": 1789437860466,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 570236,
+          "end_positions-by-account": 2282374
+        },
+        {
+          "ts": 1789437860966,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 580021,
+          "end_positions-by-account": 2323240
+        },
+        {
+          "ts": 1789437861466,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 592686,
+          "end_positions-by-account": 2373614
+        },
+        {
+          "ts": 1789437861967,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 605878,
+          "end_positions-by-account": 2424498
+        },
+        {
+          "ts": 1789437862467,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 618833,
+          "end_positions-by-account": 2476393
+        },
+        {
+          "ts": 1789437862968,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 631973,
+          "end_positions-by-account": 2531249
+        },
+        {
+          "ts": 1789437863468,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 644621,
+          "end_positions-by-account": 2579806
+        },
+        {
+          "ts": 1789437863969,
+          "committed": 547227,
+          "committedParts": [
+            67125,
+            67117,
+            67118,
+            67341,
+            67255,
+            77024,
+            67083,
+            67164
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 656467,
+          "end_positions-by-account": 2627787
+        },
+        {
+          "ts": 1789437864470,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 668787,
+          "end_positions-by-account": 2676594
+        },
+        {
+          "ts": 1789437864970,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 679710,
+          "end_positions-by-account": 2720315
+        },
+        {
+          "ts": 1789437865470,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 692357,
+          "end_positions-by-account": 2771396
+        },
+        {
+          "ts": 1789437865970,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 703855,
+          "end_positions-by-account": 2817711
+        },
+        {
+          "ts": 1789437866470,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 716502,
+          "end_positions-by-account": 2867207
+        },
+        {
+          "ts": 1789437866971,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 729724,
+          "end_positions-by-account": 2920403
+        },
+        {
+          "ts": 1789437867471,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 742372,
+          "end_positions-by-account": 2970958
+        },
+        {
+          "ts": 1789437867971,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 755019,
+          "end_positions-by-account": 3021439
+        },
+        {
+          "ts": 1789437868472,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 767127,
+          "end_positions-by-account": 3071818
+        },
+        {
+          "ts": 1789437868972,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 778589,
+          "end_positions-by-account": 3116494
+        },
+        {
+          "ts": 1789437869473,
+          "committed": 668197,
+          "committedParts": [
+            85622,
+            89641,
+            67118,
+            67341,
+            89789,
+            89496,
+            89569,
+            89621
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 789809,
+          "end_positions-by-account": 3159552
+        },
+        {
+          "ts": 1789437869974,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 797781,
+          "end_positions-by-account": 3193862
+        },
+        {
+          "ts": 1789437870474,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 809853,
+          "end_positions-by-account": 3241974
+        },
+        {
+          "ts": 1789437870975,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 823075,
+          "end_positions-by-account": 3294490
+        },
+        {
+          "ts": 1789437871475,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 835723,
+          "end_positions-by-account": 3345291
+        },
+        {
+          "ts": 1789437871976,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 845495,
+          "end_positions-by-account": 3385095
+        },
+        {
+          "ts": 1789437872477,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 858718,
+          "end_positions-by-account": 3436666
+        },
+        {
+          "ts": 1789437872978,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 871940,
+          "end_positions-by-account": 3488236
+        },
+        {
+          "ts": 1789437873478,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 884012,
+          "end_positions-by-account": 3537434
+        },
+        {
+          "ts": 1789437873978,
+          "committed": 789140,
+          "committedParts": [
+            89589,
+            89641,
+            89489,
+            89780,
+            112308,
+            112026,
+            94092,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 896692,
+          "end_positions-by-account": 3588013
+        },
+        {
+          "ts": 1789437874478,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 909458,
+          "end_positions-by-account": 3638237
+        },
+        {
+          "ts": 1789437874979,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 921664,
+          "end_positions-by-account": 3687450
+        },
+        {
+          "ts": 1789437875480,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 930446,
+          "end_positions-by-account": 3724584
+        },
+        {
+          "ts": 1789437875980,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 938494,
+          "end_positions-by-account": 3755070
+        },
+        {
+          "ts": 1789437876481,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 949992,
+          "end_positions-by-account": 3801821
+        },
+        {
+          "ts": 1789437876982,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 960914,
+          "end_positions-by-account": 3847076
+        },
+        {
+          "ts": 1789437877482,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 974137,
+          "end_positions-by-account": 3898086
+        },
+        {
+          "ts": 1789437877982,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 986784,
+          "end_positions-by-account": 3949170
+        },
+        {
+          "ts": 1789437878483,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 999431,
+          "end_positions-by-account": 3998731
+        },
+        {
+          "ts": 1789437878983,
+          "committed": 908581,
+          "committedParts": [
+            112089,
+            112107,
+            112010,
+            112281,
+            112308,
+            123581,
+            111990,
+            112215
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1010929,
+          "end_positions-by-account": 4044959
+        },
+        {
+          "ts": 1789437879485,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1021000,
+          "end_positions-by-account": 4086176
+        },
+        {
+          "ts": 1789437879985,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1031923,
+          "end_positions-by-account": 4129715
+        },
+        {
+          "ts": 1789437880486,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1043995,
+          "end_positions-by-account": 4178821
+        },
+        {
+          "ts": 1789437880987,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1056254,
+          "end_positions-by-account": 4226294
+        },
+        {
+          "ts": 1789437881488,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1068715,
+          "end_positions-by-account": 4275938
+        },
+        {
+          "ts": 1789437881989,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1081654,
+          "end_positions-by-account": 4326755
+        },
+        {
+          "ts": 1789437882489,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1094012,
+          "end_positions-by-account": 4377654
+        },
+        {
+          "ts": 1789437882989,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1107232,
+          "end_positions-by-account": 4429555
+        },
+        {
+          "ts": 1789437883489,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1119304,
+          "end_positions-by-account": 4479199
+        },
+        {
+          "ts": 1789437883990,
+          "committed": 1020404,
+          "committedParts": [
+            123063,
+            134508,
+            112010,
+            112281,
+            134777,
+            134531,
+            134544,
+            134690
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1131952,
+          "end_positions-by-account": 4530783
+        },
+        {
+          "ts": 1789437884491,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1144784,
+          "end_positions-by-account": 4580655
+        },
+        {
+          "ts": 1789437884991,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1153982,
+          "end_positions-by-account": 4616618
+        },
+        {
+          "ts": 1789437885492,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1166630,
+          "end_positions-by-account": 4668006
+        },
+        {
+          "ts": 1789437885993,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1178702,
+          "end_positions-by-account": 4717122
+        },
+        {
+          "ts": 1789437886494,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1191924,
+          "end_positions-by-account": 4771454
+        },
+        {
+          "ts": 1789437886995,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1205146,
+          "end_positions-by-account": 4824271
+        },
+        {
+          "ts": 1789437887496,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1217794,
+          "end_positions-by-account": 4873468
+        },
+        {
+          "ts": 1789437887996,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1229866,
+          "end_positions-by-account": 4919379
+        },
+        {
+          "ts": 1789437888496,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1242178,
+          "end_positions-by-account": 4970950
+        },
+        {
+          "ts": 1789437888996,
+          "committed": 1143611,
+          "committedParts": [
+            134585,
+            134508,
+            134506,
+            134865,
+            157202,
+            157064,
+            134544,
+            156337
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1255736,
+          "end_positions-by-account": 5024073
+        },
+        {
+          "ts": 1789437889497,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1266963,
+          "end_positions-by-account": 5069389
+        },
+        {
+          "ts": 1789437889997,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1279036,
+          "end_positions-by-account": 5117935
+        },
+        {
+          "ts": 1789437890497,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1291683,
+          "end_positions-by-account": 5168987
+        },
+        {
+          "ts": 1789437890997,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1304905,
+          "end_positions-by-account": 5220466
+        },
+        {
+          "ts": 1789437891497,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1317553,
+          "end_positions-by-account": 5271406
+        },
+        {
+          "ts": 1789437891997,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1330200,
+          "end_positions-by-account": 5323150
+        },
+        {
+          "ts": 1789437892498,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1343422,
+          "end_positions-by-account": 5375711
+        },
+        {
+          "ts": 1789437892999,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1356644,
+          "end_positions-by-account": 5428199
+        },
+        {
+          "ts": 1789437893500,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1369866,
+          "end_positions-by-account": 5480586
+        },
+        {
+          "ts": 1789437894001,
+          "committed": 1266363,
+          "committedParts": [
+            157036,
+            156954,
+            156910,
+            157354,
+            157202,
+            166627,
+            157039,
+            157241
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1383089,
+          "end_positions-by-account": 5532979
+        },
+        {
+          "ts": 1789437894503,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1395458,
+          "end_positions-by-account": 5582306
+        },
+        {
+          "ts": 1789437895003,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1408073,
+          "end_positions-by-account": 5635155
+        },
+        {
+          "ts": 1789437895505,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1421295,
+          "end_positions-by-account": 5687821
+        },
+        {
+          "ts": 1789437896007,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1432217,
+          "end_positions-by-account": 5729808
+        },
+        {
+          "ts": 1789437896507,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1444935,
+          "end_positions-by-account": 5781835
+        },
+        {
+          "ts": 1789437897008,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1458087,
+          "end_positions-by-account": 5832858
+        },
+        {
+          "ts": 1789437897509,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1470734,
+          "end_positions-by-account": 5883552
+        },
+        {
+          "ts": 1789437898010,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1483381,
+          "end_positions-by-account": 5934266
+        },
+        {
+          "ts": 1789437898510,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1495454,
+          "end_positions-by-account": 5983372
+        },
+        {
+          "ts": 1789437899012,
+          "committed": 1394248,
+          "committedParts": [
+            179496,
+            179352,
+            156910,
+            160139,
+            179615,
+            179579,
+            179476,
+            179681
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1507526,
+          "end_positions-by-account": 6032387
+        },
+        {
+          "ts": 1789437899513,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1519229,
+          "end_positions-by-account": 6077409
+        },
+        {
+          "ts": 1789437900014,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1531302,
+          "end_positions-by-account": 6125625
+        },
+        {
+          "ts": 1789437900516,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1542224,
+          "end_positions-by-account": 6169841
+        },
+        {
+          "ts": 1789437901018,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1553147,
+          "end_positions-by-account": 6214527
+        },
+        {
+          "ts": 1789437901518,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1566369,
+          "end_positions-by-account": 6266463
+        },
+        {
+          "ts": 1789437902018,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1577867,
+          "end_positions-by-account": 6312010
+        },
+        {
+          "ts": 1789437902519,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1589364,
+          "end_positions-by-account": 6358834
+        },
+        {
+          "ts": 1789437903020,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1602012,
+          "end_positions-by-account": 6409218
+        },
+        {
+          "ts": 1789437903521,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1614295,
+          "end_positions-by-account": 6458142
+        },
+        {
+          "ts": 1789437904021,
+          "committed": 1518050,
+          "committedParts": [
+            179496,
+            179352,
+            179401,
+            179819,
+            202094,
+            202071,
+            193614,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1626301,
+          "end_positions-by-account": 6506153
+        },
+        {
+          "ts": 1789437904523,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1637426,
+          "end_positions-by-account": 6552063
+        },
+        {
+          "ts": 1789437905025,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1650074,
+          "end_positions-by-account": 6601625
+        },
+        {
+          "ts": 1789437905527,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1661571,
+          "end_positions-by-account": 6649728
+        },
+        {
+          "ts": 1789437906028,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1672494,
+          "end_positions-by-account": 6690893
+        },
+        {
+          "ts": 1789437906528,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1683991,
+          "end_positions-by-account": 6736257
+        },
+        {
+          "ts": 1789437907029,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1692040,
+          "end_positions-by-account": 6769664
+        },
+        {
+          "ts": 1789437907530,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1702962,
+          "end_positions-by-account": 6813841
+        },
+        {
+          "ts": 1789437908031,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1716185,
+          "end_positions-by-account": 6865138
+        },
+        {
+          "ts": 1789437908532,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1721360,
+          "end_positions-by-account": 6888604
+        },
+        {
+          "ts": 1789437909033,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1721360,
+          "end_positions-by-account": 6888604
+        },
+        {
+          "ts": 1789437909533,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1721360,
+          "end_positions-by-account": 6888604
+        },
+        {
+          "ts": 1789437910033,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1721360,
+          "end_positions-by-account": 6888604
+        },
+        {
+          "ts": 1789437910534,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1721360,
+          "end_positions-by-account": 6888604
+        },
+        {
+          "ts": 1789437911036,
+          "committed": 1636820,
+          "committedParts": [
+            201958,
+            201943,
+            201878,
+            202291,
+            202094,
+            222551,
+            201902,
+            202203
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 1721360,
+          "end_positions-by-account": 6888604
+        }
+      ]
+    },
+    {
+      "cores": 4,
+      "pass": "tiny",
+      "group": "plf32-tiny-c4-tiny",
+      "hostFreeGB": 134.8,
+      "nanoCpus": 4000000000,
+      "reporterS": 2,
+      "parallelism": 4,
+      "slotsTotal": 4,
+      "tSubmit": 1789437976.5968168,
+      "jobId": "2f47de100e120abc78a672651c6142a3",
+      "shape": {
+        "vertexCount": 3,
+        "signature": [
+          [
+            "Source: orders<br/>:- by symbol<br/>+- split by allocation<br/>",
+            []
+          ],
+          [
+            "aggregate by account<br/>+- positions-by-account: Writer<br/>   +- positions-by-account: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ],
+          [
+            "aggregate by symbol<br/>+- positions-by-symbol: Writer<br/>   +- positions-by-symbol: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ]
+        ]
+      },
+      "warmup": {
+        "rates": [
+          69517.3860911271,
+          65588.12949640288,
+          61091.889732321215,
+          73896.1038961039
+        ],
+        "mean": 67523.37730398877,
+        "drift": 0.0384,
+        "scatter": 0.1896,
+        "warmupS": 93.3
+      },
+      "tSteady": 1789438083.0188968,
+      "tOpen": 1789438084.8264608,
+      "open": {
+        "ts": 1789438082588,
+        "committed": 5466522,
+        "committedParts": [
+          697105,
+          696751,
+          651213,
+          664681,
+          707436,
+          705861,
+          668976,
+          674499
+        ],
+        "endIn": 20000000,
+        "end_positions-by-symbol": 5477069,
+        "end_positions-by-account": 21916510
+      },
+      "brokerLimitHits": 0,
+      "brokerRefaults": 12864,
+      "brokerFileCacheBytes": 1120436224,
+      "brokerLimitBytes": 4294967296,
+      "tClose": 1789438115.9206269,
+      "close": {
+        "ts": 1789438113332,
+        "committed": 6640173,
+        "committedParts": [
+          852001,
+          850138,
+          797862,
+          809467,
+          853740,
+          853749,
+          809043,
+          814173
+        ],
+        "endIn": 20000000,
+        "end_positions-by-symbol": 6648063,
+        "end_positions-by-account": 26594316
+      },
+      "boundaries": 6,
+      "elapsedS": 30.74,
+      "recordsConsumed": 1173651,
+      "rateSource": "kafka committed offsets on block-trades-tiny",
+      "recordsPerSec": 38175.0,
+      "outputRecsPerSec": 190874.8,
+      "vantageSinkRecords": 1169760.0,
+      "vantageDisagreement": 0.0033,
+      "backlogRemaining": 13359827,
+      "headroomS": 350.0,
+      "tmCores": 3.996,
+      "tmCapFrac": 0.9991,
+      "tmThrottledPeriodsPct": 97.7,
+      "kafkaCores": 0.398,
+      "kafkaCap": 2.5,
+      "kafkaCapFrac": 0.1593,
+      "gcMsInWindow": 408.0,
+      "gcFracOfCapacity": 0.0033,
+      "sourceIdle": 0.0,
+      "sourceBusy": 0.9807,
+      "sourceBackpressured": 0.0193,
+      "bpSamples": 56,
+      "backpressure": {
+        "aggregate by account -> positions-by-account: Writer -> positions-by-account: Committer": {
+          "busy": 0.8626,
+          "backPressured": 0.0,
+          "idle": 0.1374,
+          "samples": 56
+        },
+        "Source: orders -> (by symbol, split by allocation)": {
+          "busy": 0.9807,
+          "backPressured": 0.0193,
+          "idle": 0.0,
+          "samples": 56
+        },
+        "aggregate by symbol -> positions-by-symbol: Writer -> positions-by-symbol: Committer": {
+          "idle": 0.7662,
+          "busy": 0.2338,
+          "backPressured": 0.0,
+          "samples": 56
+        }
+      },
+      "status": "OK",
+      "ticks": [
+        {
+          "ts": 1789438065071,
+          "committed": 4114778,
+          "committedParts": [
+            517078,
+            518487,
+            493787,
+            494900,
+            538413,
+            539253,
+            500342,
+            512518
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4318448,
+          "end_positions-by-account": 17286917
+        },
+        {
+          "ts": 1789438065572,
+          "committed": 4114778,
+          "committedParts": [
+            517078,
+            518487,
+            493787,
+            494900,
+            538413,
+            539253,
+            500342,
+            512518
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4349890,
+          "end_positions-by-account": 17414034
+        },
+        {
+          "ts": 1789438066072,
+          "committed": 4114778,
+          "committedParts": [
+            517078,
+            518487,
+            493787,
+            494900,
+            538413,
+            539253,
+            500342,
+            512518
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4385125,
+          "end_positions-by-account": 17546983
+        },
+        {
+          "ts": 1789438066571,
+          "committed": 4114778,
+          "committedParts": [
+            517078,
+            518487,
+            493787,
+            494900,
+            538413,
+            539253,
+            500342,
+            512518
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4422816,
+          "end_positions-by-account": 17705064
+        },
+        {
+          "ts": 1789438067072,
+          "committed": 4114778,
+          "committedParts": [
+            517078,
+            518487,
+            493787,
+            494900,
+            538413,
+            539253,
+            500342,
+            512518
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4458029,
+          "end_positions-by-account": 17835206
+        },
+        {
+          "ts": 1789438067573,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4469116,
+          "end_positions-by-account": 17881893
+        },
+        {
+          "ts": 1789438068073,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4493414,
+          "end_positions-by-account": 17980427
+        },
+        {
+          "ts": 1789438068573,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4517351,
+          "end_positions-by-account": 18073872
+        },
+        {
+          "ts": 1789438069074,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4553438,
+          "end_positions-by-account": 18220412
+        },
+        {
+          "ts": 1789438069574,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4578256,
+          "end_positions-by-account": 18328369
+        },
+        {
+          "ts": 1789438070075,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4609321,
+          "end_positions-by-account": 18452862
+        },
+        {
+          "ts": 1789438070575,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4656315,
+          "end_positions-by-account": 18644706
+        },
+        {
+          "ts": 1789438071075,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4702393,
+          "end_positions-by-account": 18814150
+        },
+        {
+          "ts": 1789438071576,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4734987,
+          "end_positions-by-account": 18944688
+        },
+        {
+          "ts": 1789438072077,
+          "committed": 4462643,
+          "committedParts": [
+            562112,
+            561881,
+            538346,
+            539738,
+            583283,
+            584270,
+            539254,
+            553759
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4774142,
+          "end_positions-by-account": 19106239
+        },
+        {
+          "ts": 1789438072577,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4809290,
+          "end_positions-by-account": 19240801
+        },
+        {
+          "ts": 1789438073079,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4828494,
+          "end_positions-by-account": 19320590
+        },
+        {
+          "ts": 1789438073579,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4857618,
+          "end_positions-by-account": 19432031
+        },
+        {
+          "ts": 1789438074079,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4874381,
+          "end_positions-by-account": 19502642
+        },
+        {
+          "ts": 1789438074579,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4901997,
+          "end_positions-by-account": 19621213
+        },
+        {
+          "ts": 1789438075080,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4933046,
+          "end_positions-by-account": 19738788
+        },
+        {
+          "ts": 1789438075581,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 4965263,
+          "end_positions-by-account": 19869795
+        },
+        {
+          "ts": 1789438076082,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5000976,
+          "end_positions-by-account": 20010270
+        },
+        {
+          "ts": 1789438076582,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5038902,
+          "end_positions-by-account": 20157657
+        },
+        {
+          "ts": 1789438077082,
+          "committed": 4790846,
+          "committedParts": [
+            607027,
+            606856,
+            571569,
+            584578,
+            624061,
+            622053,
+            584253,
+            590449
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5079515,
+          "end_positions-by-account": 20327938
+        },
+        {
+          "ts": 1789438077583,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5110413,
+          "end_positions-by-account": 20444362
+        },
+        {
+          "ts": 1789438078084,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5139119,
+          "end_positions-by-account": 20566687
+        },
+        {
+          "ts": 1789438078584,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5170328,
+          "end_positions-by-account": 20696220
+        },
+        {
+          "ts": 1789438079084,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5213902,
+          "end_positions-by-account": 20874190
+        },
+        {
+          "ts": 1789438079585,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5259399,
+          "end_positions-by-account": 21050790
+        },
+        {
+          "ts": 1789438080086,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5306638,
+          "end_positions-by-account": 21237292
+        },
+        {
+          "ts": 1789438080586,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5343571,
+          "end_positions-by-account": 21382194
+        },
+        {
+          "ts": 1789438081087,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5380244,
+          "end_positions-by-account": 21524114
+        },
+        {
+          "ts": 1789438081587,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5411094,
+          "end_positions-by-account": 21654291
+        },
+        {
+          "ts": 1789438082087,
+          "committed": 5096672,
+          "committedParts": [
+            652077,
+            651791,
+            606221,
+            619712,
+            657928,
+            655590,
+            623718,
+            629635
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5451262,
+          "end_positions-by-account": 21817303
+        },
+        {
+          "ts": 1789438082588,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5477069,
+          "end_positions-by-account": 21916510
+        },
+        {
+          "ts": 1789438083089,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5486604,
+          "end_positions-by-account": 21950018
+        },
+        {
+          "ts": 1789438083591,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5496715,
+          "end_positions-by-account": 21993022
+        },
+        {
+          "ts": 1789438084092,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5529058,
+          "end_positions-by-account": 22132579
+        },
+        {
+          "ts": 1789438084594,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5567732,
+          "end_positions-by-account": 22277260
+        },
+        {
+          "ts": 1789438085095,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5606363,
+          "end_positions-by-account": 22433442
+        },
+        {
+          "ts": 1789438085595,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5633593,
+          "end_positions-by-account": 22543550
+        },
+        {
+          "ts": 1789438086096,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5670954,
+          "end_positions-by-account": 22687932
+        },
+        {
+          "ts": 1789438086597,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5695553,
+          "end_positions-by-account": 22792006
+        },
+        {
+          "ts": 1789438087097,
+          "committed": 5466522,
+          "committedParts": [
+            697105,
+            696751,
+            651213,
+            664681,
+            707436,
+            705861,
+            668976,
+            674499
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5735662,
+          "end_positions-by-account": 22961847
+        },
+        {
+          "ts": 1789438087597,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5770277,
+          "end_positions-by-account": 23090728
+        },
+        {
+          "ts": 1789438088098,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5802479,
+          "end_positions-by-account": 23211213
+        },
+        {
+          "ts": 1789438088600,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5825717,
+          "end_positions-by-account": 23315147
+        },
+        {
+          "ts": 1789438089102,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5849938,
+          "end_positions-by-account": 23401584
+        },
+        {
+          "ts": 1789438089605,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5855140,
+          "end_positions-by-account": 23421854
+        },
+        {
+          "ts": 1789438090105,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5858573,
+          "end_positions-by-account": 23431057
+        },
+        {
+          "ts": 1789438090605,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5862234,
+          "end_positions-by-account": 23453482
+        },
+        {
+          "ts": 1789438091106,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5868138,
+          "end_positions-by-account": 23474425
+        },
+        {
+          "ts": 1789438091608,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5873553,
+          "end_positions-by-account": 23495558
+        },
+        {
+          "ts": 1789438092109,
+          "committed": 5753843,
+          "committedParts": [
+            736930,
+            734412,
+            693915,
+            697179,
+            741273,
+            741454,
+            696586,
+            712094
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5881992,
+          "end_positions-by-account": 23527520
+        },
+        {
+          "ts": 1789438092610,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5889407,
+          "end_positions-by-account": 23557812
+        },
+        {
+          "ts": 1789438093111,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5895130,
+          "end_positions-by-account": 23581306
+        },
+        {
+          "ts": 1789438093612,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5901914,
+          "end_positions-by-account": 23609238
+        },
+        {
+          "ts": 1789438094115,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5908991,
+          "end_positions-by-account": 23637725
+        },
+        {
+          "ts": 1789438094616,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5916734,
+          "end_positions-by-account": 23673791
+        },
+        {
+          "ts": 1789438095117,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5952746,
+          "end_positions-by-account": 23819351
+        },
+        {
+          "ts": 1789438095619,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 5994330,
+          "end_positions-by-account": 23985312
+        },
+        {
+          "ts": 1789438096119,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6036904,
+          "end_positions-by-account": 24162434
+        },
+        {
+          "ts": 1789438096603,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6067805,
+          "end_positions-by-account": 24289914
+        },
+        {
+          "ts": 1789438097105,
+          "committed": 5886136,
+          "committedParts": [
+            748879,
+            745486,
+            703157,
+            719651,
+            763729,
+            763844,
+            719095,
+            722295
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6104286,
+          "end_positions-by-account": 24430198
+        },
+        {
+          "ts": 1789438097606,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6135265,
+          "end_positions-by-account": 24545183
+        },
+        {
+          "ts": 1789438098125,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6144680,
+          "end_positions-by-account": 24579847
+        },
+        {
+          "ts": 1789438098627,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6146091,
+          "end_positions-by-account": 24582351
+        },
+        {
+          "ts": 1789438099128,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6150440,
+          "end_positions-by-account": 24601769
+        },
+        {
+          "ts": 1789438099630,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6157816,
+          "end_positions-by-account": 24632676
+        },
+        {
+          "ts": 1789438100133,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6167789,
+          "end_positions-by-account": 24675917
+        },
+        {
+          "ts": 1789438100634,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6181308,
+          "end_positions-by-account": 24741375
+        },
+        {
+          "ts": 1789438101136,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6217699,
+          "end_positions-by-account": 24881452
+        },
+        {
+          "ts": 1789438101637,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6254102,
+          "end_positions-by-account": 25020350
+        },
+        {
+          "ts": 1789438102142,
+          "committed": 6121435,
+          "committedParts": [
+            786276,
+            783585,
+            738386,
+            742233,
+            786236,
+            786299,
+            741568,
+            756852
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6284598,
+          "end_positions-by-account": 25142645
+        },
+        {
+          "ts": 1789438102643,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6314851,
+          "end_positions-by-account": 25268823
+        },
+        {
+          "ts": 1789438103143,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6361365,
+          "end_positions-by-account": 25449067
+        },
+        {
+          "ts": 1789438103643,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6411193,
+          "end_positions-by-account": 25648656
+        },
+        {
+          "ts": 1789438104144,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6454042,
+          "end_positions-by-account": 25826182
+        },
+        {
+          "ts": 1789438104644,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6472329,
+          "end_positions-by-account": 25894693
+        },
+        {
+          "ts": 1789438105144,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6510284,
+          "end_positions-by-account": 26050429
+        },
+        {
+          "ts": 1789438105644,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6542815,
+          "end_positions-by-account": 26174715
+        },
+        {
+          "ts": 1789438106144,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6556205,
+          "end_positions-by-account": 26227135
+        },
+        {
+          "ts": 1789438106645,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6566879,
+          "end_positions-by-account": 26272434
+        },
+        {
+          "ts": 1789438107146,
+          "committed": 6292133,
+          "committedParts": [
+            808008,
+            803901,
+            758679,
+            764581,
+            808665,
+            808784,
+            764092,
+            775423
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6595311,
+          "end_positions-by-account": 26388642
+        },
+        {
+          "ts": 1789438107647,
+          "committed": 6528564,
+          "committedParts": [
+            842602,
+            841013,
+            758679,
+            805396,
+            853740,
+            853749,
+            764092,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6607623,
+          "end_positions-by-account": 26431755
+        },
+        {
+          "ts": 1789438108148,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6611411,
+          "end_positions-by-account": 26445944
+        },
+        {
+          "ts": 1789438108649,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6617362,
+          "end_positions-by-account": 26469966
+        },
+        {
+          "ts": 1789438109155,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6622079,
+          "end_positions-by-account": 26488677
+        },
+        {
+          "ts": 1789438109656,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6626680,
+          "end_positions-by-account": 26505490
+        },
+        {
+          "ts": 1789438110208,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6629698,
+          "end_positions-by-account": 26518921
+        },
+        {
+          "ts": 1789438110709,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6630916,
+          "end_positions-by-account": 26524679
+        },
+        {
+          "ts": 1789438111211,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6634762,
+          "end_positions-by-account": 26537168
+        },
+        {
+          "ts": 1789438111713,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6637081,
+          "end_positions-by-account": 26545647
+        },
+        {
+          "ts": 1789438112329,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6638022,
+          "end_positions-by-account": 26550989
+        },
+        {
+          "ts": 1789438112829,
+          "committed": 6603330,
+          "committedParts": [
+            842602,
+            841013,
+            788494,
+            805396,
+            853740,
+            853749,
+            809043,
+            809293
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6641682,
+          "end_positions-by-account": 26565591
+        },
+        {
+          "ts": 1789438113332,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6648063,
+          "end_positions-by-account": 26594316
+        },
+        {
+          "ts": 1789438113832,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6656078,
+          "end_positions-by-account": 26627070
+        },
+        {
+          "ts": 1789438114333,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6663784,
+          "end_positions-by-account": 26656538
+        },
+        {
+          "ts": 1789438114835,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6674354,
+          "end_positions-by-account": 26697386
+        },
+        {
+          "ts": 1789438115337,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6682052,
+          "end_positions-by-account": 26727795
+        },
+        {
+          "ts": 1789438115838,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6689572,
+          "end_positions-by-account": 26761360
+        },
+        {
+          "ts": 1789438116339,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6696709,
+          "end_positions-by-account": 26790885
+        },
+        {
+          "ts": 1789438116840,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6707067,
+          "end_positions-by-account": 26830258
+        },
+        {
+          "ts": 1789438117353,
+          "committed": 6640173,
+          "committedParts": [
+            852001,
+            850138,
+            797862,
+            809467,
+            853740,
+            853749,
+            809043,
+            814173
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6719574,
+          "end_positions-by-account": 26877233
+        },
+        {
+          "ts": 1789438117855,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6725556,
+          "end_positions-by-account": 26903232
+        },
+        {
+          "ts": 1789438118360,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6732796,
+          "end_positions-by-account": 26930725
+        },
+        {
+          "ts": 1789438118861,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6741106,
+          "end_positions-by-account": 26962778
+        },
+        {
+          "ts": 1789438119361,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6752367,
+          "end_positions-by-account": 27012446
+        },
+        {
+          "ts": 1789438119862,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6767244,
+          "end_positions-by-account": 27081697
+        },
+        {
+          "ts": 1789438120362,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6795609,
+          "end_positions-by-account": 27183052
+        },
+        {
+          "ts": 1789438120865,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6803898,
+          "end_positions-by-account": 27218352
+        },
+        {
+          "ts": 1789438121366,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6810557,
+          "end_positions-by-account": 27241542
+        },
+        {
+          "ts": 1789438121875,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6818997,
+          "end_positions-by-account": 27275007
+        },
+        {
+          "ts": 1789438122378,
+          "committed": 6717944,
+          "committedParts": [
+            854257,
+            854178,
+            808374,
+            810779,
+            871280,
+            869863,
+            817420,
+            831793
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6827252,
+          "end_positions-by-account": 27310321
+        },
+        {
+          "ts": 1789438122878,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6836774,
+          "end_positions-by-account": 27347119
+        },
+        {
+          "ts": 1789438123378,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6842177,
+          "end_positions-by-account": 27366918
+        },
+        {
+          "ts": 1789438123881,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6849748,
+          "end_positions-by-account": 27399743
+        },
+        {
+          "ts": 1789438124381,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6857749,
+          "end_positions-by-account": 27431669
+        },
+        {
+          "ts": 1789438124882,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6865887,
+          "end_positions-by-account": 27464166
+        },
+        {
+          "ts": 1789438125383,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6872611,
+          "end_positions-by-account": 27490818
+        },
+        {
+          "ts": 1789438125883,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6881128,
+          "end_positions-by-account": 27525246
+        },
+        {
+          "ts": 1789438126401,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6892530,
+          "end_positions-by-account": 27578394
+        },
+        {
+          "ts": 1789438126902,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6924053,
+          "end_positions-by-account": 27700171
+        },
+        {
+          "ts": 1789438127404,
+          "committed": 6826150,
+          "committedParts": [
+            876786,
+            873261,
+            821487,
+            831918,
+            878394,
+            876240,
+            831415,
+            836649
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6936864,
+          "end_positions-by-account": 27746465
+        },
+        {
+          "ts": 1789438127931,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6944980,
+          "end_positions-by-account": 27779285
+        },
+        {
+          "ts": 1789438128432,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6951806,
+          "end_positions-by-account": 27811044
+        },
+        {
+          "ts": 1789438128934,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6962051,
+          "end_positions-by-account": 27848044
+        },
+        {
+          "ts": 1789438129434,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6973797,
+          "end_positions-by-account": 27896830
+        },
+        {
+          "ts": 1789438129936,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6973801,
+          "end_positions-by-account": 27897209
+        },
+        {
+          "ts": 1789438130437,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6973801,
+          "end_positions-by-account": 27897209
+        },
+        {
+          "ts": 1789438130938,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6973801,
+          "end_positions-by-account": 27897209
+        },
+        {
+          "ts": 1789438131438,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6973801,
+          "end_positions-by-account": 27897209
+        },
+        {
+          "ts": 1789438131944,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6973801,
+          "end_positions-by-account": 27897209
+        },
+        {
+          "ts": 1789438132446,
+          "committed": 6935596,
+          "committedParts": [
+            883272,
+            879114,
+            830916,
+            840772,
+            898602,
+            898711,
+            849880,
+            854329
+          ],
+          "endIn": 20000000,
+          "end_positions-by-symbol": 6973801,
+          "end_positions-by-account": 27897209
+        }
+      ]
+    }
+  ],
+  "at": "2026-09-14 22:03:11",
+  "disk": {
+    "hostFreeBytes": 134906073088,
+    "inputBytesPerRecord": 46.6,
+    "inputBytes": 1864785920,
+    "sinkBytesPerInput": 146.7,
+    "sinkBytesUnbounded": 5867737241,
+    "sinkRetentionCapBytes": 34359738368,
+    "sinkBytes": 5867737241,
+    "sinkBoundedByRetention": false,
+    "checkpointBytes": 53248,
+    "floorBytes": 20000000000,
+    "neededBytes": 27732576409,
+    "fits": true,
+    "hostFreeBytesNow": 132999610368,
+    "reclaimableBytes": 1906462720,
+    "measuredOn": {
+      "tinyTopicRecords": 20000000,
+      "tinyTopicBytes": 932392960,
+      "sinkRecordsConsumed": 6640173,
+      "sinkBytesOnDisk": 974069760
+    }
+  },
+  "backlogNeeded": 3722062,
+  "backlogConfigured": 40000000,
+  "ratio": 1.556,
+  "result": "FAIL"
+}
