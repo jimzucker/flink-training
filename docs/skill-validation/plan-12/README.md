@@ -92,7 +92,7 @@ unreported and the reason is written down as unknown.
 
 Decision, by the rule written above: **the one-core case keeps its definition; phase 2.5 is dropped; 1→2 is reportable** with the standard case. Noted, not explained: the one-core case is the noisiest (10.8% over three passes, and its fastest pass was the refused one at 95.3% of cap), its GC fraction is twice the two-core case's, and its source idles at 0% while the two-core source idles at 14%.
 
-Arm A and arm C together, as a replay fixture ([`record/plan12-phase1.json`](../../../.claude/skills/scalable-flink-skill/harness/record/plan12-phase1.json)): 1→2 = 2.11×, 2→4 = 1.94× on the same build, rig and day, arms back to back rather than interleaved. Replay: 14 suites, OK.
+Arm A and arm C together, as a replay fixture ([`record/plan12-phase1.json`](../../runs/harness-record/plan12-phase1.json)): 1→2 = 2.11×, 2→4 = 1.94× on the same build, rig and day, arms back to back rather than interleaved. Replay: 14 suites, OK.
 
 ### Phase 1 verdict
 

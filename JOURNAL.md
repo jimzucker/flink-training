@@ -54,7 +54,7 @@ hours of active session time, of which roughly 6.4 were human. The rest was the
 model working unattended.
 
 The method that produced the scaling result was extracted into
-[`.claude/skills/scalable-flink-skill`](.claude/skills/scalable-flink-skill/SKILL.md) and
+[`scalable-flink-skill`](https://github.com/jimzucker/scalable-flink-skill/blob/main/SKILL.md) and
 then validated against a fresh agent that rebuilt the measurement from nothing —
 see [`docs/skill-validation/`](docs/skill-validation/clean-room/clean-room-run-1.md).
 

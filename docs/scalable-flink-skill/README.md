@@ -8,17 +8,16 @@ Ask Claude to build a pipeline and prove it scales. About an hour later you
 have the pipeline — and a scaling table, with the resource columns beside the
 throughput, that holds up when someone pushes on it.
 
-**The skill's home is [github.com/jimzucker/scalable-flink-skill](https://github.com/jimzucker/scalable-flink-skill)**
-— clone it straight into your skills directory. This repository keeps a working
-copy at [`.claude/skills/scalable-flink-skill/`](../../.claude/skills/scalable-flink-skill/)
-so the skill is available while working here, and holds the validation evidence
-behind every figure below.
+**The skill lives in [its own repository](https://github.com/jimzucker/scalable-flink-skill)**
+— clone it straight into your skills directory and it is available everywhere,
+including here. This repository holds the validation evidence behind every
+figure below.
 
 | | |
 |---|---|
 | the LinkedIn post | [`post.md`](post.md) |
 | the card above, as HTML | [`card.html`](card.html) |
-| the skill and its harness | [`.claude/skills/scalable-flink-skill/`](../../.claude/skills/scalable-flink-skill/) |
+| the skill and its harness | [jimzucker/scalable-flink-skill](https://github.com/jimzucker/scalable-flink-skill) |
 
 ## What comes out
 
@@ -81,7 +80,7 @@ Claude builds these with you; the harness expects them.
 | `pipeline.json` | describes the three, plus cases, passes, backlog and caps; start from `harness/pipeline.example.json` |
 
 The full contract is
-[`harness/README.md`](../../.claude/skills/scalable-flink-skill/harness/README.md).
+[`harness/README.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/harness/README.md).
 
 ## Running it
 

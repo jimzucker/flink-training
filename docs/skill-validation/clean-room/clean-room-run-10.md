@@ -67,7 +67,7 @@ which is why the two runs cannot be compared and why neither could be trusted
 to be stable on the next.
 
 So the harness now ships with the skill —
-[`harness/`](../../../.claude/skills/scalable-flink-skill/harness/README.md) — as
+[`harness/`](https://github.com/jimzucker/scalable-flink-skill/blob/main/harness/README.md) — as
 code: the sampler, the preflight, the tiny proof, the completeness run, the
 suite, every guard with a self-test, and the thresholds with the measurement
 each was set from. `prove.py replay` re-derives the recorded suites against

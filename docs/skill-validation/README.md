@@ -2,7 +2,7 @@
 
 Twenty-nine runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
-[`SKILL.md`](../../.claude/skills/scalable-flink-skill/SKILL.md), given one prompt and
+[`SKILL.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/SKILL.md), given one prompt and
 no human input.
 
 The point is not that the runs succeeded. It is that **the skill has to carry the
