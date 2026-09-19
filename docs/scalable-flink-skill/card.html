@@ -57,7 +57,7 @@
   .result{padding:30px clamp(24px,3.4vw,40px) 24px}
 
   .plot{display:flex;align-items:flex-end;gap:18px}
-  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;gap:8px}
+  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:8px;min-width:0}
   .chip{
     font-family:var(--mono);
     font-size:14px;
@@ -74,7 +74,7 @@
     color:var(--ink);
     white-space:nowrap;
   }
-  .bar{border-radius:5px 5px 0 0}
+  .bar{width:100%;border-radius:5px 5px 0 0}
 
   .axis{
     display:flex;
@@ -84,12 +84,16 @@
     border-top:1px solid var(--rule);
   }
   .axis div{
+    min-width:0;
     font-family:var(--mono);
-    font-size:13px;
+    /* the columns shrink with the bars; the label must not wrap when they do */
+    font-size:clamp(10px,1.2vw,13px);
     font-weight:500;
     letter-spacing:.09em;
     text-transform:uppercase;
     color:var(--muted);
+    white-space:nowrap;
+    text-align:center;
   }
 
   .foot{
@@ -115,17 +119,17 @@
 
   <section class="result">
     <div class="plot">
-      <div class="col-bar" style="width:140px">
+      <div class="col-bar" style="flex:1">
         <span class="chip">&nbsp;</span>
         <span class="val">58,326</span>
         <div class="bar" style="height:64px;background:var(--b1)"></div>
       </div>
-      <div class="col-bar" style="width:281px">
+      <div class="col-bar" style="flex:2">
         <span class="chip">2.06&times;</span>
         <span class="val">120,115</span>
         <div class="bar" style="height:132px;background:var(--b2)"></div>
       </div>
-      <div class="col-bar" style="width:563px">
+      <div class="col-bar" style="flex:4">
         <span class="chip">1.99&times;</span>
         <span class="val">238,804</span>
         <div class="bar" style="height:262px;background:var(--b3)"></div>
@@ -133,9 +137,9 @@
     </div>
 
     <div class="axis">
-      <div style="width:140px">1 CPU</div>
-      <div style="width:281px">2 CPUs</div>
-      <div style="width:563px">4 CPUs</div>
+      <div style="flex:1">1 CPU</div>
+      <div style="flex:2">2 CPUs</div>
+      <div style="flex:4">4 CPUs</div>
     </div>
   </section>
 
