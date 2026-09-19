@@ -45,14 +45,14 @@ across 1→4 cores — [`docs/skill-validation/payload-2k.md`](../skill-validati
    outputs, how many distinct keys, what has to be exactly right, who is
    watching, and — written down verbatim — the claim you want to make. Every
    later decision is judged against that sentence.
-2. **Builds in reviewable steps.** One branch per step, each ending with the
+2. **Builds it in reviewable steps.** One branch per step, each ending with the
    system running and measured rather than compiling.
-3. **Proves nothing is lost, separately from proving it is fast.** A backlog
-   small enough to drain to the last record, checked against a manifest
-   computed from the input alone, with no tolerances — then again after killing
-   a worker mid-drain. No throughput table is published for a build that has
-   not passed.
-4. **Measures each step up in capacity.** It caps one worker's CPU, raises
+3. **Verifies the results are correct and complete.** A backlog small enough
+   to drain to the last record, checked against a manifest computed from the
+   input alone, with no tolerances — then again after killing a worker
+   mid-drain. Completeness is a separate run from throughput, and no
+   throughput table is published for a build that has not passed.
+4. **Measures and compares scaling.** It caps one worker's CPU, raises
    parallelism to match, drains a fixed backlog, and leads with the step ratio
    you would actually buy.
 
