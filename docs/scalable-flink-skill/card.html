@@ -1,7 +1,7 @@
 <title>Prove It Scales</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 <style>
   /* Single-theme by design: a shareable card, built to sit in a light feed.
      Every colour is painted explicitly so it holds on any host ground. */
@@ -9,28 +9,24 @@
     --paper:#eef2f1;
     --card:#ffffff;
     --band:#0b6a6e;
-    --band-ink:#ffffff;
-    --band-soft:#9fd6d5;
     --ink:#0f1f1e;
     --muted:#566766;
-    --dim:#7d8c8b;
     --rule:#d5dedc;
     --accent:#0b6a6e;
     --b1:#8ecac7;
     --b2:#3d9a99;
     --b3:#0b6a6e;
     --disp:"Archivo","Helvetica Neue",Arial,sans-serif;
-    --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
     --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
   }
   body{
     background:var(--paper);
     color:var(--ink);
-    font-family:var(--sans);
+    font-family:var(--disp);
     display:flex;
     justify-content:center;
     align-items:flex-start;
-    padding-block:26px 40px;
+    padding-block:24px 34px;
     padding-left:18px;
     padding-right:18px;
   }
@@ -42,217 +38,110 @@
     overflow:hidden;
   }
 
-  /* ---- headline band ---- */
   .band{
     background:var(--band);
-    color:var(--band-ink);
-    padding:26px clamp(22px,3.2vw,38px) 22px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
+    color:#ffffff;
+    padding:30px clamp(24px,3.4vw,40px) 28px;
   }
   h1{
-    font-family:var(--disp);
     font-weight:800;
-    font-size:clamp(26px,3.5vw,40px);
-    line-height:1.03;
+    font-size:clamp(27px,3.7vw,43px);
+    line-height:1.04;
     letter-spacing:-.022em;
     margin:0;
-    max-width:23ch;
+    max-width:24ch;
     text-wrap:balance;
   }
-  h1 em{font-style:normal;color:var(--band-soft)}
-  .prompt{
-    margin:0;
-    font-family:var(--mono);
-    font-size:clamp(12.5px,1.45vw,15.5px);
-    color:var(--band-soft);
-    display:flex;
-    gap:9px;
-    align-items:baseline;
-  }
-  .prompt b{font-weight:600;color:#ffffff}
+  h1 em{font-style:normal;color:#9fd6d5}
 
-  /* ---- body: steps beside the result ---- */
-  .body{
-    display:grid;
-    grid-template-columns:minmax(290px,0.92fr) minmax(330px,1fr);
-    gap:1px;
-    background:var(--rule);
-  }
-  .col{background:var(--card);padding:20px clamp(20px,3vw,30px) 22px;display:flex;flex-direction:column}
+  .result{padding:30px clamp(24px,3.4vw,40px) 24px}
 
-  .eyebrow{
-    margin:0 0 15px;
-    font-family:var(--mono);
-    font-size:10.5px;
-    font-weight:600;
-    letter-spacing:.17em;
-    text-transform:uppercase;
-    color:var(--dim);
-  }
-
-  .steps{display:flex;flex-direction:column;gap:15px}
-  .step{display:flex;gap:13px;align-items:baseline}
-  .step .n{
-    font-family:var(--mono);
-    font-size:12px;
-    font-weight:600;
-    color:var(--accent);
-    font-variant-numeric:tabular-nums;
-    flex:0 0 1.2em;
-  }
-  .step .t{
-    font-family:var(--disp);
-    font-weight:600;
-    font-size:clamp(16.5px,1.85vw,19.5px);
-    line-height:1.26;
-    letter-spacing:-.008em;
-    color:var(--ink);
-  }
-
-  /* ---- chart: height = throughput reached, width = CPUs used ---- */
-  .plot{
-    display:flex;
-    align-items:flex-end;
-    gap:12px;
-  }
-  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;gap:6px}
+  .plot{display:flex;align-items:flex-end;gap:18px}
+  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;gap:8px}
   .chip{
     font-family:var(--mono);
-    font-size:12px;
+    font-size:14px;
     font-weight:600;
-    letter-spacing:.03em;
     color:var(--accent);
     min-height:1.2em;
     white-space:nowrap;
   }
   .val{
     font-family:var(--mono);
-    font-size:clamp(12px,1.5vw,15px);
+    font-size:clamp(15px,1.8vw,19px);
     font-weight:500;
     font-variant-numeric:tabular-nums;
     color:var(--ink);
     white-space:nowrap;
   }
-  .bar{position:relative;border-radius:4px 4px 0 0}
+  .bar{border-radius:5px 5px 0 0}
+
   .axis{
     display:flex;
-    gap:12px;
-    margin-top:9px;
-    padding-top:9px;
+    gap:18px;
+    margin-top:11px;
+    padding-top:11px;
     border-top:1px solid var(--rule);
   }
   .axis div{
     font-family:var(--mono);
-    font-size:11.5px;
+    font-size:13px;
     font-weight:500;
     letter-spacing:.09em;
     text-transform:uppercase;
     color:var(--muted);
   }
-  .spec{
-    margin:auto 0 0;
-    padding-top:18px;
-    font-family:var(--mono);
-    font-size:11.5px;
-    line-height:1.5;
-    color:var(--dim);
-  }
-  .note{
-    margin:13px 0 0;
-    font-family:var(--mono);
-    font-size:11px;
-    line-height:1.55;
-    color:var(--dim);
-  }
 
-  /* ---- footer ---- */
   .foot{
     border-top:1px solid var(--rule);
-    padding:16px clamp(22px,3.2vw,38px) 18px;
+    padding:16px clamp(24px,3.4vw,40px) 18px;
     display:flex;
     flex-wrap:wrap;
-    gap:12px 40px;
+    gap:8px 30px;
     align-items:baseline;
     justify-content:space-between;
-  }
-  .kicker{
-    margin:0;
-    font-family:var(--disp);
-    font-weight:700;
-    font-size:clamp(21px,2.7vw,28px);
-    line-height:1.2;
-    letter-spacing:-.015em;
-    color:var(--accent);
-  }
-  .link{
     font-family:var(--mono);
-    font-size:clamp(11.5px,1.3vw,13px);
+    font-size:clamp(12px,1.4vw,14px);
     color:var(--muted);
-    white-space:nowrap;
   }
-
-  @media (max-width:720px){
-    .body{grid-template-columns:1fr}
-  }
+  .foot b{font-weight:500;color:var(--accent)}
 </style>
 
 <div class="card">
 
   <header class="band">
     <h1>A free Claude Code skill that builds your data pipeline and <em>proves it scales.</em></h1>
-    <p class="prompt"><b>&#10095;</b>“Build this pipeline and prove it scales.”</p>
   </header>
 
-  <section class="body">
-
-    <div class="col">
-      <p class="eyebrow">What it does</p>
-      <div class="steps">
-        <div class="step"><span class="n">1</span><span class="t">Interviews you before it builds</span></div>
-        <div class="step"><span class="n">2</span><span class="t">Builds it in reviewable steps</span></div>
-        <div class="step"><span class="n">3</span><span class="t">Proves nothing is lost</span></div>
-        <div class="step"><span class="n">4</span><span class="t">Measures each step up in capacity</span></div>
+  <section class="result">
+    <div class="plot">
+      <div class="col-bar" style="width:140px">
+        <span class="chip">&nbsp;</span>
+        <span class="val">58,326</span>
+        <div class="bar" style="height:64px;background:var(--b1)"></div>
       </div>
-      <p class="spec">Apache Flink on Kafka &middot; one laptop &middot; about an hour end to end</p>
+      <div class="col-bar" style="width:281px">
+        <span class="chip">2.06&times;</span>
+        <span class="val">120,115</span>
+        <div class="bar" style="height:132px;background:var(--b2)"></div>
+      </div>
+      <div class="col-bar" style="width:563px">
+        <span class="chip">1.99&times;</span>
+        <span class="val">238,804</span>
+        <div class="bar" style="height:262px;background:var(--b3)"></div>
+      </div>
     </div>
 
-    <div class="col">
-      <p class="eyebrow">One hour later</p>
-
-      <div class="plot">
-        <div class="col-bar" style="width:74px">
-          <span class="chip">&nbsp;</span>
-          <span class="val">58,326</span>
-          <div class="bar" style="height:42px;background:var(--b1)"></div>
-        </div>
-        <div class="col-bar" style="width:147px">
-          <span class="chip">2.06&times;</span>
-          <span class="val">120,115</span>
-          <div class="bar" style="height:86px;background:var(--b2)"></div>
-        </div>
-        <div class="col-bar" style="width:295px">
-          <span class="chip">1.99&times;</span>
-          <span class="val">238,804</span>
-          <div class="bar" style="height:170px;background:var(--b3)"></div>
-        </div>
-      </div>
-
-      <div class="axis">
-        <div style="width:74px">1 CPU</div>
-        <div style="width:147px">2 CPUs</div>
-        <div style="width:295px">4 CPUs</div>
-      </div>
-
-      <p class="note">Records per second. Each block is as tall as the throughput it reached and as wide as the CPUs it used. Every case ran at 96.3&ndash;98.1% of its CPU cap, so the worker was the limit.</p>
+    <div class="axis">
+      <div style="width:140px">1 CPU</div>
+      <div style="width:281px">2 CPUs</div>
+      <div style="width:563px">4 CPUs</div>
     </div>
-
   </section>
 
   <footer class="foot">
-    <p class="kicker">You have a pipeline that scales.</p>
-    <span class="link">github.com/jimzucker/scalable-flink-skill</span>
+    <span>Records per second, on one laptop</span>
+    <b>github.com/jimzucker/scalable-flink-skill</b>
   </footer>
 
 </div>
