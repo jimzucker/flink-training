@@ -10,6 +10,7 @@ memory.
 |---|---|---|---|
 | Lessons learned from the 24-day AI build | senior managers | `lessons-post.md`, `lessons-article.html`, `lessons-card.html` | merged (#91, #92, #93) |
 | Introducing the prove-it-scales skill | post: senior managers · article: engineers who will use it | `skill-post.md`, `skill-article.md`, `skill-post-card.html`, `skill-article-card.html` | branch `linkedin-skill-post`, no PR |
+| A skill that refuses to publish a bad benchmark | engineers | `refused-benchmark-article.md` | branch `linkedin-refused-benchmark`, no PR; no graphic yet |
 
 ## Tone rules
 
