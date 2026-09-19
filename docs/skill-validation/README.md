@@ -1,6 +1,6 @@
 # Clean-room validation
 
-Twenty-nine runs of the same problem, each by a fresh agent in an empty directory, barred
+Thirty runs of the same problem, each by a fresh agent in an empty directory, barred
 from reading this repository or any earlier run, allowed only
 [`SKILL.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/SKILL.md), given one prompt and
 no human input.
@@ -42,8 +42,15 @@ way to tell them apart.
 | [26](clean-room/clean-room-run-26.md) | DataStream | 1.67 h | — | 67 | 139,255 | 316,042 | 540,772 | 3.88× | 97% | **100%** |
 | [27](clean-room/clean-room-run-27.md)† | DataStream | 2.13 h | — | 115 | 108,886 | 264,183 | 489,595 | 4.50× | 100% | **100%** |
 | [28](clean-room/clean-room-run-28.md)† | DataStream | 2.65 h | — | 103 | 186,252 | 396,982 | **757,704** | 4.07× | 100% | **100%** |
+| [30](clean-room/clean-room-run-30.md)‡ | DataStream | 2.15 h | — | 83 | — | 474,307 | **788,285** | — | **99%** | **99%** |
 
 Human time was **0 h** and human prompts **1** in every row.
+
+‡ Run 30 ran cases **2 and 4 with no 1-core case**, so it has no 1→4 ratio; its
+step is **2→4 = 1.662×, 83.1% of linear**, which misses the claim. The agent
+dropped the 1-core case on the skill's own rule: at parallelism 1 that job
+chains into a single vertex, so the baseline would not share the other cases'
+graph. Run 29 has no row — it failed at the tiny proof and produced no table.
 
 The **2 cores** and **TM % of cap at 2** columns were added on 2026-09-14 from [`docs/runs/ledger.csv`](../runs/ledger.csv), using the same convention as the 1- and 4-core columns: the mean of the passes the harness marked OK, and the mean of those passes' CPU-cap fraction, rounded. Runs 1–8 carry the one value their write-ups publish — run 6 its ascending pass, and runs 1, 3 and 4 a percentage computed from the TaskManager cores they report. Run 9 is suite 7 divided by four legs per order, as its other columns are; run 10 is suite B, and its cap at two cores was never published. Run 3's **90%** is below the 95% floor. Run 13's existing 100% at four cores does not match its suite, whose passes average 96.9%; it is left as published.
 
