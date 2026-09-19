@@ -14,7 +14,7 @@ and ships with the measurement harness that produces the table.
 
 | | |
 |---|---|
-| the pitch, for a general audience | [`article.md`](article.md) |
+| the LinkedIn post | [`post.md`](post.md) |
 | the card above, as HTML | [`card.html`](card.html) |
 | the skill and its harness | [`.claude/skills/scalable-flink-skill/`](../../.claude/skills/scalable-flink-skill/) |
 

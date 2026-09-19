@@ -9,7 +9,7 @@ memory.
 | piece | audience | files | state |
 |---|---|---|---|
 | Lessons learned from the 24-day AI build | senior managers | `lessons-post.md`, `lessons-article.html`, `lessons-card.html` | merged (#91, #92, #93) |
-| Prove it scales — the short pitch | engineers | all three live together in [`docs/scalable-flink-skill/`](../scalable-flink-skill/): `article.md`, `card.html` (rendered to `card.png`) and `README.md` | branch `linkedin-scalable-flink-skill`, no PR |
+| Prove it scales — the short pitch | engineers | all three live together in [`docs/scalable-flink-skill/`](../scalable-flink-skill/): `post.md`, `card.html` (rendered to `card.png`) and `README.md` | branch `linkedin-scalable-flink-skill`, no PR |
 
 ## Tone rules
 
