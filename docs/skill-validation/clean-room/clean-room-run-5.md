@@ -153,6 +153,6 @@ and broke a rule written as prose, in the same hour, with the violating number
 printed in its own results table.** Across five runs that pattern holds without
 exception. An audit then counted eighty rules and seven guards, and fourteen
 mechanisable rules became [the mandatory guard
-set](../../../.claude/skills/prove-it-scales/SKILL.md) — with a promotion rule
+set](https://github.com/jimzucker/scalable-flink-skill/blob/main/SKILL.md) — with a promotion rule
 attached to the skill itself: *when a run breaks a rule, that rule becomes a
 guard with a self-test, or it gets deleted.*
