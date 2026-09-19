@@ -691,3 +691,7 @@ scaffolding that is later replaced.
 
 See [`JOURNAL.md`](JOURNAL.md) for the step-by-step record.
 
+
+## Licence
+
+[Apache License 2.0](LICENSE).
