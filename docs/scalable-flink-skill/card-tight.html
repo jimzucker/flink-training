@@ -1,4 +1,4 @@
-<title>Prove It Scales</title>
+<title>Prove It Scales Tight</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
@@ -30,7 +30,7 @@
     display:flex;
     justify-content:center;
     align-items:flex-start;
-    padding-block:26px 40px;
+    padding-block:20px 28px;
     padding-left:18px;
     padding-right:18px;
   }
@@ -46,7 +46,7 @@
   .band{
     background:var(--band);
     color:var(--band-ink);
-    padding:26px clamp(22px,3.2vw,38px) 22px;
+    padding:24px clamp(22px,3.2vw,38px) 20px;
     display:flex;
     flex-direction:column;
     gap:12px;
@@ -80,7 +80,7 @@
     gap:1px;
     background:var(--rule);
   }
-  .col{background:var(--card);padding:20px clamp(20px,3vw,30px) 22px;display:flex;flex-direction:column}
+  .col{background:var(--card);padding:20px clamp(20px,3vw,30px) 20px;display:flex;flex-direction:column}
 
   .eyebrow{
     margin:0 0 15px;
@@ -92,7 +92,7 @@
     color:var(--dim);
   }
 
-  .steps{display:flex;flex-direction:column;gap:15px}
+  .steps{display:flex;flex-direction:column;gap:21px}
   .step{display:flex;gap:13px;align-items:baseline}
   .step .n{
     font-family:var(--mono);
@@ -105,7 +105,7 @@
   .step .t{
     font-family:var(--disp);
     font-weight:600;
-    font-size:clamp(16.5px,1.85vw,19.5px);
+    font-size:clamp(17px,1.95vw,21px);
     line-height:1.26;
     letter-spacing:-.008em;
     color:var(--ink);
@@ -170,7 +170,7 @@
   /* ---- footer ---- */
   .foot{
     border-top:1px solid var(--rule);
-    padding:16px clamp(22px,3.2vw,38px) 18px;
+    padding:15px clamp(22px,3.2vw,38px) 16px;
     display:flex;
     flex-wrap:wrap;
     gap:12px 40px;
@@ -245,7 +245,7 @@
         <div style="width:295px">4 CPUs</div>
       </div>
 
-      <p class="note">Records per second. Each block is as tall as the throughput it reached and as wide as the CPUs it used. Every case ran at 96.3&ndash;98.1% of its CPU cap, so the worker was the limit.</p>
+      <p class="note">Records per second &mdash; as tall as the throughput reached, as wide as the CPUs used. Every case ran at 96.3&ndash;98.1% of its CPU cap.</p>
     </div>
 
   </section>
