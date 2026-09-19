@@ -9,7 +9,6 @@ memory.
 | piece | audience | files | state |
 |---|---|---|---|
 | Lessons learned from the 24-day AI build | senior managers | `lessons-post.md`, `lessons-article.html`, `lessons-card.html` | merged (#91, #92, #93) |
-| Introducing the skill (superseded by the pitch above) | post: senior managers · article: engineers who will use it | `skill-post.md`, `skill-article.md`, `skill-post-card.html`, `skill-article-card.html` | branch `linkedin-skill-post`, no PR |
 | Prove it scales — the short pitch | engineers | all three live together in [`docs/scalable-flink-skill/`](../scalable-flink-skill/): `article.md`, `card.html` (rendered to `card.png`) and `README.md` | branch `linkedin-scalable-flink-skill`, no PR |
 
 ## Tone rules
@@ -93,12 +92,24 @@ The author's words each rule traces to:
   Claude-built runs read 506,286 and 668,254 records/s against the demo's
   238,804 — 2.1× and 2.8×.
 
-## Open on the skill pieces
+## Cut: the first skill post and article
+
+An earlier pair — `skill-post.md` (senior managers), `skill-article.md`
+(engineers) and a card for each — was written on 2026-09-14 and **removed on
+2026-09-19 at the author's request.** It was superseded by the pitch in
+[`docs/scalable-flink-skill/`](../scalable-flink-skill/), and had gone stale
+twice over: it used the skill's old name, its post opened "Last week I shared
+six rules…", and its article led with the harness's refusals rather than what
+the skill produces.
+
+It lived only on branch `linkedin-skill-post`, commit **`752c655`**, which was
+never merged and is now deleted. Nothing else in the repository carried those
+505 lines, so recovering them means fetching that commit by hash before GitHub
+collects it — after that it is gone.
+
+One open item from that work still stands, because it is about the figures and
+not the writing:
 
 - Runs 23 and 24 are described as measured at 4,096 keys. Their `suite.json`
   files do not record cardinality (`workload` is null); the figure comes only
   from [`demo-under-harness.md`](../skill-validation/demo-under-harness.md).
-- The post opens "Last week I shared six rules…" — true only if the lessons post
-  is published first.
-- The post says "The first thing it did was report a result I didn't want"; the
-  demo comparison actually came late in the validation work.
