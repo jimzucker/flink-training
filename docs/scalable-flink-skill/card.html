@@ -117,7 +117,7 @@
     align-items:flex-end;
     gap:12px;
   }
-  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;gap:6px}
+  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:6px;min-width:0}
   .chip{
     font-family:var(--mono);
     font-size:12px;
@@ -135,7 +135,7 @@
     color:var(--ink);
     white-space:nowrap;
   }
-  .bar{position:relative;border-radius:4px 4px 0 0}
+  .bar{position:relative;width:100%;border-radius:4px 4px 0 0}
   .axis{
     display:flex;
     gap:12px;
@@ -144,12 +144,16 @@
     border-top:1px solid var(--rule);
   }
   .axis div{
+    min-width:0;
     font-family:var(--mono);
-    font-size:11.5px;
+    /* the columns shrink with the bars; the label must not wrap when they do */
+    font-size:clamp(10px,1.2vw,11.5px);
     font-weight:500;
     letter-spacing:.09em;
     text-transform:uppercase;
     color:var(--muted);
+    white-space:nowrap;
+    text-align:center;
   }
   .spec{
     margin:auto 0 0;
@@ -160,10 +164,11 @@
     color:var(--dim);
   }
   .note{
-    margin:13px 0 0;
+    margin:auto 0 0;
+    padding-top:13px;
     font-family:var(--mono);
-    font-size:11px;
-    line-height:1.55;
+    font-size:11.5px;
+    line-height:1.5;
     color:var(--dim);
   }
 
@@ -212,27 +217,27 @@
       <div class="steps">
         <div class="step"><span class="n">1</span><span class="t">Interviews you before it builds</span></div>
         <div class="step"><span class="n">2</span><span class="t">Builds it in reviewable steps</span></div>
-        <div class="step"><span class="n">3</span><span class="t">Proves nothing is lost</span></div>
-        <div class="step"><span class="n">4</span><span class="t">Measures each step up in capacity</span></div>
+        <div class="step"><span class="n">3</span><span class="t">Verifies the results are correct and complete</span></div>
+        <div class="step"><span class="n">4</span><span class="t">Measures and compares scaling</span></div>
       </div>
-      <p class="spec">Apache Flink on Kafka &middot; one laptop &middot; about an hour end to end</p>
+      <p class="spec">Apache Flink on Kafka &middot; about an hour end to end</p>
     </div>
 
     <div class="col">
       <p class="eyebrow">One hour later</p>
 
       <div class="plot">
-        <div class="col-bar" style="width:74px">
+        <div class="col-bar" style="flex:1">
           <span class="chip">&nbsp;</span>
           <span class="val">58,326</span>
           <div class="bar" style="height:42px;background:var(--b1)"></div>
         </div>
-        <div class="col-bar" style="width:147px">
+        <div class="col-bar" style="flex:2">
           <span class="chip">2.06&times;</span>
           <span class="val">120,115</span>
           <div class="bar" style="height:86px;background:var(--b2)"></div>
         </div>
-        <div class="col-bar" style="width:295px">
+        <div class="col-bar" style="flex:4">
           <span class="chip">1.99&times;</span>
           <span class="val">238,804</span>
           <div class="bar" style="height:170px;background:var(--b3)"></div>
@@ -240,12 +245,12 @@
       </div>
 
       <div class="axis">
-        <div style="width:74px">1 CPU</div>
-        <div style="width:147px">2 CPUs</div>
-        <div style="width:295px">4 CPUs</div>
+        <div style="flex:1">1 core</div>
+        <div style="flex:2">2 cores</div>
+        <div style="flex:4">4 cores</div>
       </div>
 
-      <p class="note">Records per second. Each block is as tall as the throughput it reached and as wide as the CPUs it used. Every case ran at 96.3&ndash;98.1% of its CPU cap, so the worker was the limit.</p>
+      <p class="note">Records per second &middot; M1 Pro, 16&nbsp;GB, 8&nbsp;cores</p>
     </div>
 
   </section>

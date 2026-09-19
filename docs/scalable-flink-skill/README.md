@@ -26,9 +26,9 @@ One measured suite from this repository's own pipeline, at 4,096 distinct keys:
 
 | capacity | throughput | step |
 |---|---:|---|
-| 1 unit | 58,326 records/s | |
-| 2 units | 120,115 records/s | **2.06×** [1.92, 2.18] |
-| 4 units | 238,804 records/s | **1.99×** [1.95, 2.03] |
+| 1 core | 58,326 records/s | |
+| 2 cores | 120,115 records/s | **2.06×** [1.92, 2.18] |
+| 4 cores | 238,804 records/s | **1.99×** [1.95, 2.03] |
 
 Every case ran at 96.3–98.1% of its CPU cap, so the worker was the constraint
 and not something beside it. Garbage collection was 3.8 / 0.8 / 0.3% of
@@ -45,14 +45,14 @@ across 1→4 cores — [`docs/skill-validation/payload-2k.md`](../skill-validati
    outputs, how many distinct keys, what has to be exactly right, who is
    watching, and — written down verbatim — the claim you want to make. Every
    later decision is judged against that sentence.
-2. **Builds in reviewable steps.** One branch per step, each ending with the
+2. **Builds it in reviewable steps.** One branch per step, each ending with the
    system running and measured rather than compiling.
-3. **Proves nothing is lost, separately from proving it is fast.** A backlog
-   small enough to drain to the last record, checked against a manifest
-   computed from the input alone, with no tolerances — then again after killing
-   a worker mid-drain. No throughput table is published for a build that has
-   not passed.
-4. **Measures each step up in capacity.** It caps one worker's CPU, raises
+3. **Verifies the results are correct and complete.** A backlog small enough
+   to drain to the last record, checked against a manifest computed from the
+   input alone, with no tolerances — then again after killing a worker
+   mid-drain. Completeness is a separate run from throughput, and no
+   throughput table is published for a build that has not passed.
+4. **Measures and compares scaling.** It caps one worker's CPU, raises
    parallelism to match, drains a fixed backlog, and leads with the step ratio
    you would actually buy.
 
