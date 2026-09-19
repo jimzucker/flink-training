@@ -34,7 +34,7 @@ It's free and open, and every validation run behind that table is public. Link i
 
 ---
 
-**First comment:** "What it does, how to install it, and what a result looks like: https://github.com/jimzucker/flink-training/tree/main/docs/scalable-flink-skill"
+**First comment:** "What it does, how to install it, and what a result looks like: https://github.com/jimzucker/scalable-flink-skill"
 
 
 ---

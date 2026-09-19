@@ -7,7 +7,7 @@ setup.
 To use one outside this repo, copy it to your own skills directory:
 
 ```bash
-cp -r .claude/skills/scalable-flink-skill ~/.claude/skills/
+git clone https://github.com/jimzucker/scalable-flink-skill ~/.claude/skills/scalable-flink-skill
 ```
 
 | skill | what it does |

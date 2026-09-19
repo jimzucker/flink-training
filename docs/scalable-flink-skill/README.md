@@ -8,9 +8,11 @@ Ask Claude to build a pipeline and prove it scales. About an hour later you
 have the pipeline — and a scaling table, with the resource columns beside the
 throughput, that holds up when someone pushes on it.
 
-The skill itself lives in
-[`.claude/skills/scalable-flink-skill/`](../../.claude/skills/scalable-flink-skill/)
-and ships with the measurement harness that produces the table.
+**The skill's home is [github.com/jimzucker/scalable-flink-skill](https://github.com/jimzucker/scalable-flink-skill)**
+— clone it straight into your skills directory. This repository keeps a working
+copy at [`.claude/skills/scalable-flink-skill/`](../../.claude/skills/scalable-flink-skill/)
+so the skill is available while working here, and holds the validation evidence
+behind every figure below.
 
 | | |
 |---|---|
@@ -60,8 +62,8 @@ Docker, Python 3 (the harness is standard library only), and JDK 17. The stack
 runs `flink:1.20.1-scala_2.12-java17` and `apache/kafka:3.9.0` on one machine.
 
 ```bash
-git clone https://github.com/jimzucker/flink-training
-cp -r flink-training/.claude/skills/scalable-flink-skill ~/.claude/skills/
+git clone https://github.com/jimzucker/scalable-flink-skill \
+  ~/.claude/skills/scalable-flink-skill
 ```
 
 Then ask Claude to build your pipeline and prove it scales. The skill starts

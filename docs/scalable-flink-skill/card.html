@@ -111,14 +111,13 @@
     color:var(--ink);
   }
 
-  /* ---- chart ---- */
+  /* ---- chart: height = throughput reached, width = CPUs used ---- */
   .plot{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:clamp(14px,3vw,30px);
-    align-items:end;
+    display:flex;
+    align-items:flex-end;
+    gap:12px;
   }
-  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;gap:7px}
+  .col-bar{display:flex;flex-direction:column;justify-content:flex-end;gap:6px}
   .chip{
     font-family:var(--mono);
     font-size:12px;
@@ -126,36 +125,20 @@
     letter-spacing:.03em;
     color:var(--accent);
     min-height:1.2em;
+    white-space:nowrap;
   }
   .val{
     font-family:var(--mono);
-    font-size:clamp(13px,1.6vw,15.5px);
+    font-size:clamp(12px,1.5vw,15px);
     font-weight:500;
     font-variant-numeric:tabular-nums;
     color:var(--ink);
+    white-space:nowrap;
   }
   .bar{position:relative;border-radius:4px 4px 0 0}
-  /* perfect-doubling marker, drawn from the 1-unit case */
-  .bar .linear{
-    position:absolute;
-    left:-5px;right:-5px;
-    border-top:1px dashed rgba(15,31,30,.5);
-  }
-  .bar .linear b{
-    position:absolute;
-    right:0;
-    bottom:4px;
-    font-family:var(--mono);
-    font-size:9.5px;
-    font-weight:500;
-    letter-spacing:.1em;
-    text-transform:uppercase;
-    color:rgba(15,31,30,.62);
-  }
   .axis{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:clamp(14px,3vw,30px);
+    display:flex;
+    gap:12px;
     margin-top:9px;
     padding-top:9px;
     border-top:1px solid var(--rule);
@@ -167,14 +150,6 @@
     letter-spacing:.09em;
     text-transform:uppercase;
     color:var(--muted);
-  }
-  .spec{
-    margin:auto 0 0;
-    padding-top:18px;
-    font-family:var(--mono);
-    font-size:11.5px;
-    line-height:1.5;
-    color:var(--dim);
   }
   .note{
     margin:13px 0 0;
@@ -239,41 +214,37 @@
       <p class="eyebrow">One hour later</p>
 
       <div class="plot">
-        <div class="col-bar">
+        <div class="col-bar" style="width:74px">
           <span class="chip">&nbsp;</span>
           <span class="val">58,326</span>
           <div class="bar" style="height:42px;background:var(--b1)"></div>
         </div>
-        <div class="col-bar">
+        <div class="col-bar" style="width:147px">
           <span class="chip">2.06&times;</span>
           <span class="val">120,115</span>
-          <div class="bar" style="height:86px;background:var(--b2)">
-            <div class="linear" style="top:3px"></div>
-          </div>
+          <div class="bar" style="height:86px;background:var(--b2)"></div>
         </div>
-        <div class="col-bar">
+        <div class="col-bar" style="width:295px">
           <span class="chip">1.99&times;</span>
           <span class="val">238,804</span>
-          <div class="bar" style="height:170px;background:var(--b3)">
-            <div class="linear" style="top:4px"></div>
-          </div>
+          <div class="bar" style="height:170px;background:var(--b3)"></div>
         </div>
       </div>
 
       <div class="axis">
-        <div>1 unit</div>
-        <div>2 units</div>
-        <div>4 units</div>
+        <div style="width:74px">1 CPU</div>
+        <div style="width:147px">2 CPUs</div>
+        <div style="width:295px">4 CPUs</div>
       </div>
 
-      <p class="note">Records per second, measured. Dashed line marks perfect doubling. Every case ran at 96.3&ndash;98.1% of its CPU cap, so the worker was the limit.</p>
+      <p class="note">Records per second. Each block is as tall as the throughput it reached and as wide as the CPUs it used. Every case ran at 96.3&ndash;98.1% of its CPU cap, so the worker was the limit.</p>
     </div>
 
   </section>
 
   <footer class="foot">
     <p class="kicker">You have a pipeline that scales.</p>
-    <span class="link">github.com/jimzucker/flink-training</span>
+    <span class="link">github.com/jimzucker/scalable-flink-skill</span>
   </footer>
 
 </div>

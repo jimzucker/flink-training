@@ -11,13 +11,16 @@ The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 
 > ### Looking for the skill?
 >
-> **[scalable-flink-skill](docs/scalable-flink-skill/)** — a free Claude Code
+> **[scalable-flink-skill](https://github.com/jimzucker/scalable-flink-skill)** — a free Claude Code
 > skill that builds your data pipeline and proves it scales. It interviews you,
 > builds in reviewable steps, proves nothing is lost, then measures each step up
 > in capacity. About an hour on a laptop.
 >
-> [What it does, how to install it, and what a result looks like →](docs/scalable-flink-skill/)
-> This repository is the pipeline it was validated against.
+> [![Skill CI](https://github.com/jimzucker/scalable-flink-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/jimzucker/scalable-flink-skill/actions/workflows/ci.yml)
+>
+> [What it does, how to install it, and what a result looks like →](https://github.com/jimzucker/scalable-flink-skill)
+> This repository is the pipeline it was validated against, and keeps
+> [a copy of the skill](docs/scalable-flink-skill/) so it is available while working here.
 
 ---
 
@@ -691,3 +694,7 @@ scaffolding that is later replaced.
 
 See [`JOURNAL.md`](JOURNAL.md) for the step-by-step record.
 
+
+## Licence
+
+[Apache License 2.0](LICENSE).
