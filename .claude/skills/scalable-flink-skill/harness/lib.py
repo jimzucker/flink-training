@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-prove-it-scales: the measurement harness.
+scalable-flink-skill: the measurement harness.
 
 This file is the skill's guards, as code. It is shipped with the skill and used
 verbatim: an agent following the skill supplies a pipeline (see README.md) and

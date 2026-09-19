@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-prove-it-scales harness — the one entry point.
+scalable-flink-skill harness — the one entry point.
 
     python3 harness/prove.py <command>     (run from the directory holding pipeline.json,
                                             or set PIPELINE_JSON=/path/to/pipeline.json)

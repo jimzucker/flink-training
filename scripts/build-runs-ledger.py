@@ -5,7 +5,7 @@ Sources, merged in this order:
 
   1. docs/skill-validation/**/suite.json        harness suites, one row per pass
   2. docs/skill-validation/**/*tinyproof*.json  harness tiny proofs, one row per case
-  3. .claude/skills/prove-it-scales/harness/record/{run9,run10,plan12}-*.json
+  3. .claude/skills/scalable-flink-skill/harness/record/{run9,run10,plan12}-*.json
                                                 rate-only records for runs that
                                                 predate suite.json
   4. docs/runs/transcribed.csv                  hand-transcribed from prose and
@@ -28,7 +28,7 @@ from datetime import datetime, timezone
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VAL = os.path.join(ROOT, "docs", "skill-validation")
-RECORD = os.path.join(ROOT, ".claude", "skills", "prove-it-scales", "harness", "record")
+RECORD = os.path.join(ROOT, ".claude", "skills", "scalable-flink-skill", "harness", "record")
 TRANSCRIBED = os.path.join(ROOT, "docs", "runs", "transcribed.csv")
 OUT = os.path.join(ROOT, "docs", "runs", "ledger.csv")
 

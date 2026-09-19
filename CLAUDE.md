@@ -12,7 +12,7 @@ Where the evidence lives:
 | every scaling pass, all steps and runs | `docs/runs/ledger.csv` — see `docs/runs/README.md` |
 | the runs status table | top of `docs/skill-validation/README.md` |
 | findings behind the rules below | `docs/skill-validation/findings.md` |
-| the skill itself | `.claude/skills/prove-it-scales/` |
+| the skill itself | `.claude/skills/scalable-flink-skill/` |
 | public writing, tone rules, canonical wording | `docs/linkedin/README.md` |
 | what happened in each step, verbatim | `docs/steps/step-NN/transcript.md` |
 
