@@ -53,6 +53,17 @@
     text-wrap:balance;
   }
   h1 em{font-style:normal;color:#9fd6d5}
+  .flow{
+    margin:18px 0 0;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 12px;
+    font-family:var(--mono);
+    font-size:clamp(11px,1.25vw,14px);
+    color:#9fd6d5;
+  }
+  .flow b{font-weight:600;color:#ffffff}
+  .flow span{opacity:.55}
 
   .result{padding:30px clamp(24px,3.4vw,40px) 24px}
 
@@ -115,6 +126,7 @@
 
   <header class="band">
     <h1>A free Claude Code skill that builds your data pipeline and <em>proves it scales.</em></h1>
+    <p class="flow"><b>Interviews you</b><span>&rarr;</span><b>builds in reviewable steps</b><span>&rarr;</span><b>proves nothing is lost</b><span>&rarr;</span><b>measures every doubling</b></p>
   </header>
 
   <section class="result">
