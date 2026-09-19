@@ -9,8 +9,8 @@ memory.
 | piece | audience | files | state |
 |---|---|---|---|
 | Lessons learned from the 24-day AI build | senior managers | `lessons-post.md`, `lessons-article.html`, `lessons-card.html` | merged (#91, #92, #93) |
-| Introducing the prove-it-scales skill | post: senior managers · article: engineers who will use it | `skill-post.md`, `skill-article.md`, `skill-post-card.html`, `skill-article-card.html` | branch `linkedin-skill-post`, no PR |
-| Prove it scales — the short pitch | engineers | `prove-it-scales-pitch.md` | branch `linkedin-prove-it-scales-pitch`, no PR; no graphic yet |
+| Introducing the skill (superseded by the pitch above) | post: senior managers · article: engineers who will use it | `skill-post.md`, `skill-article.md`, `skill-post-card.html`, `skill-article-card.html` | branch `linkedin-skill-post`, no PR |
+| Prove it scales — the short pitch | engineers | all three live together in [`docs/scalable-flink-skill/`](../scalable-flink-skill/): `article.md`, `card.html` (rendered to `card.png`) and `README.md` | branch `linkedin-scalable-flink-skill`, no PR |
 
 ## Tone rules
 

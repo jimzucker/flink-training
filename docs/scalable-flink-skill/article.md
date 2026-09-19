@@ -1,6 +1,6 @@
 # Prove it scales
 
-Draft. The short pitch for the prove-it-scales skill: what it does for you,
+Draft. The short pitch for the skill: what it does for you,
 forward-looking, no build history. Figures come from
 [`docs/skill-validation/demo-under-harness.md`](../skill-validation/demo-under-harness.md)
 and [`docs/skill-validation/payload-2k.md`](../skill-validation/payload-2k.md).
@@ -9,7 +9,7 @@ and [`docs/skill-validation/payload-2k.md`](../skill-validation/payload-2k.md).
 
 Ask Claude to build a data pipeline. An hour later you have the pipeline — and a scaling table you can put in front of a skeptic.
 
-**prove-it-scales** is a free Claude Code skill. It interviews you first: what goes in, what comes out, how many distinct keys, what has to be exactly right, and the claim you want to be able to make. It builds in reviewable steps. Then it proves nothing is lost, and measures what actually happens when you double the hardware.
+**scalable-flink-skill** is a free Claude Code skill. It interviews you first: what goes in, what comes out, how many distinct keys, what has to be exactly right, and the claim you want to be able to make. It builds in reviewable steps. Then it proves nothing is lost, and measures what actually happens when you double the hardware.
 
 What lands on your desk looks like this:
 
@@ -27,7 +27,7 @@ That table is the point. Capacity decisions — how many servers, what a platfor
 
 ```
 git clone https://github.com/jimzucker/flink-training
-cp -r flink-training/.claude/skills/prove-it-scales ~/.claude/skills/
+cp -r flink-training/.claude/skills/scalable-flink-skill ~/.claude/skills/
 ```
 
 Then ask Claude to build your pipeline and prove it scales.

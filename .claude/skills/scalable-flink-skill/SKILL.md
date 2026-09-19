@@ -1,5 +1,5 @@
 ---
-name: prove-it-scales
+name: scalable-flink-skill
 description: Use when the user wants to build a data pipeline or service AND demonstrate that it scales — a training project, a capacity study, a proof for a demo or talk. Interviews one question at a time before building, then enforces a measurement discipline that produces numbers the audience cannot pick apart.
 ---
 

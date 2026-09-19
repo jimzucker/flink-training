@@ -8,8 +8,8 @@ re-decided something the rule had already decided — what a refusal does, what
 the window is anchored on, what counts as flat — and paid for it in hours.
 
 ```
-cp ~/.claude/skills/prove-it-scales/harness/pipeline.example.json pipeline.json   # edit
-H=~/.claude/skills/prove-it-scales/harness/prove.py
+cp ~/.claude/skills/scalable-flink-skill/harness/pipeline.example.json pipeline.json   # edit
+H=~/.claude/skills/scalable-flink-skill/harness/prove.py
 nohup python3 $H all > results/all.log 2>&1 &        # the whole chain below, one stack session;
                                                      # wait on results/DONE, read results/phases.log
 ```
