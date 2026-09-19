@@ -9,6 +9,16 @@ Requirements come from [`assignment.pptx`](assignment.pptx).
 The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 [`docs/demo-runbook.md`](docs/demo-runbook.md).
 
+> ### Looking for the skill?
+>
+> **[scalable-flink-skill](docs/scalable-flink-skill/)** — a free Claude Code
+> skill that builds your data pipeline and proves it scales. It interviews you,
+> builds in reviewable steps, proves nothing is lost, then measures each step up
+> in capacity. About an hour on a laptop.
+>
+> [What it does, how to install it, and what a result looks like →](docs/scalable-flink-skill/)
+> This repository is the pipeline it was validated against.
+
 ---
 
 ## The result
