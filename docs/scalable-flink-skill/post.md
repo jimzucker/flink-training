@@ -12,7 +12,7 @@ and [`docs/skill-validation/payload-2k.md`](../skill-validation/payload-2k.md).
 
 Ask Claude to build a data pipeline. An hour later you have the pipeline — and a scaling table you can put in front of a skeptic.
 
-**scalable-flink-skill** is a free Claude Code skill. It interviews you first: what goes in, what comes out, how many distinct keys, what has to be exactly right, and the claim you want to be able to make. It builds in reviewable steps. Then it proves nothing is lost, and measures what actually happens when you double the hardware.
+**scalable-flink-skill** is a free Claude Code skill. It interviews you first: what goes in, what comes out, how many distinct keys, what has to be exactly right, and the claim you want to be able to make. It builds it in reviewable steps. Then it verifies the results are correct and complete, and measures and compares scaling.
 
 What lands on your desk looks like this:
 
