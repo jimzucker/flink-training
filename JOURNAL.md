@@ -54,7 +54,7 @@ hours of active session time, of which roughly 6.4 were human. The rest was the
 model working unattended.
 
 The method that produced the scaling result was extracted into
-[`.claude/skills/prove-it-scales`](.claude/skills/prove-it-scales/SKILL.md) and
+[`.claude/skills/scalable-flink-skill`](.claude/skills/scalable-flink-skill/SKILL.md) and
 then validated against a fresh agent that rebuilt the measurement from nothing —
 see [`docs/skill-validation/`](docs/skill-validation/clean-room/clean-room-run-1.md).
 
@@ -175,7 +175,7 @@ trusting the markup is what caught every one of these:
 | 3 | Legend inherited `text-anchor:middle`, ran off-canvas | Gave it its own anchor-start class |
 | 4 | 250px of vertical dead space | Raised the price row, trimmed canvas to 790px |
 
-Final render: [`docs/steps/step-01/pipeline-render.jpg`](../docs/steps/step-01/pipeline-render.jpg)
+Final render: [`docs/steps/step-01/pipeline-render.jpg`](docs/steps/step-01/pipeline-render.jpg)
 
 ### Verification
 
@@ -209,7 +209,7 @@ questions, and renamed the topics.
 - **Review page** published so the diagram can be looked at and shared:
   https://claude.ai/code/artifact/65b81ff2-fe6f-4690-b323-3b8f256da462
 
-Full exchange: [`docs/reviews/step-01.md`](../docs/reviews/step-01.md)
+Full exchange: [`docs/reviews/step-01.md`](docs/reviews/step-01.md)
 
 Round 2 corrected an error in my own review question. I had asked how late
 prices should be handled; prices are keyed by symbol, so each symbol lands on a
@@ -299,7 +299,7 @@ run 1  213d847f804ed9d0a057471c87da453d0ae6cea0e06ca7824e13002b43205d5c
 run 2  213d847f804ed9d0a057471c87da453d0ae6cea0e06ca7824e13002b43205d5c
 ```
 
-Evidence: [`docs/steps/step-02/`](../docs/steps/step-02/)
+Evidence: [`docs/steps/step-02/`](docs/steps/step-02/)
 
 ### Verification
 
@@ -343,7 +343,7 @@ wall-clock event times so latency can be measured from creation to sink.
   ends mid-cycle so the record count is nominal ±1. Rates are now checked with a
   tolerance while the invariants stay exact.
 
-Full exchange: [`docs/reviews/step-02.md`](../docs/reviews/step-02.md)
+Full exchange: [`docs/reviews/step-02.md`](docs/reviews/step-02.md)
 
 Round 2 reverted the sub-account expansion as a typo; the 1000/sec price rate,
 the round-robin generator and wall-clock event times all stand.
@@ -406,7 +406,7 @@ One ShellCheck finding, fixed with a justified disable: the sourced-or-executed
 idiom in `env.sh` reads as unreachable to a static checker that cannot know
 which it is.
 
-Evidence: [`docs/steps/step-03/ci-run.md`](../docs/steps/step-03/ci-run.md)
+Evidence: [`docs/steps/step-03/ci-run.md`](docs/steps/step-03/ci-run.md)
 
 ### Verification
 
@@ -439,7 +439,7 @@ page: GitHub rejected it with *3 of 3 required status checks are expected*.
 `required_linear_history` is on too, enforcing at the server what the workflow
 has been doing by hand since step 00.
 
-Full exchange: [`docs/reviews/step-03.md`](../docs/reviews/step-03.md)
+Full exchange: [`docs/reviews/step-03.md`](docs/reviews/step-03.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-03`.
 
@@ -507,7 +507,7 @@ all checks passed, with no tolerances
 Negative positions are present and expected: they are shorts, and their presence
 is what shows the sign handling is live rather than untested.
 
-Evidence: [`docs/steps/step-04/`](../docs/steps/step-04/)
+Evidence: [`docs/steps/step-04/`](docs/steps/step-04/)
 
 ### Verification
 
@@ -543,7 +543,7 @@ demo scales 2 → 4, and empty sinks 5 and 6 confirmed as expected.
   the graph is built. Verified against the running job: all three vertices at
   parallelism 4.
 
-Full exchange: [`docs/reviews/step-04.md`](../docs/reviews/step-04.md)
+Full exchange: [`docs/reviews/step-04.md`](docs/reviews/step-04.md)
 
 **Outcome:** awaiting round 2.
 
@@ -618,7 +618,7 @@ of sink 6.
 
 Idleness proved by turning it off: identical input, one setting changed, sinks 5
 and 6 drop from 12 and 48 to **zero** while Part 1 is unaffected. Details in
-[`docs/steps/step-05/idleness.md`](../docs/steps/step-05/idleness.md).
+[`docs/steps/step-05/idleness.md`](docs/steps/step-05/idleness.md).
 
 ### An operational finding
 
@@ -653,7 +653,7 @@ The checks were proved by reintroducing the defects rather than trusting them:
 
 All three failed the check, and the run exited non-zero.
 
-Full exchange: [`docs/reviews/step-06.md`](../docs/reviews/step-06.md)
+Full exchange: [`docs/reviews/step-06.md`](docs/reviews/step-06.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-06`.
 
@@ -711,7 +711,7 @@ rendering it:
 
 ### Results
 
-Dashboard: [`docs/steps/step-06/dashboard.png`](../docs/steps/step-06/dashboard.png)
+Dashboard: [`docs/steps/step-06/dashboard.png`](docs/steps/step-06/dashboard.png)
 
 The rates on it are the design, visible:
 
@@ -750,7 +750,7 @@ The checks were proved by reintroducing the defects rather than trusting them:
 
 All three failed the check, and the run exited non-zero.
 
-Full exchange: [`docs/reviews/step-06.md`](../docs/reviews/step-06.md)
+Full exchange: [`docs/reviews/step-06.md`](docs/reviews/step-06.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-06`.
 
@@ -800,7 +800,7 @@ A trade traced end to end, and reconciling both ways:
 | ⑤ AAPL | −2800 × 74.25 = −207900.00 |
 | ⑥ each of four accounts | −700 × 74.25 = −51975.00 → **sum −207900.00, matching ⑤** |
 
-Evidence: [`docs/steps/step-07/`](../docs/steps/step-07/)
+Evidence: [`docs/steps/step-07/`](docs/steps/step-07/)
 
 ### Review
 
@@ -820,7 +820,7 @@ value appears within the first ten seconds rather than after a minute of nothing
 Questions 1 and 2 went unanswered, so the runbook stays as written and the demo
 rate stays at the stated 10 trades/sec.
 
-Full exchange: [`docs/reviews/step-07.md`](../docs/reviews/step-07.md)
+Full exchange: [`docs/reviews/step-07.md`](docs/reviews/step-07.md)
 
 A follow-up audit of every window reference found one stale claim: the README
 said the demo kept the specified minute, which step 07 had just made untrue. The
@@ -892,7 +892,7 @@ dashboard renders                               92510 bytes
 cold start came up green
 ```
 
-Evidence: [`docs/steps/step-08/`](../docs/steps/step-08/)
+Evidence: [`docs/steps/step-08/`](docs/steps/step-08/)
 
 ### Review
 
@@ -917,7 +917,7 @@ individually — which is exactly why that job did not catch the generator exiti
 on start. Running the deliverable the way it is actually delivered is the only
 thing that would have.
 
-Full exchange: [`docs/reviews/step-08.md`](../docs/reviews/step-08.md)
+Full exchange: [`docs/reviews/step-08.md`](docs/reviews/step-08.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-08`.
 
@@ -971,7 +971,7 @@ interval each time — which is what a uniform wait for the next commit looks li
 It is the strongest available evidence that the delay is the guarantee and not
 the pipeline.
 
-Evidence: [`docs/steps/step-09/`](../docs/steps/step-09/)
+Evidence: [`docs/steps/step-09/`](docs/steps/step-09/)
 
 ### Verification
 
@@ -1001,7 +1001,7 @@ been written to say any non-zero count meant the guarantee was being retried,
 which would have raised a false alarm mid-demo. The panel now says what the
 number means and the runbook has an answer ready.
 
-Full exchange: [`docs/reviews/step-09.md`](../docs/reviews/step-09.md)
+Full exchange: [`docs/reviews/step-09.md`](docs/reviews/step-09.md)
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-09`.
 
@@ -1156,7 +1156,7 @@ that write volume moves the ceiling further than any parallelism change — and
 that the same trap exists in the managed service, where KPUs and MSK brokers are
 provisioned separately.
 
-Details: [`docs/steps/step-10/scaling.md`](../docs/steps/step-10/scaling.md)
+Details: [`docs/steps/step-10/scaling.md`](docs/steps/step-10/scaling.md)
 
 ### Review
 
@@ -1173,7 +1173,7 @@ now: `scripts/precheck.sh` runs the two jobs that need no Docker stack in about
 fifteen seconds, and `.githooks/pre-push` runs it on every push. Every CI failure
 on this branch would have been caught by it.
 
-Full exchange: [`docs/reviews/step-10.md`](../docs/reviews/step-10.md)
+Full exchange: [`docs/reviews/step-10.md`](docs/reviews/step-10.md)
 
 
 ---
@@ -1219,11 +1219,11 @@ failed. Flink opens a transactional producer per sink subtask per checkpoint, so
 that interval demanded 64 `InitProducerId` round trips a second from a remote
 coordinator. One second was tuned against localhost at parallelism 2.
 
-Details: [`docs/steps/step-11/aws.md`](../docs/steps/step-11/aws.md)
+Details: [`docs/steps/step-11/aws.md`](docs/steps/step-11/aws.md)
 
 ### Review
 
-_Pending._ Full exchange: [`docs/reviews/step-11.md`](../docs/reviews/step-11.md)
+_Pending._ Full exchange: [`docs/reviews/step-11.md`](docs/reviews/step-11.md)
 
 
 ---
@@ -1276,7 +1276,7 @@ one row. Its step ratios *rise* (1.47×, 1.64×, 1.73×) rather than decaying, w
 is backwards and is recorded as unexplained rather than explained away; a
 shuffle-cost hypothesis was checked against the dataflow graph and refuted; and
 the 4- and 8-unit points were measured once each. Full data:
-[`docs/steps/step-12/units-aws.txt`](../docs/steps/step-12/units-aws.txt).
+[`docs/steps/step-12/units-aws.txt`](docs/steps/step-12/units-aws.txt).
 
 The reported number is **orders/sec**, counted as records arriving in
 `positions-by-symbol`, which is exactly one per order. Allocations are four times
@@ -1310,7 +1310,7 @@ A laptop, one broker, `docker compose up`, four minutes per case. The AWS work
 from steps 10 and 11 becomes a one-slide appendix — *the ceiling is the broker,
 and here is what moving it costs* — rather than the main event.
 
-Details: [`docs/steps/step-12/scaling-demo.md`](../docs/steps/step-12/scaling-demo.md)
+Details: [`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling-demo.md)
 
 ### Review
 
@@ -1323,7 +1323,7 @@ the cold-start question by finding the bug behind it.
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-12`.
 
-Full exchange: [`docs/reviews/step-12.md`](../docs/reviews/step-12.md)
+Full exchange: [`docs/reviews/step-12.md`](docs/reviews/step-12.md)
 
 ---
 
@@ -1391,10 +1391,10 @@ chart alongside its table.
 
 **Outcome:** approved, squash-merged to `main`, tagged `step-13`.
 
-Full exchange: [`docs/reviews/step-13.md`](../docs/reviews/step-13.md)
+Full exchange: [`docs/reviews/step-13.md`](docs/reviews/step-13.md)
 
-The files: [`docs/deck/`](../docs/deck/) — a deliverable, not per-step evidence,
+The files: [`docs/deck/`](docs/deck/) — a deliverable, not per-step evidence,
 so they sit where someone looking for the deck would look rather than under a
 step number.
 
-Details: [`docs/steps/step-13/deck.md`](../docs/steps/step-13/deck.md)
+Details: [`docs/steps/step-13/deck.md`](docs/steps/step-13/deck.md)
