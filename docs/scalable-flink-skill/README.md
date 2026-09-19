@@ -26,9 +26,9 @@ One measured suite from this repository's own pipeline, at 4,096 distinct keys:
 
 | capacity | throughput | step |
 |---|---:|---|
-| 1 unit | 58,326 records/s | |
-| 2 units | 120,115 records/s | **2.06×** [1.92, 2.18] |
-| 4 units | 238,804 records/s | **1.99×** [1.95, 2.03] |
+| 1 core | 58,326 records/s | |
+| 2 cores | 120,115 records/s | **2.06×** [1.92, 2.18] |
+| 4 cores | 238,804 records/s | **1.99×** [1.95, 2.03] |
 
 Every case ran at 96.3–98.1% of its CPU cap, so the worker was the constraint
 and not something beside it. Garbage collection was 3.8 / 0.8 / 0.3% of

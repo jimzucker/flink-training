@@ -18,9 +18,9 @@ What lands on your desk looks like this:
 
 | capacity | throughput | step |
 |---|---:|---|
-| 1 unit | 58,326 records/s | |
-| 2 units | 120,115 records/s | **2.06×** |
-| 4 units | 238,804 records/s | **1.99×** |
+| 1 core | 58,326 records/s | |
+| 2 cores | 120,115 records/s | **2.06×** |
+| 4 cores | 238,804 records/s | **1.99×** |
 
 Near-linear, with the range around each step, and the resource columns beside the throughput so anyone can see the machine was the limit and not something else. Six times the message size, and the same pipeline still returns 4.57× across the same range.
 
