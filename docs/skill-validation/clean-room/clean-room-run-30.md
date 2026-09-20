@@ -104,9 +104,25 @@ entirely on which side of 0.99 the cap fraction lands:
 
 The case with **more** limit hits was accepted; both discarded measurements were
 **faster** than accepted passes of the same case. A 0.7-point difference in cap
-fraction should not decide whether a measurement exists. Unfixed — the threshold
-needs to come from measured spread, and changing it means replaying it against
-the record first.
+fraction should not decide whether a measurement exists.
+
+**Unfixed, and a threshold will not fix it.** Tried on 2026-09-20: a refault
+floor was added, and the harness's own replay refused it — `cases.json` holds
+the starvation this guard exists for, and the new rule made it invisible.
+Laid side by side, the signals overlap in every direction:
+
+| case | hits | cap | refaults | required |
+|---|---:|---:|---:|---|
+| 2 GiB starved, the true positive | 30,927 | 0.964 | **520,575** | fire |
+| run 23, accepted | 9,437 | 0.996 | **572,000** | do not fire |
+| run 30 4c p2-desc, disproved by the one-variable run | 36,152 | **0.956** | 158,499 | fires today |
+
+The true positive does *less* disk reading than an accepted case and runs at a
+*higher* cap than a proven false positive. No line separates them, so the next
+attempt should be a design change — have the guard prescribe the one-variable
+re-run that actually settled it — or nothing. It fires about twice in 103 cases,
+discards one measurement rather than the run, and errs toward caution: it has
+never let a broker-starved number into a table.
 
 ## Two bugs, found and fixed
 
@@ -137,29 +153,23 @@ all 23 recorded suites, and refuses any sizing rule that would have blocked a
 suite whose table we accepted. Sizing decides whether a suite may run at all, and
 nothing replayed it — which is why a key-name slip could stand.
 
-## What the skill still gets wrong
+## What the agent reported, and what came of it
 
-Reported by the agent, not yet acted on:
+Seven more findings, all acted on. Every one was verified in the code before it
+was believed.
 
-- **§7's dashboard cannot be built without forking the harness, which §1 and §10
-  forbid.** `compose_text()` has no extension point. The skill asks for something
-  it also prohibits. It needs an `extraServices` hook, or §7 marked out of scope.
-- **Preflight contradicts itself on worker memory** — one row says "uncapped", two
-  lines later it budgets 4096m, and that phantom figure lands in `suite.json` as
-  `heldStill.tmProcessMemory`.
-- **The reaper is wider than documented.** It kills any process whose command line
-  names the project path, not just one naming `prove.py`; a plain `tail` of the
-  log was killed mid-run.
-- **The host probe's own 2→4 spread was 76–91%** across three runs on one idle
-  machine. `report` prints it as the bound for judging a missed claim, but a bound
-  that moves 15 points cannot settle a 12-point shortfall.
-- **The interview has no unattended mode**, which is exactly the clean-room case.
-  The agent recorded all nine answers as assumptions; the skill should say to.
-- **Sizing `tinyCount`/`smallCount` before the first measurement is circular**, and
-  for a fast pipeline "tiny" ends up large — 150,000,000 here, 43% of the suite
-  backlog.
-- `pipeline.example.json` ships `outputsPerInput: 8` with two output topics and no
-  derivation; `killAtFraction: 0.35` landed at 62.7% and the log still said 35%.
+| finding | outcome |
+|---|---|
+| **§7 asks for a dashboard §1 and §10 forbid building** — `compose_text()` had no extension point, so the agent read all three rules and correctly built nothing | fixed: `extraServices` splices services into the generated stack, with the project prefix and a CPU cap required, and what was added is recorded in the results header |
+| **Preflight contradicted itself on worker memory** — "uncapped" on one line, a 4096m budget three lines later, and that phantom written into `suite.json` as `heldStill.tmProcessMemory` | fixed: one `tm_memory_capped()` test answers it in both places; uncapped reports uncapped and records null |
+| **The host probe was quoted as a bound after one reading** — 76.4%, 83% and 91% across three runs on an idle machine | fixed: three repeats, median with its range. Measured while fixing it, memory-bound 2→4 reads 79% [76%–83%] against register-only's 98% [98%–99%], so the noise is real and specific to the arm that matters |
+| **The reaper is wider than documented** — it kills any process naming the project path, and took a plain `tail` of the log | fixed in the harness README, which had warned only about commands naming `prove.py` |
+| **The interview has no unattended mode**, the clean-room case exactly | fixed: answer all nine yourself and write each down as a stated assumption |
+| **Sizing before the first measurement is circular** — size from a rate the tiny proof exists to measure | fixed: guess high, measure, re-size; and "tiny" is not small for a fast pipeline, 150,000,000 here |
+| **`pipeline.example.json` shipped `outputsPerInput: 8`** with two output topics and no derivation; `killAtFraction: 0.35` landed at 62.7% | fixed: the derivation ships with it, and the kill point is documented as approximate to the next commit |
+
+In [`scalable-flink-skill@067c21f`](https://github.com/jimzucker/scalable-flink-skill/commit/067c21f)
+and [`@874ab56`](https://github.com/jimzucker/scalable-flink-skill/commit/874ab56).
 
 ## Cost
 
