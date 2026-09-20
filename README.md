@@ -19,8 +19,8 @@ The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 > [![Skill CI](https://github.com/jimzucker/scalable-flink-skill/actions/workflows/ci.yml/badge.svg)](https://github.com/jimzucker/scalable-flink-skill/actions/workflows/ci.yml)
 >
 > [What it does, how to install it, and what a result looks like →](https://github.com/jimzucker/scalable-flink-skill)
-> This repository is the pipeline it was validated against, and keeps
-> [a copy of the skill](docs/scalable-flink-skill/) so it is available while working here.
+> This repository is the pipeline it was validated against: every run, and every
+> measured pass, is in [`docs/skill-validation/`](docs/skill-validation/).
 
 ---
 
