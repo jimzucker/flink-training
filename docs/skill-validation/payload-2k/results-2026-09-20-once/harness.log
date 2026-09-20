@@ -1,0 +1,12 @@
+[2026-09-20 05:52:26] stack up: plonce-kafka (cap 2.5), plonce-jm (cap 0.5); task manager is started per case
+[2026-09-20 05:53:53] fill: env FILLER_FIELDS=32 /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp job/generators.jar:job/jobs.jar io.github.jimzucker.flinktraining.generator.HarnessBacklog --mode=produce --count=20000000 --seed=20260911 --partitions=8 --bootstrap=localhost:19092 --topic=block-trades-tiny --manifest=~/code/GitHub/payload-rig/once/results/manifest-tiny.json
+[2026-09-20 05:55:31] fill done: produced 20,000,000 trades and 200,000 prices in 87.7s (228,123 rec/s); manifest ~/code/GitHub/payload-rig/once/results/manifest-tiny.json
+[2026-09-20 05:55:32] backlog block-trades-tiny: 20,000,000 records read back over 8 partitions
+[2026-09-20 05:55:32] ---- tiny case 1 cores ----
+[2026-09-20 05:58:08]   1c: 30,553 rec/s, tm 100.6% of cap, vantage 0.91%
+[2026-09-20 05:58:08] ---- tiny case 4 cores ----
+[2026-09-20 06:00:15]   4c: 130,087 rec/s, tm 100.0% of cap, vantage 0.31%
+[2026-09-20 06:00:16]   disk: input 47 B/record x 40,000,000 = 1.9 GB; sinks 163 B/input -> 6.5 GB, retention caps them at 34.4 GB; checkpoints 0.00 GB; need 28.4 GB incl. the 20 GB floor, 129.1 GB free now + 2.0 GB the tiny proof gives back = 131.2 GB: FITS
+[2026-09-20 06:00:16]   backlog: 40,000,000 configured, 13,873,799 needed at the measured 130,087 rec/s
+[2026-09-20 06:01:23] fstrim: /var/lib/docker: 2.3 GiB (2500272128 bytes) trimmed
+[2026-09-20 06:01:23] stack down; nothing with prefix plonce survives

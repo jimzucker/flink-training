@@ -20,12 +20,12 @@ empty — never estimated.
 
 ## What is in it
 
-392 rows as of 2026-09-15.
+396 rows as of 2026-09-20.
 
 | source_kind | rows | from | covers |
 |---|---:|---|---|
 | `suite.json` | 156 | `docs/skill-validation/**/suite.json` | clean-room runs 11–28 (not 22), the demo under the harness, the 2026-09-04 rig, harness-live-1, plan 12 phase 3 |
-| `tinyproof` | 70 | `docs/skill-validation/**/*tinyproof*.json` | the same runs' tiny proofs, including refused and retried attempts; the only measurements for run 29, the 32,768-key demo arms, and the [2 KB payload](../skill-validation/payload-2k.md) experiment |
+| `tinyproof` | 74 | `docs/skill-validation/**/*tinyproof*.json` | the same runs' tiny proofs, including refused and retried attempts; the only measurements for run 29, the 32,768-key demo arms, and the [2 KB payload](../skill-validation/payload-2k.md) experiment |
 | `record` | 82 | [`docs/runs/harness-record/`](harness-record/)`{run9,run10,plan12}-*.json` | runs 9 and 10 and plan 12 phase 1 — input rate per pass, nothing else |
 | `transcribed` | 84 | [`transcribed.csv`](transcribed.csv) | clean-room runs 1–8 and steps 10–12, copied by hand from their tables and logs |
 
