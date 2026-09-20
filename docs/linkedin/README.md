@@ -9,7 +9,7 @@ memory.
 | piece | audience | files | state |
 |---|---|---|---|
 | Lessons learned from the 24-day AI build | senior managers | `lessons-post.md`, `lessons-article.html`, `lessons-card.html` | merged (#91, #92, #93) |
-| Prove it scales — the short pitch | engineers | all three live together in [`docs/scalable-flink-skill/`](../scalable-flink-skill/): `post.md`, `card.html` (rendered to `card.png`) and `README.md` | branch `linkedin-scalable-flink-skill`, no PR |
+| Prove it scales — the short pitch | engineers | in the skill's own repository: [`post.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/docs/post.md), [`card.html`](https://github.com/jimzucker/scalable-flink-skill/blob/main/docs/card.html) (rendered to `card.png`) and its [README](https://github.com/jimzucker/scalable-flink-skill) | published there; this repository keeps the evidence the figures come from |
 
 ## Tone rules
 
@@ -97,7 +97,7 @@ The author's words each rule traces to:
 An earlier pair — `skill-post.md` (senior managers), `skill-article.md`
 (engineers) and a card for each — was written on 2026-09-14 and **removed on
 2026-09-19 at the author's request.** It was superseded by the pitch in
-[`docs/scalable-flink-skill/`](../scalable-flink-skill/), and had gone stale
+[the skill's own repository](https://github.com/jimzucker/scalable-flink-skill), and had gone stale
 twice over: it used the skill's old name, its post opened "Last week I shared
 six rules…", and its article led with the harness's refusals rather than what
 the skill produces.
