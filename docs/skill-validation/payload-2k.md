@@ -151,6 +151,57 @@ The 1-CPU case shares its core with JIT and GC threads, which may inflate the
 2 KB 1→2 step (2.66) — not tested; the 326 B 2→4 step (1.62) was not investigated.
 Neither number is a model of the pipeline's ceiling.
 
+## Parse once: measured
+
+The first option below was tried. Commit adds `SplitOnce`, which parses the
+order once and emits the symbol update on the main output and the account
+updates on a side output, and `PositionsJobParseOnce`, which wires the same two
+aggregations to it. Both arms ran from **one jar** (`839fcde2930d`), back to
+back on 2026-09-20, differing in two lines of `pipeline.json`: the project name
+and the main class.
+
+A side output rather than two operators chained off one parsed stream, because
+with object reuse off Flink copies a record per downstream consumer, which could
+cost more than the parse it saves. Equivalence is proved before any rig time by
+`ParseOnceEquivalenceTest`: `SplitOnce` emits field for field what
+`ToSymbolUpdate` and `SplitByAllocation` emit between them, at 326 B and at 2 KB,
+filler included.
+
+| tiny proof, 2 KB order | 1c orders/s | 4c orders/s | 1→4 | verdict |
+|---|---:|---:|---:|---|
+| parse twice (control) | 24,934 | 104,559 | 4.193 | PASS, guard self-test 38/38 |
+| **parse once** | **30,553** | **130,087** | **4.258** | PASS, guard self-test 38/38 |
+| gain | **+22.5%** | **+24.4%** | — | |
+
+**The stage bench predicted this within 7%.** It put the second parse at
+6.9 µs/order; the pipeline shows 40.11 µs/order falling to 32.73, a saving of
+**7.38 µs**. That is the first stage-bench figure checked against the running
+job, and the check holds — which is some evidence the rest of the stage table
+is worth trusting, and none at all that the unexplained ~10 µs is.
+
+**Scaling is unchanged: 4.258 against 4.193**, inside the ±4% this rig carries.
+Parsing once removes constant work per order, so it buys throughput, not
+scalability.
+
+### The constraint moved
+
+| fraction of time | control 1c / 4c | parse once 1c / 4c |
+|---|---|---|
+| source busy | 0.92 / 0.95 | **0.77 / 0.84** |
+| source back-pressured | 0.06 / 0.04 | **0.22 / 0.14** |
+| account aggregation busy | 0.61 / 0.84 | **0.83 / 0.89** |
+
+The source chain was the constraint and no longer is: it drops to 0.77 busy at
+one core while its back-pressure rises to 0.22, and the account aggregation
+climbs to 0.83–0.89. **A second round of the same optimisation would return much
+less.** What is worth attacking next is the shuffle and the aggregation, which
+the stage table puts at about 30% of the added cost — the two remaining options
+below.
+
+Both arms: [`results-2026-09-20-once/`](payload-2k/results-2026-09-20-once/),
+[`results-2026-09-20-f32/`](payload-2k/results-2026-09-20-f32/), with the configs
+beside them.
+
 ## Options, not measured
 
 Each targets a stage measured above; none has been tried in the pipeline, and
@@ -158,20 +209,22 @@ savings measured alone need not add up there.
 
 | option | stage it targets | cost there |
 |---|---|---:|
-| parse once, emit symbol updates on the main output and account updates on a side output | the second parse | ~6.9 µs |
 | carry only what the aggregation uses across the shuffle | serialize + deserialize | ~5.8 µs |
 | carry the filler as one string instead of 64 | mostly deserialize | part of ~5.8 µs |
 | skip the filler when parsing for the symbol side | building the filler map | ~3.1 µs |
 | a binary format instead of JSON at the producer | both parses | ~13.5 µs |
 
-A fan-out of a parsed `BlockTrade` to two chained operators is not in the
-list: with object reuse off, Flink may copy the record per output, which could
-cost more than the parse it saves. Not verified in this experiment.
+A fan-out of a parsed `BlockTrade` to two chained operators is still not in
+the list: with object reuse off, Flink may copy the record per output, which
+could cost more than the parse it saves. The measured arm above avoids the
+question by using a side output; whether chaining would have been cheaper is
+still unverified.
 
 ## Files
 
 | path | what |
 |---|---|
+| `payload-2k/results-2026-09-20-once/` | the parse-once arm, and `results-2026-09-20-f32/` its same-day control; `pipeline-once-2026-09-20.json` and `pipeline-f32-2026-09-20.json` differ in two lines |
 | `payload-2k/results-2026-09-14-f32/` | the failed tiny proof, its manifests, completeness (passed, including a worker killed mid-drain), preflight, harness log |
 | `payload-2k/results-2026-09-15-f32/` | the rerun, with `sampler.log` (host swap, container CPU and memory, checkpoints) and `vm.log` (Docker VM meminfo and vmstat) |
 | `payload-2k/results-2026-09-15-base/` | the same-day control, same samplers; `completeness-2026-09-14.json` is from the base stack the day before |

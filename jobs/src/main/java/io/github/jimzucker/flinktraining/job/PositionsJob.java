@@ -76,7 +76,9 @@ public final class PositionsJob {
                 .name("positions-by-account");
     }
 
-    private static KafkaSource<String> ordersSource(JobConfig config) {
+    // package-private so PositionsJobParseOnce builds the identical source and
+    // sinks: the two arms must differ in one thing only.
+    static KafkaSource<String> ordersSource(JobConfig config) {
         return KafkaSource.<String>builder()
                 .setBootstrapServers(config.bootstrapServers())
                 .setTopics(config.ordersTopic())
@@ -103,7 +105,7 @@ public final class PositionsJob {
      * <p>Each sink needs its own transactional id prefix. Sharing one across two
      * sinks in the same job makes them fight over the same transactional ids.
      */
-    private static KafkaSink<PositionState> positionsSink(
+    static KafkaSink<PositionState> positionsSink(
             JobConfig config, String topic, String transactionalIdPrefix) {
         Properties properties = JobConfig.sinkProducerProperties();
         // Flink's default transaction timeout exceeds the broker's maximum, which
