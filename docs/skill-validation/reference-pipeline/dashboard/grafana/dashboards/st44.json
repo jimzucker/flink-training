@@ -1,0 +1,164 @@
+{
+  "uid": "st44scaling",
+  "title": "st44 — hourly average by location, scaling run 44",
+  "description": "Seven panels, one question each (skill section 7). Two of the shipped seven ask a fan-out question and this pipeline has no fan-out; they are replaced by the same question in this pipeline's shape (ASSUMPTIONS.md B11). Nothing here is ever quoted as a result: the harness reads committed broker offsets and the cgroup CPU counter for the table, and this is for looking at.",
+  "timezone": "America/New_York",
+  "editable": true,
+  "schemaVersion": 39,
+  "refresh": "",
+  "time": { "from": "2026-09-22T23:10:00.000-04:00", "to": "2026-09-23T00:40:00.000-04:00" },
+  "templating": { "list": [] },
+  "annotations": { "list": [] },
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "Readings read per second, against hourly rows published per second",
+      "description": "Replaces the shipped 'rate per stage' panel. This pipeline has no fan-out: one row per location per hour however many readings arrived, so the two lines are five orders of magnitude apart and the axis is logarithmic. The question is the same one — is the output really per window, and is the pipeline reading while it publishes?",
+      "datasource": { "type": "prometheus", "uid": "st44prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "custom": { "scaleDistribution": { "type": "log", "log": 10 }, "lineWidth": 2, "fillOpacity": 0 }
+        },
+        "overrides": []
+      },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~\".*parse_reading.*\"})",
+          "legendFormat": "readings parsed per second"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~\".*hourly_average_by_location.*\"})",
+          "legendFormat": "hourly rows published per second"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Readings behind each published row — should sit at 36,000",
+      "description": "The cardinality question, in this pipeline's shape. One location has 10 sensors and an hour has 3,600 seconds, so every published row must stand for exactly 36,000 readings. A different number means a different number of locations than the interview predicted, or a window that is not an hour. Both counters come from the same operator and the same scrape, so this is not a ratio across two clocks.",
+      "datasource": { "type": "prometheus", "uid": "st44prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 0 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "single" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "sum(rate(flink_taskmanager_job_task_operator_numRecordsIn{operator_name=~\".*hourly_average_by_location.*\"}[2m])) / clamp_min(sum(rate(flink_taskmanager_job_task_operator_numRecordsOut{operator_name=~\".*hourly_average_by_location.*\"}[2m])), 0.0001)",
+          "legendFormat": "readings per published row"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "The one aggregation's subtasks, overlaid",
+      "description": "Replaces the shipped 'two paths overlaid' panel: there is only one aggregation here, so the comparison that means something is between its parallel subtasks. 100 location keys land 25/25/25/25 at four subtasks (pipeline.max-parallelism 369), so these lines should sit on top of each other. A subtask below the others is key skew, and key skew reads in the table as a pipeline that did not scale.",
+      "datasource": { "type": "prometheus", "uid": "st44prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "short", "custom": { "lineWidth": 2, "fillOpacity": 0 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "sum by (subtask_index) (flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=~\".*hourly_average_by_location.*\"})",
+          "legendFormat": "subtask {{subtask_index}}"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "Busiest, most back-pressured and most idle task — at the limit, falling behind, or starved?",
+      "description": "Fraction of a second each task spent busy, waiting to hand its output on, and waiting for input. A source that is idle is starved by the broker, not overwhelmed by it; a task that is back-pressured is waiting on whatever is downstream of it.",
+      "datasource": { "type": "prometheus", "uid": "st44prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "percentunit", "min": 0, "max": 1, "custom": { "lineWidth": 2, "fillOpacity": 0 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 1000",
+          "legendFormat": "busiest task"
+        },
+        {
+          "refId": "B",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 1000",
+          "legendFormat": "most back-pressured task"
+        },
+        {
+          "refId": "C",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "max(flink_taskmanager_job_task_idleTimeMsPerSecond) / 1000",
+          "legendFormat": "most idle task"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "CPU per component, in cores — including the idle one",
+      "description": "Which container is in the way. The broker can be the ceiling at half a core, and nothing inside the engine can see it. Read from cumulative CPU nanoseconds per container off the Docker API; the harness reads the cgroup counter directly for the table and never quotes this.",
+      "datasource": { "type": "prometheus", "uid": "st44prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 16 },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0, "custom": { "lineWidth": 2, "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "rate(docker_container_cpu_seconds_total[1m])",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "type": "timeseries",
+      "title": "Backlog remaining — is this a drain, and did it run out?",
+      "description": "Readings on the input topic the source has not read yet. A measurement is only a drain while this line is falling; a case whose backlog reaches zero inside its window has measured the end of the data rather than the pipeline.",
+      "datasource": { "type": "prometheus", "uid": "st44prom" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 16 },
+      "fieldConfig": { "defaults": { "unit": "short", "min": 0, "custom": { "lineWidth": 2, "fillOpacity": 10 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "single" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "sum(flink_taskmanager_job_task_operator_pendingRecords)",
+          "legendFormat": "readings not yet read"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "timeseries",
+      "title": "Checkpoint duration — what the guarantee costs",
+      "description": "Exactly-once checkpointing every 10 seconds. The state is one open hour per location, 100 keys, so this should be small and flat; a checkpoint that grows across a case is state the pipeline is not shedding. Flink publishes -1 between a job starting and its first checkpoint completing; that is clamped to 0 here so the line is not read as a negative duration.",
+      "datasource": { "type": "prometheus", "uid": "st44prom" },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "fieldConfig": { "defaults": { "unit": "ms", "min": 0, "custom": { "lineWidth": 2, "fillOpacity": 0 } }, "overrides": [] },
+      "options": { "legend": { "displayMode": "list", "placement": "bottom", "showLegend": true }, "tooltip": { "mode": "multi" } },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": { "type": "prometheus", "uid": "st44prom" },
+          "expr": "max(clamp_min(flink_jobmanager_job_lastCheckpointDuration, 0))",
+          "legendFormat": "last checkpoint duration"
+        }
+      ]
+    }
+  ]
+}
