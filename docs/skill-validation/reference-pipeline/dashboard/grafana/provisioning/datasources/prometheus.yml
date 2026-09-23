@@ -1,0 +1,10 @@
+apiVersion: 1
+datasources:
+  - name: Prometheus
+    uid: st44prom
+    type: prometheus
+    access: proxy
+    url: http://st44-prometheus:9090
+    isDefault: true
+    jsonData:
+      timeInterval: 5s

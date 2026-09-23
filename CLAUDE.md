@@ -13,6 +13,7 @@ Where the evidence lives:
 | the runs status table | top of `docs/skill-validation/README.md` |
 | findings behind the rules below | `docs/skill-validation/findings.md` |
 | the skill itself | its own repository: [jimzucker/scalable-flink-skill](https://github.com/jimzucker/scalable-flink-skill) |
+| a pipeline we already trust, for testing harness changes without a clean room | `docs/skill-validation/reference-pipeline/` |
 | public writing, tone rules, canonical wording | `docs/linkedin/README.md` |
 | what happened in each step, verbatim | `docs/steps/step-NN/transcript.md` |
 
@@ -75,7 +76,14 @@ proof. So:
   already broken. Probe the hardest case first.
 - **Prove a fix at the cheapest level that reproduces it**, in order:
   `prove.py selftest-pure` → `prove.py replay` → the rig (`prove.py all --quick`)
-  → a clean-room run. A run is never the first proof of a fix.
+  → the reference pipeline → a clean-room run. A run is never the first proof
+  of a fix.
+- **A harness change is tested against the reference pipeline, not a clean
+  room.** `docs/skill-validation/reference-pipeline/run-reference.sh` re-runs
+  the whole chain against a build we already trust, in about an hour with no
+  pipeline to write or debug. Spend a clean-room run only when what the skill
+  *teaches* has changed — runs 44, 45 and 46 cost 363k, 559k and 294k tokens,
+  and most of that was an agent debugging its own Flink job.
 - **Replay every new guard or threshold against every recorded run** before it
   can block anything. Thresholds come from measured spread, not round numbers.
   One change per validation run.

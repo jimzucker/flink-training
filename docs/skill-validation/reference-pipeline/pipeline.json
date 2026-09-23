@@ -1,0 +1,161 @@
+{
+  "_whatItIs": "Temperature readings in, one per sensor per second, 1,000 sensors across 100 locations. Out: one row per location per one-hour bucket carrying the TOTAL and the COUNT, so nobody has to argue about a rounded average. The bucket comes from the timestamp inside the reading; the machine clock is never used. ANSWERS.md is the spec, ASSUMPTIONS.md holds every decision the answers did not settle.",
+  "_secondVantage": "The outputs are PER WINDOW -- one row per location per hour, however many readings arrived -- so there is no constant fan-out anywhere in the job and outputsPerInput would be a property of the test data rather than of the pipeline. The second reading is therefore a command: st44.Progress sums the count field the pipeline already publishes, which is exactly how much input its own output accounts for. It moves one closed hour at a time, and ASSUMPTIONS.md B4 staggers the 100 locations so that step is 36,000 readings and not 3,600,000.",
+  "_topicsOut": "Empty, and allowed to be empty only because secondVantage is a command. The hourly rows are declared in topicsAlsoWritten instead, which is what makes the completeness drain refuse a build that never writes them.",
+  "_backlogs": "GUESSES, written before anything was measured, as section 3 says they must be. They are re-derived from the rate the tiny proof measures and the numbers in this file at the end of the run are the measured ones.",
+  "project": "refpipe",
+  "topics": {
+    "in": "temperature-readings",
+    "out": []
+  },
+  "topicsAlsoWritten": [
+    "hourly-average-by-location"
+  ],
+  "partitions": 8,
+  "ports": {
+    "kafka": 19092,
+    "rest": 18081
+  },
+  "secondVantage": {
+    "mode": "command",
+    "cmd": "{java} -cp {jar} st44.Progress --bootstrap={bootstrapExt} --topic={also0}"
+  },
+  "design": {
+    "operators": [
+      "read temperature readings",
+      "parse reading",
+      "hourly average by location",
+      "publish hourly average"
+    ],
+    "inputs": [
+      "temperature-readings"
+    ],
+    "outputs": [
+      "hourly-average-by-location"
+    ]
+  },
+  "keySets": {
+    "hourly average by location": "locationKeys"
+  },
+  "checkpointMs": 10000,
+  "job": {
+    "jar": "job/target/st44.jar",
+    "mainClass": "st44.TempJob",
+    "args": "--bootstrap={bootstrap} --in={in} --out={also0} --group={group} --parallelism={par} --checkpointMs={ckptMs}",
+    "sourceVertexMatch": "Source"
+  },
+  "generator": {
+    "cmd": "{java} -cp {jar} st44.Gen --mode=produce --count={count} --seed={seed} --topic={topic} --manifest={manifest} --bootstrap={bootstrapExt} --partitions={partitions}",
+    "manifestCmd": "{java} -cp {jar} st44.Gen --mode=manifest --count={count} --seed={seed} --manifest={manifest}",
+    "manifestCountField": "readingCount"
+  },
+  "verifier": {
+    "cmd": "{java} -cp {jar} st44.Verify --bootstrap={bootstrapExt} --manifest={manifest} --topic={also0} --arm={arm}"
+  },
+  "cases": [
+    1,
+    2,
+    4
+  ],
+  "baseline": 1,
+  "passes": 3,
+  "backlog": {
+    "count": 900000000,
+    "tinyCount": 600000000,
+    "smallCount": 25000000,
+    "seed": 44,
+    "killAtFraction": 0.35
+  },
+  "caps": {
+    "kafka": 2.5,
+    "jobmanager": 0.5,
+    "tmMemoryBase": "1024m",
+    "tmMemoryPerCore": "512m",
+    "kafkaMemory": "5632m",
+    "kafkaHeap": "1G"
+  },
+  "flinkProperties": {
+    "metrics.reporter.prom.factory.class": "org.apache.flink.metrics.prometheus.PrometheusReporterFactory",
+    "metrics.reporter.prom.port": "9249",
+    "env.java.opts.taskmanager": "-XX:+UseG1GC",
+    "pipeline.max-parallelism": "369"
+  },
+  "extraServices": {
+    "statsexporter": {
+      "image": "python:3.12-alpine",
+      "container_name": "st44-statsexporter",
+      "hostname": "st44-statsexporter",
+      "cpus": 0.2,
+      "mem_limit": "64m",
+      "ports": [
+        "\"19110:9110\""
+      ],
+      "environment": [
+        "PREFIX=st44-",
+        "INTERVAL_S=5"
+      ],
+      "command": [
+        "python3",
+        "/app/docker_cpu_exporter.py"
+      ],
+      "volumes": [
+        "{RUNDIR}/dashboard/exporter:/app:ro",
+        "/var/run/docker.sock:/var/run/docker.sock:ro"
+      ]
+    },
+    "prometheus": {
+      "image": "prom/prometheus:v2.53.2",
+      "container_name": "st44-prometheus",
+      "hostname": "st44-prometheus",
+      "cpus": 0.3,
+      "mem_limit": "192m",
+      "ports": [
+        "\"19090:9090\""
+      ],
+      "command": [
+        "--config.file=/etc/prometheus/prometheus.yml",
+        "--storage.tsdb.path=/prometheus",
+        "--storage.tsdb.retention.time=48h",
+        "--web.enable-lifecycle"
+      ],
+      "volumes": [
+        "{RUNDIR}/dashboard/prometheus:/etc/prometheus:ro"
+      ]
+    },
+    "grafana": {
+      "image": "grafana/grafana:11.2.0",
+      "container_name": "st44-grafana",
+      "hostname": "st44-grafana",
+      "cpus": 0.2,
+      "mem_limit": "224m",
+      "ports": [
+        "\"13000:3000\""
+      ],
+      "environment": [
+        "GF_AUTH_ANONYMOUS_ENABLED=true",
+        "GF_AUTH_ANONYMOUS_ORG_ROLE=Admin",
+        "GF_AUTH_BASIC_ENABLED=false",
+        "GF_SECURITY_ALLOW_EMBEDDING=true",
+        "GF_USERS_DEFAULT_THEME=light",
+        "GF_FEATURE_TOGGLES_ENABLE=publicDashboards"
+      ],
+      "volumes": [
+        "{RUNDIR}/dashboard/grafana/provisioning:/etc/grafana/provisioning:ro",
+        "{RUNDIR}/dashboard/grafana/dashboards:/var/lib/grafana/dashboards:ro"
+      ]
+    }
+  },
+  "images": {
+    "flink": "flink:1.20.1-scala_2.12-java17",
+    "kafka": "apache/kafka:3.9.0",
+    "kafkaLibs": "/opt/kafka/libs"
+  },
+  "jdk": "/opt/homebrew/opt/openjdk@17",
+  "axis": "one machine, more cores",
+  "apiLevel": "DataStream",
+  "guarantee": {
+    "state": "exactly-once checkpointing",
+    "sink": "at-least-once, idempotent (the absolute total and count per location and hour)"
+  },
+  "_reference": "A known-good pipeline, kept so a harness change can be measured without an agent building a new one first. It is clean-room run 44's build, whose ten cases all measured and whose completeness passed both arms with no tolerances. {RUNDIR} is replaced by run-reference.sh with wherever the fixture was copied to. DO NOT let a clean-room agent read this directory: it is a worked answer to the interview they are meant to answer themselves."
+}
