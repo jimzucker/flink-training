@@ -44,6 +44,8 @@ job/           the Flink job, generator, verifier and progress command (1,170 li
 dashboard/     Prometheus, Grafana and the container CPU exporter
 pipeline.json  run 44's own, with {RUNDIR} where the absolute paths were
 ANSWERS.md     the six interview answers it was built from
+ASSUMPTIONS.md run 44's own assumptions and PLAN.md its plan, word for word; preflight
+PLAN.md        stops the chain without them
 run-reference.sh
 ```
 
@@ -53,6 +55,11 @@ run-reference.sh
 source scripts/env.sh          # Java 17; the build needs it
 sh docs/skill-validation/reference-pipeline/run-reference.sh
 ```
+
+Every container, volume and network is named with `PREFIX` (default `refpipe`),
+which the script substitutes into `pipeline.json` and both Prometheus files as it
+copies them. Run 44 hardcoded its own `st44-` prefix there, and the first re-run
+started a Prometheus scraping two hosts that did not exist.
 
 It copies itself to a scratch directory, builds the jar, and runs
 `prove.py all` against whatever harness is installed at

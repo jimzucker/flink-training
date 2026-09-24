@@ -4,7 +4,7 @@ datasources:
     uid: st44prom
     type: prometheus
     access: proxy
-    url: http://st44-prometheus:9090
+    url: http://{PREFIX}-prometheus:9090
     isDefault: true
     jsonData:
       timeInterval: 5s
