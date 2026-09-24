@@ -1,0 +1,21 @@
+wrote results/suite.txt and results/suite.md
+
+NO SCALING RESULT
+
+  4 cases were measured and 2 were thrown out, leaving usable readings at 4 cores.
+  Comparing one core count with another is the whole measurement, so there is
+  nothing here to report. This is not a slow pipeline and not a fast one.
+
+  Why each was thrown out:
+
+   2 cases — 4c p1-asc, 4c sentinel
+     the pipeline only used 90.9% of the 4 cores it was given, and it needs 95% to count.
+     Something else was holding it back, so this case shows where scaling stops. It is kept
+     in the table and left out of the ratios.
+
+  What to do: a guard that threw out a case whose worker was at its cap is
+  worth doubting before the pipeline is. Run `prove.py ceiling` to find out
+  whether the thing a guard blamed actually moves the rate, and `prove.py
+  probe` to find out whether this machine can do the step at all. Both are
+  minutes, and neither changes the pipeline.
+

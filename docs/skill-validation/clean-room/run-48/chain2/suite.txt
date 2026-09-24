@@ -1,0 +1,69 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      1    134,762/s         —          1 / 98%      1536m / 3.3%     2.5 / 5%     5g, full 1,494x   Kafka memory    raise kafkaMemory
+      2    244,437/s     1.81x         2 / 100%      2048m / 1.2%     2.5 / 9%      5g, never full   Pipeline CPU    check the host
+      4    475,278/s     1.94x         4 / 100%      3072m / 1.0%    2.5 / 20%      5g, never full   Pipeline CPU    check the host
+
+  Each pair is what it was allowed and how much of that went:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core: raise kafkaMemory from 5g to about 8g.
+  1 core: Kafka's memory, blocking higher throughput. Kafka hit its limit 1,494 times and had to
+      read the test data back off disk, so the pipeline was waiting on Kafka rather than using
+      its CPU.
+  2 cores: doubling gave 1.81x, short of the 1.90x target.
+  4 cores: doubling gave 1.94x, which clears the 1.90x target — but the readings are far enough
+      apart that it could be as low as 1.88x, and the lower bound is what is judged.
+  the 4-core p1-asc: the machine was busy with something else: load reached 8.2 on 8 cores while
+      measuring. A CPU cap is a share, not a promise of cycles — every case can read 100% of its
+      cap and still do less work. Close what else is running and measure again.
+
+
+  1->2 cores: doubling gave 1.81x, target 1.90x  ->  missed
+      for comparison, this host's own cores returned 0.811 when it has to reach memory and 0.968
+         when it does not on the same step, with no pipeline involved. The target is 0.95 of
+         linear.
+  2->4 cores: doubling gave 1.94x, target 1.90x  ->  missed — the readings are far enough apart that it could be as low as 1.88x, and that is what is judged
+      for comparison, this host's own cores returned 0.828 when it has to reach memory and 0.980
+         when it does not on the same step, with no pipeline involved. The target is 0.95 of
+         linear.
+
+======================================================================================================================
+axis                 : one machine, more cores: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API (question 5 default), hand-written keyed broadcast operators, no SQL or Table API
+guarantee            : state = exactly-once checkpointing every 10 s; sink = at-least-once Kafka sink, idempotent by emitting the absolute position per key; duplicates dropped by per-symbol sequence
+checkpoint interval  : 10000 ms
+build hash           : 12d4d5de99ecf590  (completeness passed for 12d4d5de99ecf590)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 250,000,000 records, accountKeys 16,384, duplicateRecords 1,247,403, partitions 8, priceRecords 16,384, symbolKeys 4,096, uniqueOrders 248,752,597, 5 outputs per input
+backlog              : 250,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-09-24 07:05:51 -> 2026-09-24 07:45:30 EDT (40m)  dashboard: from=1790247951610&to=1790250330182
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     129,516     647,582   1.00/1   99.8%   100   0.13/2.5    0.0%  27.2%  1783s  0.4%       OK
+    2   p1-asc     249,317   1,246,584   2.01/2   100.4%   100   0.23/2.5    0.7%  20.8%   833s  0.1%       OK
+    4   p1-asc     470,555   2,352,776   3.97/4   99.2%   100   0.47/2.5    2.2%  12.9%   386s  0.1%       OK
+    4  p2-desc     476,895   2,384,473   3.83/4   95.7%    99   0.45/2.5    1.7%  15.9%   386s  0.1%       OK
+    2  p2-desc     245,570   1,227,850   2.01/2   100.3%   100   0.23/2.5    0.6%  21.4%   868s  0.3%       OK
+    1  p2-desc     137,046     685,230   0.99/1   99.1%   100   0.12/2.5    0.0%  25.5%  1683s  0.3%       OK
+    1   p3-asc     137,723     688,615   1.00/1   100.2%   100   0.13/2.5    0.1%  27.8%  1678s  0.1%       OK
+    2   p3-asc     238,424   1,192,118   2.00/2   100.2%   100   0.22/2.5    0.3%  31.3%   910s  0.1%       OK
+    4   p3-asc     478,384   2,391,923   4.00/4   100.1%    99   0.49/2.5    2.6%  12.9%   376s  0.1%       OK
+    1 sentinel     130,915     654,576   0.98/1   97.9%   100   0.13/2.5    0.1%  30.3%  1780s  0.3%  CEILING
+        ceiling: Kafka ran out of memory 1,494 times during the window and had to read the backlog back off disk (18,702 page refaults). Kafka was the bottleneck here, not the cores. — raise caps.kafkaMemory from 5120m to about 8192m
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     134,762     673,809   1.00/1   99.7%   100   0.13/2.5    0.0%  26.8%  1715s  0.4%   spread 6.1%
+    2     MEAN     244,437   1,222,184   2.01/2   100.3%   100   0.22/2.5    0.5%  24.5%   871s  0.3%   spread 4.5%
+    4     MEAN     475,278   2,376,390   3.93/4   98.4%    99   0.47/2.5    2.2%  13.9%   382s  0.1%   spread 1.7%
+======================================================================================================================
+STEP 1->2 cores: 1.814x  (ideal 2x, target 1.90x, range across passes 1.731x-1.925x)
+STEP 2->4 cores: 1.944x  (ideal 2x, target 1.90x, range across passes 1.887x-2.006x)
+order effect (descending / ascending): {1: 1.0256, 2: 1.007, 4: 1.0051}
+======================================================================================================================

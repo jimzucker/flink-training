@@ -1,0 +1,86 @@
+[13:10:35] ===== completeness
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 21 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[13:10:40] fill: /opt/homebrew/opt/openjdk@17/bin/java -Xmx2g -cp <scratch>/confluent-rig/job/target/positions-1.0.jar st48.Generator --mode=produce --count=20000000 --seed=20260926 --partitions=8 --bootstrap=localhost:19092 --topic=orders-small --manifest=<scratch>/confluent-rig/results/manifest-small.json --pricesTopic=prices --mvTopics=market-values-by-symbol,market-values-by-account
+[13:10:57] fill done: generator produce: 20,000,000 records (19,899,963 unique orders, 100,037 duplicates) seed 20260926 in 16.0 s
+[13:10:58] backlog orders-small: 20,000,000 records read back over 8 partitions
+[13:14:47] processed the full test data set in 184.5s
+verifier, clean arm: manifest 20,000,000 input records (19,899,963 unique orders, 100,037 duplicates)
+read 20,000,000 + 80,000,000 position rows and 69,632 + 278,528 market-value rows in 48.3 s
+PASS  positions-by-symbol: 20,000,000 rows, exactly one per input record (20,000,000)
+PASS  positions-by-account: 80,000,000 rows, exactly four per input record (80,000,000)
+PASS  positions-by-symbol: 4,096 distinct keys, predicted 4,096
+PASS  positions-by-symbol: every key in exactly one partition (0 keys split)
+PASS  positions-by-symbol: no key's version ever goes backwards (0 keys did, worst 0)
+PASS  positions-by-account: 16,384 distinct keys, predicted 16,384
+PASS  positions-by-account: every key in exactly one partition (0 keys split)
+PASS  positions-by-account: no key's version ever goes backwards (0 keys did, worst 0)
+PASS  market-values-by-symbol: 4,096 distinct keys, predicted 4,096
+PASS  market-values-by-symbol: every key in exactly one partition (0 keys split)
+PASS  market-values-by-symbol: no key's version ever goes backwards (0 keys did, worst 0)
+PASS  market-values-by-account: 16,384 distinct keys, predicted 16,384
+PASS  market-values-by-account: every key in exactly one partition (0 keys split)
+PASS  market-values-by-account: no key's version ever goes backwards (0 keys did, worst 0)
+PASS  positions by symbol: final position and order count match the manifest for all 4,096 symbols (0 do not)
+PASS  positions by account: final position and order count match the manifest for all 16,384 keys (0 do not)
+PASS  two paths agree: for every symbol the four account positions sum to the symbol position (0 do not)
+PASS  market values by symbol: last value = final position x latest price for all 4,096 symbols (0 do not)
+PASS  market values by account: last value = final position x latest price for all 16,384 keys (0 do not)
+COMPLETE: every assertion holds, no tolerances (clean arm)
+
+[13:16:39]   design against build:
+[13:16:39]   area               declared                      built  what was found
+[13:16:39]   ------------------------------------------------------------------------------------
+[13:16:39]   operator           kafka-source                  yes    in the running plan
+[13:16:39]   operator           parse-orders                  yes    in the running plan
+[13:16:39]   operator           prices-source                 yes    in the running plan
+[13:16:39]   operator           parse-prices                  yes    in the running plan
+[13:16:39]   operator           position-by-symbol            yes    in the running plan
+[13:16:39]   operator           market-value-by-symbol        yes    in the running plan
+[13:16:39]   operator           position-by-account           yes    in the running plan
+[13:16:39]   operator           market-value-by-account       yes    in the running plan
+[13:16:39]   operator           sink-positions-by-symbol      yes    in the running plan
+[13:16:39]   operator           sink-positions-by-account     yes    in the running plan
+[13:16:39]   operator           sink-market-values-by-symbol  yes    in the running plan
+[13:16:39]   operator           sink-market-values-by-account yes    in the running plan
+[13:16:39]   input              orders                        later  not created yet -- the fill has not run
+[13:16:39]   input              prices                        yes    16,384 records on the broker
+[13:16:39]   output             positions-by-symbol           yes    20,000,000 records after the drain
+[13:16:39]   output             positions-by-account          yes    80,000,000 records after the drain
+[13:16:39]   output             market-values-by-symbol       yes    69,632 records after the drain
+[13:16:39]   output             market-values-by-account      yes    278,528 records after the drain
+[13:16:39]   constraint         outputsPerInput = 5.0         yes    read back 5.0
+[13:16:39]   constraint         maxParallelism = 440          yes    read back 440
+[13:18:57] KILL: committed=10414832, killing the pipeline mid-run
+[13:19:52] KILL: job RUNNING again after the restart
+[13:21:48] processed the full test data set in 265.4s (killed and restarted mid-run)
+verifier, killed arm: manifest 20,000,000 input records (19,899,963 unique orders, 100,037 duplicates)
+read 20,049,807 + 80,200,167 position rows and 81,409 + 325,629 market-value rows in 48.5 s
+PASS  positions-by-symbol: 20,049,807 rows, at least one per input record (20,000,000)
+PASS  positions-by-account: 80,200,167 rows, at least four per input record (80,000,000)
+PASS  positions-by-symbol: 4,096 distinct keys, predicted 4,096
+PASS  positions-by-symbol: every key in exactly one partition (0 keys split)
+PASS  positions-by-symbol: no key goes backwards more than once after the restart (2,233 keys went back once, worst 1)
+PASS  positions-by-account: 16,384 distinct keys, predicted 16,384
+PASS  positions-by-account: every key in exactly one partition (0 keys split)
+PASS  positions-by-account: no key goes backwards more than once after the restart (9,110 keys went back once, worst 1)
+PASS  market-values-by-symbol: 4,096 distinct keys, predicted 4,096
+PASS  market-values-by-symbol: every key in exactly one partition (0 keys split)
+PASS  market-values-by-symbol: no key goes backwards more than once after the restart (0 keys went back once, worst 0)
+PASS  market-values-by-account: 16,384 distinct keys, predicted 16,384
+PASS  market-values-by-account: every key in exactly one partition (0 keys split)
+PASS  market-values-by-account: no key goes backwards more than once after the restart (0 keys went back once, worst 0)
+PASS  positions by symbol: final position and order count match the manifest for all 4,096 symbols (0 do not)
+PASS  positions by account: final position and order count match the manifest for all 16,384 keys (0 do not)
+PASS  two paths agree: for every symbol the four account positions sum to the symbol position (0 do not)
+PASS  market values by symbol: last value = final position x latest price for all 4,096 symbols (0 do not)
+PASS  market values by account: last value = final position x latest price for all 16,384 keys (0 do not)
+COMPLETE: every assertion holds, no tolerances (killed arm)
+
+COMPLETENESS PASSED FOR BUILD 12d4d5de99ecf590 (a clean run, and one killed and restarted at 50%)
+[13:23:21] ===== completeness rc=0

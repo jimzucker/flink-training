@@ -1,5 +1,14 @@
 # The demo's own job, measured by the skill's harness
 
+> **Corrected 2026-09-24.** Two things this page did not say, both read from the
+> run's own `results/suite.json`: the 4,096-key table was a **quick look** —
+> 2 passes per case, `quickLook: true`, `publishable: false`. It also did not
+> record which garbage collector each case ran. Re-run today with the same jars
+> and configuration, the **1-core case runs the Serial collector** and the 2- and
+> 4-core cases G1; at three passes it reads 2.01× / 1.96×, and with G1 on every case,
+> nothing else changed, **1.91× / 1.99×**. See [article-gap.md](article-gap.md).
+> The table below is left as it was recorded.
+
 Twenty-eight clean-room runs compared the skill's pipelines against the demo's
 published table, and the comparison was never like for like: different job,
 different input, and a looser instrument. The demo measures a 60 s window with

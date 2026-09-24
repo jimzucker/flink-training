@@ -1,0 +1,16 @@
+2026-09-24 06:35:09 phase=all start
+2026-09-24 06:35:09 phase=up start
+2026-09-24 06:35:11 phase=up end rc=0 2s
+2026-09-24 06:35:11 phase=preflight start
+2026-09-24 06:38:12 phase=preflight end rc=0 180s
+2026-09-24 06:38:12 phase=completeness start
+2026-09-24 06:50:43 phase=completeness end rc=0 752s
+2026-09-24 06:50:43 phase=tinyproof start
+2026-09-24 07:02:35 phase=tinyproof end rc=0 712s
+2026-09-24 07:02:35 phase=fill start
+2026-09-24 07:05:51 phase=fill end rc=0 196s
+2026-09-24 07:05:51 phase=suite start
+2026-09-24 07:45:30 phase=suite end rc=0 2379s
+2026-09-24 07:45:30 phase=report start
+2026-09-24 07:45:30 phase=report end rc=1 0s
+2026-09-24 07:45:30 phase=all end STOPPED at report: the table is good, the pipeline did not meet the target 70.3 min

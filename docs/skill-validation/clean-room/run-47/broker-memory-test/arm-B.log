@@ -1,0 +1,95 @@
+[21:47:53] arm B-6g: broker memory in pipeline.json = 6g
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 15 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[21:47:58] stack up: st47-kafka (cap 2.5), st47-jm (cap 0.5); task manager is started per case
+[21:47:58] restarting the broker so both arms start with a cold cache
+st47-kafka
+[21:48:02] broker limit read back: 6442450944 bytes
+[21:48:03] orders backlog read back: 165000000 records (expect 165000000)
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 15 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[21:48:03] ---- case 4 cores, pass p1-asc ----
+[21:48:03] 21:48:03  [....................]   0%  suite: case 1 of 4 (4 cores, pass p1-asc)
+[21:53:15]   4c p1-asc: 461,304 rec/s  tm 3.94/4 (98.6%)  kafka 0.44/2.5  srcIdle 1.6%  srcBP 27.9%  headroom 156s  vantage 0.14%
+[21:53:15] ---- case 4 cores, pass p2-desc ----
+[21:53:15] 21:53:15  [#####...............]  25%  suite: case 2 of 4 (4 cores, pass p2-desc)  about 15m left
+[21:57:32]   4c p2-desc: 425,033 rec/s  tm 3.99/4 (99.8%)  kafka 0.50/2.5  srcIdle 1.1%  srcBP 27.0%  headroom 234s  vantage 0.49%
+[21:57:32] ---- case 4 cores, pass p3-asc ----
+[21:57:32] 21:57:32  [##########..........]  50%  suite: case 3 of 4 (4 cores, pass p3-asc)  about 9m left
+[22:01:35]   4c p3-asc: 426,843 rec/s  tm 3.80/4 (95.1%)  kafka 0.43/2.5  srcIdle 1.3%  srcBP 29.0%  headroom 230s  vantage 0.57%
+[22:01:35] ---- case 4 cores, pass sentinel ----
+[22:01:35] 22:01:35  [###############.....]  75%  suite: case 4 of 4 (4 cores, pass sentinel)  about 4m left
+[22:05:56]   4c sentinel: 355,767 rec/s  tm 3.89/4 (97.3%)  kafka 0.66/2.5  srcIdle 1.5%  srcBP 25.3%  headroom 280s  vantage 0.33%
+wrote results/suite.txt and results/suite.md
+
+NO SCALING RESULT
+
+  4 cases were measured and 0 were thrown out, leaving usable readings at no case at all.
+  Comparing one core count with another is the whole measurement, so there is
+  nothing here to report. This is not a slow pipeline and not a fast one.
+
+  What to do: a guard that threw out a case whose worker was at its cap is
+  worth doubting before the pipeline is. Run `prove.py ceiling` to find out
+  whether the thing a guard blamed actually moves the rate, and `prove.py
+  probe` to find out whether this machine can do the step at all. Both are
+  minutes, and neither changes the pipeline.
+
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+    4 *    417,237/s         —          4 / 97%      3584m / 0.4%    2.5 / 27%      6g, never full   Pipeline CPU    check it matches
+
+  Each pair is what it was allowed and how much of that went:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  4 cores is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what is being claimed. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  * the 4-core row is not counted in the table: its readings are 25% apart and the limit is 20%.
+      Its numbers are still shown, and what to do about them still applies.
+  the 4-core p1-asc: the machine was busy with something else: load reached 15.2 on 8 cores
+      while measuring. A CPU cap is a share, not a promise of cycles — every case can read 100%
+      of its cap and still do less work. Close what else is running and measure again.
+
+
+
+======================================================================================================================
+axis                 : one worker growing: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent by publishing the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : 3f6c398464479ec2  (completeness passed for 3f6c398464479ec2)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 165,000,000 records, allocationsPerOrder 4, outputRowsPerOrder 5, symbolKeyCount 4, accountKeyCount 16, totalQuantity 10,890,029,626, priceRecordsPerSymbol 8, 5 outputs per input
+backlog              : 165,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-09-23 21:48:03 -> 2026-09-23 22:05:56 EDT (18m)  dashboard: from=1790214483897&to=1790215556614
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    4   p1-asc     461,304   2,306,519   3.94/4   98.6%    97   0.44/2.5    1.6%  27.9%   156s  0.1%       OK
+    4  p2-desc     425,033   2,125,163   3.99/4   99.8%    99   0.50/2.5    1.1%  27.0%   234s  0.5%       OK
+    4   p3-asc     426,843   2,134,215   3.80/4   95.1%    90   0.43/2.5    1.3%  29.0%   230s  0.6%       OK
+    4 sentinel     355,767   1,778,837   3.89/4   97.3%    95   0.66/2.5    1.5%  25.3%   280s  0.3%       OK
+-----------------------------------------------------------------------------------------------------------------
+    4     MEAN     417,237   2,086,184   3.91/4   97.7%    95   0.51/2.5    1.4%  27.3%   225s  0.6%   spread 25.3%   UNREPORTABLE (its readings are 25% apart and the limit is 20%)
+======================================================================================================================
+order effect (descending / ascending): {4: 0.9571}
+sentinel: 4c first 461,304 -> last 355,767 rec/s, drift -25.8% across the suite (counted in the 4c spread)
+======================================================================================================================
+[22:05:57] arm B-6g done
