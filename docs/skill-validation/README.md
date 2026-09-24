@@ -43,6 +43,11 @@ way to tell them apart.
 | [27](clean-room/clean-room-run-27.md)† | DataStream | 2.13 h | — | 115 | 108,886 | 264,183 | 489,595 | 4.50× | 100% | **100%** |
 | [28](clean-room/clean-room-run-28.md)† | DataStream | 2.65 h | — | 103 | 186,252 | 396,982 | **757,704** | 4.07× | 100% | **100%** |
 | [30](clean-room/clean-room-run-30.md)‡ | DataStream | 2.15 h | — | 83 | — | 474,307 | **788,285** | — | **99%** | **99%** |
+| [47](clean-room/clean-room-run-47.md)♦ | DataStream | 2.57 h | — | 108 | 97,863 | 168,300 | 242,923 | **no table** | 100% | **99%** |
+| [48](clean-room/clean-room-run-48.md)♦ | DataStream | 3.92 h | — | 122 | 130,030 | 240,684 | **466,878** | 3.59× | 98% | **98%** |
+| [49](clean-room/clean-room-run-49.md)♦ | DataStream, **Confluent** | 1.68 h | — | 81 | 131,538 | 255,648 | **493,284** | **3.75×** | 100% | **100%** |
+
+♦ Runs 31–46 are not in this table. Runs 47–49 took the interview's default answers; 47 threw its own table out (the Mac was swapping) and re-measured at 1.83× / 1.76×, 48 missed the target on 1→2 in three chains, and 49 passed both steps — see [article-gap.md](article-gap.md).
 
 Human time was **0 h** and human prompts **1** in every row.
 

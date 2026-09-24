@@ -1,0 +1,166 @@
+{
+  "_": "Written from the field table in harness/README.md, not copied from an example. Every number here is either derived from this run's own interview answers or a first guess that the tiny proof is allowed to overrule.",
+
+  "project": "st47",
+
+  "_topics": "The harness owns the orders topic and the two position topics, and nothing else. prices is a second INPUT: this run creates it, fills it and reads it, and it appears in neither list. The two market-value topics are throttled outputs -- their rows are per 10-second interval, not per order -- so they stay out of topics.out and are declared below instead.",
+  "topics": {
+    "in": "orders",
+    "out": [
+      "positions-by-symbol",
+      "positions-by-account"
+    ]
+  },
+
+  "topicsAlsoWritten": [
+    "market-values-by-symbol",
+    "market-values-by-account"
+  ],
+
+  "_design": "What the interview asked for, as lists the completeness step can diff against the running job. Question 1 asks for two position outputs and a market value against each of them, so there are two market values, not one.",
+  "design": {
+    "operators": [
+      "parse",
+      "position-by-symbol",
+      "position-by-account",
+      "market-value-by-symbol",
+      "market-value-by-account"
+    ],
+    "inputs": [
+      "orders",
+      "prices"
+    ]
+  },
+
+  "partitions": 8,
+
+  "_outputsPerInput": "Derived from this run's own answer to question 2: every order carries exactly 4 allocations, so it writes 1 row to positions-by-symbol and 4 to positions-by-account. 1 + 4 = 5. The two market values are emitted on a timer and are deliberately not in this number.",
+  "outputsPerInput": 5,
+
+  "checkpointMs": 10000,
+
+  "job": {
+    "jar": "job/target/positions-1.0.jar",
+    "mainClass": "scaletest.PositionsJob",
+    "args": "--bootstrap={bootstrap} --topicIn={in} --topicSym={out0} --topicAcct={out1} --topicPrices=prices --topicMvSym=market-values-by-symbol --topicMvAcct=market-values-by-account --group={group} --parallelism={par} --checkpointMs={ckptMs} --marketValueIntervalMs=10000",
+    "sourceVertexMatch": "orders-source"
+  },
+
+  "generator": {
+    "cmd": "{java} -cp {jar} scaletest.GenerateBacklog --mode=produce --count={count} --seed={seed} --partitions={partitions} --bootstrap={bootstrapExt} --topic={topic} --topicPrices=prices --manifest={manifest}",
+    "manifestCmd": "{java} -cp {jar} scaletest.GenerateBacklog --mode=manifest --count={count} --seed={seed} --manifest={manifest}",
+    "manifestCountField": "orderCount"
+  },
+
+  "verifier": {
+    "cmd": "{java} -cp {jar} scaletest.VerifyCompleteness --bootstrap={bootstrapExt} --topicSym={out0} --topicAcct={out1} --topicMvSym=market-values-by-symbol --topicMvAcct=market-values-by-account --manifest={manifest} --arm={arm}"
+  },
+
+  "cases": [1, 2, 4],
+  "baseline": 1,
+  "passes": 3,
+
+  "_backlog": "First guesses. This run has measured nothing yet, so these are sized from a deliberately high assumption of 500,000 orders a second at the 4-core case: the suite needs (240 warm-up + 70 window + 20 checkpoint) seconds of it and the tiny proof (120 + 40 + 20). The tiny proof measures the real rate and the harness says what to use instead. smallCount has to span several checkpoint intervals at the ONE-core rate so the kill can land where it is asked to.",
+  "backlog": {
+    "count": 165000000,
+    "seed": 20260923,
+    "smallCount": 8000000,
+    "tinyCount": 90000000,
+    "killAtFraction": 0.35
+  },
+
+  "_caps": "The virtual machine is 9,937 MiB. At the 4-core case the worker asks for 1024 + 4 x 640 = 3,584m, the job manager takes 1,600m, and that leaves about 4,700m for the broker. kafkaMemory minus kafkaHeap is what the broker caches the backlog with: 4,608m less 1G is about 3.5 GB. The shipped example's 6g broker plus a 4-core worker would be 11,392m on a 9,937 MiB machine, which is the configuration the skill's own run 45 measured the worker giving way under.",
+  "caps": {
+    "kafka": 2.5,
+    "jobmanager": 0.5,
+    "kafkaMemory": "4608m",
+    "kafkaHeap": "1G",
+    "tmMemoryBase": "1024m",
+    "tmMemoryPerCore": "640m"
+  },
+
+  "images": {
+    "flink": "flink:1.20.1-scala_2.12-java17",
+    "kafka": "apache/kafka:3.9.0",
+    "kafkaLibs": "/opt/kafka/libs"
+  },
+
+  "_flinkProperties": "The garbage collector is pinned because --cpus 1 makes the JVM see one processor and pick the serial collector, which would make the baseline a different program from every other case. The Prometheus reporter is what five of the dashboard's seven panels need; on flink:1.20.x the reporter jars are already installed as plugins, so nothing else is required and ENABLE_BUILT_IN_PLUGINS must NOT be set. pipeline.max-parallelism is filled in from what the key-layout preflight row names, before the stack is brought up for the chain.",
+  "flinkProperties": {
+    "env.java.opts.taskmanager": "-XX:+UseG1GC",
+    "metrics.reporter.prom.factory.class": "org.apache.flink.metrics.prometheus.PrometheusReporterFactory",
+    "metrics.reporter.prom.port": "9249",
+    "pipeline.max-parallelism": "577"
+  },
+
+  "_keySets": "The manifest fields holding each keyed stage's keys, so preflight can ask Flink's own key-group assignment where 4 symbols and 16 account keys would land at 1, 2 and 4 subtasks.",
+  "keySets": {
+    "position-by-symbol": "totalBySymbol",
+    "position-by-account": "totalByAccount"
+  },
+
+  "_extraServices": "Section 7's dashboard, in the compose file so that teardown reaps it, every container named for the project, and every one capped: anything sharing the cores under test changes the number being measured. The exporter directory is mounted, not the file, because a tool that rewrites the file replaces the inode.",
+  "extraServices": {
+    "statsexporter": {
+      "image": "python:3.12-alpine",
+      "container_name": "st47-statsexporter",
+      "hostname": "st47-statsexporter",
+      "cpus": 0.1,
+      "mem_limit": "128m",
+      "environment": {"PREFIX": "st47-"},
+      "command": ["python3", "/app/docker_cpu_exporter.py"],
+      "volumes": [
+        "~/code/GitHub/flink-skill-test-47/dashboard/exporter:/app:ro",
+        "/var/run/docker.sock:/var/run/docker.sock:ro"
+      ]
+    },
+    "prometheus": {
+      "image": "prom/prometheus:v2.53.0",
+      "container_name": "st47-prometheus",
+      "hostname": "st47-prometheus",
+      "cpus": 0.2,
+      "mem_limit": "768m",
+      "command": [
+        "--config.file=/etc/prometheus/prometheus.yml",
+        "--storage.tsdb.path=/prometheus",
+        "--storage.tsdb.retention.time=24h"
+      ],
+      "ports": ["19090:9090"],
+      "volumes": [
+        "~/code/GitHub/flink-skill-test-47/dashboard/prometheus:/etc/prometheus:ro"
+      ]
+    },
+    "grafana": {
+      "image": "grafana/grafana:11.1.0",
+      "container_name": "st47-grafana",
+      "hostname": "st47-grafana",
+      "cpus": 0.15,
+      "mem_limit": "384m",
+      "environment": {
+        "GF_AUTH_ANONYMOUS_ENABLED": "true",
+        "GF_AUTH_ANONYMOUS_ORG_ROLE": "Admin",
+        "GF_AUTH_DISABLE_LOGIN_FORM": "true",
+        "GF_SECURITY_ALLOW_EMBEDDING": "true",
+        "GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH": "/etc/grafana/provisioning/dashboards/json/st47.json"
+      },
+      "ports": ["13000:3000"],
+      "volumes": [
+        "~/code/GitHub/flink-skill-test-47/dashboard/grafana/provisioning:/etc/grafana/provisioning:ro"
+      ]
+    }
+  },
+
+  "ports": {
+    "kafka": 19092,
+    "rest": 18081
+  },
+
+  "jdk": "/opt/homebrew/opt/openjdk@17",
+
+  "axis": "one worker growing: one task manager container capped at N cores, parallelism N, N slots",
+  "apiLevel": "Flink DataStream API, hand-written operators (no SQL, no Table API)",
+  "guarantee": {
+    "state": "exactly-once checkpointing",
+    "sink": "at-least-once, idempotent by publishing the absolute position per key"
+  }
+}

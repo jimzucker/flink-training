@@ -1,0 +1,65 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      1    119,662/s         —         1 / 100%      1536m / 4.5%     2.5 / 5%     5g, full 1,694x   Pipeline CPU    check it matches
+      2    234,966/s     1.96x         2 / 100%      2048m / 1.6%     2.5 / 9%     5g, full 4,800x   Pipeline CPU    add cores for more
+      4    446,297/s     1.90x          4 / 99%      3072m / 0.8%    2.5 / 21%      5g, never full   Pipeline CPU    add cores for more
+
+  Each pair is what it was allowed and how much of that went:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what is being claimed. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  the cases did not all run the same garbage collector: 1 core All,Copy,MarkSweepCompact; 2
+      cores All,G1 Old Generation,G1 Young Generation; 4 cores All,G1 Old Generation,G1 Young
+      Generation. A case with a different collector is a different program, so the step into it
+      is not a scaling measurement. Pin it in flinkProperties (env.java.opts.taskmanager:
+      -XX:+UseG1GC) and measure again.
+  the 1-core p1-asc: the machine was busy with something else: load reached 11.3 on 8 cores
+      while measuring. A CPU cap is a share, not a promise of cycles — every case can read 100%
+      of its cap and still do less work. Close what else is running and measure again.
+
+
+  1->2 cores: doubling gave 1.96x, target 1.80x  ->  met
+  2->4 cores: doubling gave 1.90x, target 1.80x  ->  met
+
+======================================================================================================================
+axis                 : one machine, more cores: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API (question 5 default), hand-written keyed broadcast operators, no SQL or Table API
+guarantee            : state = exactly-once checkpointing every 10 s; sink = at-least-once Kafka sink, idempotent by emitting the absolute position per key; duplicates dropped by per-symbol sequence
+checkpoint interval  : 10000 ms
+build hash           : 12d4d5de99ecf590  (completeness passed for 12d4d5de99ecf590)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 250,000,000 records, accountKeys 16,384, duplicateRecords 1,247,403, partitions 8, priceRecords 16,384, symbolKeys 4,096, uniqueOrders 248,752,597, 5 outputs per input
+backlog              : 250,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-09-24 18:26:07 -> 2026-09-24 19:06:31 EDT (40m)  dashboard: from=1790288767780&to=1790291191073
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     122,534     612,668   0.96/1   95.7%   100   0.13/2.5    0.0%  32.4%  1907s  0.2%       OK
+    2   p1-asc     246,454   1,232,270   2.00/2   100.1%   100   0.23/2.5    0.7%  21.8%   873s  0.2%       OK
+    4   p1-asc     456,430   2,282,152   3.99/4   99.7%   100   0.52/2.5    1.8%  13.1%   372s  0.4%       OK
+    4  p2-desc     442,352   2,211,758   4.02/4   100.4%   100   0.55/2.5    1.7%  14.3%   417s  0.1%       OK
+    2  p2-desc     226,252   1,131,261   2.01/2   100.3%   100   0.26/2.5    1.0%  22.5%   947s  0.3%       OK
+    1  p2-desc     117,980     589,899   0.99/1   98.8%   100   0.12/2.5    0.1%  28.8%  1974s  0.4%       OK
+    1   p3-asc     119,801     599,007   1.00/1   100.0%   100   0.12/2.5    0.0%  31.1%  1950s  0.3%       OK
+    2   p3-asc     232,191   1,160,954   2.01/2   100.4%   100   0.23/2.5    0.4%  24.0%   928s  0.5%       OK
+    4   p3-asc     440,108   2,200,543   3.98/4   99.5%   100   0.53/2.5    1.8%  15.0%   420s  0.0%       OK
+    1 sentinel     118,335     591,676   0.99/1   99.5%   100   0.12/2.5    0.0%  23.8%  1970s  0.2%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     119,662     598,312   0.98/1   98.5%   100   0.12/2.5    0.0%  29.0%  1950s  0.4%   spread 3.8%
+    2     MEAN     234,966   1,174,828   2.01/2   100.3%   100   0.24/2.5    0.7%  22.7%   916s  0.5%   spread 8.6%
+    4     MEAN     446,297   2,231,484   3.99/4   99.9%   100   0.53/2.5    1.8%  14.1%   403s  0.4%   spread 3.7%
+======================================================================================================================
+STEP 1->2 cores: 1.964x  (ideal 2x, target 1.80x, range across passes 1.846x-2.089x)
+STEP 2->4 cores: 1.899x  (ideal 2x, target 1.80x, range across passes 1.786x-2.017x)
+order effect (descending / ascending): {1: 0.9737, 2: 0.9454, 4: 0.9868}
+sentinel: 1c first 122,534 -> last 118,335 rec/s, drift -3.5% across the suite (counted in the 1c spread)
+======================================================================================================================

@@ -14,6 +14,7 @@ Where the evidence lives:
 | findings behind the rules below | `docs/skill-validation/findings.md` |
 | the skill itself | its own repository: [jimzucker/scalable-flink-skill](https://github.com/jimzucker/scalable-flink-skill) |
 | a pipeline we already trust, for testing harness changes without a clean room | `docs/skill-validation/reference-pipeline/` |
+| why skill builds read lower than the published demo, and what fixed it | `docs/skill-validation/article-gap.md` |
 | public writing, tone rules, canonical wording | `docs/linkedin/README.md` |
 | what happened in each step, verbatim | `docs/steps/step-NN/transcript.md` |
 
