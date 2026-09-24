@@ -83,15 +83,15 @@
   "extraServices": {
     "statsexporter": {
       "image": "python:3.12-alpine",
-      "container_name": "st44-statsexporter",
-      "hostname": "st44-statsexporter",
+      "container_name": "{PREFIX}-statsexporter",
+      "hostname": "{PREFIX}-statsexporter",
       "cpus": 0.2,
       "mem_limit": "64m",
       "ports": [
         "\"19110:9110\""
       ],
       "environment": [
-        "PREFIX=st44-",
+        "PREFIX={PREFIX}-",
         "INTERVAL_S=5"
       ],
       "command": [
@@ -105,8 +105,8 @@
     },
     "prometheus": {
       "image": "prom/prometheus:v2.53.2",
-      "container_name": "st44-prometheus",
-      "hostname": "st44-prometheus",
+      "container_name": "{PREFIX}-prometheus",
+      "hostname": "{PREFIX}-prometheus",
       "cpus": 0.3,
       "mem_limit": "192m",
       "ports": [
@@ -124,8 +124,8 @@
     },
     "grafana": {
       "image": "grafana/grafana:11.2.0",
-      "container_name": "st44-grafana",
-      "hostname": "st44-grafana",
+      "container_name": "{PREFIX}-grafana",
+      "hostname": "{PREFIX}-grafana",
       "cpus": 0.2,
       "mem_limit": "224m",
       "ports": [

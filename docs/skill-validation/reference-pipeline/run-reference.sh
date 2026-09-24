@@ -45,10 +45,32 @@ if ! java -version 2>&1 | grep -q '"17'; then
     exit 2
 fi
 
+# The project name every container, volume and network carries. The fixture
+# stores it as {PREFIX} rather than a literal, because run 44 hardcoded its own
+# prefix into the dashboard and the first re-run then started three containers
+# the teardown check could not see and a Prometheus scraping two hosts that did
+# not exist.
+PREFIX=${PREFIX:-refpipe}
+
 echo "copying the reference pipeline to $DEST"
 mkdir -p "$DEST"
-cp -R "$HERE/job" "$HERE/dashboard" "$HERE/ANSWERS.md" "$DEST/"
-sed "s#{RUNDIR}#$DEST#g" "$HERE/pipeline.json" > "$DEST/pipeline.json"
+cp -R "$HERE/job" "$HERE/dashboard" "$DEST/"
+cp "$HERE/ANSWERS.md" "$HERE/ASSUMPTIONS.md" "$HERE/PLAN.md" "$DEST/"
+sed -e "s#{RUNDIR}#$DEST#g" -e "s#{PREFIX}#$PREFIX#g" \
+    "$HERE/pipeline.json" > "$DEST/pipeline.json"
+for f in "$DEST/dashboard/prometheus/prometheus.yml" \
+         "$DEST/dashboard/grafana/provisioning/datasources/prometheus.yml"; do
+    sed "s#{PREFIX}#$PREFIX#g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
+done
+
+# Assert the effect: nothing unsubstituted, and the prefix reached the dashboard.
+if grep -rl '{RUNDIR}\|{PREFIX}' "$DEST/pipeline.json" "$DEST/dashboard/prometheus/prometheus.yml" \
+        "$DEST/dashboard/grafana/provisioning/datasources/prometheus.yml" 2>/dev/null | grep .; then
+    echo "a placeholder was left behind in the files above"
+    exit 2
+fi
+grep -q "\"$PREFIX-statsexporter\"" "$DEST/pipeline.json" || { echo "prefix did not reach pipeline.json"; exit 2; }
+grep -q "$PREFIX-tm:9249" "$DEST/dashboard/prometheus/prometheus.yml" || { echo "prefix did not reach prometheus.yml"; exit 2; }
 
 echo "building the jar"
 (cd "$DEST/job" && mvn -q -DskipTests package)
