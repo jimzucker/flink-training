@@ -47,8 +47,9 @@ way to tell them apart.
 | [48](clean-room/clean-room-run-48.md)♦ | DataStream | 3.92 h | — | 122 | 130,030 | 240,684 | **466,878** | 3.59× | 98% | **98%** |
 | [49](clean-room/clean-room-run-49.md)♦ | DataStream, **Confluent** | 1.68 h | — | 81 | 131,538 | 255,648 | **493,284** | **3.75×** | 100% | **100%** |
 | [50](clean-room/clean-room-run-50.md)♦ | **SQL** | 3.39 h | — | 132 | — | 56,231 | 105,317 | — | 100% | **98%** |
+| [51](clean-room/clean-room-run-51.md)♦ | **SQL** | 3.94 h | — | 131 | — | 45,778 | 97,108 | — | 100% | **99%** |
 
-♦ Runs 31–46 are not in this table. Runs 47–50 took the interview's default answers; 47 threw its own table out (the Mac was swapping) and re-measured at 1.83× / 1.76×, 48 missed the target on 1→2 in three chains, 49 passed both steps — see [article-gap.md](article-gap.md) — and 50, built in SQL, measured 2→4 only: every 1-core pass was thrown out for garbage collection.
+♦ Runs 31–46 are not in this table. Runs 47–51 took the interview's default answers; 47 threw its own table out (the Mac was swapping) and re-measured at 1.83× / 1.76×, 48 missed the target on 1→2 in three chains, 49 passed both steps — see [article-gap.md](article-gap.md) — and 50, built in SQL, measured 2→4 only: every 1-core pass was thrown out for garbage collection. 51, SQL again with the skill's new SQL guidance, read 2→4 at 2.12× and correctly reported 1→2 as unmeasured.
 
 Human time was **0 h** and human prompts **1** in every row.
 

@@ -1,0 +1,11 @@
+phase interview+plan start 2026-09-25 07:29:52
+smoke up start 07:35:26
+chain 1 launched 2026-09-25 07:41:03
+chain 1 STOPPED at tinyproof 08:07:56; probe start 08:08:57
+fill start 08:14:52
+fill end 08:16:42
+ceiling start 08:16:50
+ceiling end 08:30:36
+chain 2 launched 2026-09-25 08:31:43
+tinyproof control start 09:06:04
+tinyproof control end 09:21 PASS
