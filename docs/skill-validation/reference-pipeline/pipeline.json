@@ -30,6 +30,7 @@
     "inputs": [
       "temperature-readings"
     ],
+    "every": {"hourly-average-by-location": "1 hour"},
     "outputs": [
       "hourly-average-by-location"
     ]
