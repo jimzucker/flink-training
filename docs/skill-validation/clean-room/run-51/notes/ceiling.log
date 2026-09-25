@@ -1,0 +1,13 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 21 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[08:16:50] ---- ceiling: broker capped at 2.5 cores, pipeline at 4 ----
+[08:21:02]   broker 0.82/2.5 (33%)  cores 99.3%  89,609 rec/s  srcIdle 0.0%
+[08:21:03] ---- ceiling: broker capped at 1.0 cores, pipeline at 4 ----
+[08:25:36]   broker 0.81/1 (81%)  cores 100.3%  90,878 rec/s  srcIdle 0.0%
+[08:25:36] ---- ceiling: broker capped at 0.5 cores, pipeline at 4 ----
+[08:30:35]   broker 0.49/0.5 (99%)  cores 99.6%  85,045 rec/s  srcIdle 0.0%
