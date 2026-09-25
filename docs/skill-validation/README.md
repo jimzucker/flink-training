@@ -46,8 +46,9 @@ way to tell them apart.
 | [47](clean-room/clean-room-run-47.md)♦ | DataStream | 2.57 h | — | 108 | 97,863 | 168,300 | 242,923 | **no table** | 100% | **99%** |
 | [48](clean-room/clean-room-run-48.md)♦ | DataStream | 3.92 h | — | 122 | 130,030 | 240,684 | **466,878** | 3.59× | 98% | **98%** |
 | [49](clean-room/clean-room-run-49.md)♦ | DataStream, **Confluent** | 1.68 h | — | 81 | 131,538 | 255,648 | **493,284** | **3.75×** | 100% | **100%** |
+| [50](clean-room/clean-room-run-50.md)♦ | **SQL** | 3.39 h | — | 132 | — | 56,231 | 105,317 | — | 100% | **98%** |
 
-♦ Runs 31–46 are not in this table. Runs 47–49 took the interview's default answers; 47 threw its own table out (the Mac was swapping) and re-measured at 1.83× / 1.76×, 48 missed the target on 1→2 in three chains, and 49 passed both steps — see [article-gap.md](article-gap.md).
+♦ Runs 31–46 are not in this table. Runs 47–50 took the interview's default answers; 47 threw its own table out (the Mac was swapping) and re-measured at 1.83× / 1.76×, 48 missed the target on 1→2 in three chains, 49 passed both steps — see [article-gap.md](article-gap.md) — and 50, built in SQL, measured 2→4 only: every 1-core pass was thrown out for garbage collection.
 
 Human time was **0 h** and human prompts **1** in every row.
 

@@ -1,0 +1,185 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 21 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[23:42:21] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-skill-test-50/job/target/positions-sql-1.0.jar st50.Generate --mode=produce --count=60000000 --seed=51 --partitions=8 --bootstrap=localhost:19092 --topic=orders-tiny --pricesTopic=prices --manifest=~/code/GitHub/flink-skill-test-50/results/manifest-tiny.json
+[23:43:07] fill done: done: 60,000,000 records written to orders-tiny in 44.9 s, manifest ~/code/GitHub/flink-skill-test-50/results/manifest-tiny.json
+[23:43:09] backlog orders-tiny: 60,000,000 records read back over 8 partitions
+[23:43:09] ---- tiny case 1 cores ----
+[23:46:50]   CEILING at 27,775 rec/s, tm 100.2% of cap: garbage collection used 6.8% of this case's time and the limit is 5.5%. The pipeline ran short of memory, not cores. Give it more memory instead of more cores.
+[23:46:50]   keeping it: a case that is not the constraint is reported and left out of the steps, not a reason to stop.
+[23:46:50] ---- tiny case 2 cores ----
+[23:50:11]   2c: 52,905 rec/s, tm 100.7% of cap, vantage 0.46%
+[23:50:11] ---- tiny case 4 cores ----
+[23:53:19]   4c: 99,492 rec/s, tm 100.2% of cap, vantage 0.05%
+[23:53:20]   disk: input 58 B/record x 120,000,000 = 7.0 GB (7.0 GB of it already on the broker, 0.0 GB still to write); sinks 214 B/input -> 25.6 GB, retention caps them at 68.7 GB; checkpoints 0.00 GB; need 45.6 GB incl. the 20 GB floor, 126.4 GB free now + 5.2 GB the tiny proof gives back = 131.6 GB: FITS
+[23:53:20]   backlog: 120,000,000 configured, 22,385,587 needed at the measured 99,492 rec/s
+[23:53:20]   kafka memory: 4608m, hit its limit 0 times
+
+[23:53:20]   1->2: not bounded — 1 cores was a ceiling
+tiny proof 2 -> 4 ratio: 1.881x (bounds 1.50-2.50)
+  2 core(s)        52,905 rec/s
+  4 core(s)        99,492 rec/s
+  2 of 4 cores did 53% of the work. It should be about 50%.
+[23:53:20]   1->4: not bounded — 1 cores was a ceiling
+
+guard self-test:
+pure guards (synthetic case records through check_case):
+  ok  a transient case is retried and passes (must not fire) -> DID NOT FIRE
+  ok  a case that fails twice is not retried again   -> FAILED | attempt 2 failed
+  ok  a rig failure is never retried                 -> FAILED | attempt 1 failed
+  ok  a ceiling is never retried                     -> FAILED | attempt 1 failed
+  ok  bottleneck label: Pipeline CPU (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Kafka memory (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: broker hits at 96.8% of cap are not blamed on Kafka (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Pipeline memory (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Kafka writes (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Input feed (must not fire)   -> DID NOT FIRE
+  ok  one core is singular (must not fire)           -> DID NOT FIRE
+  ok  two cores is plural (must not fire)            -> DID NOT FIRE
+  ok  a step above 2x is not reported as met (must not fire) -> DID NOT FIRE
+  ok  the generated stack file is filled in (must not fire) -> DID NOT FIRE
+  ok  the scorecard stays under 136 characters (must not fire) -> DID NOT FIRE
+  ok  size: 4 GiB reads as 4g (must not fire)        -> DID NOT FIRE
+  ok  size: 6 GiB reads as 6g (must not fire)        -> DID NOT FIRE
+  ok  size: 6400 MiB reads as 6.25g (must not fire)  -> DID NOT FIRE
+  ok  the Kafka memory column comes from the record (must not fire) -> DID NOT FIRE
+  ok  detail: the baseline says why (must not fire)  -> DID NOT FIRE
+  ok  detail: a short step names both numbers (must not fire) -> DID NOT FIRE
+  ok  detail: a step above 2x says the smaller case reads low (must not fire) -> DID NOT FIRE
+  ok  detail: Kafka memory names the size to try (must not fire) -> DID NOT FIRE
+  ok  action: the baseline has no step into it (must not fire) -> DID NOT FIRE
+  ok  action: a step that doubled needs nothing (must not fire) -> DID NOT FIRE
+  ok  action: a step short of the target points at the host (must not fire) -> DID NOT FIRE
+  ok  action: a step above 2x says the baseline reads low (must not fire) -> DID NOT FIRE
+  ok  action: says so when there is no usable step (must not fire) -> DID NOT FIRE
+  ok  action: names the Kafka memory to try, in gigabytes (must not fire) -> DID NOT FIRE
+  ok  action: more memory for the pipeline (must not fire) -> DID NOT FIRE
+  ok  action: compress the writes (must not fire)    -> DID NOT FIRE
+  ok  bottleneck: CPU is the block (must not fire)   -> DID NOT FIRE
+  ok  bottleneck: Kafka out of memory (must not fire) -> DID NOT FIRE
+  ok  bottleneck: out of memory (must not fire)      -> DID NOT FIRE
+  ok  bottleneck: waiting to write (must not fire)   -> DID NOT FIRE
+  ok  bottleneck: unknown says investigating (must not fire) -> DID NOT FIRE
+  ok  bottleneck: waiting for input (must not fire)  -> DID NOT FIRE
+  ok  window has < 3 commit boundaries               -> FAILED | only 2 commit boundaries inside the window
+  ok  measured rate is zero                          -> FAILED | measured rate is not positive: 0 records in 60.0s
+  ok  rate came from the engine                      -> FAILED | rate came from the engine, not the transport
+  ok  two vantage points disagree                    -> FAILED | the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs 
+  ok  the data ran out before the window closed      -> FAILED | the data ran out before the measurement finished: 1,000 records left at the end of the window, which
+  ok  external-boundary samples missing              -> FAILED | no back-pressure reading came back for the source, so there is no way to tell whether the pipeline w
+  ok  too few reporter samples in the window         -> FAILED | only 2 back-pressure readings landed inside the window and 3 are needed. Without enough of them ther
+  ok  cores are not the constraint (baseline, run 5's 94%) -> CEILING | the pipeline only used 94.0% of the 4 cores it was given, and it needs 95% to count. Something else 
+  ok  baseline at 95.9% is the constraint (run 12 p3; must not fire) -> DID NOT FIRE
+  ok  cores are not the constraint (other)           -> CEILING | the pipeline only used 90.0% of the 4 cores it was given, and it needs 95% to count. Something else 
+  ok  source idle past the ceiling                   -> CEILING | the source sat idle 40.0% of the window and the limit is 20%. It spent that time waiting for input, 
+  ok  garbage collection is the constraint           -> CEILING | garbage collection used 13.0% of this case's time and the limit is 5.5%. The pipeline ran short of m
+  ok  GC at the worst level that behaved, 4.8% (must not fire) -> DID NOT FIRE
+  ok  swap: run 47's slow passes are put down to the machine's memory (must not fire) -> DID NOT FIRE
+  ok  swap: a quiet machine says nothing about swap (must not fire) -> DID NOT FIRE
+  ok  swap: a case that counts gets no swap sentence (must not fire) -> DID NOT FIRE
+  ok  disk: a topic's bytes are its own partitions only (must not fire) -> DID NOT FIRE
+  ok  disk: a longer topic with the same start is its own (must not fire) -> DID NOT FIRE
+  ok  disk: two topics together (must not fire)      -> DID NOT FIRE
+  ok  fill: a fill that keeps growing runs on (must not fire) -> DID NOT FIRE
+  ok  fill: 6.7 minutes before the first record, like run 48's price feed, runs on (must not fire) -> DID NOT FIRE
+  ok  fill: nothing written in 10 minutes is stopped (must not fire) -> DID NOT FIRE
+  ok  fill: a fill that stopped growing for 5 minutes is stopped (must not fire) -> DID NOT FIRE
+  ok  fill: a 4-minute pause after writing runs on (must not fire) -> DID NOT FIRE
+  ok  kafka tools: the Apache image (must not fire)  -> DID NOT FIRE
+  ok  kafka tools: the Confluent image (must not fire) -> DID NOT FIRE
+  ok  kafka tools: nothing found is not guessed at (must not fire) -> DID NOT FIRE
+  ok  collector: none named, G1 on every case (must not fire) -> DID NOT FIRE
+  ok  collector: other options kept, G1 added (must not fire) -> DID NOT FIRE
+  ok  collector: G1 already named is kept as it is (must not fire) -> DID NOT FIRE
+  ok  collector: any collector but G1 in the config stops the run -> FAILED | flinkProperties asks for the ParallelGC garbage collector. The skill measures on G1 only: a differen
+  ok  collector: a pass that reported Serial stops the suite -> FAILED | the case at 4 cores ran the Copy, MarkSweepCompact garbage collector, not G1. The skill measures on 
+  ok  collector: a pass that reported G1 is fine (must not fire) -> DID NOT FIRE
+  ok  collector: a step between a Serial and a G1 case is not counted (must not fire) -> DID NOT FIRE
+  ok  kafka jars: left out, Apache's path for the Apache image (must not fire) -> DID NOT FIRE
+  ok  kafka jars: left out, Confluent's path for the Confluent image (must not fire) -> DID NOT FIRE
+  ok  either Kafka: a plain Apache-client build has nothing vendor-only (must not fire) -> DID NOT FIRE
+  ok  either Kafka: Confluent serializers are found (must not fire) -> DID NOT FIRE
+  ok  broker advice: run 49's hits on cases at their cap ask for nothing (must not fire) -> DID NOT FIRE
+  ok  broker advice: a case under its cap with hits is the one named (must not fire) -> DID NOT FIRE
+  ok  the broker was starved of page cache (cores off their cap) -> CEILING | the pipeline only used 93.0% of the 4 cores it was given, and it needs 95% to count. Kafka hit its m
+  ok  cores off their cap with no broker hits still says something else held it back -> CEILING | the pipeline only used 93.0% of the 4 cores it was given, and it needs 95% to count. Something else 
+  ok  broker limit hits at 97.9% of cap: the pass is kept (must not fire) -> DID NOT FIRE
+  ok  broker limit hits at exactly the cap floor: the pass is kept (must not fire) -> DID NOT FIRE
+  ok  broker limit hits while the cores are pinned (must not fire) -> DID NOT FIRE
+  ok  a broker that never hit its limit (must not fire) -> DID NOT FIRE
+  ok  the same graph at a new job id and size passes (must not fire) -> DID NOT FIRE
+  ok  job graph differs across cases                 -> FAILED | job graph shape differs from the other cases:
+{'vertexCount': 3, 'signature': [['a', ['HASH']]]}
+vs
+
+  ok  a case's readings are too far apart            -> FAILED | its readings are 26% apart and the limit is 20%
+  ok  a case measured only once                      -> FAILED | only 1 usable reading, and 2 are needed to see how much it wobbles
+  ok  a commit that lands in two pieces (must not fire) -> DID NOT FIRE
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 21 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+  ok  quick look: the flag reaches neither the record nor the guards (must not fire) -> DID NOT FIRE
+  ok  quick look: two passes, so every case has a spread (must not fire) -> DID NOT FIRE
+  ok  quick look: one pass computes a ratio, stamped unpublishable (must not fire) -> DID NOT FIRE
+  ok  sentinel: rig drifted across the suite         -> FAILED | sentinel drift -28.6%: its readings are 27% apart and the limit is 20%
+  ok  sentinel: drift inside the noise floor (must not fire) -> DID NOT FIRE
+  ok  a host-side watcher outlives the run           -> FAILED | host processes watching this run were found and killed: [22463, 22464, 22466]
+  ok  disk: run 11's build A fitted (must not fire)  -> DID NOT FIRE
+  ok  disk: the suite would not fit                  -> FAILED | the suite needs 97.5 GB of disk and only 60.0 GB will be free once the tiny proof's topics are delet
+  ok  key layout: the demo's own 5/3/4/4 is measured, not assumed (must not fire) -> DID NOT FIRE
+  ok  keys do not divide evenly and a maxParallelism would fix it -> FAILED | the positions-by-account stage at 4 cores would get 5/3/4/4 keys across its subtasks. The busiest on
+  ok  an uneven layout with no fix available is reported, not thrown out (must not fire) -> DID NOT FIRE
+  ok  a subtask would get no keys at all             -> FAILED | the positions-by-account stage at 4 cores would get 5/3/8/0 keys across its subtasks, so subtask 3 g
+  ok  an even key layout passes (must not fire)      -> DID NOT FIRE
+  ok  disk: the backlog is projected twice after a fill -> FAILED | the suite needs 92.3 GB of disk and only 77.3 GB will be free once the tiny proof's topics are delet
+  ok  disk: the tiny proof re-runs once the backlog on disk is credited (must not fire) -> DID NOT FIRE
+  ok  disk: crediting the backlog does not excuse a suite that still will not fit -> FAILED | the suite needs 54.4 GB of disk and only 40.0 GB will be free once the tiny proof's topics are delet
+  ok  scorecard: a ratio above its target is not called short of it (must not fire) -> DID NOT FIRE
+  ok  scorecard: a ratio below its target still says so (must not fire) -> DID NOT FIRE
+  ok  probe: the range is an envelope, the middle half is the figure that tightens (must not fire) -> DID NOT FIRE
+  ok  suite.json records the memory each case was given (must not fire) -> DID NOT FIRE
+  ok  the build is missing an output the business case asks for -> FAILED | the job does not match the design the run wrote down: operator sink-mv-by-account; output market-val
+  ok  a build with more operators than the design names passes, and says so (must not fire) -> DID NOT FIRE
+  ok  the measured fan-out is not the declared one   -> FAILED | the job does not match the design the run wrote down: constraint outputsPerInput = 5, read back 8. T
+  ok  a declared input the fill has not created yet (must not fire) -> DID NOT FIRE
+  ok  a declared input missing after the fill        -> FAILED | the job does not match the design the run wrote down: input st-readings. The interview's answers are
+  ok  a pipeline with no constant fan-out still gets a report (must not fire) -> DID NOT FIRE
+  ok  the backlog is not sized on the tiny proof's own warm-up floor (must not fire) -> DID NOT FIRE
+  ok  the job graph draws from the plan the engine served (must not fire) -> DID NOT FIRE
+  ok  the second vantage reads the same either way (must not fire) -> DID NOT FIRE
+  ok  a pipeline with no second way to measure it    -> FAILED | pipeline.json says nothing about how to measure the pipeline a second way. Either set outputsPerInpu
+  ok  outputsPerInput with no output to count it in  -> FAILED | secondVantage mode constantFanOut needs at least one topic in topics.out to count. A pipeline with n
+  ok  all: the chain stops at the first failing step -> FAILED | chain stopped at c, d never ran, DONE says 'STOPPED at c 0.0 min'
+  ok  a run that measured nothing does not report a pass -> FAILED | no scaling result: 4 cases were measured and 2 were thrown out, leaving usable readings at 4 cores.
+  ok  broker advice says when the machine cannot give it -> FAILED | but this machine cannot give it that. At 4 cores the worker wants 4,160 MiB, the job manager takes 1
+  ok  broker advice is silent when the machine can give it (must not fire) -> DID NOT FIRE
+  ok  outputs behind the source point at checkpoint phase -> FAILED | the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs 
+  ok  outputs ahead of the source point at the step size -> FAILED | the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs 
+  ok  a job that is restarting is not called an unsteady rate -> FAILED | the job has restarted 15 times since this case started. It is failing and recovering, not reading at
+  ok  a failed job is named as failed                -> FAILED | the job is failed, not running: Caused by: java.lang.OutOfMemoryError: Direct buffer memory
+  ok  a running job that has not restarted is left alone (must not fire) -> DID NOT FIRE
+  ok  tinyproof sizes from a ceiling top case instead of stopping -> FAILED | sized from the 4-core ceiling case, as it should
+  ok  tinyproof stops plainly when no case produced a rate -> FAILED | not one case produced a rate, so there is nothing to size the suite from. The messages above say why
+  ok  bytes per record is measured on every input topic the run owns -> FAILED | bytes per record is measured across every input topic
+  ok  warm-up accepts a noisy ramp                   -> FAILED | scatter 34%
+  ok  warm-up accepts a flat plateau (must not fire) -> DID NOT FIRE
+  ok  a valid case record passes (must not fire)     -> DID NOT FIRE
+live guards (the rig, broken on purpose):
+  ok  resource cap was not applied                   -> FAILED | cpu cap did not apply on st50-tm: NanoCpus=2000000000, wanted 4000000000
+  ok  cluster still busy from the last case          -> FAILED | a task manager from the last case is still registered: {'taskmanagers': 1, 'slots-total': 2, 'slots-
+  ok  backlog does not match its manifest            -> FAILED | backlog on orders-tiny is 60000000 records, manifest says 59999999
+  ok  disk: broker and volume sizes read (must not fire) -> DID NOT FIRE
+  ok  monitor launched unattended is dead            -> FAILED | offset sampler died at startup:
+nope
+
+  ok  no job is actually running                     -> FAILED | job never reached RUNNING
+140/140 guards fired as expected
+TINY PROOF PASSED

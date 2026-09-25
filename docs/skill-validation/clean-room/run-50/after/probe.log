@@ -1,0 +1,24 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 21 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+probing this machine at [1, 2, 4] cores, 9 repeats per case, no pipeline involved
+
+  simple arithmetic    per core: 1c 631,621,081  2c 609,531,354  4c 600,604,570
+  simple arithmetic    1->2: 1.93x  [1.92-1.94x]
+  simple arithmetic    2->4: 1.97x  [1.96-1.98x]
+  memory-heavy work    per core: 1c 540,426,951  2c 466,827,885  4c 362,108,424
+  memory-heavy work    1->2: 1.72x  [1.57-1.94x]
+  memory-heavy work    2->4: 1.54x  [1.37-1.76x]
+
+  simple arithmetic    full range 1%, middle half 0%
+  memory-heavy work    full range 20%, middle half 10%
+  the widest of those is 20% over 9 repeats, middle half 10%.
+  Compare the middle half with the shortfall before leaning on it: a bound that
+  moves more than the thing it is meant to explain, explains nothing. The full
+  range is an envelope and gets wider with repeats, never narrower, so it is not
+  the figure to tighten. If the middle half is still too wide, say it cannot be
+  settled here — that is a complete answer.
