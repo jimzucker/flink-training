@@ -43,13 +43,19 @@ way to tell them apart.
 | [27](clean-room/clean-room-run-27.md)† | DataStream | 2.13 h | — | 115 | 108,886 | 264,183 | 489,595 | 4.50× | 100% | **100%** |
 | [28](clean-room/clean-room-run-28.md)† | DataStream | 2.65 h | — | 103 | 186,252 | 396,982 | **757,704** | 4.07× | 100% | **100%** |
 | [30](clean-room/clean-room-run-30.md)‡ | DataStream | 2.15 h | — | 83 | — | 474,307 | **788,285** | — | **99%** | **99%** |
+| 37† | DataStream | — | — | — | — | — | — | **no table** | — | — |
+| 42 | DataStream | — | — | — | 717,133 | 1,398,517 | 2,558,226 | 3.57× | 100% | **98%** |
+| 43 | DataStream | — | — | — | — | — | — | **no table** | — | — |
+| 44 | DataStream | 3.17 h | — | — | 794,036 | 1,409,446 | **2,567,941** | 3.23× | 100% | **100%** |
+| 45 | DataStream | 2.00 h | — | — | — | — | — | **no table** | — | — |
+| 46 | DataStream | 1.83 h | — | — | — | — | 3,021,110 | **no table** | — | **99%** |
 | [47](clean-room/clean-room-run-47.md)♦ | DataStream | 2.57 h | — | 108 | 97,863 | 168,300 | 242,923 | **no table** | 100% | **99%** |
 | [48](clean-room/clean-room-run-48.md)♦ | DataStream | 3.92 h | — | 122 | 130,030 | 240,684 | **466,878** | 3.59× | 98% | **98%** |
 | [49](clean-room/clean-room-run-49.md)♦ | DataStream, **Confluent** | 1.68 h | — | 81 | 131,538 | 255,648 | **493,284** | **3.75×** | 100% | **100%** |
 | [50](clean-room/clean-room-run-50.md)♦ | **SQL** | 3.39 h | — | 132 | — | 56,231 | 105,317 | — | 100% | **98%** |
 | [51](clean-room/clean-room-run-51.md)♦ | **SQL** | 3.94 h | — | 131 | — | 45,778 | 97,108 | — | 100% | **99%** |
 
-♦ Runs 31–46 are not in this table. Runs 47–51 took the interview's default answers; 47 threw its own table out (the Mac was swapping) and re-measured at 1.83× / 1.76×, 48 missed the target on 1→2 in three chains, 49 passed both steps — see [article-gap.md](article-gap.md) — and 50, built in SQL, measured 2→4 only: every 1-core pass was thrown out for garbage collection. 51, SQL again with the skill's new SQL guidance, read 2→4 at 2.12× and correctly reported 1→2 as unmeasured.
+♦ Runs 37 and 42–46 were added on 2026-09-25 from their own directories (`results/suite.json`, `results/DONE`); 43 and 45 stopped at the tiny proof, 46 kept only its 4-core case (the false PASS fixed on 2026-09-23), and 42's report crashed so its DONE was written by hand. Wall times for 44–46 are from [reference-pipeline/README.md](reference-pipeline/README.md); the rest were not recorded. † Run 37 ran in `flink-skill-test-39` and left no results there. **Runs 31–36 and 38–41 are still not in this table:** from run 14 on, run numbers and directory numbers drift apart by up to two, and nothing on record ties directories 32–41 to those run numbers. Runs 47–51 took the interview's default answers; 47 threw its own table out (the Mac was swapping) and re-measured at 1.83× / 1.76×, 48 missed the target on 1→2 in three chains, 49 passed both steps — see [article-gap.md](article-gap.md) — and 50, built in SQL, measured 2→4 only: every 1-core pass was thrown out for garbage collection. 51, SQL again with the skill's new SQL guidance, read 2→4 at 2.12× and correctly reported 1→2 as unmeasured.
 
 Human time was **0 h** and human prompts **1** in every row.
 
