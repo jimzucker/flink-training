@@ -1,0 +1,59 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      2     56,231/s         —         2 / 100%      2304m / 3.5%     2.5 / 3%    4.5g, never full   Pipeline CPU    check it matches
+      4    105,317/s     1.87x          4 / 95%      3584m / 0.9%     2.5 / 7%    4.5g, never full   Pipeline CPU    add cores for more
+
+  Each pair is what it was allowed and how much of that went:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  2 cores is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what is being claimed. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  the 4-core p1-asc: the machine was busy with something else: load reached 12.0 on 8 cores
+      while measuring. A CPU cap is a share, not a promise of cycles — every case can read 100%
+      of its cap and still do less work. Close what else is running and measure again.
+
+
+  2->4 cores: doubling gave 1.87x, target 1.80x  ->  met
+
+======================================================================================================================
+axis                 : one machine, more cores: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink SQL: DDL plus one STATEMENT SET of four INSERT INTO statements, submitted from a Java main; the planner chooses every operator, exchange and chain (no DataStream code)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once upsert-kafka, idempotent by writing the absolute position and order count per key
+checkpoint interval  : 10000 ms
+build hash           : cf0586cba9111def  (completeness passed for cf0586cba9111def)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 120,000,000 records, partitions 8, symbols 4,096, accountKeys 16,384, allocationsPerOrder 4, priceTicksPerSymbol 3, 5 outputs per input
+backlog              : 120,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-09-24 22:37:48 -> 2026-09-24 23:20:26 EDT (43m)  dashboard: from=1790303868195&to=1790306426387
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc      28,012     140,060   1.00/1   99.9%   100   0.06/2.5    0.0%   3.0%  4141s  0.1%  CEILING
+        ceiling: garbage collection used 9.2% of this case's time and the limit is 5.5%. The pipeline ran short of memory, not cores. Give it more memory instead of more cores.
+    2   p1-asc      54,514     272,568   1.99/2   99.3%   100   0.11/2.5    0.0%   2.3%  2070s  0.2%       OK
+    4   p1-asc     102,706     513,532   4.00/4   100.1%   100   0.20/2.5    0.0%   2.1%  1008s  0.3%       OK
+    4  p2-desc     106,728     533,640   3.98/4   99.6%   100   0.18/2.5    0.0%   2.2%   958s  0.1%       OK
+    2  p2-desc      55,378     276,892   2.00/2   100.0%   100   0.09/2.5    0.0%   2.6%  2031s  0.4%       OK
+    1  p2-desc      27,249     136,246   1.00/1   99.7%   100   0.04/2.5    0.0%   2.0%  4263s  0.3%  CEILING
+        ceiling: garbage collection used 9.7% of this case's time and the limit is 5.5%. The pipeline ran short of memory, not cores. Give it more memory instead of more cores.
+    1   p3-asc      28,874     144,370   1.00/1   99.6%   100   0.04/2.5    0.0%   2.4%  4021s  0.1%  CEILING
+        ceiling: garbage collection used 9.4% of this case's time and the limit is 5.5%. The pipeline ran short of memory, not cores. Give it more memory instead of more cores.
+    2   p3-asc      58,802     294,009   1.99/2   99.5%   100   0.09/2.5    0.0%   2.1%  1906s  0.4%       OK
+    4   p3-asc     106,517     532,586   3.81/4   95.2%   100   0.18/2.5    0.0%   2.1%   990s  0.3%       OK
+    1 sentinel      29,292     146,461   1.00/1   99.6%   100   0.04/2.5    0.0%   2.8%  3957s  0.4%  CEILING
+        ceiling: garbage collection used 8.2% of this case's time and the limit is 5.5%. The pipeline ran short of memory, not cores. Give it more memory instead of more cores.
+-----------------------------------------------------------------------------------------------------------------
+    2     MEAN      56,231     281,156   1.99/2   99.6%   100   0.09/2.5    0.0%   2.3%  2003s  0.4%   spread 7.6%
+    4     MEAN     105,317     526,586   3.93/4   98.3%   100   0.19/2.5    0.0%   2.2%   986s  0.3%   spread 3.8%
+======================================================================================================================
+STEP 2->4 cores: 1.873x  (ideal 2x, target 1.80x, range across passes 1.747x-1.958x)
+order effect (descending / ascending): {2: 0.9774, 4: 1.0202}
+======================================================================================================================

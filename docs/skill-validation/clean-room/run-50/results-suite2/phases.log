@@ -1,0 +1,16 @@
+2026-09-24 22:09:54 phase=all start
+2026-09-24 22:09:54 phase=up start
+2026-09-24 22:09:56 phase=up end rc=0 2s
+2026-09-24 22:09:56 phase=preflight start
+2026-09-24 22:12:21 phase=preflight end rc=0 144s
+2026-09-24 22:12:21 phase=completeness start
+2026-09-24 22:24:28 phase=completeness end rc=0 727s
+2026-09-24 22:24:28 phase=tinyproof start
+2026-09-24 22:36:20 phase=tinyproof end rc=0 712s
+2026-09-24 22:36:20 phase=fill start
+2026-09-24 22:37:48 phase=fill end rc=0 88s
+2026-09-24 22:37:48 phase=suite start
+2026-09-24 23:20:26 phase=suite end rc=0 2558s
+2026-09-24 23:20:26 phase=report start
+2026-09-24 23:20:26 phase=report end rc=0 0s
+2026-09-24 23:20:26 phase=all end PASS 70.5 min
