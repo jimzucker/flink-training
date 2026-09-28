@@ -41,7 +41,8 @@ both arms, clean and killed, with no tolerances.
 
 ```
 job/           the Flink job, generator, verifier and progress command (1,170 lines of Java)
-dashboard/     Prometheus, Grafana and the container CPU exporter
+dashboard/     Prometheus, Grafana and the container CPU exporter; the dashboard is
+               built by dashboard/build_dashboard.py in the skill's four rows
 pipeline.json  run 44's own, with {RUNDIR} where the absolute paths were
 ANSWERS.md     the six interview answers it was built from
 ASSUMPTIONS.md run 44's own assumptions and PLAN.md its plan, word for word; preflight
