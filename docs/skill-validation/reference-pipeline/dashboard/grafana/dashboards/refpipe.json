@@ -1,0 +1,905 @@
+{
+ "title": "Reference pipeline \u2014 hourly average by location",
+ "uid": "refpipe-rows",
+ "timezone": "America/New_York",
+ "schemaVersion": 39,
+ "time": {
+  "from": "now-90m",
+  "to": "now"
+ },
+ "refresh": "10s",
+ "tags": [
+  "scalable-flink-skill"
+ ],
+ "panels": [
+  {
+   "type": "row",
+   "id": 1,
+   "title": "1. Pipeline output",
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 0
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "id": 2,
+   "title": "Input and output rate, log scale \u2014 both flat during a case",
+   "description": "Rate per stage, in this pipeline's shape: one aggregation and an hourly output, so the two lines sit orders of magnitude apart and the scale is logarithmic.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 0,
+    "y": 1
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "scaleDistribution": {
+       "type": "log",
+       "log": 10
+      }
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~\".*parse_reading.*\"})",
+     "legendFormat": "readings parsed per second"
+    },
+    {
+     "refId": "B",
+     "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=~\".*hourly_average_by_location.*\"})",
+     "legendFormat": "hourly rows published per second"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "id": 3,
+   "title": "Readings per output row \u2014 stays at 36,000",
+   "description": "The cardinality question in this pipeline's shape: each hourly row per location averages a fixed number of readings. A line away from 36,000 means keys or windows are not the ones predicted.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 8,
+    "y": 1
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(rate(flink_taskmanager_job_task_operator_numRecordsIn{operator_name=~\".*hourly_average_by_location.*\"}[2m])) / clamp_min(sum(rate(flink_taskmanager_job_task_operator_numRecordsOut{operator_name=~\".*hourly_average_by_location.*\"}[2m])), 0.0001)",
+     "legendFormat": "readings per published row"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "id": 4,
+   "title": "Input rate per subtask \u2014 lines overlap",
+   "description": "The two-paths question in this pipeline's shape: every subtask of the aggregation should read the same. One falling away from the others is a key spread or a partition problem.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 8,
+    "x": 16,
+    "y": 1
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum by (subtask_index) (flink_taskmanager_job_task_operator_numRecordsInPerSecond{operator_name=~\".*hourly_average_by_location.*\"})",
+     "legendFormat": "subtask {{subtask_index}}"
+    }
+   ]
+  },
+  {
+   "type": "row",
+   "id": 5,
+   "title": "2. Lag and job health",
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 9
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "id": 6,
+   "title": "Records waiting in Kafka \u2014 falls steadily in each case",
+   "description": "Records waiting in Kafka for the job to read. In a measured drain it falls steadily; flat at zero means the case ran out of input.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 10
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum(flink_taskmanager_job_task_operator_pendingRecords)",
+     "legendFormat": "readings not yet read"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "id": 7,
+   "title": "Event-time lag \u2014 flat on a live pipeline",
+   "description": "How far the time in the records being read lags behind the clock. On a pipeline left running this is how stale the outputs are. In a drain it only reads the age of the backlog.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 12,
+    "y": 10
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "s",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_taskmanager_job_task_operator_currentEmitEventTimeLag) / 1000",
+     "legendFormat": "lag"
+    }
+   ]
+  },
+  {
+   "type": "stat",
+   "id": 8,
+   "title": "Job restarts \u2014 0",
+   "description": "Times the job failed and recovered. Anything above zero outside a planned kill means readings were taken across a failure.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 0,
+    "y": 18
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "area",
+    "textMode": "value"
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_jobmanager_job_numRestarts)"
+    }
+   ]
+  },
+  {
+   "type": "stat",
+   "id": 9,
+   "title": "Failed checkpoints \u2014 0",
+   "description": "Checkpoints that did not complete. While they fail, a crash would replay from further back.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 6,
+    "y": 18
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 1
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "area",
+    "textMode": "value"
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_jobmanager_job_numberOfFailedCheckpoints)"
+    }
+   ]
+  },
+  {
+   "type": "stat",
+   "id": 10,
+   "title": "Completed checkpoints \u2014 keeps rising",
+   "description": "The guarantee being kept, for comparison with the failures beside it.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 12,
+    "y": 18
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "area",
+    "textMode": "value"
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_jobmanager_job_numberOfCompletedCheckpoints)"
+    }
+   ]
+  },
+  {
+   "type": "stat",
+   "id": 11,
+   "title": "Job uptime \u2014 resets on a restart",
+   "description": "How long the running job has been up since its last start.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 6,
+    "x": 18,
+    "y": 18
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "area",
+    "textMode": "value"
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_jobmanager_job_uptime)"
+    }
+   ]
+  },
+  {
+   "type": "row",
+   "id": 12,
+   "title": "3. Kafka",
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 22
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "id": 13,
+   "title": "CPU by container, cores \u2014 pipeline at its cap, the rest low",
+   "description": "Every container's CPU. The pipeline sitting at its cap while the broker idles means the pipeline is the constraint; the broker pinned while the pipeline falls off its cap means the reverse.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 23
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "rate(docker_container_cpu_seconds_total[1m])",
+     "legendFormat": "{{name}}"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "id": 14,
+   "title": "Broker memory and limit \u2014 filling to the limit is normal",
+   "description": "The broker's memory, page cache included, against its container limit. Page cache grows until it meets the limit, so touching the line is normal. The harness's own broker-memory check is what says whether reads were pushed to disk.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 12,
+    "y": 23
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(docker_container_memory_bytes{name=~\".*-kafka\"})",
+     "legendFormat": "in use"
+    },
+    {
+     "refId": "B",
+     "expr": "max(docker_container_memory_limit_bytes{name=~\".*-kafka\"})",
+     "legendFormat": "limit"
+    }
+   ]
+  },
+  {
+   "type": "row",
+   "id": 15,
+   "title": "4. Flink",
+   "collapsed": false,
+   "gridPos": {
+    "h": 1,
+    "w": 24,
+    "x": 0,
+    "y": 31
+   },
+   "panels": []
+  },
+  {
+   "type": "timeseries",
+   "id": 16,
+   "title": "Task busy, back-pressured and idle time \u2014 busy near 100%",
+   "description": "Busy near 100% is working at the limit. Back-pressured is waiting on the task after it. Idle with no back-pressure is starved of input.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 32
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     },
+     "max": 1
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 1000",
+     "legendFormat": "busiest task"
+    },
+    {
+     "refId": "B",
+     "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 1000",
+     "legendFormat": "most back-pressured task"
+    },
+    {
+     "refId": "C",
+     "expr": "max(flink_taskmanager_job_task_idleTimeMsPerSecond) / 1000",
+     "legendFormat": "most idle task"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "id": 17,
+   "title": "Garbage collection, % of cores \u2014 under 5.5%",
+   "description": "Time spent collecting garbage, as a share of the cores the pipeline has. The harness calls a case over 5.5% a ceiling; the red line is that limit.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 12,
+    "y": 32
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "percentunit",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0,
+      "thresholdsStyle": {
+       "mode": "line+area"
+      }
+     },
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       },
+       {
+        "color": "red",
+        "value": 0.055
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "sum({__name__=~\"flink_taskmanager_Status_JVM_GarbageCollector_G1_.*_TimeMsPerSecond\"}) / 1000 / scalar(max(flink_jobmanager_taskSlotsTotal))",
+     "legendFormat": "garbage collection"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "id": 18,
+   "title": "Checkpoint duration \u2014 flat",
+   "description": "How long the last checkpoint took. Rising against a steady rate means the state is getting harder to save.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 0,
+    "y": 40
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "ms",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(clamp_min(flink_jobmanager_job_lastCheckpointDuration, 0))",
+     "legendFormat": "last checkpoint"
+    }
+   ]
+  },
+  {
+   "type": "timeseries",
+   "id": 19,
+   "title": "Checkpoint size \u2014 levels off",
+   "description": "The size of the last checkpoint. On a pipeline left running it should level off; a line that keeps climbing is keys that never expire.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 8,
+    "w": 12,
+    "x": 12,
+    "y": 40
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "bytes",
+     "custom": {
+      "lineWidth": 2,
+      "fillOpacity": 8,
+      "showPoints": "never",
+      "spanNulls": 60000,
+      "axisSoftMin": 0
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "legend": {
+     "displayMode": "list",
+     "placement": "bottom"
+    },
+    "tooltip": {
+     "mode": "multi",
+     "sort": "desc"
+    }
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_jobmanager_job_lastCheckpointSize)",
+     "legendFormat": "last checkpoint"
+    }
+   ]
+  },
+  {
+   "type": "stat",
+   "id": 20,
+   "title": "Free task slots",
+   "description": "Slots no job is using. During a measured case this is 0 on purpose: the harness gives the job exactly the slots it uses. A pipeline left running needs spares to restart or rescale.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 12,
+    "x": 0,
+    "y": 48
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "area",
+    "textMode": "value"
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_jobmanager_taskSlotsAvailable)"
+    }
+   ]
+  },
+  {
+   "type": "stat",
+   "id": 21,
+   "title": "Worker threads \u2014 not climbing",
+   "description": "Threads in the worker. A slow climb over hours is a leak.",
+   "datasource": {
+    "type": "prometheus",
+    "uid": "st44prom"
+   },
+   "gridPos": {
+    "h": 4,
+    "w": 12,
+    "x": 12,
+    "y": 48
+   },
+   "fieldConfig": {
+    "defaults": {
+     "unit": "short",
+     "thresholds": {
+      "mode": "absolute",
+      "steps": [
+       {
+        "color": "green",
+        "value": null
+       }
+      ]
+     }
+    },
+    "overrides": []
+   },
+   "options": {
+    "reduceOptions": {
+     "calcs": [
+      "lastNotNull"
+     ]
+    },
+    "colorMode": "background",
+    "graphMode": "area",
+    "textMode": "value"
+   },
+   "targets": [
+    {
+     "refId": "A",
+     "expr": "max(flink_taskmanager_Status_JVM_Threads_Count)"
+    }
+   ]
+  }
+ ],
+ "editable": true
+}
