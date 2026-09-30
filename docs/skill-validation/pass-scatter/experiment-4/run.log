@@ -1,0 +1,16 @@
+arm: same worker, job restarted 4 times
+  J1: 1.463M  1.477M  1.466M  1.473M   mean 1.470M
+  J2: 1.559M  1.556M  1.576M  1.577M   mean 1.567M
+  J3: 1.575M  1.601M  1.607M  1.610M   mean 1.598M
+  J4: 1.600M  1.595M  1.619M  1.620M   mean 1.608M
+arm: fresh worker each time, pinned to vCPUs 0-1
+  worker 1 pinned to: '0-1'
+  P1: 1.682M  1.674M  1.506M  1.516M   mean 1.594M
+  worker 2 pinned to: '0-1'
+  P2: 1.721M  1.690M  1.743M  1.726M   mean 1.720M
+  worker 3 pinned to: '0-1'
+  P3: 1.688M  1.690M  1.693M  1.671M   mean 1.686M
+  worker 4 pinned to: '0-1'
+  P4: 1.645M  1.704M  1.697M  1.711M   mean 1.689M
+same worker : start averages 1.470M, 1.567M, 1.598M, 1.608M | between starts 8.9% lowest to highest, sd 4.1% | within a start sd 0.7%
+pinned      : start averages 1.594M, 1.720M, 1.686M, 1.689M | between starts 7.5% lowest to highest, sd 3.2% | within a start sd 2.4%

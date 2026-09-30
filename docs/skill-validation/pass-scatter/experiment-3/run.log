@@ -1,0 +1,9 @@
+start A: group refpipe-noise3-A-1790637943
+  running fbf712ad4fd6e0abbff453307eed16cf after 12s
+  A: 1.530M  1.602M  1.595M  1.588M  1.608M  1.592M  1.611M  1.610M
+start B: group refpipe-noise3-B-1790638631
+  running b1e72318545285a0b117d66180f4aa4f after 12s
+  B: 1.485M  1.526M  1.520M  1.486M  1.504M  1.456M  1.546M  1.560M
+start A: 8 windows, mean 1.592M, standard deviation 1.7%, lowest to highest 5.1%
+start B: 8 windows, mean 1.511M, standard deviation 2.3%, lowest to highest 6.9%
+between the two starts: -5.1%
