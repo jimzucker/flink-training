@@ -1,0 +1,27 @@
+start  1 cold       worker age 180s before the measured job
+  C1: 1.443M  1.468M  1.498M  1.481M   mean 1.473M
+start  2 pre-warmed worker age 186s before the measured job
+  W2: 1.350M  1.410M  1.419M  1.457M   mean 1.409M
+start  3 cold       worker age 180s before the measured job
+  C3: 1.404M  1.385M  1.445M  1.426M   mean 1.415M
+start  4 pre-warmed worker age 186s before the measured job
+  W4: 1.560M  1.555M  1.569M  1.561M   mean 1.561M
+start  5 cold       worker age 180s before the measured job
+  C5: 1.485M  1.495M  1.368M  1.341M   mean 1.422M
+start  6 pre-warmed worker age 186s before the measured job
+  W6: 1.557M  1.573M  1.588M  1.587M   mean 1.576M
+start  7 cold       worker age 180s before the measured job
+  C7: 1.291M  1.866M  1.606M  1.608M   mean 1.593M
+start  8 pre-warmed worker age 187s before the measured job
+  W8: 1.625M  1.627M  1.644M  1.631M   mean 1.632M
+start  9 cold       worker age 180s before the measured job
+  C9: 1.483M  1.549M  1.575M  1.577M   mean 1.546M
+start 10 pre-warmed worker age 186s before the measured job
+  W10: 1.555M  1.573M  1.588M  1.552M   mean 1.567M
+start 11 cold       worker age 180s before the measured job
+  C11: 1.512M  1.514M  1.525M  1.508M   mean 1.515M
+start 12 pre-warmed worker age 187s before the measured job
+  W12: 1.403M  1.419M  1.432M  1.426M   mean 1.420M
+cold      : 1.473M, 1.415M, 1.422M, 1.593M, 1.546M, 1.515M | mean 1.494M | between starts sd 4.7%, lowest to highest 11.9% | within a start sd 4.5% | fell more than 4% during the run: 1 of 6
+pre-warmed: 1.409M, 1.561M, 1.576M, 1.632M, 1.567M, 1.420M | mean 1.528M | between starts sd 6.0%, lowest to highest 14.6% | within a start sd 1.2% | fell more than 4% during the run: 0 of 6
+pre-warmed against cold: +2.3%, +0.7 standard errors
