@@ -1,0 +1,16 @@
+2026-09-30 21:47:58 phase=all start
+2026-09-30 21:47:58 phase=up start
+2026-09-30 21:48:00 phase=up end rc=0 2s
+2026-09-30 21:48:00 phase=preflight start
+2026-09-30 21:50:52 phase=preflight end rc=0 172s
+2026-09-30 21:50:52 phase=completeness start
+2026-09-30 22:00:25 phase=completeness end rc=0 573s
+2026-09-30 22:00:25 phase=tinyproof start
+2026-09-30 22:11:17 phase=tinyproof end rc=0 652s
+2026-09-30 22:11:17 phase=fill start
+2026-09-30 22:13:53 phase=fill end rc=0 157s
+2026-09-30 22:13:53 phase=suite start
+2026-09-30 23:18:03 phase=suite end rc=0 3850s
+2026-09-30 23:18:03 phase=report start
+2026-09-30 23:18:03 phase=report end rc=1 0s
+2026-09-30 23:18:03 phase=all end STOPPED at report: not settled — 2→4 reads 1.86x, between 1.77x and 1.90x, which spans the 1.80x target. More passes would decide it 90.1 min
