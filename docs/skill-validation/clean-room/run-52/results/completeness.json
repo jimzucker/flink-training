@@ -1,0 +1,321 @@
+{
+  "build": "47546d835381037c",
+  "records": 10000000,
+  "cores": 1,
+  "arms": [
+    {
+      "group": "st52-complete-clean",
+      "killed": false,
+      "drainS": 120.2,
+      "killedAtCommitted": null,
+      "shape": {
+        "vertexCount": 4,
+        "signature": [
+          [
+            "Source: orders-source<br/>+- parse-orders<br/>",
+            []
+          ],
+          [
+            "Source: prices-source<br/>+- parse-prices<br/>",
+            []
+          ],
+          [
+            "position-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ],
+          [
+            "position-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          128
+        ],
+        "plan": {
+          "jid": "25e8f77e98ef07252d306c80ca5d6099",
+          "name": "st52 positions and market values",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "36d4643082db3c452764d1522f499c91",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "2ec4b66bbb4aec4aa40e69c0fa20a9fc",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: orders-source<br/>+- parse-orders<br/>",
+              "optimizer_properties": {}
+            },
+            {
+              "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: prices-source<br/>+- parse-prices<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "arm clean: manifest 10,000,000 records = 9,950,000 orders + 50,000 repeated on purpose\npositions-by-symbol: 9,950,000 rows, 4,096 keys, backward steps 0\npositions-by-account: 39,800,000 rows, 16,384 keys, backward steps 0\nmarket-values-by-symbol: 36,878 rows, 4,096 keys, backward steps 0\nmarket-values-by-account: 147,476 rows, 16,384 keys, backward steps 0\ntwo paths: the account positions add up to the symbol position for 4,096 of 4,096 symbols\nPASS: every position and market value matches the manifest exactly, per-key order held (no key ever went backwards), every key in one partition, and the 50000 repeated orders were each counted once\n"
+    },
+    {
+      "group": "st52-complete-kill",
+      "killed": true,
+      "drainS": 198.6,
+      "killedAtCommitted": 4561216,
+      "shape": {
+        "vertexCount": 4,
+        "signature": [
+          [
+            "Source: orders-source<br/>+- parse-orders<br/>",
+            []
+          ],
+          [
+            "Source: prices-source<br/>+- parse-prices<br/>",
+            []
+          ],
+          [
+            "position-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ],
+          [
+            "position-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          128
+        ],
+        "plan": {
+          "jid": "034a42f74c548198d7b69dd38f57e29c",
+          "name": "st52 positions and market values",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "36d4643082db3c452764d1522f499c91",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "2ec4b66bbb4aec4aa40e69c0fa20a9fc",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: orders-source<br/>+- parse-orders<br/>",
+              "optimizer_properties": {}
+            },
+            {
+              "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: prices-source<br/>+- parse-prices<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "arm killed: manifest 10,000,000 records = 9,950,000 orders + 50,000 repeated on purpose\npositions-by-symbol: 10,040,296 rows, 4,096 keys, backward steps 3,572\npositions-by-account: 40,162,252 rows, 16,384 keys, backward steps 14,288\nmarket-values-by-symbol: 49,154 rows, 4,096 keys, backward steps 0\nmarket-values-by-account: 196,609 rows, 16,384 keys, backward steps 0\ntwo paths: the account positions add up to the symbol position for 4,096 of 4,096 symbols\nPASS: every position and market value matches the manifest exactly, per-key order held (at most one backward step per key after the restart), every key in one partition, and the 50000 repeated orders were each counted once\n"
+    }
+  ],
+  "at": "2026-09-30 21:51:08",
+  "designDiff": [
+    {
+      "area": "operator",
+      "declared": "orders-source",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "parse-orders",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "prices-source",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "position-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "position-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-positions-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-positions-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-market-values-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-market-values-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "input",
+      "declared": "orders",
+      "built": true,
+      "detail": "not created yet -- the fill has not run"
+    },
+    {
+      "area": "input",
+      "declared": "prices",
+      "built": true,
+      "detail": "36,864 records on the broker"
+    },
+    {
+      "area": "output",
+      "declared": "positions-by-symbol",
+      "built": true,
+      "detail": "9,950,000 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "positions-by-account",
+      "built": true,
+      "detail": "39,800,000 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "market-values-by-symbol",
+      "built": true,
+      "detail": "36,878 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "market-values-by-account",
+      "built": true,
+      "detail": "147,476 records after the drain"
+    },
+    {
+      "area": "constraint",
+      "declared": "outputsPerInput = 4.975",
+      "built": true,
+      "detail": "read back 4.975"
+    },
+    {
+      "area": "constraint",
+      "declared": "maxParallelism = 128",
+      "built": true,
+      "detail": "read back 128"
+    }
+  ],
+  "result": "PASS"
+}
