@@ -153,3 +153,12 @@ jobs:
       # they get linted rather than trusted.
       - name: ShellCheck
         run: shellcheck scripts/*.sh docker/scripts/*.sh
+
+      # The reference pipeline's dashboard is generated, never hand-edited, so
+      # the committed file must be exactly what its builder writes. A hand edit
+      # to refpipe.json would otherwise drift from build_dashboard.py unseen.
+      - name: The reference dashboard is what its builder writes
+        run: |
+          d=docs/skill-validation/reference-pipeline/dashboard
+          python3 "$d/build_dashboard.py" "$RUNNER_TEMP/refpipe.json"
+          diff -u "$d/grafana/dashboards/refpipe.json" "$RUNNER_TEMP/refpipe.json"
