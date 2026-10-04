@@ -1,0 +1,48 @@
+  confluent-cloud: created environment flink-training (env-2kdxd1)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 105 s after it was created
+  confluent-cloud up: cluster lkc-mv5652q, pool lfcp-do0z0v7, 3 API keys; credentials in <scratch>/cloud-profiler/probe-creds.env
+17:52:47 setup pool lfcp-do0z0v7 for the fill; its size read back: 20
+17:59:01 sixteen fill jobs running
+18:01:05   fill, 124 s: orders holds 38532155 in 24 partitions 
+18:03:08   fill, 247 s: orders holds 59677591 in 24 partitions 
+18:05:11   fill, 370 s: orders holds 80971456 in 24 partitions 
+18:07:14   fill, 493 s: orders holds 103126546 in 24 partitions 
+18:09:18   fill, 617 s: orders holds 125556168 in 24 partitions 
+18:11:22   fill, 741 s: orders holds 147969598 in 24 partitions 
+18:13:25   fill, 864 s: orders holds 170537219 in 24 partitions 
+18:15:28   fill, 987 s: orders holds 193322118 in 24 partitions 
+18:17:31   fill, 1110 s: orders holds 215813732 in 24 partitions 
+18:18:27 backlog: orders holds 218,233,768 records in 24 partitions 
+18:18:40 case copy20: new pool lfcp-q2565mm, size read back 20
+18:19:32 case copy20: baseline set, HTTP 200; the statement reports spec.scaling {'baseline_cfu': 20} 
+18:20:35   case copy20, 98 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 16.0, 'flink-training-amp3': 1.0, 'flink-training-amp9': 1.0, 'flink-training-amp10': 1.0, 'flink-training-amp4': 1.0, 'flink-training-amp1': 1.0, 'flink-training-amp12': 1.0, 'flink-training-amp15': 1.0, 'flink-training-amp13': 1.0, 'flink-training-amp5': 1.0, 'flink-training-amp14': 1.0, 'flink-training-amp2': 1.0, 'flink-training-amp7': 1.0, 'flink-training-amp8': 1.0, 'flink-training-amp11': 1.0, 'flink-training-amp6': 1.0, 'flink-training-amp16': 1.0}
+18:21:36   case copy20, 160 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 16.0, 'flink-training-amp9': 1.0, 'flink-training-amp10': 1.0, 'flink-training-amp12': 1.0, 'flink-training-amp15': 1.0, 'flink-training-amp13': 1.0, 'flink-training-amp14': 1.0, 'flink-training-amp11': 1.0, 'flink-training-amp16': 1.0}
+18:22:38   case copy20, 222 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 1.0, 'flink-training-copy20': 1.0}
+18:23:40   case copy20, 284 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 1.0, 'flink-training-copy20': 1.0}
+18:24:42   case copy20, 346 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 1.0, 'flink-training-copy20': 1.0}
+18:25:44   case copy20, 408 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 9.0, 'flink-training-copy20': 9.0}
+18:26:47   case copy20, 470 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-copy20': 20.0}
+18:26:47 READY FOR THE QUERY PROFILER: statement flink-training-copy20 in pool lfcp-q2565mm, environment env-2kdxd1; touch <scratch>/cloud-profiler/looked when done
+18:27:48   case copy20, 532 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-copy20': 20.0}
+18:28:50   case copy20, 594 s: status DELETING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-copy20': 20.0}
+18:28:50     live operator/current_parallelism: HTTP 200 (no points)
+18:28:51     live operator/max_parallelism: HTTP 200 (no points)
+deleted pool lfcp-q2565mm
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []
+Traceback (most recent call last):
+  File "<scratch>/cloud-profiler/probe.py", line 261, in <module>
+    say(f"  case {label}, {time.time() - t_case:.0f} s: status {p.statement_status(nm)[0]}; CFU in use (export) {cf}")
+                                                                ~~~~~~~~~~~~~~~~~~^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 412, in statement_status
+    d = self.cli_json("flink", "statement", "describe", name, "--cloud", self.cloud, "--region", self.region) or {}
+        ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 239, in cli_json
+    out = self.cli(*args, "-o", "json", quiet=quiet)
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 234, in cli
+    raise Refusal("rig", f"confluent {what} did not succeed: "
+                         + ("(output withheld: it may hold a secret)" if quiet else (err or out).strip()[:300]))
+lib.Refusal: confluent flink statement describe flink-training-copy20 --cloud gcp --region us-east1 -o json did not succeed: No Flink endpoint is specified, defaulting to public endpoint: https://flink.us-east1.gcp.confluent.cloud
+Error: Statement resource=flink-training-copy20 does not exist

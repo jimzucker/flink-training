@@ -180,3 +180,67 @@ publication belong on a quieter machine.
 
 Raw results, with the scripts that produced them:
 [pass-scatter/](pass-scatter/). The figures above are copied from those logs.
+
+## 8. What one CFU buys on Confluent Cloud, and what held 20 CFU back — 2026-10-03/04
+
+Fourteen probe runs on Confluent Cloud (GCP us-east1, a Basic Kafka cluster,
+Flink SQL), each on a stack it created and deleted itself, set out to answer
+one question before the harness measures anything there: when a compute pool
+goes from 10 to 20 CFU, does the job get twice the workers, the way 2 to 4
+cores gives it twice the slots on the laptop? Rates below compare only within
+one run unless a row says otherwise; separate stacks read the same per-key
+sum at 10 CFU at 18.6 and 16.3 million records a minute (runs 06 and 07).
+
+| # | what was tested | result |
+|---|---|---|
+| 01–05 | filling a backlog with Confluent's generator, which has no seed | one job used 1 CFU and wrote 12,740–18,370 records/s on three stacks, whatever the pool size; two side by side 27,099 (2.03× one, same stack); eight 74,962 and 74,950; sixteen 187,320 |
+| 03 | lowering a pool's size between cases | Confluent answered "Reducing the max_cfu of a compute pool is currently unsupported". Every case now gets a new pool (scalable-flink-skill #123) |
+| 04 | where the window can be anchored | Kafka's tools listed no consumer group for a statement's reads in 30 readings out of 30: the laptop's committed-offset anchor does not exist here |
+| 04, 05 | drains with no baseline, pools of 5, 10 and 20 CFU; 24 and 48 partitions | each statement started at 1 CFU and grew in about three minutes; in 20 CFU pools it stopped at **10 CFU** three times out of three, at 24 and at 48 partitions, with tens of millions of records still waiting |
+| 06 | the same drain, pool 20, once as before and once with `baseline_cfu` 20 (one stack) | Confluent's scaling status said "OK" in 22 readings out of 22, at 10 CFU with 62 million or more waiting. With the baseline the statement reached 20 CFU: **1.54×** by records read (18.60 → 28.73 M/min), **1.62×** by Kafka bytes sent (1,419 → 2,295 MB/min) |
+| 04, 05 | Confluent's per-minute "records read" against the backlog | added up to 72.0%, 72.7%, 75.7%, 93.0% and 93.6% of the records the drains got through; the fill's "records written" matched its topic. Cause not known; records read is not used as a rate |
+| 07 | per-key sum and pass-through copy at 10 and 20 CFU, baseline = pool size (one stack) | sum **1.66×** (records read), **1.69×** (Kafka bytes); copy **1.23×** and **1.31×**. The copy was never held back (0 ms/s) and busy 1,000 ms/s. The cluster sat at its 10 eCKU limit in all four cases |
+| 08 | the copy at 20 CFU with the cluster allowed 50 eCKU | the cluster grew to 50; the copy read 31.56 M/min against 30.59 in run 07. **eCKU is not the limit** |
+| 09 | the copy at 20 CFU with 96 partitions in and out, 50 eCKU | **43.73 M/min, 1.38×** run 08 (Kafka bytes 3,440 against 2,499 MB/min). Input and output were changed together, so which one mattered is not separated |
+| 10, 11 | reading parallelism from the metrics API | `operator/current_parallelism` and `operator/max_parallelism` returned no data in six query shapes, while `operator/num_records_in` returned data; the API offers no operator or subtask label. Confluent's documentation says parallelism cannot be set ("Autopilot manages parallelism") |
+| 13 | the Console's Query Profiler, read through Chrome | the copy runs as one chained task. **1 subtask at 1 CFU, 20 subtasks at 20 CFU.** At 20 CFU the subtasks read 1.04 to 3.40 million messages a minute each. 18 of the 24 input partitions were "Blocked" 20–66% of the time: paused by **watermark alignment**, which Confluent Cloud turns on by default |
+| 14 | the same copy with `sql.tables.scan.watermark-alignment.max-allowed-drift` = `1 d` (read back from the statement) | no partition blocked. **46.0 and 47.1 M/min** in the first two minutes at 20 CFU, against 30.6–31.6 with alignment on in runs 07 and 08 (other stacks). Then 35, 16, 8 and 5 M/min in the next four minutes, with 47, 23, 12 and 5 million still waiting: the partitions ran dry one by one |
+
+What this establishes, and does not:
+
+- **One CFU ran one subtask** in the one statement read this way (run 13), so
+  a CFU step can be a worker step like the laptop's. Nothing but the Console
+  shows it; the harness cannot read it back on every case yet.
+- **Confluent's autoscaler decides how much of a pool to use.** Left alone it
+  stopped at 10 CFU of 20 and reported "OK". `baseline_cfu` set to the pool's
+  size made the statement use all of it (run 06). Without it, a case measures
+  the autoscaler, not the pool.
+- **Watermark alignment is on by default and paused most of the input.** The
+  laptop's jobs have no alignment, so the two platforms were not measuring the
+  same job. Raising the allowed drift removed every pause and the copy read
+  about half as much again (run 14) — but over two minutes, compared across
+  stacks; a full case has not been measured.
+- **The 24-partition topic broke the laptop's own rule** that the partition
+  count divides by every parallelism under test (SKILL.md §6). 24 over 20
+  subtasks cannot be even; the subtasks' readings (1.04–3.40 M/min) and run
+  14's tail are consistent with that, but which subtask read which partitions
+  was not recorded. 96 partitions read 1.38× faster (run 09).
+- **Ruled out:** the input partition count while the autoscaler capped the
+  job (run 05), and the Kafka cluster's eCKU limit (run 08).
+- **Not yet measured:** the 10→20 step with all three in place — baseline =
+  pool size, alignment drift raised, partitions divisible by every case
+  (20, 40 or 60 for 5/10/20).
+- **Readiness.** Two stacks ran their first statement 5 and 7 seconds after
+  creation, and in both a table created afterwards stayed invisible through
+  five tries over two and a half minutes (runs 10 and 12). In the other ten
+  runs with a readiness reading, the first statement took 102–108 seconds and
+  every table appeared. That is a pattern over twelve stacks, not a measured
+  cause; the harness's readiness check should prove a table can be created
+  and then written to.
+- **Run 13 was lost by hand.** The statement it was watching was deleted to
+  start run 14's test on the same stack; the probe's next status read stopped
+  it and the stack was torn down. Run 14 repeated that test on its own stack.
+
+Raw results, scripts and the Query Profiler readings:
+[confluent-cloud/](confluent-cloud/). The figures above are recomputed from
+those files with `analyse.py`.

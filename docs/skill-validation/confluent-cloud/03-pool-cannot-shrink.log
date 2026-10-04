@@ -1,0 +1,36 @@
+  confluent-cloud: created environment flink-training (env-d53x7o)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 108 s after it was created
+  confluent-cloud up: cluster lkc-9kgg095, pool lfcp-rrzzqpk, 2 API keys; credentials in <scratch>/cloud-drain/probe-creds.env
+20:10:19 pool size 20 CFU -> 20
+20:12:31   fill, one job, 64 s: orders holds 373,443 in 24 partitions; CFU in use {} 
+20:14:00   fill, one job, 153 s: orders holds 1,430,881 in 24 partitions; CFU in use {'flink-training-flink': 1.0} 
+20:15:30   fill, one job, 243 s: orders holds 2,652,464 in 24 partitions; CFU in use {'flink-training-flink': 1.0} 
+20:15:30 fill, one job: 12,740 records/s written, over 179 s
+20:17:58 eight fill jobs running: flink-training-amp1t1, flink-training-amp2t1, flink-training-amp3t1, flink-training-amp4t1, flink-training-amp5t1, flink-training-amp6t1, flink-training-amp7t1, flink-training-amp8t1
+20:19:03   fill, eight jobs, 64 s: orders holds 11,809,417 in 24 partitions; CFU in use {'flink-training-flink': 1.0} 
+20:21:02   fill, eight jobs, 184 s: orders holds 20,622,650 in 24 partitions; CFU in use {'flink-training-flink': 1.0} 
+20:23:02   fill, eight jobs, 303 s: orders holds 29,719,687 in 24 partitions; CFU in use {'flink-training-flink': 1.0} 
+20:23:02 fill, eight jobs: 74,962 records/s written, over 239 s
+20:23:46 backlog: orders holds 30,325,837 records in 24 partitions 
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []
+Traceback (most recent call last):
+  File "<scratch>/cloud-drain/probe.py", line 189, in <module>
+    say(f"pool size {cfu} CFU ->", L.P.set_and_read_back(p, cfu))
+                                   ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platforms.py", line 102, in set_and_read_back
+    p.set_size(units)
+    ~~~~~~~~~~^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 273, in set_size
+    self.cli("flink", "compute-pool", "update", self.state["pool"], "--max-cfu", str(int(units)))
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 140, in cli
+    raise Refusal("rig", f"confluent {what} did not succeed: "
+                         + ("(output withheld: it may hold a secret)" if quiet else (err or out).strip()[:300]))
+lib.Refusal: confluent flink compute-pool update lfcp-rrzzqpk --max-cfu 5 did not succeed: Error: Reducing the max_cfu of a compute pool is currently unsupported.
+
+Suggestions:
+    List available Flink compute pools with confluent flink compute-pool list.
+    Make sure you have selected the Flink compute pool's environment with confluent environment use.

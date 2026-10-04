@@ -1,0 +1,45 @@
+  confluent-cloud: created environment flink-training (env-v9zqzp)
+  confluent-cloud: the stack ran its first statement 5 s after it was created
+  confluent-cloud up: cluster lkc-9kgdgk5, pool lfcp-rrz6zrk, 3 API keys; credentials in <scratch>/cloud-profiler/probe-creds.env
+17:46:03 setup pool lfcp-rrz6zrk for the fill; its size read back: 20
+  confluent-cloud: statement flink-training-amp1t1 could not see a table created just before it; retrying in 30 s as flink-training-amp1t1-r2
+  confluent-cloud: statement flink-training-amp1t1-r2 could not see a table created just before it; retrying in 30 s as flink-training-amp1t1-r3
+  confluent-cloud: statement flink-training-amp1t1-r3 could not see a table created just before it; retrying in 30 s as flink-training-amp1t1-r4
+  confluent-cloud: statement flink-training-amp1t1-r4 could not see a table created just before it; retrying in 30 s as flink-training-amp1t1-r5
+17:49:21   flink-training-amp1t1: the new table was not visible yet; retrying in 30 s
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []
+Traceback (most recent call last):
+  File "<scratch>/cloud-profiler/probe.py", line 136, in run_retrying
+    p.run_statement(nm, sql, DB)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 432, in run_statement
+    status = self._run_statement(nm, sql, database, timeout_s, pool)
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 467, in _run_statement
+    raise Refusal("rig", f"statement {name} did not run on Confluent Cloud ({status.lower()}): "
+                         f"{detail or json.dumps(whole)[:600]}")
+lib.Refusal: statement flink-training-amp1t1-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training`.`flink-training-kafka`.`orders`'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<scratch>/cloud-profiler/probe.py", line 215, in <module>
+    fills = [amp(i, "orders") for i in range(1, 17)]
+             ~~~^^^^^^^^^^^^^
+  File "<scratch>/cloud-profiler/probe.py", line 166, in amp
+    return run_retrying(f"flink-training-amp{i}",
+        f"INSERT INTO {table} SELECT CONCAT(b.order_id, '-', CAST(a.x AS STRING), '-', CAST(c.y AS STRING)), "
+        f"b.symbol, b.account, b.qty, b.price FROM fake_base_{i} AS b "
+        f"CROSS JOIN (VALUES {V50}) AS a(x) CROSS JOIN (VALUES {V40}) AS c(y)")
+  File "<scratch>/cloud-profiler/probe.py", line 142, in run_retrying
+    p.cli("flink", "statement", "delete", nm, "--cloud", p.cloud, "--region", p.region, "--force")
+    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 234, in cli
+    raise Refusal("rig", f"confluent {what} did not succeed: "
+                         + ("(output withheld: it may hold a secret)" if quiet else (err or out).strip()[:300]))
+lib.Refusal: confluent flink statement delete flink-training-amp1t1 --cloud gcp --region us-east1 --force did not succeed: No Flink endpoint is specified, defaulting to public endpoint: https://flink.us-east1.gcp.confluent.cloud
+Error: Flink SQL statement "flink-training-amp1t1" not found
+
+Suggestions:
+    List available Flink SQL statements with confluent flink statement list.
