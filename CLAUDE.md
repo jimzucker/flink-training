@@ -75,6 +75,12 @@ proof. So:
 
 - **Stop at the first failure.** Don't run the rest of a battery on code that is
   already broken. Probe the hardest case first.
+- **Run only the case that can show the effect, then work backwards** — on the
+  laptop too, to get the answer sooner, and most of all on paid or shared
+  services, where every extra case costs money as well as time. Say beforehand what
+  reading counts as an effect (larger than the measured spread), and add cases
+  only if that one shows something. (2026-10-04: a proposed four-case cloud
+  repeat to test one setting was cut to the one 20 CFU case.)
 - **Prove a fix at the cheapest level that reproduces it**, in order:
   `prove.py selftest-pure` → `prove.py replay` → the rig (`prove.py all --quick`)
   → the reference pipeline → a clean-room run. A run is never the first proof
