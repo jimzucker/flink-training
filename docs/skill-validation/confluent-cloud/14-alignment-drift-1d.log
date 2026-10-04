@@ -1,0 +1,42 @@
+  confluent-cloud: created environment flink-training (env-rg1nmk)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud up: cluster lkc-9kgd3dv, pool lfcp-81qdkd0, 3 API keys; credentials in <scratch>/cloud-nodrift/probe-creds.env
+18:43:27 setup pool lfcp-81qdkd0 for the fill; its size read back: 20
+18:49:07 sixteen fill jobs running
+18:51:11   fill, 124 s: orders holds 43805913 in 24 partitions 
+18:53:14   fill, 247 s: orders holds 67160651 in 24 partitions 
+18:55:16   fill, 369 s: orders holds 91204503 in 24 partitions 
+18:57:19   fill, 492 s: orders holds 116310484 in 24 partitions 
+18:59:22   fill, 615 s: orders holds 141595616 in 24 partitions 
+19:01:26   fill, 739 s: orders holds 166851058 in 24 partitions 
+19:03:28   fill, 861 s: orders holds 191903512 in 24 partitions 
+19:05:31   fill, 984 s: orders holds 216797610 in 24 partitions 
+19:06:29 backlog: orders holds 219,734,269 records in 24 partitions 
+19:06:43 case copy20: new pool lfcp-nv566od, size read back 20
+19:07:12 case copy20: baseline set, HTTP 200; the statement reports spec.scaling {'baseline_cfu': 20} 
+19:07:13 case copy20: statement properties read back: {'sql.current-catalog': 'flink-training', 'sql.current-database': 'flink-training-kafka', 'sql.tables.scan.watermark-alignment.max-allowed-drift': '1 d'}
+19:08:16   case copy20, 89 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 16.0, 'flink-training-amp7': 1.0, 'flink-training-amp10': 1.0, 'flink-training-amp3': 1.0, 'flink-training-amp12': 1.0, 'flink-training-amp11': 1.0, 'flink-training-amp15': 1.0, 'flink-training-amp9': 1.0, 'flink-training-amp5': 1.0, 'flink-training-amp16': 1.0, 'flink-training-amp4': 1.0, 'flink-training-amp13': 1.0, 'flink-training-amp1': 1.0, 'flink-training-amp14': 1.0, 'flink-training-amp8': 1.0, 'flink-training-amp6': 1.0, 'flink-training-amp2': 1.0}
+19:09:18   case copy20, 151 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 16.0, 'flink-training-amp10': 1.0, 'flink-training-amp12': 1.0, 'flink-training-amp11': 0.0, 'flink-training-amp15': 1.0, 'flink-training-amp9': 1.0, 'flink-training-amp16': 1.0, 'flink-training-amp13': 1.0, 'flink-training-amp14': 1.0}
+19:10:20   case copy20, 213 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 1.0, 'flink-training-amp11': 0.0, 'flink-training-copy20': 1.0}
+19:11:23   case copy20, 276 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 1.0, 'flink-training-amp11': 0.0, 'flink-training-copy20': 1.0}
+19:12:25   case copy20, 338 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 1.0, 'flink-training-amp11': 0.0, 'flink-training-copy20': 1.0}
+19:13:27   case copy20, 400 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 9.0, 'flink-training-amp11': 0.0, 'flink-training-copy20': 9.0}
+19:14:29   case copy20, 462 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-amp11': 0.0, 'flink-training-copy20': 20.0}
+19:14:29 READY FOR THE QUERY PROFILER: statement flink-training-copy20 in pool lfcp-nv566od, environment env-rg1nmk; touch <scratch>/cloud-nodrift/looked when done
+19:15:31   case copy20, 523 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-amp11': 0.0, 'flink-training-copy20': 20.0}
+19:18:51     copy20 operator/current_parallelism: 
+19:18:52     copy20 operator/max_parallelism: 
+19:18:52     copy20 statement_utilization/current_cfus: 23:07=1.0 23:08=1.0 23:09=1.0 23:10=9.0 23:11=20.0 23:12=20.0 23:13=20.0 23:14=20.0 23:15=20.0 23:16=20.0 23:17=20.0
+19:18:53     copy20 num_records_in: 23:07=533602.0 23:08=893491.0 23:09=235035.0 23:10=9763578.0 23:11=27699222.0 23:12=45966419.0 23:13=47143051.0 23:14=35211441.0 23:15=16351563.0 23:16=8324648.0 23:17=5362594.0 23:18=1258715.0
+19:18:54     copy20 num_records_out: 23:07=533607.0 23:08=893486.0 23:09=235035.0 23:10=9763565.0 23:11=27699246.0 23:12=45966405.0 23:13=47143065.0 23:14=35211440.0 23:15=16351553.0 23:16=8324649.0 23:17=5362591.0 23:18=1258717.0
+19:18:55     copy20 pending_records: 23:07=219198269.0 23:08=218305766.0 23:09=109035133.0 23:10=249601815.0 23:11=231889633.0 23:12=134821437.0 23:13=86328861.0 23:14=46784032.0 23:15=23142113.0 23:16=11806765.0 23:17=5484589.0 23:18=0.0
+19:18:55     copy20 task/busy_time_ms_per_second: 23:07=887.0 23:08=977.0 23:09=1000.0 23:10=1000.0 23:11=1000.0 23:12=1000.0 23:13=1000.0 23:14=1000.0 23:15=1000.0 23:16=1000.0 23:17=1000.0 23:18=425.0
+19:18:56     copy20 task/backpressure_time_ms_per_second: 23:07=0.0 23:08=0.0 23:09=0.0 23:10=0.0 23:11=0.0 23:12=0.0 23:13=0.0 23:14=0.0 23:15=0.0 23:16=0.0 23:17=0.0 23:18=0.0
+19:18:56     copy20 sent_bytes: 23:07=37581672.0 23:08=68838330.0 23:09=149025608.0 23:10=776420536.0 23:11=1734401477.0 23:12=3400212357.0 23:13=3730915458.0 23:14=3213237286.0 23:15=1600986152.0 23:16=994167211.0 23:17=736001350.0 23:18=233564405.0
+19:18:57     copy20 received_bytes: 23:06=260050746.0 23:07=15755539.0 23:08=65842582.0 23:09=122148326.0 23:10=786515633.0 23:11=1745412424.0 23:12=3376588260.0 23:13=3556311870.0 23:14=2582573354.0 23:15=1333381021.0 23:16=761162418.0 23:17=553785579.0 23:18=104430768.0
+19:18:57     copy20 elastic_cku_count: 23:06=9.0 23:07=3.0 23:08=4.0 23:09=10.0 23:10=10.0 23:11=10.0 23:12=10.0 23:13=10.0 23:14=10.0 23:15=10.0 23:16=10.0 23:17=10.0
+deleted pool lfcp-nv566od
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []

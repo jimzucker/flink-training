@@ -1,0 +1,22 @@
+  confluent-cloud: created environment flink-training (env-g27vxv)
+  confluent-cloud: the stack ran its first statement 7 s after it was created
+  confluent-cloud up: cluster lkc-gqx59vm, pool lfcp-xqykxdq, 3 API keys; credentials in <scratch>/cloud-par/probe-creds.env
+  confluent-cloud: statement flink-training-copy could not see a table created just before it; retrying in 30 s as flink-training-copy-r2
+  confluent-cloud: statement flink-training-copy-r2 could not see a table created just before it; retrying in 30 s as flink-training-copy-r3
+  confluent-cloud: statement flink-training-copy-r3 could not see a table created just before it; retrying in 30 s as flink-training-copy-r4
+  confluent-cloud: statement flink-training-copy-r4 could not see a table created just before it; retrying in 30 s as flink-training-copy-r5
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []
+Traceback (most recent call last):
+  File "<scratch>/cloud-par/probe.py", line 36, in <module>
+    p.run_statement("flink-training-copy", "INSERT INTO clicks_copy SELECT click_id, user_id, url, user_agent, view_time "
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    "FROM `examples`.`marketplace`.`clicks`", db)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 432, in run_statement
+    status = self._run_statement(nm, sql, database, timeout_s, pool)
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 467, in _run_statement
+    raise Refusal("rig", f"statement {name} did not run on Confluent Cloud ({status.lower()}): "
+                         f"{detail or json.dumps(whole)[:600]}")
+lib.Refusal: statement flink-training-copy-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training`.`flink-training-kafka`.`clicks_copy`'.

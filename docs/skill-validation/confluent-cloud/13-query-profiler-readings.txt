@@ -1,0 +1,31 @@
+Query Profiler readings, Confluent Cloud Console, 2026-10-04, read through Chrome on the MacBook Pro
+(statement flink-training-copy20, environment env-2kdxd1, pool lfcp-q2565mm; the copy at 20 CFU on
+24 partitions, watermark alignment at Confluent's default). Screenshots: screens/13-*.jpg.
+
+Task layout: one task, "Source: orders -> orders: Classifier -> Calc -> out_copy20: Writer ->
+out_copy20: Committer".
+
+At 1 CFU (18:2x local), Subtasks view, Messages in/min:
+  subtask 0: 211,638            -> 1 subtask
+
+At 20 CFU, statement header: Messages in 36,602,296 per minute; Busyness 100%.
+Subtasks view, Messages in/min, in the order listed (subtasks 0 to 19):
+  2,260,369  3,039,772  3,399,529  2,189,551  2,186,855  1,249,609  2,346,271  1,044,629
+  2,041,213  1,059,271  2,090,414  1,126,658  1,660,914  1,095,781  2,175,815  1,616,919
+  1,075,416  1,097,407  2,249,749  1,596,148
+  -> 20 subtasks; lowest 1,044,629, highest 3,399,529; they add up to 36.6 million.
+
+Partition tab at 20 CFU, 24 rows (Blocked / Active / Idle), in the order listed:
+  54/46/0  58/42/0  22/78/0  62/39/0  59/41/0  61/39/0  66/34/0  63/37/0  63/38/0  0/100/0
+  53/47/0  0/100/0  0/100/0  0/100/0  20/80/0  52/48/0  65/36/0  31/69/0  34/66/0  60/40/0
+  63/37/0  50/50/0  0/100/0  0/100/0
+  -> 6 partitions never blocked (watermarks 21, 15, 21, 15, 19 and 19 minutes behind); the other
+     18 blocked 20-66% of the time (watermarks 15-16 minutes behind). Partition numbers did not
+     come through in the page text, so which partition is which row is not recorded. Confluent's definition: a blocked
+     partition "has paused reading due to watermark alignment, because it's too far ahead of
+     other partitions".
+
+Same copy, new stack (environment env-rg1nmk), with
+"sql.tables.scan.watermark-alignment.max-allowed-drift" set to "1 d" (read back from the statement):
+  statement header at 20 CFU: Messages in 47,143,051 per minute; Busyness 100%.
+  Partition tab: Blocked 0% on every row shown; Active 97-100%. Screenshot: screens/14-*.jpg.

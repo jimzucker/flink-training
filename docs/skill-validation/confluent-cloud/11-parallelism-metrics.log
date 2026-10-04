@@ -1,0 +1,35 @@
+  confluent-cloud: created environment flink-training (env-zz9xnz)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud up: cluster lkc-k86wjpm, pool lfcp-do0z1md, 3 API keys; credentials in <scratch>/cloud-par/probe-creds.env
+16:57:07 the INSERT ran 29 s after the CREATE TABLE was sent, as flink-training-copy
+16:57:07 statement flink-training-copy running in lfcp-q256z22
+16:57:07 resource flink_materialized_table attributes: ['flink_materialized_table.name', 'flink_materialized_table.uid', 'flink_materialized_table.version']
+16:57:07 resource flink_statement attributes: ['flink_statement.uid', 'flink_statement.name']
+17:03:08 operator/current_parallelism pool, no grouping      HTTP 200: (no points)
+17:03:09 operator/current_parallelism pool, by statement     HTTP 200: (no points)
+17:03:09 operator/current_parallelism statement only         HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:10 operator/current_parallelism statement only, MAX    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:10 operator/current_parallelism statement only, SUM    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:10 operator/current_parallelism pool and statement     HTTP 200: (no points)
+17:03:11 operator/max_parallelism     pool, no grouping      HTTP 200: (no points)
+17:03:12 operator/max_parallelism     pool, by statement     HTTP 200: (no points)
+17:03:12 operator/max_parallelism     statement only         HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:12 operator/max_parallelism     statement only, MAX    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:13 operator/max_parallelism     statement only, SUM    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:13 operator/max_parallelism     pool and statement     HTTP 200: (no points)
+17:03:14 operator/num_records_in      pool, no grouping      HTTP 200: 20:57=4950.0 20:58=6042.0 20:59=6000.0 21:00=6008.0 21:01=5996.0 21:02=6008.0
+17:03:14 operator/num_records_in      pool, by statement     HTTP 200: 20:57=4950.0 20:58=6042.0 20:59=6000.0 21:00=6008.0 21:01=5996.0 21:02=6008.0
+17:03:14 operator/num_records_in      statement only         HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:15 operator/num_records_in      statement only, MAX    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:15 operator/num_records_in      statement only, SUM    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:16 operator/num_records_in      pool and statement     HTTP 200: 20:57=4950.0 20:58=6042.0 20:59=6000.0 21:00=6008.0 21:01=5996.0 21:02=6008.0
+17:03:16 num_records_in               pool, no grouping      HTTP 200: 20:57=2477.0 20:58=3020.0 20:59=3000.0 21:00=3000.0 21:01=3000.0 21:02=3000.0
+17:03:16 num_records_in               pool, by statement     HTTP 200: 20:57=2477.0 20:58=3020.0 20:59=3000.0 21:00=3000.0 21:01=3000.0 21:02=3000.0
+17:03:17 num_records_in               statement only         HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:17 num_records_in               statement only, MAX    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:17 num_records_in               statement only, SUM    HTTP 403: {"errors":[{"status":"403","detail":"Query must filter by at least one of your authorized resources"}]}
+17:03:18 num_records_in               pool and statement     HTTP 200: 20:57=2477.0 20:58=3020.0 20:59=3000.0 21:00=3000.0 21:01=3000.0 21:02=3000.0
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []

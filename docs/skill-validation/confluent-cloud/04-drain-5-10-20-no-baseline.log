@@ -1,0 +1,84 @@
+  confluent-cloud: created environment flink-training (env-po3p7m)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud up: cluster lkc-nv55293, pool lfcp-gqxx67v, 2 API keys; credentials in <scratch>/cloud-drain/probe-creds.env
+20:26:48 pool size 20 CFU -> 20
+20:30:07 eight fill jobs running: flink-training-amp1t1, flink-training-amp2t1, flink-training-amp3t1, flink-training-amp4t1, flink-training-amp5t1, flink-training-amp6t1, flink-training-amp7t1, flink-training-amp8t1
+20:31:13   fill, eight jobs, 66 s: orders holds 6,958,106 in 24 partitions; CFU in use {'pool flink-training-flink': 2.0, 'flink-training-amp1t1': 1.0, 'flink-training-amp4t1': 1.0, 'flink-training-amp3t1': 1.0, 'flink-training-amp2t1': 1.0} 
+20:35:11   fill, eight jobs, 304 s: orders holds 23,936,322 in 24 partitions; CFU in use {'pool flink-training-flink': 8.0, 'flink-training-amp1t1': 1.0, 'flink-training-amp7t1': 1.0, 'flink-training-amp4t1': 1.0, 'flink-training-amp3t1': 1.0, 'flink-training-amp6t1': 1.0, 'flink-training-amp2t1': 1.0, 'flink-training-amp8t1': 1.0, 'flink-training-amp5t1': 1.0} 
+20:39:12   fill, eight jobs, 545 s: orders holds 42,834,450 in 24 partitions; CFU in use {'pool flink-training-flink': 8.0, 'flink-training-amp1t1': 1.0, 'flink-training-amp7t1': 1.0, 'flink-training-amp4t1': 1.0, 'flink-training-amp3t1': 1.0, 'flink-training-amp6t1': 1.0, 'flink-training-amp2t1': 1.0, 'flink-training-amp8t1': 1.0, 'flink-training-amp5t1': 1.0} 
+20:39:12 fill, eight jobs: 74,950 records/s written, over 479 s
+20:39:55 backlog: orders holds 43,465,672 records in 24 partitions 
+20:40:09 new pool lfcp-j5wwqq2 for this case; its size read back: 5
+20:41:21   drain 5 CFU, 69 s: status RUNNING; sums_5 end 4; committed on orders {}; CFU in use {'pool flink-training-flink': 8.0, 'flink-training-amp1t1': 1.0, 'flink-training-amp7t1': 1.0, 'flink-training-amp4t1': 1.0, 'flink-training-amp3t1': 1.0, 'flink-training-amp6t1': 1.0, 'flink-training-amp2t1': 1.0, 'flink-training-amp8t1': 1.0, 'flink-training-amp5t1': 1.0} 
+20:42:19   drain 5 CFU, 127 s: status RUNNING; sums_5 end 3995; committed on orders {}; CFU in use {'pool flink-training-flink': 8.0, 'flink-training-amp1t1': 1.0, 'flink-training-amp7t1': 1.0, 'flink-training-amp4t1': 1.0, 'flink-training-amp3t1': 1.0, 'flink-training-amp6t1': 1.0, 'flink-training-amp2t1': 1.0, 'flink-training-amp8t1': 1.0, 'flink-training-amp5t1': 1.0} 
+20:43:19   drain 5 CFU, 187 s: status RUNNING; sums_5 end 14395; committed on orders {}; CFU in use {'pool flink-training-flink': 8.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain5t1': 1.0} 
+20:44:19   drain 5 CFU, 247 s: status RUNNING; sums_5 end 28217; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 1.0, 'flink-training-drain5t1': 1.0} 
+20:45:19   drain 5 CFU, 307 s: status RUNNING; sums_5 end 42439; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:46:20   drain 5 CFU, 368 s: status RUNNING; sums_5 end 42608; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:47:19   drain 5 CFU, 427 s: status RUNNING; sums_5 end 42608; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:48:19   drain 5 CFU, 487 s: status RUNNING; sums_5 end 42608; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:49:19   drain 5 CFU, 547 s: status RUNNING; sums_5 end 42608; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:50:19   drain 5 CFU, 607 s: status RUNNING; sums_5 end 42608; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:50:34 new pool lfcp-3830200 for this case; its size read back: 10
+20:51:44   drain 10 CFU, 67 s: status RUNNING; sums_10 end 574; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:52:44   drain 10 CFU, 128 s: status RUNNING; sums_10 end 1794; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain5t1': 5.0} 
+20:53:44   drain 10 CFU, 187 s: status RUNNING; sums_10 end 7526; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0, 'flink-training-drain10t1': 1.0, 'flink-training-drain5t1': 5.0} 
+20:54:44   drain 10 CFU, 247 s: status RUNNING; sums_10 end 32579; committed on orders {}; CFU in use {'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 5.0} 
+20:55:44   drain 10 CFU, 307 s: status RUNNING; sums_10 end 59226; committed on orders {}; CFU in use {'pool flink-training-drain10': 1.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 1.0} 
+20:56:43   drain 10 CFU, 366 s: status RUNNING; sums_10 end 59622; committed on orders {}; CFU in use {'pool flink-training-drain10': 9.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 9.0} 
+20:57:44   drain 10 CFU, 427 s: status RUNNING; sums_10 end 59862; committed on orders {}; CFU in use {'pool flink-training-drain10': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 10.0} 
+20:58:44   drain 10 CFU, 487 s: status RUNNING; sums_10 end 59862; committed on orders {}; CFU in use {'pool flink-training-drain10': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 10.0} 
+20:59:45   drain 10 CFU, 548 s: status RUNNING; sums_10 end 59862; committed on orders {}; CFU in use {'pool flink-training-drain10': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 10.0} 
+21:00:43   drain 10 CFU, 606 s: status RUNNING; sums_10 end 59862; committed on orders {}; CFU in use {'pool flink-training-drain10': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 10.0} 
+21:00:58 new pool lfcp-6k7zd9q for this case; its size read back: 20
+21:02:09   drain 20 CFU, 68 s: status RUNNING; sums_20 end 629; committed on orders {}; CFU in use {'pool flink-training-drain10': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 10.0} 
+21:03:08   drain 20 CFU, 127 s: status RUNNING; sums_20 end 1869; committed on orders {}; CFU in use {'pool flink-training-drain10': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 10.0} 
+21:04:08   drain 20 CFU, 187 s: status RUNNING; sums_20 end 12600; committed on orders {}; CFU in use {'pool flink-training-drain10': 10.0, 'pool flink-training-drain20': 0.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain10t1': 10.0, 'flink-training-drain20t1': 1.0} 
+21:05:09   drain 20 CFU, 247 s: status RUNNING; sums_20 end 28833; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-drain20': 1.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain20t1': 1.0} 
+21:06:09   drain 20 CFU, 308 s: status RUNNING; sums_20 end 60073; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-drain20': 9.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain20t1': 9.0} 
+21:07:09   drain 20 CFU, 368 s: status RUNNING; sums_20 end 66641; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-drain20': 9.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain20t1': 9.0} 
+21:08:08   drain 20 CFU, 427 s: status RUNNING; sums_20 end 66641; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-drain20': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain20t1': 10.0} 
+21:09:09   drain 20 CFU, 488 s: status RUNNING; sums_20 end 66641; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-drain20': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain20t1': 10.0} 
+21:10:09   drain 20 CFU, 548 s: status RUNNING; sums_20 end 66641; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-drain20': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain20t1': 10.0} 
+21:11:08   drain 20 CFU, 607 s: status RUNNING; sums_20 end 66641; committed on orders {}; CFU in use {'pool flink-training-drain10': 0.0, 'pool flink-training-drain20': 10.0, 'pool flink-training-flink': 0.0, 'pool flink-training-drain5': 0.0, 'flink-training-drain20t1': 10.0} 
+21:11:10 waiting 4 min for the query API to catch up
+21:15:11 query num_records_in: HTTP 200, 122 points 
+21:15:11     flink-training-amp1t1: 00:28=268 00:29=100 00:30=258 00:31=258 00:32=296 00:33=248 00:34=302 00:35=284 00:36=322 00:37=283 00:38=286 00:39=237
+21:15:11     flink-training-amp2t1: 00:28=281 00:29=70 00:30=250 00:31=248 00:32=279 00:33=269 00:34=302 00:35=276 00:36=289 00:37=304 00:38=282 00:39=251
+21:15:11     flink-training-amp3t1: 00:28=261 00:29=30 00:30=234 00:31=239 00:32=286 00:33=265 00:34=291 00:35=275 00:36=310 00:37=289 00:38=280 00:39=242
+21:15:11     flink-training-amp4t1: 00:29=286 00:30=171 00:31=240 00:32=282 00:33=261 00:34=293 00:35=276 00:36=302 00:37=284 00:38=280 00:39=255
+21:15:11     flink-training-amp5t1: 00:29=271 00:30=112 00:31=252 00:32=255 00:34=281 00:35=279 00:36=333 00:37=271 00:38=259 00:39=294 00:40=91
+21:15:11     flink-training-amp6t1: 00:29=281 00:30=55 00:31=256 00:32=257 00:34=285 00:35=253 00:36=303 00:37=283 00:38=301 00:39=299 00:40=76
+21:15:11     flink-training-amp7t1: 00:29=261 00:30=31 00:31=230 00:32=241 00:34=284 00:35=255 00:36=286 00:37=264 00:38=284 00:39=306 00:40=84
+21:15:11     flink-training-amp8t1: 00:30=288 00:31=184 00:32=240 00:34=296 00:35=268 00:36=306 00:37=273 00:38=307 00:39=300 00:40=92
+21:15:11     flink-training-drain10t1: 00:51=231,229 00:52=329,162 00:53=918,683 00:54=11,003,843 00:55=14,597,694 00:56=4,511,457 00:57=0 00:58=0 00:59=0 01:00=0 01:01=0
+21:15:11     flink-training-drain20t1: 01:02=232,266 01:03=2,048,403 01:04=9,648,606 01:05=10,822,151 01:06=10,156,825 01:07=0 01:08=0 01:09=0 01:10=0 01:11=0 01:12=0
+21:15:11     flink-training-drain5t1: 00:41=1,624,781 00:42=7,388,642 00:43=9,042,081 00:44=9,690,740 00:45=3,544,929 00:46=0 00:47=0 00:48=0 00:49=0 00:50=0
+21:15:12 query num_records_out: HTTP 200, 122 points 
+21:15:12     flink-training-amp1t1: 00:28=95,040 00:29=419,435 00:30=521,511 00:31=513,838 00:32=587,134 00:33=497,059 00:34=604,952 00:35=566,996 00:36=639,752 00:37=573,152 00:38=564,845 00:39=490,286
+21:15:12     flink-training-amp2t1: 00:28=73,360 00:29=408,153 00:30=506,487 00:31=491,094 00:32=558,452 00:33=539,802 00:34=595,449 00:35=551,107 00:36=589,535 00:37=610,361 00:38=562,620 00:39=499,564
+21:15:12     flink-training-amp3t1: 00:28=11,800 00:29=329,640 00:30=497,029 00:31=476,587 00:32=569,745 00:33=524,644 00:34=581,075 00:35=548,646 00:36=620,036 00:37=577,774 00:38=559,639 00:39=491,790
+21:15:12     flink-training-amp4t1: 00:29=228,960 00:30=470,279 00:31=479,514 00:32=563,647 00:33=513,877 00:34=587,819 00:35=553,311 00:36=600,462 00:37=570,393 00:38=562,828 00:39=510,638
+21:15:12     flink-training-amp5t1: 00:29=112,160 00:30=444,606 00:31=502,400 00:32=500,772 00:34=562,733 00:35=551,231 00:36=671,705 00:37=545,813 00:38=504,788 00:39=604,432 00:40=176,200
+21:15:12     flink-training-amp6t1: 00:29=71,044 00:30=379,191 00:31=518,160 00:32=508,413 00:34=569,489 00:35=511,527 00:36=601,056 00:37=561,271 00:38=606,185 00:39=597,397 00:40=157,731
+21:15:12     flink-training-amp7t1: 00:29=7,640 00:30=338,244 00:31=477,231 00:32=482,450 00:34=564,304 00:35=510,375 00:36=578,893 00:37=530,294 00:38=572,666 00:39=605,622 00:40=161,969
+21:15:12     flink-training-amp8t1: 00:30=250,707 00:31=475,341 00:32=480,142 00:34=594,114 00:35=531,150 00:36=615,595 00:37=541,688 00:38=609,085 00:39=611,330 00:40=177,419
+21:15:12     flink-training-drain10t1: 00:51=230,396 00:52=327,276 00:53=926,483 00:54=11,073,757 00:55=14,863,498 00:56=4,164,062 00:57=0 00:58=0 00:59=0 01:00=0 01:01=0
+21:15:12     flink-training-drain20t1: 01:02=232,266 01:03=2,026,673 01:04=9,607,378 01:05=10,732,772 01:06=10,125,349 01:07=151,084 01:08=0 01:09=0 01:10=0 01:11=0 01:12=0
+21:15:12     flink-training-drain5t1: 00:41=1,621,694 00:42=7,350,697 00:43=9,041,558 00:44=9,735,560 00:45=3,541,653 00:46=0 00:47=0 00:48=0 00:49=0 00:50=0
+21:15:12 query task/busy_time_ms_per_second: HTTP 200, 122 points 
+deleted pool lfcp-j5wwqq2
+deleted pool lfcp-3830200
+deleted pool lfcp-6k7zd9q
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []
+Traceback (most recent call last):
+  File "<scratch>/cloud-drain/probe.py", line 240, in <module>
+    say(f"    {name}: " + " ".join(f"{t}={v:,.0f}" for t, v in sorted(by[name])))
+                          ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<scratch>/cloud-drain/probe.py", line 240, in <genexpr>
+    say(f"    {name}: " + " ".join(f"{t}={v:,.0f}" for t, v in sorted(by[name])))
+                                         ^^^^^^^^
+ValueError: Unknown format code 'f' for object of type 'str'

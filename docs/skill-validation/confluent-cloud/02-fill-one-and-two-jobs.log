@@ -1,0 +1,16 @@
+  confluent-cloud: created environment flink-training (env-o7jg9p)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud up: cluster lkc-mv55ogx, pool lfcp-w7yymwm, 2 API keys; credentials in <scratch>/faker-cloud/probe-creds.env
+pool size 10 CFU -> 10
+  arm A, one job, 63 s: amplified_1 522,940
+  arm A, one job, 183 s: amplified_1 2,129,001
+  arm A, one job, 363 s: amplified_1 4,531,859
+arm A, one job: 13,366 = 13,366 records/s written, over 300 s
+  arm B, two jobs, 66 s: amplified_2 853,142, amplified_3 736,834
+  arm B, two jobs, 473 s: amplified_2 6,384,775, amplified_3 6,259,540
+  arm B, two jobs, 478 s: amplified_2 6,425,614, amplified_3 6,321,763
+arm B, two jobs: 13,534 + 13,565 = 27,099 records/s written, over 412 s
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving: []

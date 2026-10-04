@@ -1,0 +1,50 @@
+  confluent-cloud: created environment flink-training (env-717xxp)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud up: cluster lkc-o35699x, pool lfcp-v7ykpp5, 3 API keys; credentials in <scratch>/cloud-ecku/probe-creds.env
+12:54:12 setup pool lfcp-v7ykpp5 for the fill; its size read back: 20
+13:00:05 sixteen fill jobs running
+13:02:11   fill, 126 s: orders holds 38726418 in 24 partitions 
+13:04:14   fill, 249 s: orders holds 60529174 in 24 partitions 
+13:06:17   fill, 372 s: orders holds 83541042 in 24 partitions 
+13:08:20   fill, 495 s: orders holds 106864804 in 24 partitions 
+13:10:25   fill, 620 s: orders holds 131205075 in 24 partitions 
+13:12:28   fill, 743 s: orders holds 155439470 in 24 partitions 
+13:14:31   fill, 866 s: orders holds 179775814 in 24 partitions 
+13:16:34   fill, 989 s: orders holds 203899278 in 24 partitions 
+13:18:38   fill, 1113 s: orders holds 228827620 in 24 partitions 
+13:20:41   fill, 1236 s: orders holds 253777275 in 24 partitions 
+13:22:44   fill, 1359 s: orders holds 278217809 in 24 partitions 
+13:24:47   fill, 1482 s: orders holds 303234535 in 24 partitions 
+13:25:42 backlog: orders holds 305,761,976 records in 24 partitions 
+13:25:56 case copy20: new pool lfcp-w7ykogm, size read back 20
+13:26:26 case copy20: baseline set, HTTP 200; the statement reports spec.scaling {'baseline_cfu': 20} 
+13:28:03   case copy20, 120 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 16.0, 'flink-training-amp3t1': 1.0, 'flink-training-amp9t1': 1.0, 'flink-training-amp6t1': 1.0, 'flink-training-amp8t1': 1.0, 'flink-training-amp4t1': 1.0, 'flink-training-amp7t1': 1.0, 'flink-training-amp12t1': 1.0, 'flink-training-amp16t1': 1.0, 'flink-training-amp10t1': 1.0, 'flink-training-amp1t1': 1.0, 'flink-training-amp2t1': 1.0, 'flink-training-amp5t1': 1.0, 'flink-training-amp13t1': 1.0, 'flink-training-amp14t1': 1.0, 'flink-training-amp11t1': 1.0, 'flink-training-amp15t1': 1.0}
+13:30:02   case copy20, 240 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 1.0, 'flink-training-copy20t1': 1.0}
+13:32:01   case copy20, 360 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 9.0, 'flink-training-copy20t1': 9.0}
+13:34:01   case copy20, 480 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-copy20t1': 20.0}
+13:36:01   case copy20, 600 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-copy20t1': 20.0}
+13:38:02   case copy20, 720 s: status RUNNING; CFU in use (export) {'pool flink-training-flink': 0.0, 'pool flink-training-copy20': 20.0, 'flink-training-copy20t1': 20.0}
+13:41:23     copy20 statement_utilization/current_cfus: 17:26=1.0 17:27=1.0 17:28=1.0 17:29=9.0 17:30=20.0 17:31=20.0 17:32=20.0 17:33=20.0 17:34=20.0 17:35=20.0 17:36=20.0 17:37=20.0 17:38=20.0 17:39=20.0 17:40=20.0
+13:41:24     copy20 num_records_in: 17:27=542199.0 17:28=852757.0 17:29=11579417.0 17:30=11035901.0 17:31=36907026.0 17:32=34504982.0 17:33=27306437.0 17:34=30959711.0 17:35=26755743.0 17:36=31447114.0 17:37=37615665.0 17:38=26947586.0 17:39=7274637.0 17:40=300268.0 17:41=0.0
+13:41:24     copy20 num_records_out: 17:27=542200.0 17:28=852756.0 17:29=11579418.0 17:30=11035895.0 17:31=36907023.0 17:32=34504976.0 17:33=27306448.0 17:34=30959707.0 17:35=26755749.0 17:36=31447112.0 17:37=37615659.0 17:38=26947588.0 17:39=7274644.0 17:40=300268.0 17:41=0.0
+13:41:25     copy20 pending_records: 17:27=305216976.0 17:28=152182737.0 17:29=426622700.0 17:30=349667369.5 17:31=245073309.0 17:32=210571536.0 17:33=183265917.0 17:34=152310981.0 17:35=125554523.0 17:36=94110845.0 17:37=56490729.0 17:38=24266158.0 17:39=3638562.0 17:40=0.0 17:41=0.0
+13:41:25     copy20 task/busy_time_ms_per_second: 17:27=893.0 17:28=1000.0 17:29=990.0 17:30=1000.0 17:31=1000.0 17:32=1000.0 17:33=1000.0 17:34=1000.0 17:35=1000.0 17:36=1000.0 17:37=1000.0 17:38=1000.0 17:39=1000.0 17:40=132.0 17:41=1.0
+13:41:26     copy20 task/backpressure_time_ms_per_second: 17:27=0.0 17:28=0.0 17:29=0.0 17:30=0.0 17:31=0.0 17:32=0.0 17:33=0.0 17:34=0.0 17:35=0.0 17:36=0.0 17:37=0.0 17:38=0.0 17:39=0.0 17:40=0.0 17:41=0.0
+13:41:26     copy20 sent_bytes: 17:26=26063592.0 17:27=63601030.0 17:28=100057542.0 17:29=759895929.0 17:30=1344376450.0 17:31=3023113629.0 17:32=2488300186.0 17:33=2021406814.0 17:34=2378971131.0 17:35=1983158518.0 17:36=2467107478.0 17:37=2776423649.0 17:38=2853660701.0 17:39=589878688.0 17:40=254360118.0 17:41=0.0
+13:41:26     copy20 received_bytes: 17:25=430693398.0 17:26=11212682.0 17:27=57529831.0 17:28=83807900.0 17:29=787377927.0 17:30=1394874002.0 17:31=2970270959.0 17:32=2458611972.0 17:33=2045013506.0 17:34=2344498543.0 17:35=1997286083.0 17:36=2502208590.0 17:37=2773616387.0 17:38=1643650743.0 17:39=367180484.0 17:40=42426884.0 17:41=0.0
+13:41:27     copy20 elastic_cku_count: 17:25=15.0 17:26=3.0 17:27=4.0 17:28=7.0 17:29=33.0 17:30=50.0 17:31=50.0 17:32=50.0 17:33=50.0 17:34=50.0 17:35=50.0 17:36=50.0 17:37=50.0 17:38=50.0 17:39=50.0 17:40=50.0
+pool lfcp-w7ykogm not deleted: confluent flink statement delete flink-training-base1 flink-training-base10 flink-training-base11 flink-training-base12 flink-training-base13 flink-training-base14 flink-training-base15 flink-training-base16 flink-training-base2 flink-training-base3 flink-training-base4 flink-training-base5 flink-training-base6 flink-training-base7 flink-training-base8 flink-training-base9 flink-training-copy20-ddl flink-training-copy20t1 flink-training-orders-ddl flink-training-ready0 flink-training-ready1 --cloud gcp --region us-east1 --force did not succeed: No Flink endpoint is specified, defaulting to public endpoint: https://flink.us-east1.gcp.confluent.cloud
+Error: Flink SQL statement "flink-training-copy20t1" not found
+
+Suggestions:
+    List available Flink SQL statements with confluent flink statement list.
+Traceback (most recent call last):
+  File "<scratch>/cloud-ecku/probe.py", line 300, in <module>
+    p.down()
+    ~~~~~~^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 538, in down
+    raise Refusal("rig", "after teardown these still exist on Confluent Cloud and may cost "
+                         "money: " + "; ".join(left)
+                         + (". Deleting them reported: " + "; ".join(problems) if problems else ""))
+lib.Refusal: after teardown these still exist on Confluent Cloud and may cost money: Flink compute pool lfcp-w7ykogm

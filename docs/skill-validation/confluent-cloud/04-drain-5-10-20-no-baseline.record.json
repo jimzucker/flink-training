@@ -1,0 +1,408 @@
+{
+ "fill": [
+  {
+   "label": "eight jobs",
+   "jobs": 8,
+   "rate": 74950.10399136125,
+   "overS": 478.6697027683258
+  }
+ ],
+ "cases": [
+  {
+   "cfu": 5,
+   "statement": "flink-training-drain5t1",
+   "t0": 1791074412.5358348,
+   "samples": [
+    {
+     "t": 69,
+     "outEnd": 4,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 8.0,
+      "flink-training-amp1t1": 1.0,
+      "flink-training-amp7t1": 1.0,
+      "flink-training-amp4t1": 1.0,
+      "flink-training-amp3t1": 1.0,
+      "flink-training-amp6t1": 1.0,
+      "flink-training-amp2t1": 1.0,
+      "flink-training-amp8t1": 1.0,
+      "flink-training-amp5t1": 1.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 127,
+     "outEnd": 3995,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 8.0,
+      "flink-training-amp1t1": 1.0,
+      "flink-training-amp7t1": 1.0,
+      "flink-training-amp4t1": 1.0,
+      "flink-training-amp3t1": 1.0,
+      "flink-training-amp6t1": 1.0,
+      "flink-training-amp2t1": 1.0,
+      "flink-training-amp8t1": 1.0,
+      "flink-training-amp5t1": 1.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 187,
+     "outEnd": 14395,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 8.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain5t1": 1.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 247,
+     "outEnd": 28217,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 1.0,
+      "flink-training-drain5t1": 1.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 307,
+     "outEnd": 42439,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 368,
+     "outEnd": 42608,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 427,
+     "outEnd": 42608,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 487,
+     "outEnd": 42608,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 547,
+     "outEnd": 42608,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 607,
+     "outEnd": 42608,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    }
+   ],
+   "t1": 1791075019.621352
+  },
+  {
+   "cfu": 10,
+   "statement": "flink-training-drain10t1",
+   "t0": 1791075037.219816,
+   "samples": [
+    {
+     "t": 67,
+     "outEnd": 574,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 128,
+     "outEnd": 1794,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 187,
+     "outEnd": 7526,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0,
+      "flink-training-drain10t1": 1.0,
+      "flink-training-drain5t1": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 247,
+     "outEnd": 32579,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 5.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 307,
+     "outEnd": 59226,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 1.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 1.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 366,
+     "outEnd": 59622,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 9.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 9.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 427,
+     "outEnd": 59862,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 487,
+     "outEnd": 59862,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 548,
+     "outEnd": 59862,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 606,
+     "outEnd": 59862,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 10.0
+     },
+     "status": "RUNNING"
+    }
+   ],
+   "t1": 1791075643.6834261
+  },
+  {
+   "cfu": 20,
+   "statement": "flink-training-drain20t1",
+   "t0": 1791075661.912213,
+   "samples": [
+    {
+     "t": 68,
+     "outEnd": 629,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 127,
+     "outEnd": 1869,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 187,
+     "outEnd": 12600,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 10.0,
+      "pool flink-training-drain20": 0.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain10t1": 10.0,
+      "flink-training-drain20t1": 1.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 247,
+     "outEnd": 28833,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-drain20": 1.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain20t1": 1.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 308,
+     "outEnd": 60073,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-drain20": 9.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain20t1": 9.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 368,
+     "outEnd": 66641,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-drain20": 9.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain20t1": 9.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 427,
+     "outEnd": 66641,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-drain20": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain20t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 488,
+     "outEnd": 66641,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-drain20": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain20t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 548,
+     "outEnd": 66641,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-drain20": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain20t1": 10.0
+     },
+     "status": "RUNNING"
+    },
+    {
+     "t": 607,
+     "outEnd": 66641,
+     "committed": {},
+     "cfu": {
+      "pool flink-training-drain10": 0.0,
+      "pool flink-training-drain20": 10.0,
+      "pool flink-training-flink": 0.0,
+      "pool flink-training-drain5": 0.0,
+      "flink-training-drain20t1": 10.0
+     },
+     "status": "RUNNING"
+    }
+   ],
+   "t1": 1791076268.913269
+  }
+ ],
+ "backlog": {
+  "records": 43465672,
+  "partitions": 24
+ }
+}
