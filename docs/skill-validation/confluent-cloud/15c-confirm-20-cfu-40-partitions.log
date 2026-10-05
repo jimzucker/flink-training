@@ -1,0 +1,32 @@
+  confluent-cloud: created environment flink-training (env-1kmvz5)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 131 s after the stack was created
+  confluent-cloud up: cluster lkc-k86w2ov, pool lfcp-6k7yn6j, 3 API keys; credentials in <scratch>/cloud-confirm/probe-creds.env
+20:37:53 REST check: organization <organization-id>, statement read over REST: HTTP 200
+20:46:54 24 fill jobs running
+20:48:59   fill, 125 s: orders holds 81,984,728 in 40 partitions
+20:51:02   fill, 248 s: orders holds 114,015,273 in 40 partitions
+20:53:05   fill, 371 s: orders holds 147,852,844 in 40 partitions
+20:55:08   fill, 494 s: orders holds 180,915,237 in 40 partitions
+20:57:13   fill, 618 s: orders holds 215,685,763 in 40 partitions
+20:59:16   fill, 742 s: orders holds 250,082,673 in 40 partitions
+21:01:19   fill, 865 s: orders holds 284,599,923 in 40 partitions
+21:03:23   fill, 988 s: orders holds 319,152,551 in 40 partitions
+21:05:28   fill, 1114 s: orders holds 355,298,714 in 40 partitions
+21:07:32   fill, 1237 s: orders holds 391,181,655 in 40 partitions
+21:09:35   fill, 1361 s: orders holds 425,948,588 in 40 partitions
+21:09:35 fill: 278,250 records/s written by 24 jobs
+21:10:48 backlog: orders holds 431,916,232 records; partition guard: 40 partitions accepted
+21:11:02 pool size 20 CFU -> 20
+21:11:33 job flink-training-copy started with alignment off and baseline 20, both read back
+21:16:53 the job used its whole 20 CFU pool from 01:15 UTC, 348 s after it started
+21:32:19     cfu: 01:11=1 01:12=1 01:13=1 01:14=8 01:15=20 01:16=20 01:17=20 01:18=20 01:19=20 01:20=20 01:21=20 01:22=20 01:23=20 01:24=20 01:25=20 01:26=20 01:27=20 01:28=20 01:29=20 01:30=20 01:31=20
+21:32:19     recordsIn: 01:12=532,542 01:13=846,188 01:14=9,344,997 01:15=8,805,184 01:16=34,641,223 01:17=46,541,616 01:18=47,574,670 01:19=36,823,317 01:20=23,913,031 01:21=58,983,790 01:22=55,351,779 01:23=39,348,568 01:24=23,964,870 01:25=9,613,849 01:26=542,352 01:27=0 01:28=0 01:29=0 01:30=0 01:31=0
+21:32:19     pending: 01:12=431,382,232 01:13=215,267,864 01:14=610,034,046 01:15=538,817,298 01:16=377,905,754 01:17=331,364,781 01:18=283,789,116 01:19=246,967,862 01:20=223,052,588 01:21=164,043,234 01:22=106,358,792 01:23=57,206,672 01:24=23,985,063 01:25=7,267,594 01:26=0 01:27=0 01:28=0 01:29=0 01:30=0 01:31=0
+21:32:19     busyMsPerS: 01:12=873 01:13=1,000 01:14=991 01:15=1,000 01:16=1,000 01:17=1,000 01:18=1,000 01:19=1,000 01:20=1,000 01:21=1,000 01:22=1,000 01:23=1,000 01:24=1,000 01:25=1,000 01:26=215 01:27=1 01:28=1 01:29=1 01:30=1 01:31=1
+21:32:19     heldBackMsPerS: 01:12=0 01:13=0 01:14=0 01:15=0 01:16=0 01:17=0 01:18=0 01:19=0 01:20=0 01:21=0 01:22=0 01:23=0 01:24=0 01:25=0 01:26=0 01:27=0 01:28=0 01:29=0 01:30=0 01:31=0
+21:32:19     kafka sent MB: 01:11=23 01:12=77 01:13=72 01:14=597 01:15=1,093 01:16=2,811 01:17=3,592 01:18=3,502 01:19=2,410 01:20=2,478 01:21=4,397 01:22=4,296 01:23=3,693 01:24=2,140 01:25=1,255 01:26=236 01:27=0 01:28=0 01:29=0 01:30=0
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []

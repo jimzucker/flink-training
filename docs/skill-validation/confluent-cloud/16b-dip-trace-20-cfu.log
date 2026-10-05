@@ -1,0 +1,56 @@
+  confluent-cloud: created environment flink-training (env-rg180p)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 103 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 133 s after the stack was created
+  confluent-cloud up: cluster lkc-228yqdq, pool lfcp-81qdjor, 3 API keys; credentials in <scratch>/cloud-dip/probe-creds.env
+21:57:42 REST check: organization <organization-id>, statement read over REST: HTTP 200
+22:06:20 24 fill jobs running
+22:08:25   fill, 125 s: orders holds 83,741,904 in 40 partitions
+22:10:28   fill, 248 s: orders holds 117,977,687 in 40 partitions
+22:12:31   fill, 371 s: orders holds 154,064,871 in 40 partitions
+22:14:34   fill, 495 s: orders holds 190,127,908 in 40 partitions
+22:16:39   fill, 619 s: orders holds 227,896,679 in 40 partitions
+22:18:42   fill, 742 s: orders holds 265,371,080 in 40 partitions
+22:20:45   fill, 865 s: orders holds 302,777,718 in 40 partitions
+22:22:48   fill, 988 s: orders holds 340,334,110 in 40 partitions
+22:24:52   fill, 1113 s: orders holds 379,365,848 in 40 partitions
+22:26:55   fill, 1236 s: orders holds 417,477,513 in 40 partitions
+22:26:55 fill: 300,519 records/s written by 24 jobs
+22:28:05 backlog: orders holds 423,077,286 records; partition guard: 40 partitions accepted
+22:28:19 pool size 20 CFU -> 20
+22:28:50 job flink-training-copy started with alignment off and baseline 20, both read back
+22:34:14 the job used its whole 20 CFU pool from 02:33 UTC, 351 s after it started
+22:34:21   trace 02:34:14 UTC: out_copy 87,166,463; phase RUNNING; scaling OK; exceptions 0
+22:34:48   trace 02:34:44 UTC: out_copy 108,564,942 (+713,133/s); phase RUNNING; scaling OK; exceptions 0
+22:35:18   trace 02:35:14 UTC: out_copy 132,310,891 (+791,146/s); phase RUNNING; scaling OK; exceptions 0
+22:35:48   trace 02:35:44 UTC: out_copy 153,689,420 (+712,432/s); phase RUNNING; scaling OK; exceptions 0
+22:36:19   trace 02:36:14 UTC: out_copy 176,877,965 (+772,685/s); phase RUNNING; scaling OK; exceptions 0
+22:36:48   trace 02:36:44 UTC: out_copy 197,267,720 (+679,631/s); phase RUNNING; scaling OK; exceptions 0
+22:37:19   trace 02:37:14 UTC: out_copy 219,555,015 (+742,721/s); phase RUNNING; scaling OK; exceptions 0
+22:37:48   trace 02:37:44 UTC: out_copy 239,149,006 (+652,969/s); phase RUNNING; scaling OK; exceptions 0
+22:38:18   trace 02:38:14 UTC: out_copy 260,269,069 (+703,788/s); phase RUNNING; scaling OK; exceptions 0
+22:38:49   trace 02:38:44 UTC: out_copy 281,080,141 (+693,545/s); phase RUNNING; scaling OK; exceptions 0
+22:39:18   trace 02:39:14 UTC: out_copy 301,231,845 (+671,602/s); phase RUNNING; scaling OK; exceptions 0
+22:39:48   trace 02:39:44 UTC: out_copy 322,089,217 (+695,501/s); phase RUNNING; scaling OK; exceptions 0
+22:40:18   trace 02:40:14 UTC: out_copy 340,865,936 (+625,970/s); phase RUNNING; scaling OK; exceptions 0
+22:40:50   trace 02:40:44 UTC: out_copy 359,666,241 (+626,598/s); phase RUNNING; scaling OK; exceptions 0
+22:41:18   trace 02:41:14 UTC: out_copy 373,035,309 (+445,566/s); phase RUNNING; scaling OK; exceptions 0
+22:41:48   trace 02:41:44 UTC: out_copy 384,735,000 (+389,875/s); phase RUNNING; scaling OK; exceptions 0
+22:42:18   trace 02:42:14 UTC: out_copy 390,255,242 (+183,976/s); phase RUNNING; scaling OK; exceptions 0
+22:42:48   trace 02:42:44 UTC: out_copy 392,070,624 (+60,503/s); phase RUNNING; scaling OK; exceptions 0
+22:43:18   trace 02:43:14 UTC: out_copy 392,070,624 (+0/s); phase RUNNING; scaling OK; exceptions 0
+22:43:48   trace 02:43:44 UTC: out_copy 392,070,704 (+3/s); phase RUNNING; scaling OK; exceptions 0
+22:44:18   trace 02:44:14 UTC: out_copy 392,070,704 (+0/s); phase RUNNING; scaling OK; exceptions 0
+22:44:48   trace 02:44:44 UTC: out_copy 392,070,704 (+0/s); phase RUNNING; scaling OK; exceptions 0
+22:45:17   trace 02:45:14 UTC: out_copy 392,070,704 (+0/s); phase RUNNING; scaling OK; exceptions 0
+22:45:48   trace 02:45:44 UTC: out_copy 392,070,704 (+0/s); phase RUNNING; scaling OK; exceptions 0
+22:49:39     cfu: 02:28=1 02:29=1 02:30=1 02:31=9 02:32=9 02:33=20 02:34=20 02:35=20 02:36=20 02:37=20 02:38=20 02:39=20 02:40=20 02:41=20 02:42=20 02:43=20 02:44=20 02:45=20 02:46=20 02:47=20 02:48=20
+22:49:39     recordsIn: 02:29=532,624 02:30=854,726 02:31=10,180,679 02:32=10,339,394 02:33=35,776,360 02:34=46,789,076 02:35=44,759,856 02:36=43,411,102 02:37=42,761,730 02:38=40,892,207 02:39=42,954,125 02:40=35,200,610 02:41=28,577,211 02:42=9,257,449 02:43=0 02:44=0 02:45=0 02:46=0 02:47=0 02:48=0
+22:49:39     pending: 02:29=422,541,785 02:30=210,844,142 02:31=596,632,084 02:32=515,198,815 02:33=365,591,087 02:34=318,800,689 02:35=274,043,314 02:36=230,630,509 02:37=187,869,976 02:38=146,977,862 02:39=103,663,767 02:40=61,023,493 02:41=23,998,177 02:42=2,401,035 02:43=0 02:44=0 02:45=0 02:46=0 02:47=0 02:48=0 02:49=0
+22:49:39     busyMsPerS: 02:29=854 02:30=1,000 02:31=997 02:32=1,000 02:33=1,000 02:34=1,000 02:35=1,000 02:36=1,000 02:37=1,000 02:38=1,000 02:39=1,000 02:40=1,000 02:41=1,000 02:42=793 02:43=2 02:44=2 02:45=2 02:46=1 02:47=1 02:48=1 02:49=1
+22:49:39     heldBackMsPerS: 02:29=0 02:30=0 02:31=0 02:32=0 02:33=0 02:34=0 02:35=0 02:36=0 02:37=0 02:38=0 02:39=0 02:40=0 02:41=0 02:42=0 02:43=0 02:44=0 02:45=0 02:46=0 02:47=0 02:48=0 02:49=0
+22:49:39     kafka sent MB: 02:28=13 02:29=73 02:30=57 02:31=422 02:32=931 02:33=2,503 02:34=3,405 02:35=3,547 02:36=3,351 02:37=3,210 02:38=3,086 02:39=3,166 02:40=3,280 02:41=3,270 02:42=1,403 02:43=293 02:44=0 02:45=0 02:46=0 02:47=0
+22:49:39 HOLDING FOR THE QUERY PROFILER: statement flink-training-copy, environment env-rg180p; touch <scratch>/cloud-dip/looked when done
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []

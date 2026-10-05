@@ -1,0 +1,55 @@
+  confluent-cloud: created environment flink-training (env-n198jv)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 131 s after the stack was created
+  confluent-cloud up: cluster lkc-xqykw7x, pool lfcp-j5wr7vw, 3 API keys; credentials in <scratch>/cloud-confirm/probe-creds.env
+20:08:32 24 fill jobs running
+20:10:36   fill, 125 s: orders holds 84,897,813 in 40 partitions
+20:12:39   fill, 248 s: orders holds 115,410,045 in 40 partitions
+20:14:43   fill, 371 s: orders holds 146,787,942 in 40 partitions
+20:16:46   fill, 494 s: orders holds 179,328,541 in 40 partitions
+20:18:50   fill, 619 s: orders holds 211,168,302 in 40 partitions
+20:20:53   fill, 741 s: orders holds 243,873,208 in 40 partitions
+20:22:56   fill, 864 s: orders holds 277,283,398 in 40 partitions
+20:24:59   fill, 987 s: orders holds 310,234,651 in 40 partitions
+20:27:03   fill, 1112 s: orders holds 344,284,302 in 40 partitions
+20:29:06   fill, 1234 s: orders holds 379,098,363 in 40 partitions
+20:31:09   fill, 1357 s: orders holds 413,481,853 in 40 partitions
+20:31:09 fill: 266,558 records/s written by 24 jobs
+20:32:18 backlog: orders holds 418,900,180 records; partition guard: 40 partitions accepted
+20:32:32 pool size 20 CFU -> 20
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []
+Traceback (most recent call last):
+  File "<scratch>/cloud-confirm/probe.py", line 67, in <module>
+    nm = p.start_job("flink-training-copy", "INSERT INTO out_copy SELECT order_id, symbol, account, qty, price FROM orders "
+                     "/*+ OPTIONS('scan.startup.mode'='earliest-offset') */", db, CFU)
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 753, in start_job
+    self.set_baseline(name, units)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 731, in set_baseline
+    status, reply = self.rest("PATCH", self._statement_url(name), self._rest_auth(),
+                                       ~~~~~~~~~~~~~~~~~~~^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 723, in _statement_url
+    f"{self._organization()}/environments/{self.environment}/statements/{name}")
+       ~~~~~~~~~~~~~~~~~~^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 713, in _organization
+    orgs = self.cli_json("organization", "list") or []
+           ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 275, in cli_json
+    out = self.cli(*args, "-o", "json", quiet=quiet)
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 270, in cli
+    raise Refusal("rig", f"confluent {what} did not succeed: "
+                         + ("(output withheld: it may hold a secret)" if quiet else (err or out).strip()[:300]))
+lib.Refusal: confluent organization list -o json did not succeed: Error: unknown flag: --environment
+Usage:
+  confluent organization list [flags]
+
+Flags:
+      --context string   CLI context name.
+  -o, --output string    Specify the output format as "human", "json", or "yaml". (default "human")
+
+Global Flags:
+  -h, --help            Show help for this command.
+  
