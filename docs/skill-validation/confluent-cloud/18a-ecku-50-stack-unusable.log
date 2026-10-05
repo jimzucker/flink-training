@@ -1,0 +1,38 @@
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $137.77; this run estimated at $30.00
+  confluent-cloud: created environment flink-training (env-87ox0r)
+  confluent-cloud: the stack ran its first statement 8 s after it was created
+  confluent-cloud: statement flink-training-ready0-write could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r2
+  confluent-cloud: statement flink-training-ready0-write-r2 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r3
+  confluent-cloud: statement flink-training-ready0-write-r3 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r4
+  confluent-cloud: statement flink-training-ready0-write-r4 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r5
+  confluent-cloud: the stack is not usable: statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training`.`flink-training-kafka`.`flink_training_ready0`'.. Tearing it down.
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+  confluent-cloud down: environment flink-training does not exist, so nothing in it survives
+surviving after down: []
+Traceback (most recent call last):
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 417, in _ready
+    self.run_statement(f"{self.prefix}-ready{i}-write", f"INSERT INTO {table} VALUES (1)", name_db,
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                       timeout_s=240)
+                       ^^^^^^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 538, in run_statement
+    status = self._run_statement(nm, sql, database, timeout_s, pool, properties)
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 576, in _run_statement
+    raise Refusal("rig", f"statement {name} did not run on Confluent Cloud ({status.lower()}): "
+                         f"{detail or json.dumps(whole)[:600]}")
+lib.Refusal: statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training`.`flink-training-kafka`.`flink_training_ready0`'.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "<scratch>/cloud-step-ecku/probe.py", line 27, in <module>
+    p.up()
+    ~~~~^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 385, in up
+    self._ready(cluster)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "~/code/GitHub/scalable-flink-skill/harness/platform_confluent.py", line 427, in _ready
+    raise Refusal("rig", f"the new stack could create a table but not use it ({e.msg}). It was "
+                         f"torn down; run up again to get a new one")
+lib.Refusal: the new stack could create a table but not use it (statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training`.`flink-training-kafka`.`flink_training_ready0`'.). It was torn down; run up again to get a new one

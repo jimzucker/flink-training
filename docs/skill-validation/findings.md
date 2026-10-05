@@ -183,7 +183,7 @@ Raw results, with the scripts that produced them:
 
 ## 8. What one CFU buys on Confluent Cloud, and what held 20 CFU back — 2026-10-03/04
 
-Seventeen probe runs (some in several attempts) on Confluent Cloud (GCP us-east1, a Basic Kafka cluster,
+Eighteen probe runs (some in several attempts) on Confluent Cloud (GCP us-east1, a Basic Kafka cluster,
 Flink SQL), each on a stack it created and deleted itself, set out to answer
 one question before the harness measures anything there: when a compute pool
 goes from 10 to 20 CFU, does the job get twice the workers, the way 2 to 4
@@ -200,7 +200,7 @@ sum at 10 CFU at 18.6 and 16.3 million records a minute (runs 06 and 07).
 | 06 | the same drain, pool 20, once as before and once with `baseline_cfu` 20 (one stack) | Confluent's scaling status said "OK" in 22 readings out of 22, at 10 CFU with 62 million or more waiting. With the baseline the statement reached 20 CFU: **1.54×** by records read (18.60 → 28.73 M/min), **1.62×** by Kafka bytes sent (1,419 → 2,295 MB/min) |
 | 04, 05 | Confluent's per-minute "records read" against the backlog | added up to 72.0%, 72.7%, 75.7%, 93.0% and 93.6% of the input topic's log end. **Corrected by run 16:** the log end, not records read, was wrong — see below |
 | 07 | per-key sum and pass-through copy at 10 and 20 CFU, baseline = pool size (one stack) | sum **1.66×** (records read), **1.69×** (Kafka bytes); copy **1.23×** and **1.31×**. The copy was never held back (0 ms/s) and busy 1,000 ms/s. The cluster sat at its 10 eCKU limit in all four cases |
-| 08 | the copy at 20 CFU with the cluster allowed 50 eCKU | the cluster grew to 50; the copy read 31.56 M/min against 30.59 in run 07. **eCKU is not the limit** |
+| 08 | the copy at 20 CFU with the cluster allowed 50 eCKU | the cluster grew to 50; the copy read 31.56 M/min against 30.59 in run 07. eCKU was not the limit **while watermark alignment was still pausing the input** — see run 18 |
 | 09 | the copy at 20 CFU with 96 partitions in and out, 50 eCKU | **43.73 M/min, 1.38×** run 08 (Kafka bytes 3,440 against 2,499 MB/min). Input and output were changed together, so which one mattered is not separated |
 | 10, 11 | reading parallelism from the metrics API | `operator/current_parallelism` and `operator/max_parallelism` returned no data in six query shapes, while `operator/num_records_in` returned data; the API offers no operator or subtask label. Confluent's documentation says parallelism cannot be set ("Autopilot manages parallelism") |
 | 13 | the Console's Query Profiler, read through Chrome | the copy runs as one chained task. **1 subtask at 1 CFU, 20 subtasks at 20 CFU.** At 20 CFU the subtasks read 1.04 to 3.40 million messages a minute each. 18 of the 24 input partitions were "Blocked" 20–66% of the time: paused by **watermark alignment**, which Confluent Cloud turns on by default |
@@ -208,6 +208,7 @@ sum at 10 CFU at 18.6 and 16.3 million records a minute (runs 06 and 07).
 | 15 | the copy at 20 CFU on 40 partitions through the harness's own `start_job`, `wait_at_size` and `check_partitions` (scalable-flink-skill #125, #126) | attempt a: the stack ran its first statement in 5 s and the new readiness check found its table unusable and tore it down before the fill. Attempt b stopped at the job's baseline: `confluent organization list` rejects `--environment` (fixed, #126), after a 40-minute fill. Attempt c ran: 40 partitions accepted, alignment off and baseline 20 read back, the whole pool in use 348 s after the start, held back 0 ms/s. Per minute: 34.6, 46.5, 47.6, **36.8, 23.9**, 59.0, 55.4, 39.3, 24.0 M/min; Kafka's bytes show the same dip. Cause of the dip not found |
 | 16 | the same case again on a new stack, traced every 30 s: the output topic's log end (one record per input), the statement's phase and scaling status, its exception list | attempt a: first statement in 13 s, table unusable, torn down. Attempt b: **steady** — 46.8, 44.8, 43.4, 42.8, 40.9, 43.0 M/min (average 43.6), 30-second rates 653,000–791,000 records/s, running, scaling "OK" and no exceptions throughout; no dip. Then the tail as partitions ran dry. **The copy's output ended at 392,070,704 records and records read added up to 392,287,149 (0.06% apart), while the input topic's log end was 423,077,286**: the log end counts 7.3% more records than any reader got. Run 15c shows the same: records read 396,827,976 against a log end of 431,916,232 |
 | 17 | the copy at **10 then 20 CFU on one stack and one fill**: 40 partitions, alignment off and baseline = pool size read back, traced every 30 s | 17a stopped at the 20 CFU case: a minute after the new pool was created the metrics API answered 403 "Query must filter by at least one of your authorized resources" (`wait_at_size` now waits through it, scalable-flink-skill #127; 17b met the same answer for about 4 minutes). 17b: both cases at their whole pool from 350 and 341 s, held back 0 ms/s, no exceptions, scaling "OK". 10 CFU **28.55 M/min** (04:53–05:04), 20 CFU **40.14 M/min** (05:17–05:25): **1.41×** by records read, **1.38×** by Kafka bytes (2,355 → 3,240 MB/min). Leaving out the tail as the backlog ran out (10 CFU 04:53–05:01, 32.0; 20 CFU 05:17–05:23, 43.4) gives 1.36×. The 10 CFU rate rose from 29 to 35 M/min over its case; the 20 CFU rate fell from 48.6 to 39.7. The cluster was allowed 10 eCKU; its eCKU count was not recorded |
+| 18 | run 17's step again, one variable changed: the cluster allowed **50 eCKU** instead of 10, its eCKU count recorded every minute | 18a: first statement in 8 s, table unusable, torn down by the readiness check. 18b: the cluster sat at 50 eCKU through both cases. On the minutes at full size with at least 100 million records waiting: 10 CFU **29.96 M/min** (09:54–10:03), 20 CFU **52.99 M/min** (10:19–10:23): **1.77×** by records read, **1.75×** by Kafka bytes. Run 17, the same way: 31.87 and 43.97 M/min, **1.38×**. With at least 50 million waiting: 1.71× against 1.34×; by the usual rule, tails included: 1.59× against 1.41×. At 10 CFU the eCKU limit changed little (29.96 against 31.87 M/min); at 20 CFU it took the rate from 44 to 53 M/min |
 
 What this establishes, and does not:
 
@@ -229,7 +230,8 @@ What this establishes, and does not:
   14's tail are consistent with that, but which subtask read which partitions
   was not recorded. 96 partitions read 1.38× faster (run 09).
 - **Ruled out:** the input partition count while the autoscaler capped the
-  job (run 05), and the Kafka cluster's eCKU limit (run 08).
+  job (run 05). Run 08's "eCKU is not the limit" held only while alignment
+  was pausing the input; with alignment off it was the limit (run 18).
 - **The input topic's log end is not the number of records a reader can
   get.** On the two runs with both counts it was 7–8% higher than what the
   copy wrote and what Confluent's "records read" added up to, while those two
@@ -240,13 +242,17 @@ What this establishes, and does not:
   transactions that never committed would stay in the log and be skipped by
   readers — a hypothesis that fits, not a measurement. A backlog has to be
   counted as what a reader gets, not as the log end.
-- **With all three in place the copy's 10→20 step is about 1.4×** (run 17,
-  one stack): 1.41× by records read, 1.38× by Kafka bytes, 1.36× without the
-  tail. Each fix removed a limit; something else still stops the copy short
-  of doubling, and it is not measured. The copy does almost no work, so the
-  reading and writing side is where to look first — including the Kafka
-  cluster's eCKU limit, which run 08 ruled out while alignment was still
-  pausing the input, and which run 17 did not record.
+- **The fourth limit was our own cost cap on the Kafka cluster.** With the
+  three fixes and the cluster capped at 10 eCKU the copy's 10→20 step read
+  about 1.4× (run 17); capped at 50, where the cluster sat for both cases,
+  1.77× by records read and 1.75× by Kafka bytes (run 18), against the
+  skill's 1.80× target. Each run is one stack; the two are compared across
+  stacks, and the difference (1.38× against 1.77×) is far larger than the
+  15% stacks have differed by. The 20 CFU figure rests on five minutes. The
+  harness now records the cluster's eCKU in every cloud case and makes a
+  case a ceiling when the cluster sat at its limit throughout
+  (scalable-flink-skill #131). Kafka capacity was the largest line on the
+  bill, so the limit is a cost choice per study.
 - **Run 15's dip did not come back** in runs 16 and 17, so whether it recurs
   is not known.
 - **Readiness.** Four stacks ran their first statement 5–13 seconds after
