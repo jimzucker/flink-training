@@ -1,6 +1,6 @@
 # Confluent Cloud probes: raw results
 
-The tests behind [findings §8](../findings.md), run 2026-10-03/04 on Confluent
+The tests behind [findings §8](../findings.md), run 2026-10-03 to 05 on Confluent
 Cloud (GCP us-east1, a Basic Kafka cluster, Flink SQL compute pools), each on a
 stack it created and deleted itself. Every log ends with the teardown's check
 that nothing named `flink-training` survived, except where noted.
@@ -19,6 +19,9 @@ that nothing named `flink-training` survived, except where noted.
 | 10, 11 | asking the metrics API for parallelism, on a 1-CFU statement (10 stopped early: its new table never became visible) | `probes/11-parallelism-metrics.py` |
 | 12, 13 | the copy at 20 CFU on 24 partitions, held running to read the Query Profiler (12 stopped early as 10 did; 13 stopped when its statement was deleted by hand, see §8) | `probes/13-profiler.py` |
 | 14 | the same copy with watermark alignment's allowed drift raised to 1 day | `probes/14-alignment-drift-1d.py` |
+| 15a, b, c | the copy at 20 CFU on 40 partitions through the harness's own checks: a unusable stack torn down by the readiness check, a stop at the baseline (`organization list`), then the full case | `probes/15-confirm.py` |
+| 16a, b | the same case traced every 30 s from the output's log end, with phase, scaling status and exceptions (16a: unusable stack torn down) | `probes/16-dip-trace.py` |
+| 17 | the copy at 10 and then 20 CFU on one stack and one fill | `probes/17-step-10-and-20.py` |
 
 - `NN-*.log` — what the probe printed. Paths are shortened (`<scratch>`, `~`).
 - `NN-*.record.json` — the per-minute readings it saved: Confluent's metrics API
