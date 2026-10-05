@@ -1,0 +1,97 @@
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $137.77; this run estimated at $30.00
+  confluent-cloud: created environment flink-training (env-717vvp)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 133 s after the stack was created
+  confluent-cloud up: cluster lkc-w7yw5xj, pool lfcp-571dwvz, 3 API keys; credentials in <scratch>/cloud-step-ecku/probe-creds.env
+05:15:20 REST check: organization <organization-id>, statement read over REST: HTTP 200
+05:24:15 24 fill jobs running
+05:26:19   fill, 124 s: orders holds 78,571,046 in 40 partitions
+05:28:22   fill, 247 s: orders holds 111,888,211 in 40 partitions
+05:30:25   fill, 370 s: orders holds 145,681,863 in 40 partitions
+05:32:28   fill, 493 s: orders holds 180,173,199 in 40 partitions
+05:34:33   fill, 618 s: orders holds 215,853,931 in 40 partitions
+05:36:35   fill, 740 s: orders holds 251,595,511 in 40 partitions
+05:38:38   fill, 863 s: orders holds 286,594,607 in 40 partitions
+05:40:41   fill, 986 s: orders holds 322,484,036 in 40 partitions
+05:42:45   fill, 1111 s: orders holds 358,809,681 in 40 partitions
+05:44:48   fill, 1233 s: orders holds 395,000,983 in 40 partitions
+05:46:51   fill, 1356 s: orders holds 430,280,904 in 40 partitions
+05:46:51 fill: 285,478 records/s written by 24 jobs
+05:48:04 backlog: orders holds 437,149,169 records; partition guard: 40 partitions accepted
+05:48:19 case 10 CFU: pool size -> 10
+05:48:49 case 10 CFU: job flink-training-copy10 started with alignment off and baseline 10, both read back
+05:54:14 case 10 CFU: the job used its whole pool from 09:53 UTC, 353 s after it started
+05:54:21   trace 10 CFU 09:54:14 UTC: out 60,027,140; phase RUNNING; scaling OK; exceptions 0
+05:54:49   trace 10 CFU 09:54:44 UTC: out 73,562,474 (+451,009/s); phase RUNNING; scaling OK; exceptions 0
+05:55:18   trace 10 CFU 09:55:14 UTC: out 88,268,098 (+490,070/s); phase RUNNING; scaling OK; exceptions 0
+05:55:49   trace 10 CFU 09:55:44 UTC: out 102,038,984 (+458,871/s); phase RUNNING; scaling OK; exceptions 0
+05:56:19   trace 10 CFU 09:56:14 UTC: out 114,231,333 (+406,312/s); phase RUNNING; scaling OK; exceptions 0
+05:56:48   trace 10 CFU 09:56:44 UTC: out 127,737,537 (+450,085/s); phase RUNNING; scaling OK; exceptions 0
+05:57:18   trace 10 CFU 09:57:14 UTC: out 142,004,517 (+475,446/s); phase RUNNING; scaling OK; exceptions 0
+05:57:48   trace 10 CFU 09:57:44 UTC: out 156,924,965 (+497,310/s); phase RUNNING; scaling OK; exceptions 0
+05:58:18   trace 10 CFU 09:58:14 UTC: out 170,904,821 (+465,875/s); phase RUNNING; scaling OK; exceptions 0
+05:58:49   trace 10 CFU 09:58:44 UTC: out 186,541,440 (+521,112/s); phase RUNNING; scaling OK; exceptions 0
+05:59:18   trace 10 CFU 09:59:14 UTC: out 203,173,094 (+554,266/s); phase RUNNING; scaling OK; exceptions 0
+05:59:49   trace 10 CFU 09:59:44 UTC: out 219,544,804 (+545,534/s); phase RUNNING; scaling OK; exceptions 0
+06:00:19   trace 10 CFU 10:00:14 UTC: out 234,948,303 (+513,321/s); phase RUNNING; scaling OK; exceptions 0
+06:00:51   trace 10 CFU 10:00:44 UTC: out 251,644,905 (+556,460/s); phase RUNNING; scaling OK; exceptions 0
+06:01:19   trace 10 CFU 10:01:14 UTC: out 268,848,798 (+573,309/s); phase RUNNING; scaling OK; exceptions 0
+06:01:49   trace 10 CFU 10:01:44 UTC: out 285,839,026 (+566,149/s); phase RUNNING; scaling OK; exceptions 0
+06:02:19   trace 10 CFU 10:02:14 UTC: out 301,054,458 (+506,993/s); phase RUNNING; scaling OK; exceptions 0
+06:02:49   trace 10 CFU 10:02:44 UTC: out 317,208,460 (+538,420/s); phase RUNNING; scaling OK; exceptions 0
+06:03:19   trace 10 CFU 10:03:14 UTC: out 334,754,744 (+584,716/s); phase RUNNING; scaling OK; exceptions 0
+06:03:49   trace 10 CFU 10:03:44 UTC: out 349,988,307 (+507,646/s); phase RUNNING; scaling OK; exceptions 0
+06:04:19   trace 10 CFU 10:04:14 UTC: out 360,555,526 (+352,121/s); phase RUNNING; scaling OK; exceptions 0
+06:04:50   trace 10 CFU 10:04:44 UTC: out 367,552,397 (+233,182/s); phase RUNNING; scaling OK; exceptions 0
+06:05:19   trace 10 CFU 10:05:14 UTC: out 375,212,412 (+255,309/s); phase RUNNING; scaling OK; exceptions 0
+06:05:49   trace 10 CFU 10:05:44 UTC: out 382,642,845 (+247,679/s); phase RUNNING; scaling OK; exceptions 0
+06:06:19   trace 10 CFU 10:06:14 UTC: out 389,364,028 (+223,994/s); phase RUNNING; scaling OK; exceptions 0
+06:06:49   trace 10 CFU 10:06:44 UTC: out 395,568,998 (+206,777/s); phase RUNNING; scaling OK; exceptions 0
+06:07:20   trace 10 CFU 10:07:14 UTC: out 399,493,703 (+130,787/s); phase RUNNING; scaling OK; exceptions 0
+06:07:49   trace 10 CFU 10:07:44 UTC: out 401,184,954 (+56,358/s); phase RUNNING; scaling OK; exceptions 0
+06:08:19   trace 10 CFU 10:08:14 UTC: out 402,598,033 (+47,092/s); phase RUNNING; scaling OK; exceptions 0
+06:08:49   trace 10 CFU 10:08:44 UTC: out 402,957,766 (+11,987/s); phase RUNNING; scaling OK; exceptions 0
+06:12:41     10 CFU cfu: 09:48=1 09:49=1 09:50=1 09:51=9 09:52=9 09:53=10 09:54=10 09:55=10 09:56=10 09:57=10 09:58=10 09:59=10 10:00=10 10:01=10 10:02=10 10:03=10 10:04=10 10:05=10 10:06=10 10:07=10 10:08=10 10:09=10 10:10=10 10:11=10
+06:12:41     10 CFU recordsIn: 09:49=240,365 09:50=612,413 09:51=211,084 09:52=10,578,924 09:53=16,828,131 09:54=25,060,220 09:55=28,975,404 09:56=27,105,068 09:57=26,458,325 09:58=29,086,088 09:59=31,491,160 10:00=32,286,484 10:01=32,479,986 10:02=33,549,115 10:03=33,100,035 10:04=29,756,909 10:05=15,474,200 10:06=14,392,642 10:07=10,359,930 10:08=4,090,257 10:09=1,038,238 10:10=0 10:11=0 10:12=0
+06:12:41     10 CFU pending: 09:49=436,907,169 09:50=436,294,668 09:51=218,041,834 09:52=420,153,436 09:53=435,765,079 09:54=383,832,013 09:55=354,857,251 09:56=327,751,466 09:57=301,293,265 09:58=272,207,502 09:59=240,714,592 10:00=208,428,718 10:01=175,946,293 10:02=142,396,358 10:03=109,160,950 10:04=73,536,507 10:05=46,889,487 10:06=31,464,101 10:07=16,669,428 10:08=4,361,245 10:09=0 10:10=0 10:11=0 10:12=0
+06:12:41     10 CFU busyMsPerS: 09:49=802 09:50=989 09:51=1,000 09:52=984 09:53=1,000 09:54=1,000 09:55=1,000 09:56=1,000 09:57=1,000 09:58=1,000 09:59=1,000 10:00=1,000 10:01=1,000 10:02=1,000 10:03=1,000 10:04=1,000 10:05=1,000 10:06=1,000 10:07=1,000 10:08=1,000 10:09=376 10:10=1 10:11=1 10:12=1
+06:12:41     10 CFU heldBackMsPerS: 09:49=0 09:50=0 09:51=0 09:52=0 09:53=0 09:54=0 09:55=0 09:56=0 09:57=0 09:58=0 09:59=0 10:00=0 10:01=0 10:02=0 10:03=0 10:04=0 10:05=0 10:06=0 10:07=0 10:08=0 10:09=0 10:10=0 10:11=0 10:12=0
+06:12:41     10 CFU kafka sent MB: 09:48=4 09:49=51 09:50=43 09:51=284 09:52=1,025 09:53=1,620 09:54=2,003 09:55=2,155 09:56=1,966 09:57=2,134 09:58=2,205 09:59=2,458 10:00=2,376 10:01=2,573 10:02=2,415 10:03=2,709 10:04=2,702 10:05=1,253 10:06=1,312 10:07=1,171 10:08=395 10:09=195 10:10=0 10:11=0 10:12=0
+06:12:41     10 CFU kafka received MB: 09:48=62 09:49=18 09:50=44 09:51=261 09:52=985 09:53=1,637 09:54=2,018 09:55=2,182 09:56=1,961 09:57=2,160 09:58=2,204 09:59=2,473 10:00=2,385 10:01=2,602 10:02=2,414 10:03=2,511 10:04=1,669 10:05=1,134 10:06=1,031 10:07=605 10:08=198 10:09=17 10:10=0 10:11=0 10:12=0
+06:12:41     10 CFU eCKU: 09:48=10 09:49=4 09:50=7 09:51=10 09:52=31 09:53=50 09:54=50 09:55=50 09:56=50 09:57=50 09:58=50 09:59=50 10:00=50 10:01=50 10:02=50 10:03=50 10:04=50 10:05=50 10:06=48 10:07=44 10:08=44 10:09=44 10:10=44 10:11=43 10:12=42
+06:13:03 case 20 CFU: pool size -> 20
+06:13:34 case 20 CFU: job flink-training-copy20 started with alignment off and baseline 20, both read back
+  confluent-cloud: the metrics API does not cover pool lfcp-0x86dx2 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-0x86dx2 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-0x86dx2 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-0x86dx2 yet; waiting
+06:19:52 case 20 CFU: the job used its whole pool from 10:18 UTC, 406 s after it started
+06:19:59   trace 20 CFU 10:19:52 UTC: out 132,022,827; phase RUNNING; scaling OK; exceptions 0
+06:20:27   trace 20 CFU 10:20:22 UTC: out 157,205,076 (+839,795/s); phase RUNNING; scaling OK; exceptions 0
+06:20:57   trace 20 CFU 10:20:52 UTC: out 183,695,291 (+882,831/s); phase RUNNING; scaling OK; exceptions 0
+06:21:27   trace 20 CFU 10:21:22 UTC: out 210,455,449 (+891,726/s); phase RUNNING; scaling OK; exceptions 0
+06:21:57   trace 20 CFU 10:21:52 UTC: out 237,792,193 (+910,941/s); phase RUNNING; scaling OK; exceptions 0
+06:22:27   trace 20 CFU 10:22:22 UTC: out 265,283,496 (+916,075/s); phase RUNNING; scaling OK; exceptions 0
+06:22:57   trace 20 CFU 10:22:52 UTC: out 291,415,164 (+870,768/s); phase RUNNING; scaling OK; exceptions 0
+06:23:27   trace 20 CFU 10:23:22 UTC: out 318,203,909 (+892,890/s); phase RUNNING; scaling OK; exceptions 0
+06:23:56   trace 20 CFU 10:23:52 UTC: out 342,973,764 (+825,423/s); phase RUNNING; scaling OK; exceptions 0
+06:24:27   trace 20 CFU 10:24:22 UTC: out 361,522,683 (+618,113/s); phase RUNNING; scaling OK; exceptions 0
+06:24:57   trace 20 CFU 10:24:52 UTC: out 376,182,812 (+488,503/s); phase RUNNING; scaling OK; exceptions 0
+06:25:27   trace 20 CFU 10:25:22 UTC: out 390,244,305 (+468,712/s); phase RUNNING; scaling OK; exceptions 0
+06:25:57   trace 20 CFU 10:25:52 UTC: out 400,005,427 (+325,288/s); phase RUNNING; scaling OK; exceptions 0
+06:26:28   trace 20 CFU 10:26:22 UTC: out 402,960,417 (+98,468/s); phase RUNNING; scaling OK; exceptions 0
+06:26:56   trace 20 CFU 10:26:52 UTC: out 402,960,737 (+11/s); phase RUNNING; scaling OK; exceptions 0
+06:27:27   trace 20 CFU 10:27:22 UTC: out 402,960,737 (+0/s); phase RUNNING; scaling OK; exceptions 0
+06:27:56   trace 20 CFU 10:27:52 UTC: out 402,960,737 (+0/s); phase RUNNING; scaling OK; exceptions 0
+06:31:23     20 CFU cfu: 10:13=1 10:14=1 10:15=1 10:16=9 10:17=9 10:18=20 10:19=20 10:20=20 10:21=20 10:22=20 10:23=20 10:24=20 10:25=20 10:26=20 10:27=20 10:28=20 10:29=3 10:30=3
+06:31:23     20 CFU recordsIn: 10:14=158,054 10:15=581,908 10:16=11,042,200 10:17=10,206,671 10:18=37,393,654 10:19=49,318,631 10:20=54,463,363 10:21=52,589,040 10:22=54,851,686 10:23=53,748,267 10:24=42,236,182 10:25=29,565,239 10:26=6,812,477 10:27=209,336 10:28=0 10:29=0 10:30=0
+06:31:23     20 CFU pending: 10:14=436,989,669 10:15=218,203,834 10:16=617,045,578 10:17=533,198,396 10:18=377,957,520 10:19=328,644,944 10:20=274,178,188 10:21=221,590,037 10:22=166,737,907 10:23=112,642,659 10:24=60,044,102 10:25=24,126,210 10:26=1,753,593 10:27=0 10:28=0 10:29=24,128,939 10:30=10,866,535
+06:31:23     20 CFU busyMsPerS: 10:14=785 10:15=1,000 10:16=981 10:17=1,000 10:18=1,000 10:19=1,000 10:20=1,000 10:21=1,000 10:22=1,000 10:23=1,000 10:24=1,000 10:25=1,000 10:26=1,000 10:27=100 10:28=9 10:29=719 10:30=1,000
+06:31:23     20 CFU heldBackMsPerS: 10:14=0 10:15=0 10:16=0 10:17=0 10:18=0 10:19=0 10:20=0 10:21=0 10:22=0 10:23=0 10:24=0 10:25=0 10:26=0 10:27=0 10:28=0 10:29=0 10:30=0
+06:31:23     20 CFU kafka sent MB: 10:13=11 10:14=57 10:15=44 10:16=510 10:17=1,058 10:18=2,758 10:19=3,736 10:20=4,081 10:21=4,037 10:22=4,135 10:23=4,136 10:24=4,000 10:25=2,462 10:26=1,954 10:27=73 10:28=0 10:29=1,533 10:30=1,206 10:31=367
+06:31:23     20 CFU kafka received MB: 10:13=0 10:14=24 10:15=41 10:16=489 10:17=997 10:18=2,808 10:19=3,766 10:20=4,191 10:21=4,022 10:22=4,094 10:23=3,956 10:24=3,129 10:25=2,082 10:26=831 10:27=24 10:28=0 10:29=0 10:30=0 10:31=0
+06:31:23     20 CFU eCKU: 10:13=4 10:14=5 10:15=7 10:16=20 10:17=29 10:18=50 10:19=50 10:20=50 10:21=50 10:22=50 10:23=50 10:24=50 10:25=50 10:26=50 10:27=50 10:28=33 10:29=5 10:30=5
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []

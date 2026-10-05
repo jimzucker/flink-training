@@ -22,6 +22,7 @@ that nothing named `flink-training` survived, except where noted.
 | 15a, b, c | the copy at 20 CFU on 40 partitions through the harness's own checks: a unusable stack torn down by the readiness check, a stop at the baseline (`organization list`), then the full case | `probes/15-confirm.py` |
 | 16a, b | the same case traced every 30 s from the output's log end, with phase, scaling status and exceptions (16a: unusable stack torn down) | `probes/16-dip-trace.py` |
 | 17 | the copy at 10 and then 20 CFU on one stack and one fill | `probes/17-step-10-and-20.py` |
+| 18a, b | run 17's step with the Kafka cluster allowed 50 eCKU, its eCKU count recorded (18a: unusable stack torn down) | `probes/18-step-ecku-50.py` |
 
 - `NN-*.log` — what the probe printed. Paths are shortened (`<scratch>`, `~`).
 - `NN-*.record.json` — the per-minute readings it saved: Confluent's metrics API
