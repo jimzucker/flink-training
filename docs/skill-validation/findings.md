@@ -212,6 +212,7 @@ sum at 10 CFU at 18.6 and 16.3 million records a minute (runs 06 and 07).
 | 19 | run 18 again, unchanged, on a new stack | the cluster sat at 50 eCKU in both cases. On the minutes with at least 100 million waiting: 10 CFU **25.61 M/min** (00:27–00:37), 20 CFU **51.41 M/min** (00:52–00:56): **2.01×** by records read, **1.99×** by Kafka bytes; with at least 50 million waiting, 1.97× and 1.98×. The 20 CFU rate repeated within 3% of run 18 (51.41 against 52.99); the 10 CFU rate did not (25.61 against 29.96, 15% apart) |
 | 20 | one 20 CFU case through **the harness's own** `run_case_cloud` (`submit`, `measure_window`, `check_case_cloud`), 40 partitions, 50 eCKU; then a bounded `COUNT(*)` read over the Flink REST results API | 20a stopped at readiness: Confluent could not register the readiness table's schema ("failed registering schemas ... connection reset by peer"); readiness now waits through that. 20b: the rate from the output's log end **857,092 records/s** (51.4 M/min, as run 19 at 20 CFU), Confluent's records read 840,631, **1.9% apart**; CFU in use 20.0 of 20; busy 100%, held back 0%, idle 0.3%; 196.8 million records left at the window's end. The eCKU check of scalable-flink-skill #131 made this case a ceiling because the cluster sat at its 50 eCKU limit — wrongly: runs 18 and 19 had it there in both cases, so the check would have thrown out their tables. It now reports eCKU only (#134). The bounded `COUNT(*)`, polled for its status but not read while it ran, ended STOPPED and its results answered 409 "not ready" |
 | 21 | six stacks one after another, the reused environment name `flink-training` against a fresh name each time, `up` and `down` only; on the first usable stack, a bounded GROUP BY over a three-row table read through `statement_rows`, which now reads results while the statement runs | reused name: 110, 102, 102 s to the first statement, all usable. Fresh names: **8 s and 9 s, both unusable**, then 102 s, usable. The bounded GROUP BY returned exactly the three rows' totals (values come back as strings) |
+| 22 | run 18 again, unchanged (run 19's probe with only its import path changed), on a new stack | first statement 102 s, usable on the first try. The cluster sat at 50 eCKU in both cases. On the minutes with at least 100 million waiting: 10 CFU **28.51 M/min** (04:07–04:15), 20 CFU **50.87 M/min** (04:31–04:35): **1.78×** by records read, **1.78×** by Kafka bytes. `step-100m.py` computes runs 18, 19 and 22 the same way and gives runs 18's and 19's published figures exactly |
 
 What this establishes, and does not:
 
@@ -249,18 +250,18 @@ What this establishes, and does not:
   three fixes and the cluster capped at 10 eCKU the copy's 10→20 step read
   about 1.4× (run 17); capped at 50, where the cluster sat for both cases,
   1.77× by records read and 1.75× by Kafka bytes (run 18), against the
-  skill's 1.80× target, and 2.01× when run again unchanged (run 19): two
-  readings of the same step, 1.77× and 2.01×, averaging about 1.89×. They
-  straddle the target, so by the skill's own rule the step is not settled
-  yet; the difference between them comes from the 10 CFU side (29.96 against
-  25.61 M/min), while the 20 CFU side repeated within 3%. Each run is one
-  stack; run 17 against runs 18 and 19 is compared across stacks, and that
-  difference (1.38× against 1.77–2.01×) is far larger than the 15% stacks
-  have differed by. Each 20 CFU figure rests on five minutes. The
-  harness now records the cluster's eCKU in every cloud case and makes a
-  case a ceiling when the cluster sat at its limit throughout
-  (scalable-flink-skill #131). Kafka capacity was the largest line on the
-  bill, so the limit is a cost choice per study.
+  skill's 1.80× target, 2.01× when run again unchanged (run 19), and 1.78×
+  a third time (run 22): three readings of the same step averaging 1.85×,
+  two of them just under the target (by 1.7% and 0.9%) and one above it.
+  The difference between them comes from the 10 CFU side (25.61–29.96
+  M/min, 15% apart), while the 20 CFU side repeated within 4% (50.87–52.99
+  M/min). Each run is one stack; run 17 against runs 18, 19 and 22 is
+  compared across stacks, and that difference (1.38× against 1.77–2.01×) is
+  far larger than the 15% stacks have differed by. Each 20 CFU figure rests
+  on five minutes. The harness records the cluster's eCKU in every cloud
+  case and reports it; it does not decide a case (scalable-flink-skill
+  #134, after #131 wrongly made such cases ceilings). Kafka capacity was the
+  largest line on the bill, so the limit is a cost choice per study.
 - **Run 15's dip did not come back** in runs 16 and 17, so whether it recurs
   is not known.
 - **Readiness.** Four stacks ran their first statement 5–13 seconds after

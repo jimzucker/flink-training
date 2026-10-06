@@ -26,6 +26,7 @@ that nothing named `flink-training` survived, except where noted.
 | 19 | run 18 again, unchanged, on a new stack | `probes/19-step-ecku-50-repeat.py` |
 | 20a, b | one 20 CFU case through the harness's own run_case_cloud, then a bounded COUNT over the REST results API (20a: stopped at readiness on a schema-registry error) | `probes/20-live-harness-case.py` |
 | 21 | six stacks alternating the reused and fresh environment names, readiness timed; a bounded GROUP BY read through statement_rows on the first usable one | `probes/21-readiness-names-and-rows.py` |
+| 22 | run 18 again, unchanged, on a new stack: a third reading of the 10→20 CFU step at 50 eCKU | `probes/22-step-ecku-50-third.py` |
 
 - `NN-*.log` — what the probe printed. Paths are shortened (`<scratch>`, `~`).
 - `NN-*.record.json` — the per-minute readings it saved: Confluent's metrics API
@@ -33,7 +34,8 @@ that nothing named `flink-training` survived, except where noted.
   Kafka cluster's bytes and eCKU count.
 - `13-query-profiler-readings.txt` and `screens/` — what the Console's Query
   Profiler showed; no API returns these.
-- `analyse.py` — the one rule every rate in §8 uses: the minutes from the one
+- `step-100m.py` — the rule behind runs 18, 19 and 22: the minutes after the statement first reaches its pool's size with at least 100 million records waiting. `python3 step-100m.py 18b-*.record.json 19-*.record.json 22-*.record.json`.
+- `analyse.py` — the rule for the records in its format (runs 05–09 and 14): the minutes from the one
   after the statement first reaches its pool's size, leaving out the last
   reported minute, any minute that starts with nothing waiting, and the minute
   in which the backlog runs out. `python3 analyse.py 07-*.record.json`.
