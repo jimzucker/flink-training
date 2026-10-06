@@ -183,7 +183,7 @@ Raw results, with the scripts that produced them:
 
 ## 8. What one CFU buys on Confluent Cloud, and what held 20 CFU back — 2026-10-03/04
 
-Eighteen probe runs (some in several attempts) on Confluent Cloud (GCP us-east1, a Basic Kafka cluster,
+Nineteen probe runs (some in several attempts) on Confluent Cloud (GCP us-east1, a Basic Kafka cluster,
 Flink SQL), each on a stack it created and deleted itself, set out to answer
 one question before the harness measures anything there: when a compute pool
 goes from 10 to 20 CFU, does the job get twice the workers, the way 2 to 4
@@ -209,6 +209,7 @@ sum at 10 CFU at 18.6 and 16.3 million records a minute (runs 06 and 07).
 | 16 | the same case again on a new stack, traced every 30 s: the output topic's log end (one record per input), the statement's phase and scaling status, its exception list | attempt a: first statement in 13 s, table unusable, torn down. Attempt b: **steady** — 46.8, 44.8, 43.4, 42.8, 40.9, 43.0 M/min (average 43.6), 30-second rates 653,000–791,000 records/s, running, scaling "OK" and no exceptions throughout; no dip. Then the tail as partitions ran dry. **The copy's output ended at 392,070,704 records and records read added up to 392,287,149 (0.06% apart), while the input topic's log end was 423,077,286**: the log end counts 7.3% more records than any reader got. Run 15c shows the same: records read 396,827,976 against a log end of 431,916,232 |
 | 17 | the copy at **10 then 20 CFU on one stack and one fill**: 40 partitions, alignment off and baseline = pool size read back, traced every 30 s | 17a stopped at the 20 CFU case: a minute after the new pool was created the metrics API answered 403 "Query must filter by at least one of your authorized resources" (`wait_at_size` now waits through it, scalable-flink-skill #127; 17b met the same answer for about 4 minutes). 17b: both cases at their whole pool from 350 and 341 s, held back 0 ms/s, no exceptions, scaling "OK". 10 CFU **28.55 M/min** (04:53–05:04), 20 CFU **40.14 M/min** (05:17–05:25): **1.41×** by records read, **1.38×** by Kafka bytes (2,355 → 3,240 MB/min). Leaving out the tail as the backlog ran out (10 CFU 04:53–05:01, 32.0; 20 CFU 05:17–05:23, 43.4) gives 1.36×. The 10 CFU rate rose from 29 to 35 M/min over its case; the 20 CFU rate fell from 48.6 to 39.7. The cluster was allowed 10 eCKU; its eCKU count was not recorded |
 | 18 | run 17's step again, one variable changed: the cluster allowed **50 eCKU** instead of 10, its eCKU count recorded every minute | 18a: first statement in 8 s, table unusable, torn down by the readiness check. 18b: the cluster sat at 50 eCKU through both cases. On the minutes at full size with at least 100 million records waiting: 10 CFU **29.96 M/min** (09:54–10:03), 20 CFU **52.99 M/min** (10:19–10:23): **1.77×** by records read, **1.75×** by Kafka bytes. Run 17, the same way: 31.87 and 43.97 M/min, **1.38×**. With at least 50 million waiting: 1.71× against 1.34×; by the usual rule, tails included: 1.59× against 1.41×. At 10 CFU the eCKU limit changed little (29.96 against 31.87 M/min); at 20 CFU it took the rate from 44 to 53 M/min |
+| 19 | run 18 again, unchanged, on a new stack | the cluster sat at 50 eCKU in both cases. On the minutes with at least 100 million waiting: 10 CFU **25.61 M/min** (00:27–00:37), 20 CFU **51.41 M/min** (00:52–00:56): **2.01×** by records read, **1.99×** by Kafka bytes; with at least 50 million waiting, 1.97× and 1.98×. The 20 CFU rate repeated within 3% of run 18 (51.41 against 52.99); the 10 CFU rate did not (25.61 against 29.96, 15% apart) |
 
 What this establishes, and does not:
 
@@ -246,9 +247,14 @@ What this establishes, and does not:
   three fixes and the cluster capped at 10 eCKU the copy's 10→20 step read
   about 1.4× (run 17); capped at 50, where the cluster sat for both cases,
   1.77× by records read and 1.75× by Kafka bytes (run 18), against the
-  skill's 1.80× target. Each run is one stack; the two are compared across
-  stacks, and the difference (1.38× against 1.77×) is far larger than the
-  15% stacks have differed by. The 20 CFU figure rests on five minutes. The
+  skill's 1.80× target, and 2.01× when run again unchanged (run 19): two
+  readings of the same step, 1.77× and 2.01×, averaging about 1.89×. They
+  straddle the target, so by the skill's own rule the step is not settled
+  yet; the difference between them comes from the 10 CFU side (29.96 against
+  25.61 M/min), while the 20 CFU side repeated within 3%. Each run is one
+  stack; run 17 against runs 18 and 19 is compared across stacks, and that
+  difference (1.38× against 1.77–2.01×) is far larger than the 15% stacks
+  have differed by. Each 20 CFU figure rests on five minutes. The
   harness now records the cluster's eCKU in every cloud case and makes a
   case a ceiling when the cluster sat at its limit throughout
   (scalable-flink-skill #131). Kafka capacity was the largest line on the
