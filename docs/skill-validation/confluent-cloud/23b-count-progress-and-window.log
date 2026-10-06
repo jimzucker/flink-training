@@ -1,0 +1,27 @@
+  confluent-cloud: budget $350.00; charged since 2026-10-01 $170.89; this run estimated at $8.00
+  confluent-cloud: created environment flink-training (env-o7nqvj)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 132 s after the stack was created
+  confluent-cloud up: cluster lkc-j5w26vq, pool lfcp-81q7xgm, 3 API keys; credentials in <scratch>/count-diag2/creds.env
+  confluent-cloud fill: 66,455,323 of 20,000,000 records on orders_small (0 min)
+03:04:16 fill done: log end 66,455,323 at stop, 70,625,127 a minute later; 650 s
+03:04:32 A    0 s: change-log items read 0; largest n per account {}; sum 0
+03:05:32 A   61 s: change-log items read 826,099; largest n per account {'0': 122958, '3': 106092, '1': 99632, '2': 84369}; sum 413,051
+03:06:32 A  121 s: change-log items read 1,861,756; largest n per account {'0': 272251, '3': 231867, '1': 228491, '2': 198271}; sum 930,880
+03:07:33 A  181 s: change-log items read 2,888,534; largest n per account {'0': 411751, '3': 351534, '1': 351321, '2': 329663}; sum 1,444,269
+03:08:33 A  241 s: change-log items read 3,914,066; largest n per account {'0': 534622, '3': 482331, '1': 485075, '2': 455007}; sum 1,957,035
+03:09:33 A  302 s: change-log items read 4,918,985; largest n per account {'0': 663186, '3': 602783, '1': 613566, '2': 579959}; sum 2,459,494
+03:10:33 A deleted after 6 minutes: 2,948,135 of the input counted, 5,896,266 change-log items read
+03:10:36 B with the hint inside TUMBLE stopped: statement flink-training-count-b did not run on Confluent Cloud (failed): SQL parse failed. Encountered "/*+" at line 1, column 103.
+Was expecting one of:
+    "ORDER" ...
+    "PARTITION" ...
+    ")" ...
+    "," ...
+    "." ...
+    
+03:10:43 STOPPED: statement flink-training-count-b2 did not run on Confluent Cloud (failed): Internal error occurred. Statement: flink-training-count-b2
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+03:11:53 surviving after down: []

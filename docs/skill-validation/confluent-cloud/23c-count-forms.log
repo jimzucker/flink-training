@@ -1,0 +1,17 @@
+  confluent-cloud: budget $350.00; charged since 2026-10-01 $170.89; this run estimated at $8.00
+  confluent-cloud: created environment flink-training (env-qq7rnd)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 133 s after the stack was created
+  confluent-cloud up: cluster lkc-7yo1vvo, pool lfcp-q25qgg6, 3 API keys; credentials in <scratch>/count-diag3/creds.env
+03:16:39 TINY F0 plain GROUP BY: COMPLETED in 27 s; 4 change-log items; rows [{'account': '1', 'n': '2', 'qty': '15'}, {'account': '2', 'n': '1', 'qty': '3'}] -> RIGHT
+03:16:56 TINY F1 snapshot query: COMPLETED in 16 s; 2 change-log items; rows [{'account': '2', 'n': '1', 'qty': '3'}, {'account': '1', 'n': '2', 'qty': '15'}] -> RIGHT
+03:16:59 TINY F2 view + window: did not run: statement flink-training-f2-tiny did not run on Confluent Cloud (failed): SQL validation failed. Error from line 1, column 111 to line 1, column 118.
+
+Caused by: Unknown identifier '$rowtime' in 3 s; 0 change-log items; rows [] -> not right
+  confluent-cloud fill: 49,963,918 of 20,000,000 records on orders_small (0 min)
+03:26:41 fill done: log end 49,963,918 at stop, 54,097,172 a minute later
+03:27:53 BIG F1 snapshot query: COMPLETED in 72 s; 4 change-log items; 4 rows; total n 33,594,701; [{'account': '1', 'n': '8359183', 'qty': '420511158'}, {'account': '2', 'n': '8365524', 'qty': '409337458'}, {'account': '3', 'n': '8402216', 'qty': '420462929'}, {'account': '0', 'n': '8467778', 'qty': '415687580'}]
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+03:29:04 surviving after down: []
