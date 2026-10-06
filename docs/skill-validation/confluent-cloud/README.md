@@ -28,6 +28,7 @@ that nothing named `flink-training` survived, except where noted.
 | 21 | six stacks alternating the reused and fresh environment names, readiness timed; a bounded GROUP BY read through statement_rows on the first usable one | `probes/21-readiness-names-and-rows.py` |
 | 22 | run 18 again, unchanged, on a new stack: a third reading of the 10→20 CFU step at 50 eCKU | `probes/22-step-ecku-50-third.py` |
 | 23a, b, c | why the cloud chain's bounded count did not finish: the plain count for 40 minutes; its progress through the input, and a windowed count; three count forms on a known three-row table, then the snapshot query on the backlog | `probes/23a-count-plain-40-minutes.py`, `probes/23b-count-progress-and-window.py`, `probes/23c-count-forms.py` |
+| 24 | the input counted four times after the fill, and by Kafka's own consumer committed-only and everything; the completeness drain repeated at 5 CFU and its output counted the same ways | `probes/24-probe.py`, `probes/24-consume.py`, `probes/24-drain.py` |
 
 - `NN-*.log` — what the probe printed. Paths are shortened (`<scratch>`, `~`).
 - `NN-*.record.json` — the per-minute readings it saved: Confluent's metrics API

@@ -65,6 +65,7 @@ Diffing two builds found:
 |---|---:|---|
 | 20 | 1.930× | lz4 compression, no fetch floor |
 | 23 | 1.793× | no compression, `fetch.min.bytes` = 1 MB |
+| 24 | why the third cloud chain's completeness did not match: its input counted 44,992,903 by the snapshot query and its output 52,206,970, each output row read three times. One stack: the same fill, the input counted four times over 35 minutes; Kafka's own consumer (`kafka-consumer-perf-test.sh`) counting the input committed-only and everything; the completeness drain repeated through the harness's `set_size` and `submit` at 5 CFU; the output counted the same three ways | the input: **37,996,160** by the snapshot query at +74 s, +344 s, +2044 s and +2128 s; **37,996,160** by Kafka's committed-only consumer; 66,089,568 reading everything; log end 66,092,231. The output after the drain: **37,996,160** by the snapshot query, by Kafka's committed-only consumer and by Kafka reading everything; Confluent's records read 38,005,960 (0.03% over). Exact, per account. The last results page came while the statement still said RUNNING (counts 2 and 3), which is how the chain read each row three times (fixed, scalable-flink-skill #140). Why that chain's output held 16% more than its input is **not explained**: the same path on this stack was exact |
 
 — a direct mechanism for the source idle that had been measured but not
 explained.
@@ -242,11 +243,13 @@ What this establishes, and does not:
   copy wrote and what Confluent's "records read" added up to, while those two
   agreed to 0.06% (run 16). So records read is a sound count, and the
   earlier 72–94% (runs 04, 05) measured the log end's surplus, not a gap in
-  records read. Why the log end is higher is not measured. The fill's jobs
-  write in transactions and are deleted while running, so records of
-  transactions that never committed would stay in the log and be skipped by
-  readers — a hypothesis that fits, not a measurement. A backlog has to be
-  counted as what a reader gets, not as the log end.
+  records read. Why the log end is higher was measured in run 24: Kafka's own
+  consumer read 37,996,160 records as a committed-only reader and 66,089,568
+  reading everything, against a log end of 66,092,231. The surplus is records
+  of transactions that never committed — the fill's jobs are deleted while
+  running, and their open transactions are aborted. On a short fill that was
+  42% of the log. A backlog has to be counted as what a reader gets, not as
+  the log end.
 - **The fourth limit was our own cost cap on the Kafka cluster.** With the
   three fixes and the cluster capped at 10 eCKU the copy's 10→20 step read
   about 1.4× (run 17); capped at 50, where the cluster sat for both cases,
