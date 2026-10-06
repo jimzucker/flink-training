@@ -27,6 +27,7 @@ that nothing named `flink-training` survived, except where noted.
 | 20a, b | one 20 CFU case through the harness's own run_case_cloud, then a bounded COUNT over the REST results API (20a: stopped at readiness on a schema-registry error) | `probes/20-live-harness-case.py` |
 | 21 | six stacks alternating the reused and fresh environment names, readiness timed; a bounded GROUP BY read through statement_rows on the first usable one | `probes/21-readiness-names-and-rows.py` |
 | 22 | run 18 again, unchanged, on a new stack: a third reading of the 10→20 CFU step at 50 eCKU | `probes/22-step-ecku-50-third.py` |
+| 23a, b, c | why the cloud chain's bounded count did not finish: the plain count for 40 minutes; its progress through the input, and a windowed count; three count forms on a known three-row table, then the snapshot query on the backlog | `probes/23a-count-plain-40-minutes.py`, `probes/23b-count-progress-and-window.py`, `probes/23c-count-forms.py` |
 
 - `NN-*.log` — what the probe printed. Paths are shortened (`<scratch>`, `~`).
 - `NN-*.record.json` — the per-minute readings it saved: Confluent's metrics API
