@@ -1,0 +1,63 @@
+# probe.py (the recount; paused 04:22-04:50 while the two scripts below ran on its stack)
+  confluent-cloud: budget $350.00; charged since 2026-10-01 $170.89; this run estimated at $6.00
+  confluent-cloud: created environment flink-training (env-v9vrqp)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 142 s after the stack was created
+  confluent-cloud up: cluster lkc-o3571yo, pool lfcp-gqx2mjm, 3 API keys; credentials in <scratch>/count-diag4/creds.env
+  confluent-cloud fill: 60,953,614 of 20,000,000 records on orders_small (0 min)
+04:16:24 fill jobs deleted; log end 60,953,614 when the fill stopped
+04:17:38 COUNT 0 at +  74 s: snapshot total 37,996,160; log end 66,092,231; 4 rows from 4 items on 25 pages in 71 s, phase COMPLETED; [('0', '9697903'), ('1', '9341362'), ('2', '9539152'), ('3', '9417743')]
+04:22:08 COUNT 1 at + 344 s: snapshot total 37,996,160; log end 66,092,231; 4 rows from 4 items on 12 pages in 42 s, phase COMPLETED; [('0', '9697903'), ('1', '9341362'), ('2', '9539152'), ('3', '9417743')]
+04:50:28 COUNT 2 at +2044 s: snapshot total 37,996,160; log end 66,092,231; 4 rows from 4 items on 16 pages in 52 s, phase RUNNING; [('0', '9697903'), ('1', '9341362'), ('2', '9539152'), ('3', '9417743')]
+04:51:52 COUNT 3 at +2128 s: snapshot total 37,996,160; log end 66,092,231; 4 rows from 4 items on 30 pages in 82 s, phase RUNNING; [('0', '9697903'), ('1', '9341362'), ('2', '9539152'), ('3', '9417743')]
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+04:53:03 surviving after down: []
+
+# consume-read_committed
+04:26:27 read_committed 219 s rc 0
+start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.sec, rebalance.time.ms, fetch.time.ms, fetch.MB.sec, fetch.nMsg.sec
+WARNING: Exiting before consuming the expected number of messages: timeout (60000 ms) exceeded. You can use the --timeout option to increase the timeout.
+2026-10-06 08:22:49:678, 2026-10-06 08:26:26:564, 2351.6163, 10.8426, 37996160, 175189.5466, 1052, 215834, 10.8955, 176043.4408
+
+
+
+# consume-read_uncommitted
+04:26:38 read_uncommitted 229 s rc 0
+start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.sec, rebalance.time.ms, fetch.time.ms, fetch.MB.sec, fetch.nMsg.sec
+WARNING: Exiting before consuming the expected number of messages: timeout (60000 ms) exceeded. You can use the --timeout option to increase the timeout.
+2026-10-06 08:22:49:681, 2026-10-06 08:26:37:076, 4090.3398, 17.9878, 66089568, 290637.7361, 1048, 226347, 18.0711, 291983.4060
+
+
+
+# drain
+  confluent-cloud: job flink-training-job5-55 runs at 5 CFU with watermark alignment off and its baseline read back
+04:31:53 job flink-training-job5-55 at 5 CFU
+04:31:57   enriched log end 13,862,804
+04:32:59   enriched log end 24,484,858
+04:34:02   enriched log end 35,908,158
+04:35:04   enriched log end 37,997,160
+04:36:07   enriched log end 37,997,160
+04:37:09   enriched log end 37,997,160
+04:38:12   enriched log end 37,997,160
+04:43:18 records read per minute: [('2026-10-06T08:29:00Z', 499249.0), ('2026-10-06T08:30:00Z', 3454570.0), ('2026-10-06T08:31:00Z', 7089958.0), ('2026-10-06T08:32:00Z', 10217103.0), ('2026-10-06T08:33:00Z', 11108577.0), ('2026-10-06T08:34:00Z', 5636503.0), ('2026-10-06T08:35:00Z', 0.0), ('2026-10-06T08:36:00Z', 0.0), ('2026-10-06T08:37:00Z', 0.0), ('2026-10-06T08:38:00Z', 0.0), ('2026-10-06T08:39:00Z', 0.0), ('2026-10-06T08:40:00Z', 0.0), ('2026-10-06T08:41:00Z', 0.0), ('2026-10-06T08:42:00Z', 0.0)]
+04:43:18 SUMS {'recordsIn': 38005960.0, 'recordsOut': 38005960.0}
+04:44:58 SNAPSHOT enriched: total 37,996,160; rows [{'account': '1', 'n': '9341362', 'qty': '471569110'}, {'account': '0', 'n': '9697903', 'qty': '476988722'}, {'account': '2', 'n': '9539152', 'qty': '474510294'}, {'account': '3', 'n': '9417743', 'qty': '478018292'}]
+04:45:01 deleted job and case pool lfcp-rrzgdk7
+
+# consume-enriched-read_committed
+04:47:14 read_committed 133 s rc 0
+start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.sec, rebalance.time.ms, fetch.time.ms, fetch.MB.sec, fetch.nMsg.sec
+WARNING: Exiting before consuming the expected number of messages: timeout (60000 ms) exceeded. You can use the --timeout option to increase the timeout.
+2026-10-06 08:45:03:400, 2026-10-06 08:47:13:388, 2677.7399, 20.5999, 37996160, 292305.1359, 1062, 128926, 20.7696, 294712.9361
+
+
+
+# consume-enriched-read_uncommitted
+04:49:23 read_uncommitted 129 s rc 0
+start.time, end.time, data.consumed.in.MB, MB.sec, data.consumed.in.nMsg, nMsg.sec, rebalance.time.ms, fetch.time.ms, fetch.MB.sec, fetch.nMsg.sec
+WARNING: Exiting before consuming the expected number of messages: timeout (60000 ms) exceeded. You can use the --timeout option to increase the timeout.
+2026-10-06 08:47:15:178, 2026-10-06 08:49:22:626, 2677.7399, 21.0105, 37996160, 298130.6886, 1017, 126431, 21.1795, 300528.8260
+
+
