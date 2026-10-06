@@ -1,0 +1,32 @@
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $163.17; this run estimated at $20.00
+  confluent-cloud: created environment flink-training (env-x0zqmk)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 107 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 136 s after the stack was created
+  confluent-cloud up: cluster lkc-mv5ng2x, pool lfcp-k862okm, 3 API keys; credentials in <scratch>/cloud-case-live/probe-creds.env
+21:15:24 REST check: organization <organization-id>, statement read over REST: HTTP 200
+21:24:59 24 fill jobs running
+21:27:04   fill, 125 s: orders holds 78,501,864 in 40 partitions
+21:29:07   fill, 248 s: orders holds 108,503,519 in 40 partitions
+21:31:10   fill, 371 s: orders holds 138,748,464 in 40 partitions
+21:33:14   fill, 495 s: orders holds 169,987,098 in 40 partitions
+21:35:18   fill, 619 s: orders holds 201,760,188 in 40 partitions
+21:37:21   fill, 742 s: orders holds 233,839,599 in 40 partitions
+21:39:24   fill, 866 s: orders holds 266,976,435 in 40 partitions
+21:41:28   fill, 989 s: orders holds 299,114,497 in 40 partitions
+21:43:32   fill, 1113 s: orders holds 331,576,057 in 40 partitions
+21:45:36   fill, 1237 s: orders holds 364,297,910 in 40 partitions
+21:47:39   fill, 1360 s: orders holds 397,376,890 in 40 partitions
+21:49:44   fill, 1485 s: orders holds 430,392,322 in 40 partitions
+21:49:44 fill: 258,722 records/s written by 24 jobs
+21:50:59 backlog: orders holds 435,986,197 records; partition guard: 40 partitions accepted
+  confluent-cloud: job flink-training-job20-53 runs at 20 CFU with watermark alignment off and its baseline read back
+22:05:20 CASE CEILING: the Kafka cluster sat at its 50 eCKU limit for every minute of the window, so Kafka, not the 20 CFU pool, was the limit. Raise platform.maxEcku: with it at 10 the copy's 10->20 CFU step read 1.38x, at 50 it read 1.77x (findings §8). Each eCKU after the first costs about $0.14 an hour. This case is kept in the table and left out of the ratios.
+22:05:20 RECORD {"status": "CEILING", "recordsPerSec": 857091.6, "recordsReadPerSec": 840631.4611111111, "vantageDisagreement": 0.0192, "tmCores": 20.0, "tmCapFrac": 1.0, "kafkaEcku": 50.0, "kafkaEckuLimit": 50, "kafkaEckuMinutesAtLimit": 3, "sourceBusy": 1.0, "sourceBackpressured": 0.0, "sourceIdle": 0.0033333333333333335, "backlogRemaining": 196802143.0, "headroomS": 229.6, "wholeMinutes": ["2026-10-06T01:58:00Z", "2026-10-06T01:59:00Z", "2026-10-06T02:00:00Z"], "elapsedS": 180, "readings": 9, "jobId": "flink-training-job20-53"}
+22:05:20 BOTTLENECK Kafka's capacity, blocking higher throughput. The Kafka cluster sat at its 50 eCKU limit, so the pipeline was waiting on Kafka rather than using its pool.
+22:10:50 COUNT statement phase STOPPED; status keys ['detail', 'duration', 'end_time', 'identity', 'network_kind', 'phase', 'scaling_status', 'traits', 'warnings']
+22:10:50 COUNT schema {"columns": [{"name": "n", "type": {"nullable": false, "type": "BIGINT"}}, {"name": "account", "type": {"nullable": true, "type": "INTEGER"}}, {"name": "qty", "type": {"nullable": true, "type": "BIGINT"}}]}
+22:10:50 COUNT results page 1: HTTP 409; keys ['errors']; {"errors": [{"id": "f5cd2a167ed385319a7ef50d99a67cd4", "status": "409", "detail": "Results for Statement=flink-training-count not ready", "source": {}}]}
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []

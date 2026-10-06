@@ -24,6 +24,8 @@ that nothing named `flink-training` survived, except where noted.
 | 17 | the copy at 10 and then 20 CFU on one stack and one fill | `probes/17-step-10-and-20.py` |
 | 18a, b | run 17's step with the Kafka cluster allowed 50 eCKU, its eCKU count recorded (18a: unusable stack torn down) | `probes/18-step-ecku-50.py` |
 | 19 | run 18 again, unchanged, on a new stack | `probes/19-step-ecku-50-repeat.py` |
+| 20a, b | one 20 CFU case through the harness's own run_case_cloud, then a bounded COUNT over the REST results API (20a: stopped at readiness on a schema-registry error) | `probes/20-live-harness-case.py` |
+| 21 | six stacks alternating the reused and fresh environment names, readiness timed; a bounded GROUP BY read through statement_rows on the first usable one | `probes/21-readiness-names-and-rows.py` |
 
 - `NN-*.log` — what the probe printed. Paths are shortened (`<scratch>`, `~`).
 - `NN-*.record.json` — the per-minute readings it saved: Confluent's metrics API

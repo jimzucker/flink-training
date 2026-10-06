@@ -1,0 +1,62 @@
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $170.89; this run estimated at $2.00
+  confluent-cloud: created environment flink-training (env-3kg83w)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 110 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 174 s after the stack was created
+  confluent-cloud up: cluster lkc-xqy00p1, pool lfcp-rrzgg87, 3 API keys; credentials in <scratch>/cloud-ready/stack1/creds.env
+22:17:56 ROWS stack 1: [{'account': '1', 'n': '2', 'qty': '15'}, {'account': '2', 'n': '1', 'qty': '3'}] -> match [{'account': 1, 'n': 2, 'qty': 15}, {'account': 2, 'n': 1, 'qty': 3}]
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+22:18:32 STACK 1 (reused name flink-training): usable; first statement 110.1 s; row read back 173.6 s; 
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $170.89; this run estimated at $2.00
+  confluent-cloud: created environment flink-training-r52824a (env-1ko2d6)
+  confluent-cloud: the stack ran its first statement 8 s after it was created
+  confluent-cloud: statement flink-training-ready0-write could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r2
+  confluent-cloud: statement flink-training-ready0-write-r2 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r3
+  confluent-cloud: statement flink-training-ready0-write-r3 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r4
+  confluent-cloud: statement flink-training-ready0-write-r4 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r5
+  confluent-cloud: the stack is not usable: statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training-r52824a`.`flink-training-kafka`.`flink_training_ready0`'.. Tearing it down.
+  confluent-cloud: deleted environment flink-training-r52824a, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+  confluent-cloud down: environment flink-training-r52824a does not exist, so nothing in it survives
+22:21:44 STACK 2 (fresh name flink-training-r52824a): NOT usable; first statement None s; row read back None s; the new stack could create a table but not use it (statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training-r52824a`.`flink-training-kafka`.
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $170.89; this run estimated at $2.00
+  confluent-cloud: created environment flink-training (env-0k7x8q)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 131 s after the stack was created
+  confluent-cloud up: cluster lkc-nv519wd, pool lfcp-7yo17n2, 3 API keys; credentials in <scratch>/cloud-ready/stack3/creds.env
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+22:24:51 STACK 3 (reused name flink-training): usable; first statement 102.3 s; row read back 131.1 s; 
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $170.89; this run estimated at $2.00
+  confluent-cloud: created environment flink-training-r52824b (env-d5yo81)
+  confluent-cloud: the stack ran its first statement 9 s after it was created
+  confluent-cloud: statement flink-training-ready0-write could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r2
+  confluent-cloud: statement flink-training-ready0-write-r2 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r3
+  confluent-cloud: statement flink-training-ready0-write-r3 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r4
+  confluent-cloud: statement flink-training-ready0-write-r4 could not see a table created just before it; retrying in 30 s as flink-training-ready0-write-r5
+  confluent-cloud: the stack is not usable: statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training-r52824b`.`flink-training-kafka`.`flink_training_ready0`'.. Tearing it down.
+  confluent-cloud: deleted environment flink-training-r52824b, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+  confluent-cloud down: environment flink-training-r52824b does not exist, so nothing in it survives
+22:28:04 STACK 4 (fresh name flink-training-r52824b): NOT usable; first statement None s; row read back None s; the new stack could create a table but not use it (statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training-r52824b`.`flink-training-kafka`.
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $187.85; this run estimated at $2.00
+  confluent-cloud: created environment flink-training (env-v9v750)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 142 s after the stack was created
+  confluent-cloud up: cluster lkc-nv5195v, pool lfcp-pg5o355, 3 API keys; credentials in <scratch>/cloud-ready/stack5/creds.env
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+22:31:22 STACK 5 (reused name flink-training): usable; first statement 102.5 s; row read back 142.4 s; 
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $187.85; this run estimated at $2.00
+  confluent-cloud: created environment flink-training-r52824c (env-mnyv67)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 130 s after the stack was created
+  confluent-cloud up: cluster lkc-0x8kmy2, pool lfcp-mv5nx6q, 3 API keys; credentials in <scratch>/cloud-ready/stack6/creds.env
+  confluent-cloud: deleted environment flink-training-r52824c, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+22:34:29 STACK 6 (fresh name flink-training-r52824c): usable; first statement 102.0 s; row read back 130.5 s; 
+22:34:29 DONE [{"stack": 1, "reused": true, "usable": true, "firstStatementS": 110.1}, {"stack": 2, "reused": false, "usable": false, "firstStatementS": null}, {"stack": 3, "reused": true, "usable": true, "firstStatementS": 102.3}, {"stack": 4, "reused": false, "usable": false, "firstStatementS": null}, {"stack": 5, "reused": true, "usable": true, "firstStatementS": 102.5}, {"stack": 6, "reused": false, "usable": true, "firstStatementS": 102.0}]
