@@ -1,0 +1,81 @@
+[
+ {
+  "stack": 1,
+  "environment": "flink-training",
+  "reused": true,
+  "t0": 1791252824.290781,
+  "usable": true,
+  "firstStatementS": 110.1,
+  "rowReadBackS": 173.6,
+  "rows": [
+   {
+    "account": "1",
+    "n": "2",
+    "qty": "15"
+   },
+   {
+    "account": "2",
+    "n": "1",
+    "qty": "3"
+   }
+  ],
+  "rowsMatch": true,
+  "survivors": [],
+  "seconds": 288
+ },
+ {
+  "stack": 2,
+  "environment": "flink-training-r52824a",
+  "reused": false,
+  "t0": 1791253112.265878,
+  "usable": false,
+  "reason": "the new stack could create a table but not use it (statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training-r52824a`.`flink-training-kafka`.`flink_training_ready0`'.). It was torn down; run up again to get a new one",
+  "firstStatementS": null,
+  "survivors": [],
+  "seconds": 192
+ },
+ {
+  "stack": 3,
+  "environment": "flink-training",
+  "reused": true,
+  "t0": 1791253304.755143,
+  "usable": true,
+  "firstStatementS": 102.3,
+  "rowReadBackS": 131.1,
+  "survivors": [],
+  "seconds": 187
+ },
+ {
+  "stack": 4,
+  "environment": "flink-training-r52824b",
+  "reused": false,
+  "t0": 1791253491.6626592,
+  "usable": false,
+  "reason": "the new stack could create a table but not use it (statement flink-training-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table '`flink-training-r52824b`.`flink-training-kafka`.`flink_training_ready0`'.). It was torn down; run up again to get a new one",
+  "firstStatementS": null,
+  "survivors": [],
+  "seconds": 193
+ },
+ {
+  "stack": 5,
+  "environment": "flink-training",
+  "reused": true,
+  "t0": 1791253684.4665742,
+  "usable": true,
+  "firstStatementS": 102.5,
+  "rowReadBackS": 142.4,
+  "survivors": [],
+  "seconds": 198
+ },
+ {
+  "stack": 6,
+  "environment": "flink-training-r52824c",
+  "reused": false,
+  "t0": 1791253882.280756,
+  "usable": true,
+  "firstStatementS": 102.0,
+  "rowReadBackS": 130.5,
+  "survivors": [],
+  "seconds": 187
+ }
+]

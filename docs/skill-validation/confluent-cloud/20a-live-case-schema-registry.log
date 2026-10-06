@@ -1,0 +1,21 @@
+  confluent-cloud: budget $250.00; charged since 2026-10-01 $163.17; this run estimated at $20.00
+  confluent-cloud: created environment flink-training (env-zzrmm0)
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+surviving after down: []
+Traceback (most recent call last):
+  File "<scratch>/cloud-case-live/probe.py", line 29, in <module>
+    p.up()
+    ~~~~^^
+  File "~/.claude/skills/scalable-flink-skill/harness/platform_confluent.py", line 385, in up
+    self._ready(cluster)
+    ~~~~~~~~~~~^^^^^^^^^
+  File "~/.claude/skills/scalable-flink-skill/harness/platform_confluent.py", line 411, in _ready
+    self.run_statement(f"{self.prefix}-ready{i}", f"CREATE TABLE {table} (a INT)", name_db, timeout_s=240)
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "~/.claude/skills/scalable-flink-skill/harness/platform_confluent.py", line 538, in run_statement
+    status = self._run_statement(nm, sql, database, timeout_s, pool, properties)
+  File "~/.claude/skills/scalable-flink-skill/harness/platform_confluent.py", line 576, in _run_statement
+    raise Refusal("rig", f"statement {name} did not run on Confluent Cloud ({status.lower()}): "
+                         f"{detail or json.dumps(whole)[:600]}")
+lib.Refusal: statement flink-training-ready0 did not run on Confluent Cloud (failed): failed registering schemas: unable to register schema on 'flink_training_ready0-value': Post "https://lsrc-228k63y.us-east1.gcp.intranet.confluent.cloud/subjects/flink_training_ready0-value/versions?normalize=false": read tcp 10.141.134.216:59322->10.240.0.38:443: read: connection reset by peer

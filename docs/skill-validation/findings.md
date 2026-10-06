@@ -183,7 +183,7 @@ Raw results, with the scripts that produced them:
 
 ## 8. What one CFU buys on Confluent Cloud, and what held 20 CFU back — 2026-10-03/04
 
-Nineteen probe runs (some in several attempts) on Confluent Cloud (GCP us-east1, a Basic Kafka cluster,
+Twenty-one probe runs (some in several attempts) on Confluent Cloud (GCP us-east1, a Basic Kafka cluster,
 Flink SQL), each on a stack it created and deleted itself, set out to answer
 one question before the harness measures anything there: when a compute pool
 goes from 10 to 20 CFU, does the job get twice the workers, the way 2 to 4
@@ -210,6 +210,8 @@ sum at 10 CFU at 18.6 and 16.3 million records a minute (runs 06 and 07).
 | 17 | the copy at **10 then 20 CFU on one stack and one fill**: 40 partitions, alignment off and baseline = pool size read back, traced every 30 s | 17a stopped at the 20 CFU case: a minute after the new pool was created the metrics API answered 403 "Query must filter by at least one of your authorized resources" (`wait_at_size` now waits through it, scalable-flink-skill #127; 17b met the same answer for about 4 minutes). 17b: both cases at their whole pool from 350 and 341 s, held back 0 ms/s, no exceptions, scaling "OK". 10 CFU **28.55 M/min** (04:53–05:04), 20 CFU **40.14 M/min** (05:17–05:25): **1.41×** by records read, **1.38×** by Kafka bytes (2,355 → 3,240 MB/min). Leaving out the tail as the backlog ran out (10 CFU 04:53–05:01, 32.0; 20 CFU 05:17–05:23, 43.4) gives 1.36×. The 10 CFU rate rose from 29 to 35 M/min over its case; the 20 CFU rate fell from 48.6 to 39.7. The cluster was allowed 10 eCKU; its eCKU count was not recorded |
 | 18 | run 17's step again, one variable changed: the cluster allowed **50 eCKU** instead of 10, its eCKU count recorded every minute | 18a: first statement in 8 s, table unusable, torn down by the readiness check. 18b: the cluster sat at 50 eCKU through both cases. On the minutes at full size with at least 100 million records waiting: 10 CFU **29.96 M/min** (09:54–10:03), 20 CFU **52.99 M/min** (10:19–10:23): **1.77×** by records read, **1.75×** by Kafka bytes. Run 17, the same way: 31.87 and 43.97 M/min, **1.38×**. With at least 50 million waiting: 1.71× against 1.34×; by the usual rule, tails included: 1.59× against 1.41×. At 10 CFU the eCKU limit changed little (29.96 against 31.87 M/min); at 20 CFU it took the rate from 44 to 53 M/min |
 | 19 | run 18 again, unchanged, on a new stack | the cluster sat at 50 eCKU in both cases. On the minutes with at least 100 million waiting: 10 CFU **25.61 M/min** (00:27–00:37), 20 CFU **51.41 M/min** (00:52–00:56): **2.01×** by records read, **1.99×** by Kafka bytes; with at least 50 million waiting, 1.97× and 1.98×. The 20 CFU rate repeated within 3% of run 18 (51.41 against 52.99); the 10 CFU rate did not (25.61 against 29.96, 15% apart) |
+| 20 | one 20 CFU case through **the harness's own** `run_case_cloud` (`submit`, `measure_window`, `check_case_cloud`), 40 partitions, 50 eCKU; then a bounded `COUNT(*)` read over the Flink REST results API | 20a stopped at readiness: Confluent could not register the readiness table's schema ("failed registering schemas ... connection reset by peer"); readiness now waits through that. 20b: the rate from the output's log end **857,092 records/s** (51.4 M/min, as run 19 at 20 CFU), Confluent's records read 840,631, **1.9% apart**; CFU in use 20.0 of 20; busy 100%, held back 0%, idle 0.3%; 196.8 million records left at the window's end. The eCKU check of scalable-flink-skill #131 made this case a ceiling because the cluster sat at its 50 eCKU limit — wrongly: runs 18 and 19 had it there in both cases, so the check would have thrown out their tables. It now reports eCKU only (#134). The bounded `COUNT(*)`, polled for its status but not read while it ran, ended STOPPED and its results answered 409 "not ready" |
+| 21 | six stacks one after another, the reused environment name `flink-training` against a fresh name each time, `up` and `down` only; on the first usable stack, a bounded GROUP BY over a three-row table read through `statement_rows`, which now reads results while the statement runs | reused name: 110, 102, 102 s to the first statement, all usable. Fresh names: **8 s and 9 s, both unusable**, then 102 s, usable. The bounded GROUP BY returned exactly the three rows' totals (values come back as strings) |
 
 What this establishes, and does not:
 
@@ -269,6 +271,18 @@ What this establishes, and does not:
   stacks, not a measured cause. Since scalable-flink-skill #125 the harness's
   readiness check writes a row to a new table and reads it back from Kafka;
   it caught runs 15a and 16a and tore those stacks down before any fill.
+- **Readiness: the first statement's time, not the environment's name, goes
+  with an unusable stack.** Every stack whose first statement ran in 5–13
+  seconds — seven of them, under both the reused and fresh names — had
+  tables no later statement could see; every one that took about 102–110
+  seconds worked (run 21 and the runs before it). Why is not known. The
+  harness's readiness check writes a row and reads it back, catches each such
+  stack before any fill and tears it down; it costs about three minutes.
+- **The harness's cloud case works on the real service** (run 20): the
+  transport rate and Confluent's records read agreed to 1.9%, the pool was
+  fully used, and the record had the laptop's shape. A **bounded statement's
+  rows can be read over the REST API only while it runs** (runs 20 and 21);
+  the harness now reads them that way and applies the change log.
 - **Run 13 was lost by hand.** The statement it was watching was deleted to
   start run 14's test on the same stack; the probe's next status read stopped
   it and the stack was torn down. Run 14 repeated that test on its own stack.
