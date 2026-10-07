@@ -1,0 +1,1499 @@
+{
+  "build": "sql-b8381f34f137",
+  "results": [
+    {
+      "guard": "a transient case is retried and passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a case that fails twice is not retried again",
+      "ok": true,
+      "result": "FIRED",
+      "message": "attempt 2 failed"
+    },
+    {
+      "guard": "a rig failure is never retried",
+      "ok": true,
+      "result": "FIRED",
+      "message": "attempt 1 failed"
+    },
+    {
+      "guard": "a ceiling is never retried",
+      "ok": true,
+      "result": "FIRED",
+      "message": "attempt 1 failed"
+    },
+    {
+      "guard": "bottleneck label: Pipeline CPU (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck label: Kafka memory (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck label: broker hits at 96.8% of cap are not blamed on Kafka (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck label: Pipeline memory (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck label: Kafka writes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck label: Input feed (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "one core is singular (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "two cores is plural (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a step above 2x is not reported as met (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the generated stack file is filled in (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the scorecard stays under 136 characters (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "size: 4 GiB reads as 4g (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "size: 6 GiB reads as 6g (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "size: 6400 MiB reads as 6.25g (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the Kafka memory column comes from the record (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "verdict: reference run 4's 2->4, 1.65-1.82x, is not settled (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "verdict: run 37's 2->4, 1.75-1.78x, wholly under 1.80x, is missed (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "verdict: a range wholly above 1.80x is met (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "verdict: one pair and no range is judged on the point, and under is missed (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "verdict: a step not reported has no verdict (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "settle: after the sentinel, 2->4 alternates 2, 4, 2, 4 (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "settle: after a 2-core case, 2->4 starts at 4 (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "scorecard: a step that is not settled asks for more passes, not tuning (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "detail: the baseline says why (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "detail: a short step names both numbers (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "detail: a step above 2x says the smaller case reads low (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "detail: Kafka memory names the size to try (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: the baseline has no step into it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: a step that doubled needs nothing (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: a step short of the target points at the host (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a step is met or reads low, never both (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: a step above 2x says the baseline reads low (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: says so when there is no usable step (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: names the Kafka memory to try, in gigabytes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: more memory for the pipeline (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "GC ceiling: what was measured, not a cause (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "action: compress the writes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck: CPU is the block (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck: Kafka out of memory (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck: out of memory (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck: waiting to write (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck: unknown says investigating (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "bottleneck: waiting for input (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "window has < 3 commit boundaries",
+      "ok": true,
+      "result": "FIRED",
+      "message": "only 2 commit boundaries inside the window"
+    },
+    {
+      "guard": "measured rate is zero",
+      "ok": true,
+      "result": "FIRED",
+      "message": "measured rate is not positive: 0 records in 60.0s"
+    },
+    {
+      "guard": "rate came from the engine",
+      "ok": true,
+      "result": "FIRED",
+      "message": "rate came from the engine, not the transport"
+    },
+    {
+      "guard": "two vantage points disagree",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs account for 10,010,000. That is 12.0% apart and the limit is 5%. One of them is wrong, so neither ca"
+    },
+    {
+      "guard": "the data ran out before the window closed",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the data ran out before the measurement finished: 1,000 records left at the end of the window, which is only 0.0s of work at this rate. The window needs at least one checkpoint interval of data left o"
+    },
+    {
+      "guard": "external-boundary samples missing",
+      "ok": true,
+      "result": "FIRED",
+      "message": "no back-pressure reading came back for the source, so there is no way to tell whether the pipeline was working or waiting on Kafka."
+    },
+    {
+      "guard": "too few reporter samples in the window",
+      "ok": true,
+      "result": "FIRED",
+      "message": "only 2 back-pressure readings landed inside the window and 3 are needed. Without enough of them there is no way to tell whether the pipeline was working or waiting on Kafka."
+    },
+    {
+      "guard": "cores are not the constraint (baseline, run 5's 94%)",
+      "ok": true,
+      "result": "CEILING",
+      "message": "the pipeline only used 94.0% of the 4 cores it was given, and it needs 95% to count. Something else was holding it back, so this case shows where scaling stops. It is kept in the table and left out of"
+    },
+    {
+      "guard": "baseline at 95.9% is the constraint (run 12 p3; must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cores are not the constraint (other)",
+      "ok": true,
+      "result": "CEILING",
+      "message": "the pipeline only used 90.0% of the 4 cores it was given, and it needs 95% to count. Something else was holding it back, so this case shows where scaling stops. It is kept in the table and left out of"
+    },
+    {
+      "guard": "source idle past the ceiling",
+      "ok": true,
+      "result": "CEILING",
+      "message": "the source sat idle 40.0% of the window and the limit is 20%. It spent that time waiting for input, so whatever feeds the pipeline is the bottleneck, not the cores."
+    },
+    {
+      "guard": "garbage collection over the limit is flagged on the pass, not ruled on (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "gc: run 50's 1-core case (GC 9.1%, as much work per core as 2 cores) is kept (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "gc: run 25's 1-core case (GC 7.7%, 0.85x the 2-core case per core) is a ceiling (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "gc: run 21's 1-core case is judged against the 4-core case, not a 2-core case also over (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "gc: a ruling made before the larger cases exist does not stick (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "gc: the largest case over the limit has nothing to compare with and is a ceiling (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "GC at the worst level that behaved, 4.8% (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "swap: run 47's slow passes are put down to the machine's memory (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "swap: a quiet machine says nothing about swap (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "swap: a case that counts gets no swap sentence (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: a topic's bytes are its own partitions only (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: a longer topic with the same start is its own (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: two topics together (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "fill: a fill that keeps growing runs on (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "fill: 6.7 minutes before the first record, like run 48's price feed, runs on (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "fill: nothing written in 10 minutes is stopped (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "fill: a fill that stopped growing for 5 minutes is stopped (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "fill: a 4-minute pause after writing runs on (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: the 2026-09-28 mistake, a data source nobody provisioned, is found (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: panels naming the provisioned source pass (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a panel with no data source uses the default and passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a data source variable the dashboard defines passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a data source variable nobody defines is found (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a panel with no query is found (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: no data source provisioned is found (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: provisioning mounted whole is read (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: provisioning mounted in two parts, like run 36, is read (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: the Grafana service and its port are found among extraServices (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: panels with no points or an error are named (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "settle: the loop runs the open step's two sizes until it settles (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "settle: the loop stops at its budget when the step never settles (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "settle: a rig check stopping a settling case stops the loop (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "report: the not-settled range and DONE line read as written (run 52's figures) (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "memory: the budget row adds container limits and names a limit it cannot read (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "memory: the worker's container limit is 1.25x its process size, as started (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "args: every declared input has a placeholder, and the scaled one follows the tiny proof (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "grafana: loaded, data source answering, and both failures caught (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "grafana: every panel with data passes; one empty panel is named (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "grafana: a Grafana that does not answer stops it, and says so (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "grafana: the suite's range is written to the file and read back (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "grafana: a section 7 series the image does not export is named (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "chain: an empty dashboard panel stops it at completeness, before the suite (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a panel with one empty query is named, not passed on the other's points (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: opening on the last 90 minutes does not cover the suite later (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a fixed range around the suite covers it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a fixed range in epoch milliseconds covers it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: a range that ends before the suite does does not cover it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "dashboard: the suite's range is written in, refresh off, panels untouched (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "kafka tools: the Apache image (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "kafka tools: the Confluent image (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "kafka tools: nothing found is not guessed at (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "claim: run 50's thrown-out baseline leaves 1->2 missing (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "claim: every case counted, nothing missing (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "claim: the missing step says why, in the harness's own words (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "diagram: steps, keys, interval and partitions from the configuration (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "collector: none named, G1 on every case (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "collector: other options kept, G1 added (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "collector: G1 already named is kept as it is (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "collector: any collector but G1 in the config stops the run",
+      "ok": true,
+      "result": "FIRED",
+      "message": "flinkProperties asks for the ParallelGC garbage collector. The skill measures on G1 only: a different collector is a different program, and Java's own pick differs between one core and two, which made"
+    },
+    {
+      "guard": "collector: a pass that reported Serial stops the suite",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the case at 4 cores ran the Copy, MarkSweepCompact garbage collector, not G1. The skill measures on G1 only, and the harness sets it; something in the image or the configuration overrode it. Every cas"
+    },
+    {
+      "guard": "collector: a pass that reported G1 is fine (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "collector: a step between a Serial and a G1 case is not counted (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "kafka jars: left out, Apache's path for the Apache image (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "kafka jars: left out, Confluent's path for the Confluent image (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "either Kafka: a plain Apache-client build has nothing vendor-only (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "either Kafka: Confluent serializers are found (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "broker advice: run 49's hits on cases at their cap ask for nothing (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "broker advice: a case under its cap with hits is the one named (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "source: no vertex matching sourceVertexMatch names the setting and the vertices",
+      "ok": true,
+      "result": "FIRED",
+      "message": "no back-pressure reading came back for the source: no vertex in the running plan has 'Source: ' in its name (job.sourceVertexMatch). The plan's vertices are: orders[38] -> Calc[39]. Set sourceVertexMa"
+    },
+    {
+      "guard": "source: a matching vertex with no reading keeps the plain message",
+      "ok": true,
+      "result": "FIRED",
+      "message": "no back-pressure reading came back for the source, so there is no way to tell whether the pipeline was working or waiting on Kafka."
+    },
+    {
+      "guard": "the broker was starved of page cache (cores off their cap)",
+      "ok": true,
+      "result": "CEILING",
+      "message": "the pipeline only used 93.0% of the 4 cores it was given, and it needs 95% to count. Kafka hit its memory limit 310,423 times during the window and had to read the backlog back off disk (6,270,562 pag"
+    },
+    {
+      "guard": "cores off their cap with no broker hits still says something else held it back",
+      "ok": true,
+      "result": "CEILING",
+      "message": "the pipeline only used 93.0% of the 4 cores it was given, and it needs 95% to count. Something else was holding it back, so this case shows where scaling stops. It is kept in the table and left out of"
+    },
+    {
+      "guard": "broker limit hits at 97.9% of cap: the pass is kept (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "broker limit hits at exactly the cap floor: the pass is kept (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "broker limit hits while the cores are pinned (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a broker that never hit its limit (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the same graph at a new job id and size passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "job graph differs across cases",
+      "ok": true,
+      "result": "FIRED",
+      "message": "job graph shape differs from the other cases:\n{'vertexCount': 3, 'signature': [['a', ['HASH']]]}\nvs\n{'vertexCount': 3, 'signature': [['a', ['REBALANCE']]]}"
+    },
+    {
+      "guard": "a case's readings are too far apart",
+      "ok": true,
+      "result": "FIRED",
+      "message": "its readings are 26% apart and the limit is 20%"
+    },
+    {
+      "guard": "a case measured only once",
+      "ok": true,
+      "result": "FIRED",
+      "message": "only 1 usable reading, and 2 are needed to see how much it wobbles"
+    },
+    {
+      "guard": "a commit that lands in two pieces (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "quick look: the flag reaches neither the record nor the guards (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "quick look: two passes, so every case has a spread (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "quick look: one pass computes a ratio, stamped unpublishable (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "sentinel: rig drifted across the suite",
+      "ok": true,
+      "result": "FIRED",
+      "message": "sentinel drift -28.6%: its readings are 27% apart and the limit is 20%"
+    },
+    {
+      "guard": "sentinel: drift inside the noise floor (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a host-side watcher outlives the run",
+      "ok": true,
+      "result": "FIRED",
+      "message": "host processes watching this run were found and killed: [8152, 8153, 8155]"
+    },
+    {
+      "guard": "disk: run 11's build A fitted (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: the suite would not fit",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the suite needs 97.5 GB of disk and only 60.0 GB will be free once the tiny proof's topics are deleted. That is 42.1 GB of input, 34.4 GB of sinks (capped at 34.4 GB), 1.0 GB of checkpoints and 20 GB "
+    },
+    {
+      "guard": "key layout: the demo's own 5/3/4/4 is measured, not assumed (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "keys do not divide evenly and a maxParallelism would fix it",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the positions-by-account stage at 4 cores would get 5/3/4/4 keys across its subtasks. The busiest one holds 31.2% of that stage's keys where an even split is 25.0%, so the stage cannot return more tha"
+    },
+    {
+      "guard": "an uneven layout with no fix available is reported, not thrown out (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a subtask would get no keys at all",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the positions-by-account stage at 4 cores would get 5/3/8/0 keys across its subtasks, so subtask 3 gets no keys at all. That core cannot reach a cap with no work to do, and the case would be measuring"
+    },
+    {
+      "guard": "an even key layout passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "key spread: a SQL build is reported as not checked, never stopped (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "api names something other than datastream or sql",
+      "ok": true,
+      "result": "FIRED",
+      "message": "pipeline.json api must be \"datastream\" or \"sql\", got 'table'"
+    },
+    {
+      "guard": "platform: a managed service is asked for every stack step, Docker never (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "platform: a size the service did not apply stops the case",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the CFU size did not apply on fake: the case is 4, the platform reports 3"
+    },
+    {
+      "guard": "platform: a service that is named but not built stops before anything is paid for",
+      "ok": true,
+      "result": "FIRED",
+      "message": "platform 'aws' is named in pipeline.json, but the harness cannot run on it yet. Amazon MSK with Managed Service for Apache Flink. It needs an AWS account and region, an MSK cluster, and applications s"
+    },
+    {
+      "guard": "confluent: up writes owner-only credentials and no secret anywhere else; down leaves nothing (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a size the pool did not take stops the case",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the CFU size did not apply on confluent-cloud: the case is 10, the platform reports 5"
+    },
+    {
+      "guard": "confluent: a size Confluent does not allow is named, with the sizes it does",
+      "ok": true,
+      "result": "FIRED",
+      "message": "a Confluent Cloud compute pool cannot be 4 CFU: its size can only be 5, 10, 20, 30, 40, 50. Set cases to sizes from that list, for example 5, 10 and 20"
+    },
+    {
+      "guard": "confluent: a run estimated over budget stops before anything is created",
+      "ok": true,
+      "result": "FIRED",
+      "message": "this run is estimated at $400.00, and $0.00 has been charged since 2026-10-01: $400.00 would be over the $350.00 budget. Nothing was created."
+    },
+    {
+      "guard": "confluent: what has already been charged counts against the budget, not only this run's estimate",
+      "ok": true,
+      "result": "FIRED",
+      "message": "this run is estimated at $220.00, and $137.77 has been charged since 2026-10-01: $357.77 would be over the $350.00 budget. Nothing was created."
+    },
+    {
+      "guard": "confluent: a run that fits in what is left of the budget goes ahead, saying what is left (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a pool that will not delete is named as still costing money",
+      "ok": true,
+      "result": "FIRED",
+      "message": "after teardown these still exist on Confluent Cloud and may cost money: Flink compute pool lfcp-3. Deleting them reported: confluent flink compute-pool delete lfcp-3 --force did not succeed: the pool "
+    },
+    {
+      "guard": "confluent: after a failed up, down from a new process removes what was created (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a named environment is created and later deleted; an existing one is only used (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a statement is judged on the status read back, and teardown removes it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a statement Confluent reports as failed stops with Confluent's own reason",
+      "ok": true,
+      "result": "FIRED",
+      "message": "statement fsk-t-ddl did not run on Confluent Cloud (failed): Table 'why_t' could not be created: the environment is not ready"
+    },
+    {
+      "guard": "confluent: up waits until a new stack runs a statement, as measured (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a schema registry not reachable yet on a new stack is waited for, as measured (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a stack that never runs a statement stops, quoting Confluent",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the stack never ran a statement in 3 tries over 0 min; the last answer was: statement fsk-t-ready2 did not run on Confluent Cloud (failed): Unable to process the request due to technical difficulties "
+    },
+    {
+      "guard": "confluent: every case gets a new pool of its own size, so a suite can come back down to its baseline; earlier pools are deleted (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a statement that cannot see a table created just before it is retried under a new name, as measured (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a table that never becomes visible stops, quoting Confluent",
+      "ok": true,
+      "result": "FIRED",
+      "message": "statement fsk-t-job-r5 did not run on Confluent Cloud (failed): Cannot find table 'orders' in 'db'."
+    },
+    {
+      "guard": "confluent: a statement already deleted but still listed does not stop the teardown, and no pool is left behind (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: the log end and the per-minute readings come back parsed, with no secret on a command line or in the log (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a metrics API that will not answer stops with its own reason",
+      "ok": true,
+      "result": "FIRED",
+      "message": "Confluent's metrics API answered HTTP 401 for io.confluent.flink/statement_utilization/current_cfus: {'errors': [{'detail': 'invalid API key'}]}"
+    },
+    {
+      "guard": "confluent: up proves a new table can be written and read back before the stack counts as ready (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a stack that can create a table but not use it is torn down before anything is filled",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the new stack could create a table but not use it (statement fsk-t-ready0-write-r5 did not run on Confluent Cloud (failed): Cannot find table 'orders' in 'db'.). It was torn down; run up again to get "
+    },
+    {
+      "guard": "confluent: a case's job runs with watermark alignment off and its baseline at the pool's size, both read back (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a job that does not report alignment off stops before it is measured",
+      "ok": true,
+      "result": "FIRED",
+      "message": "statement fsk-t-job does not report the settings it was given: sql.tables.scan.watermark-alignment.max-allowed-drift should be '1 d', reads None"
+    },
+    {
+      "guard": "confluent: a baseline the statement does not report stops before the case is measured",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the baseline of 20 CFU did not apply to statement fsk-t-job: the statement reports None (HTTP 200)"
+    },
+    {
+      "guard": "confluent: the window waits until the statement uses its whole pool (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a new pool the metrics API does not cover yet is waited for, not a stop (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a statement that never uses its whole pool stops the case, with what it did use",
+      "ok": true,
+      "result": "FIRED",
+      "message": "statement fsk-t-job never used its 20 CFU pool in 0 minutes (CFU by minute: 00:09 10). Check that its baseline reads 20"
+    },
+    {
+      "guard": "confluent: an input topic whose partitions do not divide by every case stops, naming sizes that do",
+      "ok": true,
+      "result": "FIRED",
+      "message": "topic orders24 has 24 partitions, which do not divide evenly by 5, 10, 20 subtasks (1 CFU runs one subtask). Use a multiple of 20, for example 20, 40 or 60"
+    },
+    {
+      "guard": "confluent: partitions that divide by every case are accepted (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: submit starts every job with alignment off, the baseline at the pool's size and the partitions checked, and waits for the whole pool (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: submit stops before starting a job when the input's partitions do not divide by every case",
+      "ok": true,
+      "result": "FIRED",
+      "message": "topic orders has 24 partitions, which do not divide evenly by 5, 10, 20 subtasks (1 CFU runs one subtask). Use a multiple of 20, for example 20, 40 or 60"
+    },
+    {
+      "guard": "confluent: submit with no job SQL stops and says what to set",
+      "ok": true,
+      "result": "FIRED",
+      "message": "platform.jobSql is not set: give the Flink SQL INSERT the job runs on Confluent Cloud. The same statement runs at every size; the harness sets its size"
+    },
+    {
+      "guard": "confluent: a case's window reads the rate from the output topics' log end over whole minutes and lines Confluent's own readings up with it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud case: a valid record passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud case: the output count and Confluent's records read disagree",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the two ways of counting do not agree. The output topics say 700,000 input records a second went through; Confluent's own count of records read says 760,000. That is 8.6% apart and the limit is 5%. Ch"
+    },
+    {
+      "guard": "cloud case: the backlog ran out inside the window",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the data ran out before the measurement finished: Confluent reported 10,000,000 records waiting at the window's last whole minute, which is under 60 s of work at this rate. Make the backlog bigger: co"
+    },
+    {
+      "guard": "cloud case: a job that did not use its pool is a ceiling, kept and left out of the ratios",
+      "ok": true,
+      "result": "CEILING",
+      "message": "the job used 10.0 CFU of the 20 CFU pool on average (50.0%), and it needs 95% to count. This case shows where scaling stops; it is kept in the table and left out of the ratios."
+    },
+    {
+      "guard": "cloud case: a job waiting on its input is a ceiling",
+      "ok": true,
+      "result": "CEILING",
+      "message": "the job sat idle 30.0% of the window and the limit is 20%. It spent that time waiting for input, so whatever feeds it is the bottleneck, not the pool."
+    },
+    {
+      "guard": "cloud case: a cluster at its eCKU limit does not decide a case on its own -- run 18 at 10 CFU (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud case: a cluster at its eCKU limit does not decide a case on its own -- run 19 at 20 CFU (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud case: a cluster at its eCKU limit does not decide a case on its own -- the live case at 20 CFU (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud case: no eCKU reading is recorded as missing and does not decide the case (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud case: too short a window to see whole minutes",
+      "ok": true,
+      "result": "FIRED",
+      "message": "only 2 whole minutes inside the window, and 3 are needed: Confluent reports CFU in use, busy and held-back time by the minute, so a shorter window cannot say whether the pool was used"
+    },
+    {
+      "guard": "cloud case: the bottleneck sentence counts CFU, not cores (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud case: a cluster at its eCKU limit with the pool under-used is named as the likely bottleneck (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "local first: the same app passed on the laptop, so the cloud may start (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "local first: no laptop run named",
+      "ok": true,
+      "result": "FIRED",
+      "message": "platform.localPipeline is not set: name the laptop run's pipeline.json. A run on a paid service starts only after the same app passed completeness and the tiny proof locally"
+    },
+    {
+      "guard": "local first: the cloud run would write into the laptop's results",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the cloud run and the laptop run write to the same folder (/w/app/results), so the cloud run would write over the laptop evidence local first reads. Give the cloud's pipeline.json its own \"results\", e"
+    },
+    {
+      "guard": "local first: the cloud run has its own results folder (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "local first: completeness has not passed on the laptop",
+      "ok": true,
+      "result": "FIRED",
+      "message": "completeness has not passed on the laptop for this app (/w/local/results/completeness.json: FAIL). Run it locally first; it costs nothing there"
+    },
+    {
+      "guard": "local first: the tiny proof never ran on the laptop",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the tiny proof has not passed on the laptop for this app (/w/local/results/tinyproof.json: not found). Run it locally first; it costs nothing there"
+    },
+    {
+      "guard": "local first: the laptop declares no job SQL",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the laptop run's pipeline.json declares no job.sql, so there is no telling whether the cloud would run the same app. Add the INSERT the laptop's job runs as job.sql"
+    },
+    {
+      "guard": "local first: the cloud would run a different INSERT",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the cloud's platform.jobSql is not the INSERT the laptop's job declares (job.sql). The same app must run on both; only the tables around it differ"
+    },
+    {
+      "guard": "tables: the same name and columns on both platforms, each connected its own way (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "tables: a platform with no table definition yet says so",
+      "ok": true,
+      "result": "FIRED",
+      "message": "no table definition for platform 'aws' yet"
+    },
+    {
+      "guard": "cloud completeness: the same rows in any order and number format match (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud completeness: a row the outputs do not have is named",
+      "ok": true,
+      "result": "FIRED",
+      "message": "rows missing from the outputs: ['{\"account\": 2.0, \"n\": 5.0}']"
+    },
+    {
+      "guard": "cloud fill: generator jobs side by side until the topic holds the count, then deleted (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud fill: a fill that stops writing stops, says how far it got, and deletes its jobs",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the fill stopped writing: orders held 400 of 1,000 records and did not move for 0 minutes"
+    },
+    {
+      "guard": "cloud rows: a bounded statement's rows come back by column name (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud rows: every count runs as a snapshot query, which gives only its final rows (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud rows: results read while the statement runs, through 'not ready' and every page, with updates and deletes applied (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "cloud rows: the last page is read once, though the statement still says running (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: reading the status of a statement that no longer exists says it is gone, and does not stop the run (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "confluent: a full suite's estimate sits well inside the budget (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "platform: a name that is not a platform",
+      "ok": true,
+      "result": "FIRED",
+      "message": "pipeline.json platform must be one of local, aws, gcp, confluent-cloud, got 'azure'"
+    },
+    {
+      "guard": "platform: every laptop-only row is a real row, judged locally, reported elsewhere (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "platform: every row that reaches the laptop's stack is reported on a managed service (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: the backlog is projected twice after a fill",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the suite needs 92.3 GB of disk and only 77.3 GB will be free once the tiny proof's topics are deleted. That is 37.9 GB of input, 34.4 GB of sinks (capped at 34.4 GB), 0.0 GB of checkpoints and 20 GB "
+    },
+    {
+      "guard": "disk: the tiny proof re-runs once the backlog on disk is credited (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: crediting the backlog does not excuse a suite that still will not fit",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the suite needs 54.4 GB of disk and only 40.0 GB will be free once the tiny proof's topics are deleted. That is 0.0 GB of input still to write \u2014 the backlog needs 37.9 GB and 37.9 GB of it is on the b"
+    },
+    {
+      "guard": "scorecard: a ratio above its target is not called short of it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "scorecard: a ratio below its target still says so (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "probe: the range is an envelope, the middle half is the figure that tightens (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "suite.json records the memory each case was given (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the build is missing an output the business case asks for",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the job does not match the design the run wrote down: operator sink-mv-by-account; output market-values-by-account. The interview's answers are the spec, and a picture of them is not a check -- this i"
+    },
+    {
+      "guard": "a build with more operators than the design names passes, and says so (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the measured fan-out is not the declared one",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the job does not match the design the run wrote down: constraint outputsPerInput = 5, read back 8. The interview's answers are the spec, and a picture of them is not a check -- this is."
+    },
+    {
+      "guard": "fan-out: 4.987 against 5, the repeats section 4 asks for, passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "fan-out: 4.70 against 5, more than 5% under, still stops (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "fan-out: 5.2 against 5, over the declared fan-out, still stops (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a declared input the fill has not created yet (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a declared input missing after the fill",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the job does not match the design the run wrote down: input st-readings. The interview's answers are the spec, and a picture of them is not a check -- this is."
+    },
+    {
+      "guard": "a pipeline with no constant fan-out still gets a report (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "report: every renderer runs on two real suites, run 42's and run 52's (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "outputs: a declared output left empty by a full drain is named (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the backlog ran out under the job",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the backlog ran out (1,000 records) before the window closed. Make it bigger. It has to cover warm-up plus the window at the fastest case's rate."
+    },
+    {
+      "guard": "cases that would not share one maxParallelism",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the cases would not share one maxParallelism: {1: 128, 2: 128, 4: 256}. Flink chooses it from the parallelism when nothing sets it, so the key layout -- which key lands on which subtask -- would diffe"
+    },
+    {
+      "guard": "warm-up: run 52's own commit steps settle (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "warm-up: a rate that keeps falling never settles",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the rate never settled down within 600s. The backlog had 999,947,936,770 records left. It has to hold steady for 90s, drifting less than 10% with scatter under 20%. The last readings were [4052, 3916,"
+    },
+    {
+      "guard": "warm-up: a pipeline that commits nothing is named as such",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the pipeline did not commit a single offset in 300s, so there is nothing to measure. It is not reading the backlog. Check the job is running and that the task manager has the memory it asked for."
+    },
+    {
+      "guard": "warm-up: the backlog running dry is named",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the backlog ran out (30,949,102 records) before the window closed. Make it bigger. It has to cover warm-up plus the window at the fastest case's rate."
+    },
+    {
+      "guard": "window: it opens on run 52's next real commit, not on the clock (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "window: an offset that never advances stops the case",
+      "ok": true,
+      "result": "FIRED",
+      "message": "committed offset did not advance within 60s"
+    },
+    {
+      "guard": "graph: the shape is read off the plan, and a new job at another size matches (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "graph: a baseline chained into one vertex is a different shape",
+      "ok": true,
+      "result": "FIRED",
+      "message": "job graph shape differs from the other cases:\n{'vertexCount': 1, 'signature': [['Source: orders -> parse -> aggregate -> sink', []]], 'maxParallelism': [128]}\nvs\n{'vertexCount': 2, 'signature': [['Sou"
+    },
+    {
+      "guard": "graph: a different key-group count is a different shape",
+      "ok": true,
+      "result": "FIRED",
+      "message": "job graph shape differs from the other cases:\n{'vertexCount': 2, 'signature': [['Source: orders -> parse', []], ['aggregate -> sink', ['HASH']]], 'maxParallelism': [256]}\nvs\n{'vertexCount': 2, 'signat"
+    },
+    {
+      "guard": "back-pressure: only samples inside the window count, averaged per vertex (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "back-pressure: the collector that actually ran is read from the log (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: the projection measures bytes per record and credits what the fill deletes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "disk: a suite that cannot fit stops before the fill",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the suite needs 266.9 GB of disk and only 26.0 GB will be free once the tiny proof's topics are deleted. That is 160.0 GB of input, 85.9 GB of sinks (capped at 85.9 GB), 1.0 GB of checkpoints and 20 G"
+    },
+    {
+      "guard": "disk: input already on the broker is not asked for twice (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the backlog is not sized on the tiny proof's own warm-up floor (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the job graph draws from the plan the engine served (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "the second vantage reads the same either way (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a pipeline with no second way to measure it",
+      "ok": true,
+      "result": "FIRED",
+      "message": "pipeline.json says nothing about how to measure the pipeline a second way. Either set outputsPerInput, for a pipeline whose outputs grow by a constant multiple of the input, or set secondVantage to {\""
+    },
+    {
+      "guard": "outputsPerInput with no output to count it in",
+      "ok": true,
+      "result": "FIRED",
+      "message": "secondVantage mode constantFanOut needs at least one topic in topics.out to count. A pipeline with no output that grows with its input wants {\"mode\": \"command\"} instead."
+    },
+    {
+      "guard": "all: the chain stops at the first failing step",
+      "ok": true,
+      "result": "FIRED",
+      "message": "chain stopped at c, d never ran, DONE says 'STOPPED at c 0.0 min'"
+    },
+    {
+      "guard": "all: a chain on a paid service tears its stack down however it ends (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a run that measured nothing does not report a pass",
+      "ok": true,
+      "result": "FIRED",
+      "message": "no scaling result: 4 cases were measured and 2 were thrown out, leaving usable readings at 4 cores."
+    },
+    {
+      "guard": "broker advice says when the machine cannot give it",
+      "ok": true,
+      "result": "FIRED",
+      "message": "but this machine cannot give it that. At 20 cores the worker wants 11,264 MiB, the job manager takes 1,600, and 6,400m of broker on top is 19,264 MiB against a 9,937 MiB virtual machine -- over by 9,3"
+    },
+    {
+      "guard": "broker advice is silent when the machine can give it (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "outputs behind the source point at checkpoint phase",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs account for 9,000,000. That is 9.0% apart and the limit is 5%. One of them is wrong, so neither can "
+    },
+    {
+      "guard": "outputs ahead of the source point at the step size",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs account for 11,000,000. That is 9.0% apart and the limit is 5%. One of them is wrong, so neither can"
+    },
+    {
+      "guard": "a job that is restarting is not called an unsteady rate",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the job has restarted 15 times since this case started. It is failing and recovering, not reading at an unsteady rate: Caused by: java.lang.OutOfMemoryError: Direct buffer memory Fix the job; nothing "
+    },
+    {
+      "guard": "a failed job is named as failed",
+      "ok": true,
+      "result": "FIRED",
+      "message": "the job is failed, not running: Caused by: java.lang.OutOfMemoryError: Direct buffer memory"
+    },
+    {
+      "guard": "a running job that has not restarted is left alone (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "tinyproof sizes from a ceiling top case instead of stopping",
+      "ok": true,
+      "result": "FIRED",
+      "message": "sized from the 4-core ceiling case, as it should"
+    },
+    {
+      "guard": "tinyproof stops plainly when no case produced a rate",
+      "ok": true,
+      "result": "FIRED",
+      "message": "not one case produced a rate, so there is nothing to size the suite from. The messages above say why each case stopped."
+    },
+    {
+      "guard": "bytes per record is measured on every input topic the run owns",
+      "ok": true,
+      "result": "FIRED",
+      "message": "bytes per record is measured across every input topic"
+    },
+    {
+      "guard": "warm-up accepts a noisy ramp",
+      "ok": true,
+      "result": "FIRED",
+      "message": "scatter 34%"
+    },
+    {
+      "guard": "warm-up accepts a flat plateau (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    },
+    {
+      "guard": "a valid case record passes (must not fire)",
+      "ok": true,
+      "result": "DID NOT FIRE"
+    }
+  ],
+  "at": "2026-10-06 06:14:53"
+}

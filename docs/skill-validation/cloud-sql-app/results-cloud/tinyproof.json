@@ -1,0 +1,203 @@
+{
+  "build": "sql-b8381f34f137",
+  "topic": "orders_tiny",
+  "cases": [
+    5,
+    10
+  ],
+  "runs": [
+    {
+      "cores": 5,
+      "pass": "tiny",
+      "group": "sqlapp-tiny-c5-tiny",
+      "platform": "confluent-cloud",
+      "unit": "CFU",
+      "sizeReadBack": 5,
+      "parallelism": 5,
+      "tSubmit": 1791280026.203927,
+      "jobId": "flink-training-job5-105",
+      "tSteady": 1791280252.428895,
+      "tOpen": 1791280252.4,
+      "tClose": 1791280513.6,
+      "readings": 9,
+      "readingsLog": [
+        [
+          1791280252.4,
+          59730896
+        ],
+        [
+          1791280286.6,
+          65902051
+        ],
+        [
+          1791280319.0,
+          72296568
+        ],
+        [
+          1791280351.4,
+          78902018
+        ],
+        [
+          1791280383.8,
+          85183482
+        ],
+        [
+          1791280416.3,
+          92285660
+        ],
+        [
+          1791280448.7,
+          99364423
+        ],
+        [
+          1791280481.1,
+          105941124
+        ],
+        [
+          1791280513.6,
+          113598521
+        ]
+      ],
+      "intervalRates": [
+        180639.7,
+        197133.0,
+        203841.2,
+        193895.9,
+        218614.1,
+        218641.5,
+        202743.9,
+        236116.0
+      ],
+      "wholeMinutes": [
+        "2026-10-06T09:51:00Z",
+        "2026-10-06T09:52:00Z",
+        "2026-10-06T09:53:00Z",
+        "2026-10-06T09:54:00Z"
+      ],
+      "boundaries": 8,
+      "elapsedS": 240,
+      "recordsPerSec": 205406.7,
+      "recordsConsumed": 49297602,
+      "outputRecsPerSec": 205406.7,
+      "rateSource": "Kafka log end of the output topics, divided by outputs per input",
+      "vantageSource": "Confluent's records read, the same whole minutes",
+      "recordsReadPerSec": 203276.24166666667,
+      "vantageDisagreement": 0.0104,
+      "tmCores": 5.0,
+      "tmCapFrac": 1.0,
+      "kafkaCores": null,
+      "sourceBusy": 1.0,
+      "sourceBackpressured": 0.0,
+      "sourceIdle": 0.00225,
+      "bpSamples": 4,
+      "backlogRemaining": 345600035.0,
+      "headroomS": 1682.5,
+      "gcNames": null,
+      "gcFracOfCapacity": null,
+      "kafkaEcku": 42.25,
+      "kafkaEckuLimit": 50,
+      "kafkaEckuMinutesAtLimit": 0,
+      "status": "OK"
+    },
+    {
+      "cores": 10,
+      "pass": "tiny",
+      "group": "sqlapp-tiny-c10-tiny",
+      "platform": "confluent-cloud",
+      "unit": "CFU",
+      "sizeReadBack": 10,
+      "parallelism": 10,
+      "tSubmit": 1791280754.320944,
+      "jobId": "flink-training-job10-106",
+      "tSteady": 1791281161.604217,
+      "tOpen": 1791281161.6,
+      "tClose": 1791281429.0,
+      "readings": 9,
+      "readingsLog": [
+        [
+          1791281161.6,
+          241945452
+        ],
+        [
+          1791281197.3,
+          256080613
+        ],
+        [
+          1791281229.8,
+          269764550
+        ],
+        [
+          1791281262.2,
+          285128939
+        ],
+        [
+          1791281294.6,
+          300920789
+        ],
+        [
+          1791281327.0,
+          316019603
+        ],
+        [
+          1791281359.4,
+          333214141
+        ],
+        [
+          1791281395.9,
+          349661876
+        ],
+        [
+          1791281429.0,
+          366196330
+        ]
+      ],
+      "intervalRates": [
+        395901.9,
+        421591.0,
+        473748.1,
+        487210.3,
+        466280.7,
+        529908.8,
+        450570.4,
+        500284.1
+      ],
+      "wholeMinutes": [
+        "2026-10-06T10:07:00Z",
+        "2026-10-06T10:08:00Z",
+        "2026-10-06T10:09:00Z"
+      ],
+      "boundaries": 8,
+      "elapsedS": 180,
+      "recordsPerSec": 478020.6,
+      "recordsConsumed": 86043703,
+      "outputRecsPerSec": 478020.6,
+      "rateSource": "Kafka log end of the output topics, divided by outputs per input",
+      "vantageSource": "Confluent's records read, the same whole minutes",
+      "recordsReadPerSec": 471709.9777777778,
+      "vantageDisagreement": 0.0132,
+      "tmCores": 10.0,
+      "tmCapFrac": 1.0,
+      "kafkaCores": null,
+      "sourceBusy": 1.0,
+      "sourceBackpressured": 0.0,
+      "sourceIdle": 0.0003333333333333333,
+      "bpSamples": 3,
+      "backlogRemaining": 223534412.0,
+      "headroomS": 467.6,
+      "gcNames": null,
+      "gcFracOfCapacity": null,
+      "kafkaEcku": 50.0,
+      "kafkaEckuLimit": 50,
+      "kafkaEckuMinutesAtLimit": 3,
+      "status": "OK"
+    }
+  ],
+  "at": "2026-10-06 05:46:48",
+  "ratio": 2.3271908852048155,
+  "band": [
+    1.5,
+    2.5
+  ],
+  "selftest": "PASS",
+  "result": "PASS"
+}

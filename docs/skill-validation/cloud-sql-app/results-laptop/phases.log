@@ -1,0 +1,8 @@
+2026-10-06 01:09:44 phase=all start
+2026-10-06 01:09:44 phase=local first start
+2026-10-06 01:09:44 phase=local first end rc=0 0s
+2026-10-06 01:09:44 phase=up start
+2026-10-06 01:12:21 phase=up end rc=0 157s
+2026-10-06 01:12:21 phase=preflight start
+2026-10-06 01:12:21 phase=preflight end rc=0 0s
+2026-10-06 01:12:21 phase=completeness start

@@ -1,0 +1,56 @@
+[2026-10-06 03:34:36] phase=all start
+[2026-10-06 03:34:36] phase=local first start
+[2026-10-06 03:34:36]   the same app passed completeness and the tiny proof on the laptop (~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/pipeline.json)
+[2026-10-06 03:34:36] phase=local first end rc=0 0s
+[2026-10-06 03:34:36] phase=up start
+[2026-10-06 03:37:15] phase=up end rc=0 159s
+[2026-10-06 03:37:15] phase=preflight start
+[2026-10-06 03:37:15] phase=preflight end rc=0 0s
+[2026-10-06 03:37:15] phase=completeness start
+[2026-10-06 03:49:01]   orders_small: 44,992,903 records a reader gets; the log end says 75,648,390
+[2026-10-06 04:01:51] completeness on Confluent Cloud: FAIL (12 rows against 4 expected; first missing ['{"account": 3.0, "n": 11420247.0, "qty": 569813000.0}'], first extra ['{"account": 2.0, "n": 13035935.0, "qty": 648075938.0}'])
+[2026-10-06 04:02:56] phase=completeness end rc=1 1541s
+[2026-10-06 04:03:14] phase=down end rc=0: a stack on a paid service is not left running
+[2026-10-06 04:03:14] phase=all end STOPPED at completeness 28.6 min
+[2026-10-06 04:53:12] phase=all start
+[2026-10-06 04:53:12] phase=local first start
+[2026-10-06 04:53:12]   the same app passed completeness and the tiny proof on the laptop (~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/pipeline.json)
+[2026-10-06 04:53:12] phase=local first end rc=0 0s
+[2026-10-06 04:53:12] phase=up start
+[2026-10-06 04:56:01] phase=up end rc=0 169s
+[2026-10-06 04:56:01] phase=preflight start
+[2026-10-06 04:56:01] phase=preflight end rc=0 0s
+[2026-10-06 04:56:01] phase=completeness start
+[2026-10-06 05:07:32]   orders_small: 45,001,150 records a reader gets; the log end says 68,096,732
+[2026-10-06 05:19:09] completeness on Confluent Cloud: PASS (4 rows against 4 expected)
+[2026-10-06 05:20:13] phase=completeness end rc=0 1452s
+[2026-10-06 05:20:13] phase=tinyproof start
+[2026-10-06 06:14:48] STOPPED: 1 of 2 dashboard panels show no data over the completeness run: "Input rate" (query A (rate_a) returns nothing). Fix the panel's query or remove the panel.
+[2026-10-06 06:14:53] tiny proof on Confluent Cloud: PASS
+[2026-10-06 06:14:59] phase=tinyproof end rc=0 3286s
+[2026-10-06 06:14:59] phase=fill start
+[2026-10-06 07:19:59]   orders: 799,722,563 records a reader gets; the log end says 836,043,812
+[2026-10-06 07:19:59] phase=fill end rc=0 3899s
+[2026-10-06 07:19:59] phase=suite start
+[2026-10-06 07:19:59] ---- case 5 cores, pass p1-asc ----
+[2026-10-06 07:19:59] 07:19:59  [....................]   0%  suite: case 1 of 7 (5 cores, pass p1-asc)
+[2026-10-06 07:31:02]   5c p1-asc failed on its own data, retrying once (section 6): the two ways of counting do not agree. The output topics say 175,532 input records a second went through; Confluent's own count of records read says 153,113. That is 12.8% apart and the limit is 5%. Check outputsPerInput: the output rate is divided by it
+[2026-10-06 07:44:03]   THROWN OUT: the two ways of counting do not agree. The output topics say 266,179 input records a second went through; Confluent's own count of records read says 244,178. That is 8.3% apart and the limit is 5%. Check outputsPerInput: the output rate is divided by it
+[2026-10-06 07:44:03] ---- case 10 cores, pass p1-asc ----
+[2026-10-06 07:44:03] 07:44:03  [###.................]  14%  suite: case 2 of 7 (10 cores, pass p1-asc)  about 2h 24m left
+[2026-10-06 07:58:27]   10 CFU p1-asc: 480,640 rec/s  in use 10.00/10 (100.0%)  kafka cores not measured on this platform  srcIdle 0.1%  srcBP 0.0%  headroom 1441s  vantage 1.50%
+[2026-10-06 07:58:27] ---- case 20 cores, pass p1-asc ----
+[2026-10-06 07:58:27] 07:58:27  [######..............]  29%  suite: case 3 of 7 (20 cores, pass p1-asc)  about 1h 36m left
+[2026-10-06 08:12:32]   20 CFU p1-asc: 830,015 rec/s  in use 20.00/20 (100.0%)  kafka cores not measured on this platform  srcIdle 0.3%  srcBP 0.0%  headroom 709s  vantage 4.85%
+[2026-10-06 08:12:32] ---- case 20 cores, pass p2-desc ----
+[2026-10-06 08:12:32] 08:12:32  [#########...........]  43%  suite: case 4 of 7 (20 cores, pass p2-desc)  about 1h 10m left
+[2026-10-06 08:26:39]   20 CFU p2-desc: 859,839 rec/s  in use 20.00/20 (100.0%)  kafka cores not measured on this platform  srcIdle 0.5%  srcBP 0.0%  headroom 665s  vantage 2.33%
+[2026-10-06 08:26:39] ---- case 10 cores, pass p2-desc ----
+[2026-10-06 08:26:39] 08:26:39  [###########.........]  57%  suite: case 5 of 7 (10 cores, pass p2-desc)  about 50m left
+[2026-10-06 08:40:45]   10 CFU p2-desc: 496,044 rec/s  in use 10.00/10 (100.0%)  kafka cores not measured on this platform  srcIdle 0.1%  srcBP 0.0%  headroom 1330s  vantage 0.68%
+[2026-10-06 08:40:45] ---- case 5 cores, pass p2-desc ----
+[2026-10-06 08:40:45] 08:40:45  [##############......]  71%  suite: case 6 of 7 (5 cores, pass p2-desc)  about 32m left
+[2026-10-06 08:53:46]   5 CFU p2-desc: 254,636 rec/s  in use 5.00/5 (100.0%)  kafka cores not measured on this platform  srcIdle 0.1%  srcBP 0.0%  headroom 2906s  vantage 1.15%
+[2026-10-06 08:53:46] ---- case 5 cores, pass sentinel ----
+[2026-10-06 08:53:46] 08:53:46  [#################...]  86%  suite: case 7 of 7 (5 cores, pass sentinel)  about 15m left
+[2026-10-06 09:06:51]   5 CFU sentinel: 291,349 rec/s  in use 5.00/5 (100.0%)  kafka cores not measured on this platform  srcIdle 0.2%  srcBP 0.0%  headroom 2498s  vantage 1.04%

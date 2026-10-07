@@ -1,0 +1,59 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 21 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[03:34:36] phase=all start
+[03:34:36] phase=local first start
+[03:34:36]   the same app passed completeness and the tiny proof on the laptop (~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/pipeline.json)
+[03:34:36] phase=local first end rc=0 0s
+[03:34:36] phase=up start
+  confluent-cloud: budget $350.00; charged since 2026-10-01 $170.89; this run estimated at $60.00
+  confluent-cloud: created environment flink-training (env-9or7v0)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 131 s after the stack was created
+  confluent-cloud up: cluster lkc-do0573d, pool lfcp-nv51z9z, 3 API keys; credentials in ~/.confluent/flink-skill.env
+[03:37:15] phase=up end rc=0 159s
+[03:37:15] phase=preflight start
+PASS  every image is native to the host arch (reported)    not checked on confluent-cloud: the service runs its own hardware
+PASS  the JDK the engine needs resolves, pinned (reported) not checked on confluent-cloud: the service runs its own engine and Java
+PASS  the engine can write its state directory (reported)  not checked on confluent-cloud: the service owns the state directory
+PASS  the metrics reporter is not duplicated (reported)    not checked on confluent-cloud: the service owns the engine's plugins
+PASS  disk budget on the HOST, not the container (reported) not checked on confluent-cloud: the broker's disk is the service's
+PASS  retention on every topic written but never drained (reported) not checked on confluent-cloud: the service owns the broker's disk; storage is on the bill
+PASS  the generator is deterministic (reported)            not checked on confluent-cloud: the service's generator has no seed, so the backlog is counted as a reader gets it (a bounded SELECT), not regenerated
+PASS  CPU cap mechanism chosen once (reported)             not checked on confluent-cloud: the size is the service's unit, read back every case
+PASS  slots >= parallelism x jobs (reported)               not checked on confluent-cloud: the service runs one subtask per CFU, read back as CFU in use on every case
+PASS  partitions divide evenly by every parallelism        40 partitions / parallelism [5, 10, 20] = 8 per subtask at 5, 4 per subtask at 10, 2 per subtask at 20
+PASS  memory is per subtask, not per container (reported)  not checked on confluent-cloud: the service sizes memory with its unit
+PASS  keys divide evenly across subtasks (reported)        not checked: a SQL job places each key by hashing the whole key row, not the key string this check hashes, so nothing here says where its keys land
+PASS  nothing else is using the cores (reported)           not checked on confluent-cloud: the cores measured are not this machine's
+PASS  what this host's own cores do (reported)             not checked on confluent-cloud: the cores measured are not this machine's
+PASS  backlog covers warm-up, window and headroom          backlog 800,000,000 covers 180s x 1.5 at the 20-core rate, so up to 2,962,963 rec/s; the tiny proof checks this against the measured rate
+PASS  the interview and the plan were written down         the plan does not mention: the objective (looked for '1.80' or 'near-linear'); how long it takes (looked for 'hour'); what it writes (looked for 'record' or 'backlog'); the guarantee (looked for 'exactly-once'); the shape of the suite (looked for 'pass'); the mid-run kill (looked for 'kill'); where to watch it (looked for 'progress.txt')
+PASS  the Docker VM against the machine's memory (reported) not checked on confluent-cloud: there is no Docker VM in the stack
+PASS  pipeline, broker and job manager against the VM (reported) not checked on confluent-cloud: there is no Docker VM in the stack
+PASS  group / txn-id prefix scoped per run                 consumer group = sqlapp-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)
+PASS  back-pressure counters exist on the endpoint read (reported) not checked on confluent-cloud: busy, held-back and idle time come from the service's metrics API, read on every case
+PASS  the VM trim command is known (reported)              not checked on confluent-cloud: there is no Docker VM in the stack
+PASS  the job jar exists and hashes (reported)             not checked on confluent-cloud: the job is SQL; its build hash covers the SQL and its tables
+PASS  the build runs on either Kafka (reported)            no Confluent-only classes in the job jar, so this build runs on Apache Kafka or Confluent with only images.kafka and images.kafkaLibs changed in pipeline.json
+PASS  the diagram can show how often each output is written (reported) no output is written outside topics.out, so there is no interval to show
+PASS  the dashboard's panels name a data source that exists no Grafana among extraServices; nothing to check
+PASS  the dashboard is loaded and its data source answers  no Grafana among extraServices; nothing to check
+
+26/26 PASS
+[03:37:15] phase=preflight end rc=0 0s
+[03:37:15] phase=completeness start
+  confluent-cloud fill: 72,010,178 of 20,000,000 records on orders_small (0 min)
+[03:49:01]   orders_small: 44,992,903 records a reader gets; the log end says 75,648,390
+  confluent-cloud: job flink-training-job5-54 runs at 5 CFU with watermark alignment off and its baseline read back
+[04:01:51] completeness on Confluent Cloud: FAIL (12 rows against 4 expected; first missing ['{"account": 3.0, "n": 11420247.0, "qty": 569813000.0}'], first extra ['{"account": 2.0, "n": 13035935.0, "qty": 648075938.0}'])
+[04:02:56] phase=completeness end rc=1 1541s
+  confluent-cloud: deleted environment flink-training, which up created
+  confluent-cloud down: nothing with prefix flink-training survives
+[04:03:14] phase=down end rc=0: a stack on a paid service is not left running
+[04:03:14] phase=all end STOPPED at completeness 28.6 min

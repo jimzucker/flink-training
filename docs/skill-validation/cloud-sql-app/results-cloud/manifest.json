@@ -1,0 +1,28 @@
+{
+  "orderCount": 799722563,
+  "rows": [
+    {
+      "account": "0",
+      "n": "199297714",
+      "qty": "9936874660"
+    },
+    {
+      "account": "1",
+      "n": "199892777",
+      "qty": "10016438679"
+    },
+    {
+      "account": "3",
+      "n": "199004880",
+      "qty": "9955242160"
+    },
+    {
+      "account": "2",
+      "n": "201527192",
+      "qty": "10090996152"
+    }
+  ],
+  "topic": "orders",
+  "logEnd": 836043812,
+  "countedAs": "records a reader gets (a bounded SELECT), not the topic's log end"
+}

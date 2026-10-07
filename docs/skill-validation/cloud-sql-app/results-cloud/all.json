@@ -1,0 +1,35 @@
+{
+  "build": "sql-b8381f34f137",
+  "steps": [
+    {
+      "step": "local first",
+      "rc": 0,
+      "seconds": 0.0
+    },
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 169.1
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 0.0
+    },
+    {
+      "step": "completeness",
+      "rc": 0,
+      "seconds": 1452.1
+    },
+    {
+      "step": "tinyproof",
+      "rc": 0,
+      "seconds": 3286.0
+    },
+    {
+      "step": "fill",
+      "rc": 0,
+      "seconds": 3899.4
+    }
+  ]
+}
