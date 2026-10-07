@@ -1,0 +1,68 @@
+[2026-10-05 23:29:13] stack up: sqlapp-kafka (cap 2.5), sqlapp-jm (cap 0.5); task manager is started per case
+[2026-10-05 23:32:12] stack up: sqlapp-kafka (cap 2.5), sqlapp-jm (cap 0.5); task manager is started per case
+[2026-10-05 23:34:55] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/job/target/sqlapp.jar sqlapp.OrdersGenerator --mode=produce --count=20000000 --seed=9 --topic=orders-small --manifest=~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/results/manifest-small.json --bootstrap=localhost:19092 --partitions=8
+[2026-10-05 23:35:05] fill done: orders 20000000 written; manifest ~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/results/manifest-small.json
+[2026-10-05 23:35:06] backlog orders-small: 20,000,000 records read back over 8 partitions
+[2026-10-05 23:37:09] processed the full test data set in 78.2s
+[2026-10-05 23:38:18]   design against build:
+[2026-10-05 23:38:18]   area               declared              built  what was found
+[2026-10-05 23:38:18]   ----------------------------------------------------------------------------
+[2026-10-05 23:38:18]   operator           enriched              yes    in the running plan
+[2026-10-05 23:38:18]   input              orders                later  not created yet -- the fill has not run
+[2026-10-05 23:38:18]   output             enriched              yes    20,000,056 records after the drain
+[2026-10-05 23:38:18]   constraint         outputsPerInput = 1.0 yes    read back 1.0
+[2026-10-05 23:38:18]   constraint         maxParallelism = 128  yes    read back 128
+[2026-10-05 23:39:25] KILL: committed=9272071, killing the pipeline mid-run
+[2026-10-05 23:40:15] KILL: job RUNNING again after the restart
+[2026-10-05 23:41:16] processed the full test data set in 141.8s (killed and restarted mid-run)
+[2026-10-05 23:42:25] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/job/target/sqlapp.jar sqlapp.OrdersGenerator --mode=produce --count=150000000 --seed=8 --topic=orders-tiny --manifest=~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/results/manifest-tiny.json --bootstrap=localhost:19092 --partitions=8
+[2026-10-05 23:43:28] fill: 149,821,214 of 150,000,000 records written to orders-tiny (100%), 1 min in
+[2026-10-05 23:43:28] fill done: orders 150000000 written; manifest ~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/results/manifest-tiny.json
+[2026-10-05 23:43:30] backlog orders-tiny: 150,000,000 records read back over 8 partitions
+[2026-10-05 23:43:30] ---- tiny case 1 cores ----
+[2026-10-05 23:46:35]   1c: 394,521 rec/s, tm 100.3% of cap, vantage 0.11%
+[2026-10-05 23:46:35] ---- tiny case 2 cores ----
+[2026-10-05 23:49:36]   2c: 780,235 rec/s, tm 99.4% of cap, vantage 0.24%
+[2026-10-05 23:49:36] ---- tiny case 4 cores ----
+[2026-10-05 23:52:12]   4c failed on its own data, retrying once (section 6): the data ran out before the measurement finished: 11,846,409 records left at the end of the window, which is only 7.5s of work at this rate. The window needs at least one checkpoint interval of data left over, or its last moments measured a pipeline with nothing to read. Adding more data is the fix ONLY if the warm-up settled first time. If the warm-up failed and was retried, the retry read the data twice and the size was never the problem -- clean-room run 43 raised its backlog from 750 million records to 1.25 billion chasing this message, when what was actually wrong was a rate that would not settle.
+[2026-10-05 23:55:06]   4c: 1,578,960 rec/s, tm 98.3% of cap, vantage 0.15%
+[2026-10-05 23:55:07]   disk: input 28 B/record x 275,000,000 = 7.6 GB; sinks 110 B/input -> 30.4 GB, retention caps them at 17.2 GB; checkpoints 0.00 GB; need 44.8 GB incl. the 20 GB floor, 116.9 GB free now + 17.6 GB the tiny proof gives back = 134.5 GB: FITS
+[2026-10-05 23:55:07]   STOPPED (rig): backlog 275,000,000 is short of the 355,265,887 records the 4-core case needs at its measured 1,578,960 rec/s (warm-up + window + headroom, x1.5); set backlog.count to at least that
+[2026-10-05 23:55:07]   kafka memory: 5632m, hit its limit 0 times
+[2026-10-05 23:55:32] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp ~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/job/target/sqlapp.jar sqlapp.OrdersGenerator --mode=produce --count=150000000 --seed=8 --topic=orders-tiny --manifest=~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/results/manifest-tiny.json --bootstrap=localhost:19092 --partitions=8
+[2026-10-05 23:56:35] fill: 148,703,711 of 150,000,000 records written to orders-tiny (99%), 1 min in
+[2026-10-05 23:56:36] fill done: orders 150000000 written; manifest ~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/results/manifest-tiny.json
+[2026-10-05 23:56:37] backlog orders-tiny: 150,000,000 records read back over 8 partitions
+[2026-10-05 23:56:37] ---- tiny case 1 cores ----
+[2026-10-05 23:59:36]   1c: 398,146 rec/s, tm 99.1% of cap, vantage 0.25%
+[2026-10-05 23:59:36] ---- tiny case 2 cores ----
+[2026-10-06 00:02:36]   2c: 712,990 rec/s, tm 98.6% of cap, vantage 0.35%
+[2026-10-06 00:02:36] ---- tiny case 4 cores ----
+[2026-10-06 00:05:27]   4c: 1,511,163 rec/s, tm 95.5% of cap, vantage 0.69%
+[2026-10-06 00:05:27]   disk: input 28 B/record x 360,000,000 = 9.9 GB; sinks 112 B/input -> 40.2 GB, retention caps them at 17.2 GB; checkpoints 0.00 GB; need 47.1 GB incl. the 20 GB floor, 118.1 GB free now + 16.6 GB the tiny proof gives back = 134.7 GB: FITS
+[2026-10-06 00:05:27]   backlog: 360,000,000 configured, 340,011,675 needed at the measured 1,511,163 rec/s
+[2026-10-06 00:05:27]   kafka memory: 5632m, hit its limit 0 times
+[2026-10-06 00:05:30] STOPPED: 1 of 2 dashboard panels show no data over the completeness run: "Input rate" (query A (rate_a) returns nothing). Fix the panel's query or remove the panel.
+[2026-10-06 00:06:42] fstrim: /var/lib/docker: 7.5 GiB (8001572864 bytes) trimmed
+[2026-10-06 00:06:42] stack down; nothing with prefix sqlapp survives
+[2026-10-06 00:06:48]   the same app passed completeness and the tiny proof on the laptop (~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/pipeline.json)
+[2026-10-06 00:46:02] phase=all start
+[2026-10-06 00:46:02] phase=local first start
+[2026-10-06 00:46:02]   the same app passed completeness and the tiny proof on the laptop (~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/pipeline.json)
+[2026-10-06 00:46:02] phase=local first end rc=0 0s
+[2026-10-06 00:46:02] phase=up start
+[2026-10-06 00:48:52] phase=up end rc=0 169s
+[2026-10-06 00:48:52] phase=preflight start
+[2026-10-06 00:48:52] phase=preflight end rc=1 0s
+[2026-10-06 00:48:52] phase=all end STOPPED at preflight 2.8 min
+[2026-10-06 01:09:44]   swept 2 process(es) left over from an earlier attempt: 82822 /bin/zsh -c source ~/.claude/shell-snapshots/snapshot-z, 82825 tail -n 0 -F ~/code/GitHub/flink-training/docs/skill-va
+[2026-10-06 01:09:44]   a previous chain was still running. Its numbers and this one's would have shared the machine, so they are gone before anything is measured.
+[2026-10-06 01:09:44] phase=all start
+[2026-10-06 01:09:44] phase=local first start
+[2026-10-06 01:09:44]   the same app passed completeness and the tiny proof on the laptop (~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/pipeline.json)
+[2026-10-06 01:09:44] phase=local first end rc=0 0s
+[2026-10-06 01:09:44] phase=up start
+[2026-10-06 01:12:21] phase=up end rc=0 157s
+[2026-10-06 01:12:21] phase=preflight start
+[2026-10-06 01:12:21] phase=preflight end rc=0 0s
+[2026-10-06 01:12:21] phase=completeness start

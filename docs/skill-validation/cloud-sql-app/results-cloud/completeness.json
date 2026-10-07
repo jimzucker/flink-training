@@ -1,0 +1,13 @@
+{
+  "build": "sql-b8381f34f137",
+  "records": 45001150,
+  "cores": 5,
+  "unit": "CFU",
+  "killArm": "not checked on confluent-cloud: the service restarts its own workers",
+  "at": "2026-10-06 05:07:32",
+  "rowsExpected": 4,
+  "rowsGot": 4,
+  "missing": [],
+  "extra": [],
+  "result": "PASS"
+}

@@ -1,0 +1,33 @@
+SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+produced 5000000
+produced 10000000
+produced 15000000
+produced 20000000
+produced 25000000
+produced 30000000
+produced 35000000
+produced 40000000
+produced 45000000
+produced 50000000
+produced 55000000
+produced 60000000
+produced 65000000
+produced 70000000
+produced 75000000
+produced 80000000
+produced 85000000
+produced 90000000
+produced 95000000
+produced 100000000
+produced 105000000
+produced 110000000
+produced 115000000
+produced 120000000
+produced 125000000
+produced 130000000
+produced 135000000
+produced 140000000
+produced 145000000
+orders 150000000 written; manifest ~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/results/manifest-tiny.json

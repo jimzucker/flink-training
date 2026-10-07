@@ -1,0 +1,464 @@
+replayed 14 recorded suites, 22 step verdicts, thresholds spreadCeil=20% minPasses=2
+checked 2 harness files for undefined names
+replayed 21 recorded case verdicts
+replayed 8 recorded configurations
+replayed 24 recorded backlog sizings
+replayed 6 recorded broker memory sizings
+REPLAY OK: no recorded valid table would fail, no recorded invalid one reported, and every recorded configuration still gets its recorded verdict
+[04:53:12] phase=all start
+[04:53:12] phase=local first start
+[04:53:12]   the same app passed completeness and the tiny proof on the laptop (~/code/GitHub/flink-training/docs/skill-validation/cloud-sql-app/pipeline.json)
+[04:53:12] phase=local first end rc=0 0s
+[04:53:12] phase=up start
+  confluent-cloud: budget $350.00; charged since 2026-10-01 $170.89; this run estimated at $60.00
+  confluent-cloud: created environment flink-training (env-x0zrox)
+  confluent-cloud: statement flink-training-ready0 already existed when created; reading its status
+  confluent-cloud: the stack ran its first statement 102 s after it was created
+  confluent-cloud: a row written to a new table was read back from Kafka 142 s after the stack was created
+  confluent-cloud up: cluster lkc-12dmr53, pool lfcp-gqx7p1v, 3 API keys; credentials in ~/.confluent/flink-skill.env
+[04:56:01] phase=up end rc=0 169s
+[04:56:01] phase=preflight start
+PASS  every image is native to the host arch (reported)    not checked on confluent-cloud: the service runs its own hardware
+PASS  the JDK the engine needs resolves, pinned (reported) not checked on confluent-cloud: the service runs its own engine and Java
+PASS  the engine can write its state directory (reported)  not checked on confluent-cloud: the service owns the state directory
+PASS  the metrics reporter is not duplicated (reported)    not checked on confluent-cloud: the service owns the engine's plugins
+PASS  disk budget on the HOST, not the container (reported) not checked on confluent-cloud: the broker's disk is the service's
+PASS  retention on every topic written but never drained (reported) not checked on confluent-cloud: the service owns the broker's disk; storage is on the bill
+PASS  the generator is deterministic (reported)            not checked on confluent-cloud: the service's generator has no seed, so the backlog is counted as a reader gets it (a bounded SELECT), not regenerated
+PASS  CPU cap mechanism chosen once (reported)             not checked on confluent-cloud: the size is the service's unit, read back every case
+PASS  slots >= parallelism x jobs (reported)               not checked on confluent-cloud: the service runs one subtask per CFU, read back as CFU in use on every case
+PASS  partitions divide evenly by every parallelism        40 partitions / parallelism [5, 10, 20] = 8 per subtask at 5, 4 per subtask at 10, 2 per subtask at 20
+PASS  memory is per subtask, not per container (reported)  not checked on confluent-cloud: the service sizes memory with its unit
+PASS  keys divide evenly across subtasks (reported)        not checked: a SQL job places each key by hashing the whole key row, not the key string this check hashes, so nothing here says where its keys land
+PASS  nothing else is using the cores (reported)           not checked on confluent-cloud: the cores measured are not this machine's
+PASS  what this host's own cores do (reported)             not checked on confluent-cloud: the cores measured are not this machine's
+PASS  backlog covers warm-up, window and headroom          backlog 800,000,000 covers 180s x 1.5 at the 20-core rate, so up to 2,962,963 rec/s; the tiny proof checks this against the measured rate
+PASS  the interview and the plan were written down         the plan does not mention: the objective (looked for '1.80' or 'near-linear'); how long it takes (looked for 'hour'); what it writes (looked for 'record' or 'backlog'); the guarantee (looked for 'exactly-once'); the shape of the suite (looked for 'pass'); the mid-run kill (looked for 'kill'); where to watch it (looked for 'progress.txt')
+PASS  the Docker VM against the machine's memory (reported) not checked on confluent-cloud: there is no Docker VM in the stack
+PASS  pipeline, broker and job manager against the VM (reported) not checked on confluent-cloud: there is no Docker VM in the stack
+PASS  group / txn-id prefix scoped per run                 consumer group = sqlapp-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)
+PASS  back-pressure counters exist on the endpoint read (reported) not checked on confluent-cloud: busy, held-back and idle time come from the service's metrics API, read on every case
+PASS  the VM trim command is known (reported)              not checked on confluent-cloud: there is no Docker VM in the stack
+PASS  the job jar exists and hashes (reported)             not checked on confluent-cloud: the job is SQL; its build hash covers the SQL and its tables
+PASS  the build runs on either Kafka (reported)            no Confluent-only classes in the job jar, so this build runs on Apache Kafka or Confluent with only images.kafka and images.kafkaLibs changed in pipeline.json
+PASS  the diagram can show how often each output is written (reported) no output is written outside topics.out, so there is no interval to show
+PASS  the dashboard's panels name a data source that exists no Grafana among extraServices; nothing to check
+PASS  the dashboard is loaded and its data source answers  no Grafana among extraServices; nothing to check
+
+26/26 PASS
+[04:56:01] phase=preflight end rc=0 0s
+[04:56:01] phase=completeness start
+  confluent-cloud fill: 63,607,518 of 20,000,000 records on orders_small (0 min)
+[05:07:32]   orders_small: 45,001,150 records a reader gets; the log end says 68,096,732
+  confluent-cloud: job flink-training-job5-54 runs at 5 CFU with watermark alignment off and its baseline read back
+[05:19:09] completeness on Confluent Cloud: PASS (4 rows against 4 expected)
+[05:20:13] phase=completeness end rc=0 1452s
+[05:20:13] phase=tinyproof start
+  confluent-cloud fill: 59,793,065 of 400,000,000 records on orders_tiny (0 min)
+  confluent-cloud fill: 95,084,004 of 400,000,000 records on orders_tiny (2 min)
+  confluent-cloud fill: 132,484,479 of 400,000,000 records on orders_tiny (4 min)
+  confluent-cloud fill: 170,709,838 of 400,000,000 records on orders_tiny (6 min)
+  confluent-cloud fill: 208,471,692 of 400,000,000 records on orders_tiny (8 min)
+  confluent-cloud fill: 246,999,446 of 400,000,000 records on orders_tiny (10 min)
+  confluent-cloud fill: 283,561,571 of 400,000,000 records on orders_tiny (12 min)
+  confluent-cloud fill: 323,088,288 of 400,000,000 records on orders_tiny (14 min)
+  confluent-cloud fill: 363,284,071 of 400,000,000 records on orders_tiny (17 min)
+  confluent-cloud fill: 402,610,431 of 400,000,000 records on orders_tiny (19 min)
+  confluent-cloud: job flink-training-job5-105 runs at 5 CFU with watermark alignment off and its baseline read back
+  confluent-cloud: the metrics API does not cover pool lfcp-383mrww yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-383mrww yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-383mrww yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-383mrww yet; waiting
+  confluent-cloud: job flink-training-job10-106 runs at 10 CFU with watermark alignment off and its baseline read back
+pure guards (synthetic case records through check_case):
+  ok  a transient case is retried and passes (must not fire) -> DID NOT FIRE
+  ok  a case that fails twice is not retried again   -> FIRED | attempt 2 failed
+  ok  a rig failure is never retried                 -> FIRED | attempt 1 failed
+  ok  a ceiling is never retried                     -> FIRED | attempt 1 failed
+  ok  bottleneck label: Pipeline CPU (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Kafka memory (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: broker hits at 96.8% of cap are not blamed on Kafka (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Pipeline memory (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Kafka writes (must not fire) -> DID NOT FIRE
+  ok  bottleneck label: Input feed (must not fire)   -> DID NOT FIRE
+  ok  one core is singular (must not fire)           -> DID NOT FIRE
+  ok  two cores is plural (must not fire)            -> DID NOT FIRE
+  ok  a step above 2x is not reported as met (must not fire) -> DID NOT FIRE
+  ok  the generated stack file is filled in (must not fire) -> DID NOT FIRE
+  ok  the scorecard stays under 136 characters (must not fire) -> DID NOT FIRE
+  ok  size: 4 GiB reads as 4g (must not fire)        -> DID NOT FIRE
+  ok  size: 6 GiB reads as 6g (must not fire)        -> DID NOT FIRE
+  ok  size: 6400 MiB reads as 6.25g (must not fire)  -> DID NOT FIRE
+  ok  the Kafka memory column comes from the record (must not fire) -> DID NOT FIRE
+  ok  verdict: reference run 4's 2->4, 1.65-1.82x, is not settled (must not fire) -> DID NOT FIRE
+  ok  verdict: run 37's 2->4, 1.75-1.78x, wholly under 1.80x, is missed (must not fire) -> DID NOT FIRE
+  ok  verdict: a range wholly above 1.80x is met (must not fire) -> DID NOT FIRE
+  ok  verdict: one pair and no range is judged on the point, and under is missed (must not fire) -> DID NOT FIRE
+  ok  verdict: a step not reported has no verdict (must not fire) -> DID NOT FIRE
+  ok  settle: after the sentinel, 2->4 alternates 2, 4, 2, 4 (must not fire) -> DID NOT FIRE
+  ok  settle: after a 2-core case, 2->4 starts at 4 (must not fire) -> DID NOT FIRE
+  ok  scorecard: a step that is not settled asks for more passes, not tuning (must not fire) -> DID NOT FIRE
+  ok  detail: the baseline says why (must not fire)  -> DID NOT FIRE
+  ok  detail: a short step names both numbers (must not fire) -> DID NOT FIRE
+  ok  detail: a step above 2x says the smaller case reads low (must not fire) -> DID NOT FIRE
+  ok  detail: Kafka memory names the size to try (must not fire) -> DID NOT FIRE
+  ok  action: the baseline has no step into it (must not fire) -> DID NOT FIRE
+  ok  action: a step that doubled needs nothing (must not fire) -> DID NOT FIRE
+  ok  action: a step short of the target points at the host (must not fire) -> DID NOT FIRE
+  ok  a step is met or reads low, never both (must not fire) -> DID NOT FIRE
+  ok  action: a step above 2x says the baseline reads low (must not fire) -> DID NOT FIRE
+  ok  action: says so when there is no usable step (must not fire) -> DID NOT FIRE
+  ok  action: names the Kafka memory to try, in gigabytes (must not fire) -> DID NOT FIRE
+  ok  action: more memory for the pipeline (must not fire) -> DID NOT FIRE
+  ok  GC ceiling: what was measured, not a cause (must not fire) -> DID NOT FIRE
+  ok  action: compress the writes (must not fire)    -> DID NOT FIRE
+  ok  bottleneck: CPU is the block (must not fire)   -> DID NOT FIRE
+  ok  bottleneck: Kafka out of memory (must not fire) -> DID NOT FIRE
+  ok  bottleneck: out of memory (must not fire)      -> DID NOT FIRE
+  ok  bottleneck: waiting to write (must not fire)   -> DID NOT FIRE
+  ok  bottleneck: unknown says investigating (must not fire) -> DID NOT FIRE
+  ok  bottleneck: waiting for input (must not fire)  -> DID NOT FIRE
+  ok  window has < 3 commit boundaries               -> FIRED | only 2 commit boundaries inside the window
+  ok  measured rate is zero                          -> FIRED | measured rate is not positive: 0 records in 60.0s
+  ok  rate came from the engine                      -> FIRED | rate came from the engine, not the transport
+  ok  two vantage points disagree                    -> FIRED | the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs 
+  ok  the data ran out before the window closed      -> FIRED | the data ran out before the measurement finished: 1,000 records left at the end of the window, which
+  ok  external-boundary samples missing              -> FIRED | no back-pressure reading came back for the source, so there is no way to tell whether the pipeline w
+  ok  too few reporter samples in the window         -> FIRED | only 2 back-pressure readings landed inside the window and 3 are needed. Without enough of them ther
+  ok  cores are not the constraint (baseline, run 5's 94%) -> CEILING | the pipeline only used 94.0% of the 4 cores it was given, and it needs 95% to count. Something else 
+  ok  baseline at 95.9% is the constraint (run 12 p3; must not fire) -> DID NOT FIRE
+  ok  cores are not the constraint (other)           -> CEILING | the pipeline only used 90.0% of the 4 cores it was given, and it needs 95% to count. Something else 
+  ok  source idle past the ceiling                   -> CEILING | the source sat idle 40.0% of the window and the limit is 20%. It spent that time waiting for input, 
+  ok  garbage collection over the limit is flagged on the pass, not ruled on (must not fire) -> DID NOT FIRE
+  ok  gc: run 50's 1-core case (GC 9.1%, as much work per core as 2 cores) is kept (must not fire) -> DID NOT FIRE
+  ok  gc: run 25's 1-core case (GC 7.7%, 0.85x the 2-core case per core) is a ceiling (must not fire) -> DID NOT FIRE
+  ok  gc: run 21's 1-core case is judged against the 4-core case, not a 2-core case also over (must not fire) -> DID NOT FIRE
+  ok  gc: a ruling made before the larger cases exist does not stick (must not fire) -> DID NOT FIRE
+  ok  gc: the largest case over the limit has nothing to compare with and is a ceiling (must not fire) -> DID NOT FIRE
+  ok  GC at the worst level that behaved, 4.8% (must not fire) -> DID NOT FIRE
+  ok  swap: run 47's slow passes are put down to the machine's memory (must not fire) -> DID NOT FIRE
+  ok  swap: a quiet machine says nothing about swap (must not fire) -> DID NOT FIRE
+  ok  swap: a case that counts gets no swap sentence (must not fire) -> DID NOT FIRE
+  ok  disk: a topic's bytes are its own partitions only (must not fire) -> DID NOT FIRE
+  ok  disk: a longer topic with the same start is its own (must not fire) -> DID NOT FIRE
+  ok  disk: two topics together (must not fire)      -> DID NOT FIRE
+  ok  fill: a fill that keeps growing runs on (must not fire) -> DID NOT FIRE
+  ok  fill: 6.7 minutes before the first record, like run 48's price feed, runs on (must not fire) -> DID NOT FIRE
+  ok  fill: nothing written in 10 minutes is stopped (must not fire) -> DID NOT FIRE
+  ok  fill: a fill that stopped growing for 5 minutes is stopped (must not fire) -> DID NOT FIRE
+  ok  fill: a 4-minute pause after writing runs on (must not fire) -> DID NOT FIRE
+  ok  dashboard: the 2026-09-28 mistake, a data source nobody provisioned, is found (must not fire) -> DID NOT FIRE
+  ok  dashboard: panels naming the provisioned source pass (must not fire) -> DID NOT FIRE
+  ok  dashboard: a panel with no data source uses the default and passes (must not fire) -> DID NOT FIRE
+  ok  dashboard: a data source variable the dashboard defines passes (must not fire) -> DID NOT FIRE
+  ok  dashboard: a data source variable nobody defines is found (must not fire) -> DID NOT FIRE
+  ok  dashboard: a panel with no query is found (must not fire) -> DID NOT FIRE
+  ok  dashboard: no data source provisioned is found (must not fire) -> DID NOT FIRE
+  ok  dashboard: provisioning mounted whole is read (must not fire) -> DID NOT FIRE
+  ok  dashboard: provisioning mounted in two parts, like run 36, is read (must not fire) -> DID NOT FIRE
+  ok  dashboard: the Grafana service and its port are found among extraServices (must not fire) -> DID NOT FIRE
+  ok  dashboard: panels with no points or an error are named (must not fire) -> DID NOT FIRE
+  ok  settle: the loop runs the open step's two sizes until it settles (must not fire) -> DID NOT FIRE
+  ok  settle: the loop stops at its budget when the step never settles (must not fire) -> DID NOT FIRE
+  ok  settle: a rig check stopping a settling case stops the loop (must not fire) -> DID NOT FIRE
+  ok  report: the not-settled range and DONE line read as written (run 52's figures) (must not fire) -> DID NOT FIRE
+  ok  memory: the budget row adds container limits and names a limit it cannot read (must not fire) -> DID NOT FIRE
+  ok  memory: the worker's container limit is 1.25x its process size, as started (must not fire) -> DID NOT FIRE
+  ok  args: every declared input has a placeholder, and the scaled one follows the tiny proof (must not fire) -> DID NOT FIRE
+  ok  grafana: loaded, data source answering, and both failures caught (must not fire) -> DID NOT FIRE
+  ok  grafana: every panel with data passes; one empty panel is named (must not fire) -> DID NOT FIRE
+  ok  grafana: a Grafana that does not answer stops it, and says so (must not fire) -> DID NOT FIRE
+  ok  grafana: the suite's range is written to the file and read back (must not fire) -> DID NOT FIRE
+  ok  grafana: a section 7 series the image does not export is named (must not fire) -> DID NOT FIRE
+[06:14:48] STOPPED: 1 of 2 dashboard panels show no data over the completeness run: "Input rate" (query A (rate_a) returns nothing). Fix the panel's query or remove the panel.
+  ok  chain: an empty dashboard panel stops it at completeness, before the suite (must not fire) -> DID NOT FIRE
+  ok  dashboard: a panel with one empty query is named, not passed on the other's points (must not fire) -> DID NOT FIRE
+  ok  dashboard: opening on the last 90 minutes does not cover the suite later (must not fire) -> DID NOT FIRE
+  ok  dashboard: a fixed range around the suite covers it (must not fire) -> DID NOT FIRE
+  ok  dashboard: a fixed range in epoch milliseconds covers it (must not fire) -> DID NOT FIRE
+  ok  dashboard: a range that ends before the suite does does not cover it (must not fire) -> DID NOT FIRE
+  ok  dashboard: the suite's range is written in, refresh off, panels untouched (must not fire) -> DID NOT FIRE
+  ok  kafka tools: the Apache image (must not fire)  -> DID NOT FIRE
+  ok  kafka tools: the Confluent image (must not fire) -> DID NOT FIRE
+  ok  kafka tools: nothing found is not guessed at (must not fire) -> DID NOT FIRE
+  ok  claim: run 50's thrown-out baseline leaves 1->2 missing (must not fire) -> DID NOT FIRE
+  ok  claim: every case counted, nothing missing (must not fire) -> DID NOT FIRE
+  ok  claim: the missing step says why, in the harness's own words (must not fire) -> DID NOT FIRE
+  ok  diagram: steps, keys, interval and partitions from the configuration (must not fire) -> DID NOT FIRE
+  ok  collector: none named, G1 on every case (must not fire) -> DID NOT FIRE
+  ok  collector: other options kept, G1 added (must not fire) -> DID NOT FIRE
+  ok  collector: G1 already named is kept as it is (must not fire) -> DID NOT FIRE
+  ok  collector: any collector but G1 in the config stops the run -> FIRED | flinkProperties asks for the ParallelGC garbage collector. The skill measures on G1 only: a differen
+  ok  collector: a pass that reported Serial stops the suite -> FIRED | the case at 4 cores ran the Copy, MarkSweepCompact garbage collector, not G1. The skill measures on 
+  ok  collector: a pass that reported G1 is fine (must not fire) -> DID NOT FIRE
+  ok  collector: a step between a Serial and a G1 case is not counted (must not fire) -> DID NOT FIRE
+  ok  kafka jars: left out, Apache's path for the Apache image (must not fire) -> DID NOT FIRE
+  ok  kafka jars: left out, Confluent's path for the Confluent image (must not fire) -> DID NOT FIRE
+  ok  either Kafka: a plain Apache-client build has nothing vendor-only (must not fire) -> DID NOT FIRE
+  ok  either Kafka: Confluent serializers are found (must not fire) -> DID NOT FIRE
+  ok  broker advice: run 49's hits on cases at their cap ask for nothing (must not fire) -> DID NOT FIRE
+  ok  broker advice: a case under its cap with hits is the one named (must not fire) -> DID NOT FIRE
+  ok  source: no vertex matching sourceVertexMatch names the setting and the vertices -> FIRED | no back-pressure reading came back for the source: no vertex in the running plan has 'Source: ' in i
+  ok  source: a matching vertex with no reading keeps the plain message -> FIRED | no back-pressure reading came back for the source, so there is no way to tell whether the pipeline w
+  ok  the broker was starved of page cache (cores off their cap) -> CEILING | the pipeline only used 93.0% of the 4 cores it was given, and it needs 95% to count. Kafka hit its m
+  ok  cores off their cap with no broker hits still says something else held it back -> CEILING | the pipeline only used 93.0% of the 4 cores it was given, and it needs 95% to count. Something else 
+  ok  broker limit hits at 97.9% of cap: the pass is kept (must not fire) -> DID NOT FIRE
+  ok  broker limit hits at exactly the cap floor: the pass is kept (must not fire) -> DID NOT FIRE
+  ok  broker limit hits while the cores are pinned (must not fire) -> DID NOT FIRE
+  ok  a broker that never hit its limit (must not fire) -> DID NOT FIRE
+  ok  the same graph at a new job id and size passes (must not fire) -> DID NOT FIRE
+  ok  job graph differs across cases                 -> FIRED | job graph shape differs from the other cases:
+{'vertexCount': 3, 'signature': [['a', ['HASH']]]}
+vs
+
+  ok  a case's readings are too far apart            -> FIRED | its readings are 26% apart and the limit is 20%
+  ok  a case measured only once                      -> FIRED | only 1 usable reading, and 2 are needed to see how much it wobbles
+  ok  a commit that lands in two pieces (must not fire) -> DID NOT FIRE
+  ok  quick look: the flag reaches neither the record nor the guards (must not fire) -> DID NOT FIRE
+  ok  quick look: two passes, so every case has a spread (must not fire) -> DID NOT FIRE
+  ok  quick look: one pass computes a ratio, stamped unpublishable (must not fire) -> DID NOT FIRE
+  ok  sentinel: rig drifted across the suite         -> FIRED | sentinel drift -28.6%: its readings are 27% apart and the limit is 20%
+  ok  sentinel: drift inside the noise floor (must not fire) -> DID NOT FIRE
+  ok  a host-side watcher outlives the run           -> FIRED | host processes watching this run were found and killed: [8152, 8153, 8155]
+  ok  disk: run 11's build A fitted (must not fire)  -> DID NOT FIRE
+  ok  disk: the suite would not fit                  -> FIRED | the suite needs 97.5 GB of disk and only 60.0 GB will be free once the tiny proof's topics are delet
+  ok  key layout: the demo's own 5/3/4/4 is measured, not assumed (must not fire) -> DID NOT FIRE
+  ok  keys do not divide evenly and a maxParallelism would fix it -> FIRED | the positions-by-account stage at 4 cores would get 5/3/4/4 keys across its subtasks. The busiest on
+  ok  an uneven layout with no fix available is reported, not thrown out (must not fire) -> DID NOT FIRE
+  ok  a subtask would get no keys at all             -> FIRED | the positions-by-account stage at 4 cores would get 5/3/8/0 keys across its subtasks, so subtask 3 g
+  ok  an even key layout passes (must not fire)      -> DID NOT FIRE
+  ok  key spread: a SQL build is reported as not checked, never stopped (must not fire) -> DID NOT FIRE
+  ok  api names something other than datastream or sql -> FIRED | pipeline.json api must be "datastream" or "sql", got 'table'
+  ok  platform: a managed service is asked for every stack step, Docker never (must not fire) -> DID NOT FIRE
+  ok  platform: a size the service did not apply stops the case -> FIRED | the CFU size did not apply on fake: the case is 4, the platform reports 3
+  ok  platform: a service that is named but not built stops before anything is paid for -> FIRED | platform 'aws' is named in pipeline.json, but the harness cannot run on it yet. Amazon MSK with Mana
+  ok  confluent: up writes owner-only credentials and no secret anywhere else; down leaves nothing (must not fire) -> DID NOT FIRE
+  ok  confluent: a size the pool did not take stops the case -> FIRED | the CFU size did not apply on confluent-cloud: the case is 10, the platform reports 5
+  ok  confluent: a size Confluent does not allow is named, with the sizes it does -> FIRED | a Confluent Cloud compute pool cannot be 4 CFU: its size can only be 5, 10, 20, 30, 40, 50. Set case
+  ok  confluent: a run estimated over budget stops before anything is created -> FIRED | this run is estimated at $400.00, and $0.00 has been charged since 2026-10-01: $400.00 would be over
+  ok  confluent: what has already been charged counts against the budget, not only this run's estimate -> FIRED | this run is estimated at $220.00, and $137.77 has been charged since 2026-10-01: $357.77 would be ov
+  ok  confluent: a run that fits in what is left of the budget goes ahead, saying what is left (must not fire) -> DID NOT FIRE
+  ok  confluent: a pool that will not delete is named as still costing money -> FIRED | after teardown these still exist on Confluent Cloud and may cost money: Flink compute pool lfcp-3. D
+  ok  confluent: after a failed up, down from a new process removes what was created (must not fire) -> DID NOT FIRE
+  ok  confluent: a named environment is created and later deleted; an existing one is only used (must not fire) -> DID NOT FIRE
+  ok  confluent: a statement is judged on the status read back, and teardown removes it (must not fire) -> DID NOT FIRE
+  ok  confluent: a statement Confluent reports as failed stops with Confluent's own reason -> FIRED | statement fsk-t-ddl did not run on Confluent Cloud (failed): Table 'why_t' could not be created: the
+  ok  confluent: up waits until a new stack runs a statement, as measured (must not fire) -> DID NOT FIRE
+  ok  confluent: a schema registry not reachable yet on a new stack is waited for, as measured (must not fire) -> DID NOT FIRE
+  ok  confluent: a stack that never runs a statement stops, quoting Confluent -> FIRED | the stack never ran a statement in 3 tries over 0 min; the last answer was: statement fsk-t-ready2 d
+  ok  confluent: every case gets a new pool of its own size, so a suite can come back down to its baseline; earlier pools are deleted (must not fire) -> DID NOT FIRE
+  ok  confluent: a statement that cannot see a table created just before it is retried under a new name, as measured (must not fire) -> DID NOT FIRE
+  ok  confluent: a table that never becomes visible stops, quoting Confluent -> FIRED | statement fsk-t-job-r5 did not run on Confluent Cloud (failed): Cannot find table 'orders' in 'db'.
+  ok  confluent: a statement already deleted but still listed does not stop the teardown, and no pool is left behind (must not fire) -> DID NOT FIRE
+  ok  confluent: the log end and the per-minute readings come back parsed, with no secret on a command line or in the log (must not fire) -> DID NOT FIRE
+  ok  confluent: a metrics API that will not answer stops with its own reason -> FIRED | Confluent's metrics API answered HTTP 401 for io.confluent.flink/statement_utilization/current_cfus:
+  ok  confluent: up proves a new table can be written and read back before the stack counts as ready (must not fire) -> DID NOT FIRE
+  ok  confluent: a stack that can create a table but not use it is torn down before anything is filled -> FIRED | the new stack could create a table but not use it (statement fsk-t-ready0-write-r5 did not run on Co
+  ok  confluent: a case's job runs with watermark alignment off and its baseline at the pool's size, both read back (must not fire) -> DID NOT FIRE
+  ok  confluent: a job that does not report alignment off stops before it is measured -> FIRED | statement fsk-t-job does not report the settings it was given: sql.tables.scan.watermark-alignment.m
+  ok  confluent: a baseline the statement does not report stops before the case is measured -> FIRED | the baseline of 20 CFU did not apply to statement fsk-t-job: the statement reports None (HTTP 200)
+  ok  confluent: the window waits until the statement uses its whole pool (must not fire) -> DID NOT FIRE
+  ok  confluent: a new pool the metrics API does not cover yet is waited for, not a stop (must not fire) -> DID NOT FIRE
+  ok  confluent: a statement that never uses its whole pool stops the case, with what it did use -> FIRED | statement fsk-t-job never used its 20 CFU pool in 0 minutes (CFU by minute: 00:09 10). Check that it
+  ok  confluent: an input topic whose partitions do not divide by every case stops, naming sizes that do -> FIRED | topic orders24 has 24 partitions, which do not divide evenly by 5, 10, 20 subtasks (1 CFU runs one s
+  ok  confluent: partitions that divide by every case are accepted (must not fire) -> DID NOT FIRE
+  ok  confluent: submit starts every job with alignment off, the baseline at the pool's size and the partitions checked, and waits for the whole pool (must not fire) -> DID NOT FIRE
+  ok  confluent: submit stops before starting a job when the input's partitions do not divide by every case -> FIRED | topic orders has 24 partitions, which do not divide evenly by 5, 10, 20 subtasks (1 CFU runs one sub
+  ok  confluent: submit with no job SQL stops and says what to set -> FIRED | platform.jobSql is not set: give the Flink SQL INSERT the job runs on Confluent Cloud. The same stat
+  ok  confluent: a case's window reads the rate from the output topics' log end over whole minutes and lines Confluent's own readings up with it (must not fire) -> DID NOT FIRE
+  ok  cloud case: a valid record passes (must not fire) -> DID NOT FIRE
+  ok  cloud case: the output count and Confluent's records read disagree -> FIRED | the two ways of counting do not agree. The output topics say 700,000 input records a second went thr
+  ok  cloud case: the backlog ran out inside the window -> FIRED | the data ran out before the measurement finished: Confluent reported 10,000,000 records waiting at t
+  ok  cloud case: a job that did not use its pool is a ceiling, kept and left out of the ratios -> CEILING | the job used 10.0 CFU of the 20 CFU pool on average (50.0%), and it needs 95% to count. This case sh
+  ok  cloud case: a job waiting on its input is a ceiling -> CEILING | the job sat idle 30.0% of the window and the limit is 20%. It spent that time waiting for input, so 
+  ok  cloud case: a cluster at its eCKU limit does not decide a case on its own -- run 18 at 10 CFU (must not fire) -> DID NOT FIRE
+  ok  cloud case: a cluster at its eCKU limit does not decide a case on its own -- run 19 at 20 CFU (must not fire) -> DID NOT FIRE
+  ok  cloud case: a cluster at its eCKU limit does not decide a case on its own -- the live case at 20 CFU (must not fire) -> DID NOT FIRE
+  ok  cloud case: no eCKU reading is recorded as missing and does not decide the case (must not fire) -> DID NOT FIRE
+  ok  cloud case: too short a window to see whole minutes -> FIRED | only 2 whole minutes inside the window, and 3 are needed: Confluent reports CFU in use, busy and hel
+  ok  cloud case: the bottleneck sentence counts CFU, not cores (must not fire) -> DID NOT FIRE
+  ok  cloud case: a cluster at its eCKU limit with the pool under-used is named as the likely bottleneck (must not fire) -> DID NOT FIRE
+  ok  local first: the same app passed on the laptop, so the cloud may start (must not fire) -> DID NOT FIRE
+  ok  local first: no laptop run named               -> FIRED | platform.localPipeline is not set: name the laptop run's pipeline.json. A run on a paid service star
+  ok  local first: the cloud run would write into the laptop's results -> FIRED | the cloud run and the laptop run write to the same folder (/w/app/results), so the cloud run would w
+  ok  local first: the cloud run has its own results folder (must not fire) -> DID NOT FIRE
+  ok  local first: completeness has not passed on the laptop -> FIRED | completeness has not passed on the laptop for this app (/w/local/results/completeness.json: FAIL). R
+  ok  local first: the tiny proof never ran on the laptop -> FIRED | the tiny proof has not passed on the laptop for this app (/w/local/results/tinyproof.json: not found
+  ok  local first: the laptop declares no job SQL    -> FIRED | the laptop run's pipeline.json declares no job.sql, so there is no telling whether the cloud would r
+  ok  local first: the cloud would run a different INSERT -> FIRED | the cloud's platform.jobSql is not the INSERT the laptop's job declares (job.sql). The same app must
+  ok  tables: the same name and columns on both platforms, each connected its own way (must not fire) -> DID NOT FIRE
+  ok  tables: a platform with no table definition yet says so -> FIRED | no table definition for platform 'aws' yet
+  ok  cloud completeness: the same rows in any order and number format match (must not fire) -> DID NOT FIRE
+  ok  cloud completeness: a row the outputs do not have is named -> FIRED | rows missing from the outputs: ['{"account": 2.0, "n": 5.0}']
+  ok  cloud fill: generator jobs side by side until the topic holds the count, then deleted (must not fire) -> DID NOT FIRE
+  ok  cloud fill: a fill that stops writing stops, says how far it got, and deletes its jobs -> FIRED | the fill stopped writing: orders held 400 of 1,000 records and did not move for 0 minutes
+  ok  cloud rows: a bounded statement's rows come back by column name (must not fire) -> DID NOT FIRE
+  ok  cloud rows: every count runs as a snapshot query, which gives only its final rows (must not fire) -> DID NOT FIRE
+  ok  cloud rows: results read while the statement runs, through 'not ready' and every page, with updates and deletes applied (must not fire) -> DID NOT FIRE
+  ok  cloud rows: the last page is read once, though the statement still says running (must not fire) -> DID NOT FIRE
+  ok  confluent: reading the status of a statement that no longer exists says it is gone, and does not stop the run (must not fire) -> DID NOT FIRE
+  ok  confluent: a full suite's estimate sits well inside the budget (must not fire) -> DID NOT FIRE
+  ok  platform: a name that is not a platform        -> FIRED | pipeline.json platform must be one of local, aws, gcp, confluent-cloud, got 'azure'
+  ok  platform: every laptop-only row is a real row, judged locally, reported elsewhere (must not fire) -> DID NOT FIRE
+  ok  platform: every row that reaches the laptop's stack is reported on a managed service (must not fire) -> DID NOT FIRE
+  ok  disk: the backlog is projected twice after a fill -> FIRED | the suite needs 92.3 GB of disk and only 77.3 GB will be free once the tiny proof's topics are delet
+  ok  disk: the tiny proof re-runs once the backlog on disk is credited (must not fire) -> DID NOT FIRE
+  ok  disk: crediting the backlog does not excuse a suite that still will not fit -> FIRED | the suite needs 54.4 GB of disk and only 40.0 GB will be free once the tiny proof's topics are delet
+  ok  scorecard: a ratio above its target is not called short of it (must not fire) -> DID NOT FIRE
+  ok  scorecard: a ratio below its target still says so (must not fire) -> DID NOT FIRE
+  ok  probe: the range is an envelope, the middle half is the figure that tightens (must not fire) -> DID NOT FIRE
+  ok  suite.json records the memory each case was given (must not fire) -> DID NOT FIRE
+  ok  the build is missing an output the business case asks for -> FIRED | the job does not match the design the run wrote down: operator sink-mv-by-account; output market-val
+  ok  a build with more operators than the design names passes, and says so (must not fire) -> DID NOT FIRE
+  ok  the measured fan-out is not the declared one   -> FIRED | the job does not match the design the run wrote down: constraint outputsPerInput = 5, read back 8. T
+  ok  fan-out: 4.987 against 5, the repeats section 4 asks for, passes (must not fire) -> DID NOT FIRE
+  ok  fan-out: 4.70 against 5, more than 5% under, still stops (must not fire) -> DID NOT FIRE
+  ok  fan-out: 5.2 against 5, over the declared fan-out, still stops (must not fire) -> DID NOT FIRE
+  ok  a declared input the fill has not created yet (must not fire) -> DID NOT FIRE
+  ok  a declared input missing after the fill        -> FIRED | the job does not match the design the run wrote down: input st-readings. The interview's answers are
+  ok  a pipeline with no constant fan-out still gets a report (must not fire) -> DID NOT FIRE
+  ok  report: every renderer runs on two real suites, run 42's and run 52's (must not fire) -> DID NOT FIRE
+  ok  outputs: a declared output left empty by a full drain is named (must not fire) -> DID NOT FIRE
+  ok  the backlog ran out under the job              -> FIRED | the backlog ran out (1,000 records) before the window closed. Make it bigger. It has to cover warm-u
+  ok  cases that would not share one maxParallelism  -> FIRED | the cases would not share one maxParallelism: {1: 128, 2: 128, 4: 256}. Flink chooses it from the pa
+  ok  warm-up: run 52's own commit steps settle (must not fire) -> DID NOT FIRE
+  ok  warm-up: a rate that keeps falling never settles -> FIRED | the rate never settled down within 600s. The backlog had 999,947,936,770 records left. It has to hol
+  ok  warm-up: a pipeline that commits nothing is named as such -> FIRED | the pipeline did not commit a single offset in 300s, so there is nothing to measure. It is not readi
+  ok  warm-up: the backlog running dry is named      -> FIRED | the backlog ran out (30,949,102 records) before the window closed. Make it bigger. It has to cover w
+  ok  window: it opens on run 52's next real commit, not on the clock (must not fire) -> DID NOT FIRE
+  ok  window: an offset that never advances stops the case -> FIRED | committed offset did not advance within 60s
+  ok  graph: the shape is read off the plan, and a new job at another size matches (must not fire) -> DID NOT FIRE
+  ok  graph: a baseline chained into one vertex is a different shape -> FIRED | job graph shape differs from the other cases:
+{'vertexCount': 1, 'signature': [['Source: orders -> p
+  ok  graph: a different key-group count is a different shape -> FIRED | job graph shape differs from the other cases:
+{'vertexCount': 2, 'signature': [['Source: orders -> p
+  ok  back-pressure: only samples inside the window count, averaged per vertex (must not fire) -> DID NOT FIRE
+  ok  back-pressure: the collector that actually ran is read from the log (must not fire) -> DID NOT FIRE
+  ok  disk: the projection measures bytes per record and credits what the fill deletes (must not fire) -> DID NOT FIRE
+  ok  disk: a suite that cannot fit stops before the fill -> FIRED | the suite needs 266.9 GB of disk and only 26.0 GB will be free once the tiny proof's topics are dele
+  ok  disk: input already on the broker is not asked for twice (must not fire) -> DID NOT FIRE
+  ok  the backlog is not sized on the tiny proof's own warm-up floor (must not fire) -> DID NOT FIRE
+  ok  the job graph draws from the plan the engine served (must not fire) -> DID NOT FIRE
+  ok  the second vantage reads the same either way (must not fire) -> DID NOT FIRE
+  ok  a pipeline with no second way to measure it    -> FIRED | pipeline.json says nothing about how to measure the pipeline a second way. Either set outputsPerInpu
+  ok  outputsPerInput with no output to count it in  -> FIRED | secondVantage mode constantFanOut needs at least one topic in topics.out to count. A pipeline with n
+  ok  all: the chain stops at the first failing step -> FIRED | chain stopped at c, d never ran, DONE says 'STOPPED at c 0.0 min'
+  ok  all: a chain on a paid service tears its stack down however it ends (must not fire) -> DID NOT FIRE
+  ok  a run that measured nothing does not report a pass -> FIRED | no scaling result: 4 cases were measured and 2 were thrown out, leaving usable readings at 4 cores.
+  ok  broker advice says when the machine cannot give it -> FIRED | but this machine cannot give it that. At 20 cores the worker wants 11,264 MiB, the job manager takes
+  ok  broker advice is silent when the machine can give it (must not fire) -> DID NOT FIRE
+  ok  outputs behind the source point at checkpoint phase -> FIRED | the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs 
+  ok  outputs ahead of the source point at the step size -> FIRED | the two ways of counting do not agree. The source says 10,000,000 records went through; the outputs 
+  ok  a job that is restarting is not called an unsteady rate -> FIRED | the job has restarted 15 times since this case started. It is failing and recovering, not reading at
+  ok  a failed job is named as failed                -> FIRED | the job is failed, not running: Caused by: java.lang.OutOfMemoryError: Direct buffer memory
+  ok  a running job that has not restarted is left alone (must not fire) -> DID NOT FIRE
+  ok  tinyproof sizes from a ceiling top case instead of stopping -> FIRED | sized from the 4-core ceiling case, as it should
+  ok  tinyproof stops plainly when no case produced a rate -> FIRED | not one case produced a rate, so there is nothing to size the suite from. The messages above say why
+  ok  bytes per record is measured on every input topic the run owns -> FIRED | bytes per record is measured across every input topic
+  ok  warm-up accepts a noisy ramp                   -> FIRED | scatter 34%
+  ok  warm-up accepts a flat plateau (must not fire) -> DID NOT FIRE
+  ok  a valid case record passes (must not fire)     -> DID NOT FIRE
+281/281 guards fired as expected
+[06:14:53] tiny proof on Confluent Cloud: PASS
+[06:14:59] phase=tinyproof end rc=0 3286s
+[06:14:59] phase=fill start
+  confluent-cloud fill: 65,872,425 of 800,000,000 records on orders (0 min)
+  confluent-cloud fill: 97,314,961 of 800,000,000 records on orders (2 min)
+  confluent-cloud fill: 130,238,558 of 800,000,000 records on orders (4 min)
+  confluent-cloud fill: 163,790,288 of 800,000,000 records on orders (6 min)
+  confluent-cloud fill: 195,075,105 of 800,000,000 records on orders (8 min)
+  confluent-cloud fill: 228,686,584 of 800,000,000 records on orders (10 min)
+  confluent-cloud fill: 262,442,920 of 800,000,000 records on orders (12 min)
+  confluent-cloud fill: 296,904,991 of 800,000,000 records on orders (14 min)
+  confluent-cloud fill: 331,650,503 of 800,000,000 records on orders (17 min)
+  confluent-cloud fill: 367,147,966 of 800,000,000 records on orders (19 min)
+  confluent-cloud fill: 402,576,957 of 800,000,000 records on orders (21 min)
+  confluent-cloud fill: 438,582,135 of 800,000,000 records on orders (23 min)
+  confluent-cloud fill: 474,683,006 of 800,000,000 records on orders (25 min)
+  confluent-cloud fill: 510,194,932 of 800,000,000 records on orders (27 min)
+  confluent-cloud fill: 545,370,540 of 800,000,000 records on orders (29 min)
+  confluent-cloud fill: 580,751,895 of 800,000,000 records on orders (31 min)
+  confluent-cloud fill: 616,366,770 of 800,000,000 records on orders (33 min)
+  confluent-cloud fill: 651,802,835 of 800,000,000 records on orders (35 min)
+  confluent-cloud fill: 686,939,512 of 800,000,000 records on orders (37 min)
+  confluent-cloud fill: 722,174,250 of 800,000,000 records on orders (39 min)
+  confluent-cloud fill: 758,654,560 of 800,000,000 records on orders (41 min)
+  confluent-cloud fill: 793,707,028 of 800,000,000 records on orders (43 min)
+  confluent-cloud fill: 829,711,433 of 800,000,000 records on orders (45 min)
+[07:19:59]   orders: 799,722,563 records a reader gets; the log end says 836,043,812
+backlog 799,722,563 readable records on orders; manifest results/manifest.json
+[07:19:59] phase=fill end rc=0 3899s
+[07:19:59] phase=suite start
+[07:19:59] ---- case 5 cores, pass p1-asc ----
+[07:19:59] 07:19:59  [....................]   0%  suite: case 1 of 7 (5 cores, pass p1-asc)
+  confluent-cloud: job flink-training-job5-157 runs at 5 CFU with watermark alignment off and its baseline read back
+[07:31:02]   5c p1-asc failed on its own data, retrying once (section 6): the two ways of counting do not agree. The output topics say 175,532 input records a second went through; Confluent's own count of records read says 153,113. That is 12.8% apart and the limit is 5%. Check outputsPerInput: the output rate is divided by it
+  confluent-cloud: the metrics API does not cover pool lfcp-12dm505 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-12dm505 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-12dm505 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-12dm505 yet; waiting
+  confluent-cloud: job flink-training-job5-158 runs at 5 CFU with watermark alignment off and its baseline read back
+[07:44:03]   THROWN OUT: the two ways of counting do not agree. The output topics say 266,179 input records a second went through; Confluent's own count of records read says 244,178. That is 8.3% apart and the limit is 5%. Check outputsPerInput: the output rate is divided by it
+[07:44:03] ---- case 10 cores, pass p1-asc ----
+[07:44:03] 07:44:03  [###.................]  14%  suite: case 2 of 7 (10 cores, pass p1-asc)  about 2h 24m left
+  confluent-cloud: the metrics API does not cover pool lfcp-pg53wvy yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-pg53wvy yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-pg53wvy yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-pg53wvy yet; waiting
+  confluent-cloud: job flink-training-job10-159 runs at 10 CFU with watermark alignment off and its baseline read back
+[07:58:27]   10 CFU p1-asc: 480,640 rec/s  in use 10.00/10 (100.0%)  kafka cores not measured on this platform  srcIdle 0.1%  srcBP 0.0%  headroom 1441s  vantage 1.50%
+[07:58:27] ---- case 20 cores, pass p1-asc ----
+[07:58:27] 07:58:27  [######..............]  29%  suite: case 3 of 7 (20 cores, pass p1-asc)  about 1h 36m left
+  confluent-cloud: the metrics API does not cover pool lfcp-rrz1zr1 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-rrz1zr1 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-rrz1zr1 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-rrz1zr1 yet; waiting
+  confluent-cloud: job flink-training-job20-160 runs at 20 CFU with watermark alignment off and its baseline read back
+[08:12:32]   20 CFU p1-asc: 830,015 rec/s  in use 20.00/20 (100.0%)  kafka cores not measured on this platform  srcIdle 0.3%  srcBP 0.0%  headroom 709s  vantage 4.85%
+[08:12:32] ---- case 20 cores, pass p2-desc ----
+[08:12:32] 08:12:32  [#########...........]  43%  suite: case 4 of 7 (20 cores, pass p2-desc)  about 1h 10m left
+  confluent-cloud: the metrics API does not cover pool lfcp-yo9x9p6 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-yo9x9p6 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-yo9x9p6 yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-yo9x9p6 yet; waiting
+  confluent-cloud: job flink-training-job20-161 runs at 20 CFU with watermark alignment off and its baseline read back
+[08:26:39]   20 CFU p2-desc: 859,839 rec/s  in use 20.00/20 (100.0%)  kafka cores not measured on this platform  srcIdle 0.5%  srcBP 0.0%  headroom 665s  vantage 2.33%
+[08:26:39] ---- case 10 cores, pass p2-desc ----
+[08:26:39] 08:26:39  [###########.........]  57%  suite: case 5 of 7 (10 cores, pass p2-desc)  about 50m left
+  confluent-cloud: the metrics API does not cover pool lfcp-zmy9nry yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-zmy9nry yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-zmy9nry yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-zmy9nry yet; waiting
+  confluent-cloud: job flink-training-job10-162 runs at 10 CFU with watermark alignment off and its baseline read back
+[08:40:45]   10 CFU p2-desc: 496,044 rec/s  in use 10.00/10 (100.0%)  kafka cores not measured on this platform  srcIdle 0.1%  srcBP 0.0%  headroom 1330s  vantage 0.68%
+[08:40:45] ---- case 5 cores, pass p2-desc ----
+[08:40:45] 08:40:45  [##############......]  71%  suite: case 6 of 7 (5 cores, pass p2-desc)  about 32m left
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6zq yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6zq yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6zq yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6zq yet; waiting
+  confluent-cloud: job flink-training-job5-163 runs at 5 CFU with watermark alignment off and its baseline read back
+[08:53:46]   5 CFU p2-desc: 254,636 rec/s  in use 5.00/5 (100.0%)  kafka cores not measured on this platform  srcIdle 0.1%  srcBP 0.0%  headroom 2906s  vantage 1.15%
+[08:53:46] ---- case 5 cores, pass sentinel ----
+[08:53:46] 08:53:46  [#################...]  86%  suite: case 7 of 7 (5 cores, pass sentinel)  about 15m left
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6rw yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6rw yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6rw yet; waiting
+  confluent-cloud: the metrics API does not cover pool lfcp-mv5x6rw yet; waiting
+  confluent-cloud: job flink-training-job5-164 runs at 5 CFU with watermark alignment off and its baseline read back
+[09:06:51]   5 CFU sentinel: 291,349 rec/s  in use 5.00/5 (100.0%)  kafka cores not measured on this platform  srcIdle 0.2%  srcBP 0.0%  headroom 2498s  vantage 1.04%
+Traceback (most recent call last):
+  File "~/.claude/skills/scalable-flink-skill/harness/prove.py", line 5163, in <module>
+    rc = COMMANDS[name]()
+  File "~/.claude/skills/scalable-flink-skill/harness/prove.py", line 4979, in cmd_all
+    rc = fn()
+  File "~/.claude/skills/scalable-flink-skill/harness/prove.py", line 4533, in cmd_suite
+    cmd_report()
+    ~~~~~~~~~~^^
+  File "~/.claude/skills/scalable-flink-skill/harness/prove.py", line 4610, in cmd_report
+    text, markdown = render_table(out) + "\n", render_markdown(out)
+                     ~~~~~~~~~~~~^^^^^
+  File "~/.claude/skills/scalable-flink-skill/harness/lib.py", line 4217, in render_table
+    f"{r['tmCores']:>6.2f}/{r['cores']:<3} {r['tmCapFrac']:>5.1%} {r['tmThrottledPeriodsPct']:>5.0f} "
+                                                                   ~^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyError: 'tmThrottledPeriodsPct'

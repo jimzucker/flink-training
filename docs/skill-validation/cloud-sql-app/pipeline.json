@@ -1,0 +1,84 @@
+{
+ "project": "sqlapp",
+ "_about": "One SQL app that runs unchanged on the laptop and on Confluent Cloud: the INSERT in job/src/main/resources/enrich.sql. This is the laptop side; pipeline-cloud.json is the cloud side and names this file as localPipeline.",
+ "topics": {
+  "in": "orders",
+  "out": [
+   "enriched"
+  ]
+ },
+ "outputsPerInput": 1,
+ "partitions": 8,
+ "ports": {
+  "kafka": 19092,
+  "rest": 18081
+ },
+ "checkpointMs": 10000,
+ "job": {
+  "jar": "job/target/sqlapp.jar",
+  "mainClass": "sqlapp.EnrichJob",
+  "args": "--bootstrap={bootstrap} --in={in} --out={out0} --group={group} --parallelism={par} --checkpointMs={ckptMs}",
+  "sourceVertexMatch": "Source: ",
+  "sql": "INSERT INTO enriched SELECT order_id, symbol, account, qty, price, qty * price AS notional FROM `{in}`"
+ },
+ "generator": {
+  "cmd": "{java} -cp {jar} sqlapp.OrdersGenerator --mode=produce --count={count} --seed={seed} --topic={topic} --manifest={manifest} --bootstrap={bootstrapExt} --partitions={partitions}",
+  "manifestCmd": "{java} -cp {jar} sqlapp.OrdersGenerator --mode=manifest --count={count} --seed={seed} --manifest={manifest}",
+  "manifestCountField": "orderCount"
+ },
+ "verifier": {
+  "cmd": "{java} -cp {jar} sqlapp.EnrichVerify --bootstrap={bootstrapExt} --manifest={manifest} --topic={out0} --arm={arm}"
+ },
+ "cases": [
+  1,
+  2,
+  4
+ ],
+ "baseline": 1,
+ "passes": 2,
+ "backlog": {
+  "count": 360000000,
+  "tinyCount": 150000000,
+  "smallCount": 20000000,
+  "seed": 7,
+  "killAtFraction": 0.4
+ },
+ "caps": {
+  "kafka": 2.5,
+  "jobmanager": 0.5,
+  "tmMemoryBase": "1024m",
+  "tmMemoryPerCore": "512m",
+  "kafkaMemory": "5632m",
+  "kafkaHeap": "1G"
+ },
+ "flinkProperties": {
+  "metrics.reporter.prom.factory.class": "org.apache.flink.metrics.prometheus.PrometheusReporterFactory",
+  "metrics.reporter.prom.port": "9249",
+  "env.java.opts.taskmanager": "-XX:+UseG1GC"
+ },
+ "images": {
+  "flink": "flink:1.20.1-scala_2.12-java17",
+  "kafka": "apache/kafka:3.9.0",
+  "kafkaLibs": "/opt/kafka/libs"
+ },
+ "jdk": "/opt/homebrew/opt/openjdk@17",
+ "axis": "one machine, more cores",
+ "apiLevel": "SQL",
+ "guarantee": {
+  "state": "exactly-once checkpointing",
+  "sink": "exactly-once (Kafka transactions); the verifier reads committed records only"
+ },
+ "design": {
+  "operators": [
+   "enriched"
+  ],
+  "inputs": [
+   "orders"
+  ],
+  "outputs": [
+   "enriched"
+  ]
+ },
+ "results": "results",
+ "api": "sql"
+}

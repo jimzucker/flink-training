@@ -1,0 +1,20 @@
+{
+  "build": "sql-b8381f34f137",
+  "steps": [
+    {
+      "step": "local first",
+      "rc": 0,
+      "seconds": 0.0
+    },
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 157.0
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 0.0
+    }
+  ]
+}

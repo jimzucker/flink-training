@@ -1,0 +1,160 @@
+{
+ "project": "sqlapp",
+ "_about": "The cloud side of the SQL app: the same INSERT as pipeline.json's job.sql, run on Confluent Cloud Flink SQL. Every case reads the backlog from the start. Sizes: 20 CFU read about 51M records a minute and took ~6 minutes to reach full size (findings \u00a78, runs 18-22); a snapshot count of a short fill read 38% below the log end (2026-10-06, unexplained), so the fills carry that margin.",
+ "topics": {
+  "in": "orders",
+  "out": [
+   "enriched"
+  ]
+ },
+ "outputsPerInput": 1,
+ "partitions": 40,
+ "ports": {
+  "kafka": 19092,
+  "rest": 18081
+ },
+ "checkpointMs": 10000,
+ "job": {
+  "jar": "job/target/sqlapp.jar",
+  "mainClass": "sqlapp.EnrichJob",
+  "args": "--bootstrap={bootstrap} --in={in} --out={out0} --group={group} --parallelism={par} --checkpointMs={ckptMs}",
+  "sourceVertexMatch": "Source: ",
+  "sql": "INSERT INTO enriched SELECT order_id, symbol, account, qty, price, qty * price AS notional FROM `{in}`"
+ },
+ "generator": {
+  "cmd": "{java} -cp {jar} sqlapp.OrdersGenerator --mode=produce --count={count} --seed={seed} --topic={topic} --manifest={manifest} --bootstrap={bootstrapExt} --partitions={partitions}",
+  "manifestCmd": "{java} -cp {jar} sqlapp.OrdersGenerator --mode=manifest --count={count} --seed={seed} --manifest={manifest}",
+  "manifestCountField": "orderCount"
+ },
+ "verifier": {
+  "cmd": "{java} -cp {jar} sqlapp.EnrichVerify --bootstrap={bootstrapExt} --manifest={manifest} --topic={out0} --arm={arm}"
+ },
+ "cases": [
+  5,
+  10,
+  20
+ ],
+ "baseline": 5,
+ "passes": 2,
+ "backlog": {
+  "count": 800000000,
+  "tinyCount": 400000000,
+  "smallCount": 20000000,
+  "seed": 7,
+  "killAtFraction": 0.4
+ },
+ "caps": {
+  "kafka": 2.5,
+  "jobmanager": 0.5,
+  "tmMemoryBase": "1024m",
+  "tmMemoryPerCore": "512m",
+  "kafkaMemory": "5632m",
+  "kafkaHeap": "1G"
+ },
+ "flinkProperties": {
+  "metrics.reporter.prom.factory.class": "org.apache.flink.metrics.prometheus.PrometheusReporterFactory",
+  "metrics.reporter.prom.port": "9249",
+  "env.java.opts.taskmanager": "-XX:+UseG1GC"
+ },
+ "images": {
+  "flink": "flink:1.20.1-scala_2.12-java17",
+  "kafka": "apache/kafka:3.9.0",
+  "kafkaLibs": "/opt/kafka/libs"
+ },
+ "jdk": "/opt/homebrew/opt/openjdk@17",
+ "axis": "Confluent Cloud compute pools, CFU",
+ "apiLevel": "SQL",
+ "guarantee": {
+  "state": "exactly-once checkpointing",
+  "sink": "exactly-once (Kafka transactions); the verifier reads committed records only"
+ },
+ "design": {
+  "operators": [
+   "enriched"
+  ],
+  "inputs": [
+   "orders"
+  ],
+  "outputs": [
+   "enriched"
+  ]
+ },
+ "results": "results-cloud",
+ "api": "sql",
+ "platform": {
+  "kind": "confluent-cloud",
+  "environment": "flink-training",
+  "cloud": "gcp",
+  "region": "us-east1",
+  "budgetUsd": 350,
+  "estimateUsd": 60,
+  "maxEcku": 50,
+  "setupCfu": 30,
+  "localPipeline": "pipeline.json",
+  "jobSql": "INSERT INTO enriched SELECT order_id, symbol, account, qty, price, qty * price AS notional FROM `{in}`",
+  "tables": {
+   "orders": {
+    "columns": [
+     [
+      "order_id",
+      "STRING"
+     ],
+     [
+      "symbol",
+      "INT"
+     ],
+     [
+      "account",
+      "INT"
+     ],
+     [
+      "qty",
+      "INT"
+     ],
+     [
+      "price",
+      "DOUBLE"
+     ]
+    ]
+   },
+   "enriched": {
+    "columns": [
+     [
+      "order_id",
+      "STRING"
+     ],
+     [
+      "symbol",
+      "INT"
+     ],
+     [
+      "account",
+      "INT"
+     ],
+     [
+      "qty",
+      "INT"
+     ],
+     [
+      "price",
+      "DOUBLE"
+     ],
+     [
+      "notional",
+      "DOUBLE"
+     ]
+    ]
+   }
+  },
+  "fill": {
+   "jobs": 24,
+   "perJob": [
+    "CREATE TABLE IF NOT EXISTS fake_{topic}_{i} (order_id STRING, symbol INT, account INT, qty INT, price DOUBLE) WITH ('connector' = 'faker', 'number-of-rows' = '100000', 'rows-per-second' = '100000', 'fields.order_id.expression' = '#{Internet.uuid}', 'fields.symbol.expression' = '#{number.numberBetween ''0'',''4096''}', 'fields.account.expression' = '#{number.numberBetween ''0'',''4''}', 'fields.qty.expression' = '#{number.numberBetween ''1'',''100''}', 'fields.price.expression' = '#{number.randomDouble ''2'',''1'',''500''}')",
+    "INSERT INTO `{topic}` SELECT CONCAT(b.order_id, '-', CAST(a.x AS STRING), '-', CAST(c.y AS STRING)), b.symbol, b.account, b.qty, b.price FROM fake_{topic}_{i} AS b CROSS JOIN (VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38), (39), (40), (41), (42), (43), (44), (45), (46), (47), (48), (49)) AS a(x) CROSS JOIN (VALUES (0), (1), (2), (3), (4), (5), (6), (7), (8), (9), (10), (11), (12), (13), (14), (15), (16), (17), (18), (19), (20), (21), (22), (23), (24), (25), (26), (27), (28), (29), (30), (31), (32), (33), (34), (35), (36), (37), (38), (39)) AS c(y)"
+   ]
+  },
+  "manifestSql": "SELECT account, COUNT(*) AS n, SUM(CAST(qty AS BIGINT)) AS qty FROM `{topic}` GROUP BY account",
+  "verifySql": "SELECT account, COUNT(*) AS n, SUM(CAST(qty AS BIGINT)) AS qty FROM enriched GROUP BY account",
+  "promoUsd": 400
+ }
+}
