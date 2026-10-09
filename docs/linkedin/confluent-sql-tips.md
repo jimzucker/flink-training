@@ -14,7 +14,7 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **2. Pick a partition count that divides by every pool size you'll run.** In our job, one CFU ran one subtask, so 24 partitions couldn't spread evenly over 20 subtasks. We used 40 for 5, 10 and 20 CFU.
 
-**3. If you cap the Kafka cluster's eCKU to control cost, size the cap for your largest pool.** Capped at 10 eCKU, our 10→20 CFU step read about 1.4×. At 50 eCKU it read 1.77×. Each eCKU costs about $0.135 an hour.
+**3. Give the Kafka cluster enough capacity for your largest pool.** Confluent measures Kafka capacity in eCKU, and you can cap it to control cost. We capped ours at 10 eCKU. With that cap, doubling the Flink pool from 10 to 20 CFU raised throughput only about 1.4 times. With the cap raised to 50 eCKU, the same doubling gave 1.77 times. Each eCKU costs about $0.135 an hour.
 
 **4. Count what a reader gets, not the topic's end offset.** Records from aborted transactions stay in the log. After a short load, 42% of the log was records that readers of committed data skip.
 
