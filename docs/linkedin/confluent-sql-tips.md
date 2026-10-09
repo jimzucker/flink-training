@@ -10,7 +10,7 @@ Figures and their sources are in the table under the post.
 
 We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measuring how its throughput grew as we added compute. The SQL needed no changes, but several Confluent Cloud settings did. These are seven tips from that work:
 
-**1. Set the statement's baseline to the pool size.** Left to the autoscaler, a statement in a 20 CFU pool stopped at 10 CFU and reported its scaling status as "OK". Set `baseline_cfu` to the pool's size, and read it back.
+**1. Make the job use the whole compute pool.** CFU is Confluent's unit of Flink compute, and a pool's size is the most CFU its jobs may use. Confluent's autoscaler decides how much a job actually uses: in a 20 CFU pool it used 10 and still reported everything as OK, so a benchmark of "20 CFU" was really measuring 10. Set the statement's `baseline_cfu` to the pool's size, and check that the setting took effect.
 
 **2. Choose a partition count that divides evenly by every pool size you test.** In our job, each CFU ran one parallel worker, and each worker reads its share of the topic's partitions. 24 partitions can't be shared evenly among 20 workers, so some read more than others. We used 40 partitions, which divide evenly for pools of 5, 10 and 20 CFU.
 
