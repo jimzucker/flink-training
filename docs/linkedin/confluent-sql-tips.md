@@ -1,4 +1,4 @@
-# Moving Flink SQL from a laptop to Confluent Cloud: the SQL didn't change, the defaults did
+# Eight tips for running Flink SQL on Confluent Cloud
 
 Draft, 2026-10-07. Audience: engineers. The angle, in the author's words:
 "the tips we learned migrating sql to confluent, like the defaults we have to
