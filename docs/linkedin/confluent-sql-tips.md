@@ -20,9 +20,9 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **5. Check your results with a snapshot query.** After a benchmark you count records to make sure nothing was lost: how many went in and how many came out. A normal Flink SQL count doesn't send one answer. It sends a new running total every time a record arrives, so counting 100 million records sends 100 million updates, and you have to read through all of them to reach the final number. That can take hours. A snapshot query (`sql.snapshot.mode = now`) sends only the final total, in about a minute.
 
-**6. Create a new compute pool for each size you test.** Confluent won't let you lower a pool's maximum size, so going back down needs a new pool.
+**6. Create a new compute pool for each size you test.** Confluent won't let you lower a pool's maximum size, so to test a smaller size after a larger one you need a new pool. We used a new pool for every size we tested.
 
-**7. Wait for the usage figures before you measure.** A new pool's usage figures only start a few minutes after it is created, and then arrive about three minutes behind. Start measuring once they show the job using the whole pool.
+**7. Wait for the usage figures before you measure.** A new pool's usage figures don't appear until a few minutes after it is created, and after that they run about three minutes behind. Start measuring once they show the job using the whole pool.
 
 **8. Make sure a benchmark deletes what it creates, even if it crashes, and check spend somewhere that is up to date.** Our test tool crashed once and left a cluster running for nine hours. Confluent's daily cost list runs a day behind; a promo credit's balance updates the same day.
 
