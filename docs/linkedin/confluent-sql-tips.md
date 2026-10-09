@@ -18,7 +18,7 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **4. Count your test data by reading it, not from the topic's size.** A benchmark needs to know exactly how many records it starts with. A Kafka topic's size also includes records whose write was cancelled, and Flink skips those. When we stopped our data-loading jobs partway, cancelled records were 42% of the topic.
 
-**5. Count with a snapshot query.** A normal count query sends a new running total for every record, which is slow to read: over two hours for 70 million records. A snapshot query (`sql.snapshot.mode = now`) sends only the final total: it counted 34 million records in 72 seconds.
+**5. Check your results with a snapshot query.** After a benchmark you count records to make sure nothing was lost: how many went in and how many came out. A normal Flink SQL count keeps sending a new running total as each record arrives, so on a large topic the answer takes hours to come back: over two hours for our 70 million records. A snapshot query (`sql.snapshot.mode = now`) returns only the final total: it counted 34 million records in 72 seconds.
 
 **6. Create a new compute pool for each size you test.** Confluent won't let you lower a pool's maximum size, so going back down needs a new pool. Give each new pool a few minutes before you measure: its usage figures only start a few minutes after it is created, and then arrive about three minutes behind, so you can't yet see what the job is doing.
 
