@@ -18,7 +18,7 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **4. Count your test data by reading it, not from the topic's size.** A benchmark needs to know exactly how many records it starts with. A Kafka topic's size also includes records whose write was cancelled, and Flink skips those. When we stopped our data-loading jobs partway, cancelled records were 42% of the topic.
 
-**5. Check your results with a snapshot query.** After a benchmark you count records to make sure nothing was lost: how many went in and how many came out. A normal Flink SQL count keeps sending a new running total as each record arrives, so on a large topic the answer takes hours to come back. A snapshot query (`sql.snapshot.mode = now`) returns only the final total, in about a minute.
+**5. Check your results with a snapshot query.** After a benchmark you count records to make sure nothing was lost: how many went in and how many came out. A normal Flink SQL count doesn't send one answer. It sends a new running total every time a record arrives, so counting 100 million records sends 100 million updates, and you have to read through all of them to reach the final number. That can take hours. A snapshot query (`sql.snapshot.mode = now`) sends only the final total, in about a minute.
 
 **6. Create a new compute pool for each size you test.** Confluent won't let you lower a pool's maximum size, so going back down needs a new pool. Give each new pool a few minutes before you measure: its usage figures only start a few minutes after it is created, and then arrive about three minutes behind. Start measuring once those figures show the job using the whole pool.
 
@@ -39,7 +39,7 @@ We've built all of this into our open-source skill for measuring whether a Flink
 | 40 partitions for 5, 10 and 20 CFU | [`cloud-sql-app/pipeline-cloud.json`](../skill-validation/cloud-sql-app/pipeline-cloud.json) |
 | $0.135 per eCKU-hour | Confluent's cost list for 2026-10-06, the `price` field of the KAFKA_NUM_CKUS lines |
 | 42% of the topic was cancelled records; Flink skips them | findings §8, run 24: 37,996,160 committed of a 66,092,231 end offset; the Flink job read 38,005,960 |
-| a normal count takes hours on a large topic; a snapshot query about a minute | findings §8, run 23: about 500,000 records a minute read as running totals (over two hours for 70 million), and 33,594,701 records counted in 72 seconds as a snapshot |
+| a running total per record, 100 million updates for 100 million records, hours to read; a snapshot query about a minute (100 million is illustrative) | findings §8, run 23: about 500,000 records a minute read as running totals (over two hours for 70 million), and 33,594,701 records counted in 72 seconds as a snapshot |
 | a pool's maximum can't be lowered | findings §8, run 03 |
 | metrics about three minutes late | the skill's [`harness/README.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/harness/README.md), the Confluent Cloud paragraph |
 | a cluster left running for nine hours | findings §8, run 25 |
