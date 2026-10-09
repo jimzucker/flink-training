@@ -16,9 +16,9 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **3. Give the Kafka cluster enough capacity for your largest pool.** Confluent measures Kafka capacity in eCKU, and you can cap it to control cost. We capped ours at 10 eCKU. With that cap, doubling the Flink pool from 10 to 20 CFU raised throughput only about 1.4 times. With the cap raised to 50 eCKU, the same doubling gave 1.77 times. Each eCKU costs about $0.135 an hour.
 
-**4. Count what a reader gets, not the topic's end offset.** Records from aborted transactions stay in the log. After a short load, 42% of the log was records that readers of committed data skip.
+**4. Count your test data by reading it, not from the topic's size.** A benchmark needs to know exactly how many records it starts with. A Kafka topic's size also includes records whose write was cancelled, and Flink skips those. When we stopped our data-loading jobs partway, cancelled records were 42% of the topic.
 
-**5. Use snapshot queries for one-off counts.** A plain bounded GROUP BY streamed two change rows per input record, read through the REST API at about 500,000 records a minute. With `sql.snapshot.mode = now`, a count of 34 million records gave its four final rows in 72 seconds.
+**5. Count with a snapshot query.** A normal Flink SQL count sends an updated total every time a record arrives. We could read those updates through Confluent's REST API at about 500,000 records a minute, which is over two hours for 70 million records. A snapshot query (`sql.snapshot.mode` set to `now`) sends only the final totals: it counted 34 million records in 72 seconds.
 
 **6. Create a new compute pool for each size you test.** Confluent won't let you lower a pool's maximum size, so going back down needs a new pool. Give each new pool a few minutes before you measure: its usage figures only start a few minutes after it is created, and then arrive about three minutes behind, so you can't yet see what the job is doing.
 
@@ -38,8 +38,8 @@ We've built all of this into our open-source skill for measuring whether a Flink
 | 40 partitions for 5, 10 and 20 CFU | [`cloud-sql-app/pipeline-cloud.json`](../skill-validation/cloud-sql-app/pipeline-cloud.json) |
 | about 1.4× at 10 eCKU, 1.77× at 50 | findings §8, runs 17 and 18 |
 | $0.135 per eCKU-hour | Confluent's cost list for 2026-10-06, the `price` field of the KAFKA_NUM_CKUS lines |
-| 42% of the log was aborted records | findings §8, run 24 (37,996,160 readable of a 66,092,231 log end) |
-| two change rows per record, about 500,000 records a minute; 34 million in 72 seconds as a snapshot | findings §8, run 23 (33,594,701 records) |
+| 42% of the topic was cancelled records; Flink skips them | findings §8, run 24: 37,996,160 committed of a 66,092,231 end offset; the Flink job read 38,005,960 |
+| an updated total per record (two change rows each), about 500,000 records a minute, so over two hours for 70 million; 34 million in 72 seconds as a snapshot | findings §8, run 23 (33,594,701 records); the two hours is 70 million at the measured rate |
 | a pool's maximum can't be lowered | findings §8, run 03 |
 | metrics about three minutes late | the skill's [`harness/README.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/harness/README.md), the Confluent Cloud paragraph |
 | a cluster left running for nine hours | findings §8, run 25 |
