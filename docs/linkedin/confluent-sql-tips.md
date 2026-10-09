@@ -7,7 +7,7 @@ table under the post.
 
 ---
 
-We ran the same Flink SQL statement on a laptop and on Confluent Cloud, and proved it exact on both: every record in, every record out. The statement needed no changes. What needed attention were the platform's defaults, and how you measure. Here's what to set before you trust a number:
+We ran one Flink SQL statement on a laptop and on Confluent Cloud. The SQL needed no changes, but several Confluent Cloud settings did. These are the eight we changed, and why:
 
 **1. Set the statement's baseline to the pool size.** Left to the autoscaler, a statement in a 20 CFU pool stopped at 10 CFU and reported its scaling status as "OK". Set `baseline_cfu` to the pool's size, and read it back.
 
