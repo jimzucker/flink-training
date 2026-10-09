@@ -1,4 +1,4 @@
-# Eight tips for benchmarking Flink SQL on Confluent Cloud
+# Nine tips for benchmarking Flink SQL on Confluent Cloud
 
 Draft, 2026-10-07. Audience: engineers. The angle, in the author's words:
 "the tips we learned migrating sql to confluent, like the defaults we have to
@@ -8,9 +8,9 @@ Figures and their sources are in the table under the post.
 
 ---
 
-We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measuring how its throughput grew as we added compute. The SQL needed no changes, but several Confluent Cloud settings did. These are eight tips from that work:
+We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measuring how its throughput grew as we added compute. The SQL needed no changes, but several Confluent Cloud settings did. These are nine tips from that work:
 
-**1. Make the job use the whole compute pool.** CFU is Confluent's unit of Flink compute, and a pool's size is the most CFU its jobs may use. Confluent's autoscaler decides how much a job actually uses: in a 20 CFU pool it used 10 and still reported everything as OK, so a benchmark of "20 CFU" was really measuring 10. Set the statement's `baseline_cfu` to the pool's size, and check that the setting took effect.
+**1. Make the job use the whole compute pool.** CFU is Confluent's unit of Flink compute, and a pool's size is the most CFU its jobs may use. Confluent's autoscaler decides how much a job actually uses: in a 20 CFU pool it used 10 and still reported everything as OK, so a benchmark of "20 CFU" was really measuring 10. Set the statement's `baseline_cfu` to the pool's size, and read it back from the statement to check it took effect.
 
 **2. Choose a partition count that divides evenly by every pool size you test.** Each worker in the job reads a share of the topic's partitions (in our job, one worker per CFU). Say a topic has 6 partitions and the job has 4 workers: two workers get 2 partitions and two get 1. The job runs at the pace of its busiest workers, so 4 workers do the work of 3. Pick a count that every pool size divides into, such as 40 for pools of 5, 10 and 20.
 
@@ -24,7 +24,9 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **7. Wait for the usage figures before you measure.** A new pool's usage figures don't appear until a few minutes after it is created, and after that they run about three minutes behind. Start measuring once they show the job using the whole pool.
 
-**8. Make sure a benchmark deletes what it creates, even if it crashes, and check spend somewhere that is up to date.** Our test tool crashed once and left a cluster running for nine hours. Confluent's daily cost list runs a day behind; a promo credit's balance updates the same day.
+**8. Make sure a benchmark deletes what it creates, even if it crashes.** A test that stops halfway can leave a cluster running, and billing, for hours.
+
+**9. Allow for the cost report's delay.** Confluent's daily cost list runs about a day behind, so today's spend isn't in it yet.
 
 We've built all of this into our open-source skill for measuring whether a Flink pipeline scales. It now runs Flink SQL on a laptop and on Confluent Cloud: https://github.com/jimzucker/scalable-flink-skill
 
@@ -44,8 +46,8 @@ We've built all of this into our open-source skill for measuring whether a Flink
 | a running total per record, 100 million updates for 100 million records, hours to read; a snapshot query about a minute (100 million is illustrative) | findings §8, run 23: about 500,000 records a minute read as running totals (over two hours for 70 million), and 33,594,701 records counted in 72 seconds as a snapshot |
 | a pool's maximum can't be lowered | findings §8, run 03 |
 | metrics about three minutes late | the skill's [`harness/README.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/harness/README.md), the Confluent Cloud paragraph |
-| a cluster left running for nine hours | findings §8, run 25 |
-| cost list a day behind, promo balance the same day | the skill's `harness/README.md` budget paragraph (scalable-flink-skill #141): $170.89 on the cost list against $382.02 of credit used, 2026-10-06 |
+| a test that stops halfway can leave a cluster billing for hours | findings §8, run 25: our crashed chain left one up for nine hours |
+| the daily cost list runs about a day behind | the skill's `harness/README.md` budget paragraph (scalable-flink-skill #141): $170.89 on the cost list against $382.02 of credit used, 2026-10-06 |
 
 Left out on purpose, per the tone rules: no scaling claim for the cloud (the
 one 10→20 CFU step the harness judged read 1.73×, short of its 1.80× target;
