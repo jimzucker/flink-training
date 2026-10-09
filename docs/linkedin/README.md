@@ -10,7 +10,7 @@ memory.
 |---|---|---|---|
 | Lessons learned from the 24-day AI build | senior managers | `lessons-post.md`, `lessons-article.html`, `lessons-card.html` | merged (#91, #92, #93) |
 | Prove it scales — the short pitch | engineers | in the skill's own repository: [`post.md`](https://github.com/jimzucker/scalable-flink-skill/blob/main/docs/post.md), [`card.html`](https://github.com/jimzucker/scalable-flink-skill/blob/main/docs/card.html) (rendered to `card.png`) and its [README](https://github.com/jimzucker/scalable-flink-skill) | published there; this repository keeps the evidence the figures come from |
-| Seven tips for benchmarking Flink SQL on Confluent Cloud | engineers | `confluent-sql-tips.md` | draft, 2026-10-07 |
+| Eight tips for benchmarking Flink SQL on Confluent Cloud | engineers | `confluent-sql-tips.md` | draft, 2026-10-07 |
 
 ## Tone rules
 
