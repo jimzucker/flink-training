@@ -12,7 +12,7 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **1. Set the statement's baseline to the pool size.** Left to the autoscaler, a statement in a 20 CFU pool stopped at 10 CFU and reported its scaling status as "OK". Set `baseline_cfu` to the pool's size, and read it back.
 
-**2. Pick a partition count that divides by every pool size you'll run.** In our job, one CFU ran one subtask, so 24 partitions couldn't spread evenly over 20 subtasks. We used 40 for 5, 10 and 20 CFU.
+**2. Choose a partition count that divides evenly by every pool size you test.** In our job, each CFU ran one parallel worker, and each worker reads its share of the topic's partitions. 24 partitions can't be shared evenly among 20 workers, so some read more than others. We used 40 partitions, which divide evenly for pools of 5, 10 and 20 CFU.
 
 **3. Give the Kafka cluster enough capacity for your largest pool.** Confluent measures Kafka capacity in eCKU, and you can cap it to control cost. We capped ours at 10 eCKU. With that cap, doubling the Flink pool from 10 to 20 CFU raised throughput only about 1.4 times. With the cap raised to 50 eCKU, the same doubling gave 1.77 times. Each eCKU costs about $0.135 an hour.
 
@@ -20,7 +20,7 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 **5. Use snapshot queries for one-off counts.** A plain bounded GROUP BY streamed two change rows per input record, read through the REST API at about 500,000 records a minute. With `sql.snapshot.mode = now`, a count of 34 million records gave its four final rows in 72 seconds.
 
-**6. Plan a new compute pool for each size.** A pool's maximum can't be lowered. Allow a few minutes after creating one: the metrics arrive about three minutes late.
+**6. Create a new compute pool for each size you test.** Confluent won't let you lower a pool's maximum size, so going back down needs a new pool. Give each new pool a few minutes before you measure: its usage figures only start a few minutes after it is created, and then arrive about three minutes behind, so you can't yet see what the job is doing.
 
 **7. Make sure a benchmark deletes what it creates, even if it crashes, and check spend somewhere that is up to date.** Our test tool crashed once and left a cluster running for nine hours. Confluent's daily cost list runs a day behind; a promo credit's balance updates the same day.
 
