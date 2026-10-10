@@ -1,0 +1,199 @@
+<title>Nine Flink SQL Tips</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+  @page{size:1080px 1350px;margin:0}
+  :root{
+    --ground:#14161a; --panel:#1c1f26; --rule:#2b3039; --ink:#e9eaee; --muted:#8b919b;
+    --keep:#4fa3a5; --keep-dim:#2a5556; --warm:#cf7040; --warm-dim:#5a3423;
+    --sans:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --cond:"IBM Plex Sans Condensed","IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+    --mono:"IBM Plex Mono",ui-monospace,"SFMono-Regular",Menlo,monospace;
+  }
+  html,body{margin:0;background:var(--ground)}
+  body{color:var(--ink);font-family:var(--sans);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .slide{width:1080px;height:1350px;box-sizing:border-box;padding:92px 88px 72px;display:flex;
+         flex-direction:column;background:var(--ground);break-after:page;overflow:hidden;position:relative}
+  .slide:last-child{break-after:auto}
+  .kicker{font-family:var(--mono);font-weight:600;font-size:24px;letter-spacing:.12em;text-transform:uppercase;color:var(--warm);margin:0}
+  .num{font-family:var(--mono);font-weight:600;font-size:30px;color:var(--keep);letter-spacing:.06em;margin:0}
+  h1{font-family:var(--cond);font-weight:700;font-size:92px;line-height:1.02;letter-spacing:-.015em;margin:28px 0 0;text-wrap:balance}
+  h2{font-family:var(--cond);font-weight:700;font-size:64px;line-height:1.05;letter-spacing:-.01em;margin:18px 0 0;text-wrap:balance}
+  p.lede{font-size:32px;line-height:1.45;color:var(--muted);margin:30px 0 0}
+  p.body{font-size:31px;line-height:1.45;margin:30px 0 0;color:var(--ink)}
+  code{font-family:var(--mono);color:var(--keep);font-size:.92em}
+  .viz{flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;margin-top:20px}
+  .foot{display:flex;justify-content:space-between;font-family:var(--mono);font-size:20px;color:var(--muted)}
+  .lab{font-family:var(--mono);font-size:22px;color:var(--muted)}
+  .big{font-family:var(--cond);font-weight:700;font-size:40px}
+  /* bars */
+  .row{display:flex;align-items:center;gap:20px}
+  .row .lab{width:210px;flex:none}
+  .bar{height:56px;display:flex;border-radius:4px;overflow:hidden}
+  .seg{height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:22px;font-weight:600}
+  .keep{background:var(--keep);color:#0e2223}
+  .keepdim{background:var(--keep-dim);color:var(--ink)}
+  .warmseg{background:var(--warm);color:#2a1408}
+  .warmdim{background:var(--warm-dim);color:var(--ink)}
+  .empty{background:transparent;border:2px dashed var(--rule);color:var(--muted)}
+  /* grid of CFU squares */
+  .cfu{display:grid;grid-template-columns:repeat(10,56px);gap:10px}
+  .cfu i{width:56px;height:56px;border-radius:6px;display:block}
+  .on{background:var(--keep)} .off{background:transparent;border:2px dashed var(--rule);box-sizing:border-box}
+  /* workers */
+  .workers{display:flex;gap:28px;align-items:flex-end}
+  .worker{display:flex;flex-direction:column;gap:10px;align-items:center}
+  .worker b{width:120px;height:70px;border-radius:6px;background:var(--keep);display:block}
+  .worker b.busy{background:var(--warm)}
+  .worker span{font-family:var(--mono);font-size:22px;color:var(--muted)}
+  /* timeline */
+  .tl{display:flex;flex-direction:column;gap:0;border-left:4px solid var(--rule);margin-left:14px}
+  .tl div{padding:0 0 34px 34px;position:relative;font-size:30px;line-height:1.35}
+  .tl div:before{content:"";position:absolute;left:-14px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--rule)}
+  .tl div.go:before{background:var(--keep)}
+  .tl small{display:block;font-family:var(--mono);font-size:21px;color:var(--muted)}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:26px}
+  .box{border:2px solid var(--rule);border-radius:10px;padding:30px;display:flex;flex-direction:column;gap:12px}
+  .box.yes{border-color:var(--keep)} .box.no{border-color:var(--warm)}
+  .box .head{font-family:var(--mono);font-size:22px;letter-spacing:.06em;text-transform:uppercase}
+  .box.yes .head{color:var(--keep)} .box.no .head{color:var(--warm)}
+  .box .txt{font-size:30px;line-height:1.35}
+  .link{font-family:var(--mono);font-size:30px;color:var(--keep);margin-top:22px}
+  .swipe{font-family:var(--mono);font-size:24px;color:var(--muted);margin-top:auto}
+</style>
+
+<!-- 0: title -->
+<section class="slide">
+  <p class="kicker">Flink SQL · Confluent Cloud</p>
+  <h1>Nine tips for benchmarking Flink SQL on Confluent Cloud</h1>
+  <p class="lede">We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measuring how its throughput grew as we added compute. The SQL needed no changes, but several Confluent Cloud settings did.</p>
+  <p class="swipe">Swipe for the nine tips →</p>
+</section>
+
+<!-- 1 -->
+<section class="slide">
+  <p class="num">TIP 1 OF 9</p>
+  <h2>Make the job use the whole compute pool</h2>
+  <p class="body">Confluent's autoscaler decides how much of a pool a job uses. In a 20 CFU pool it used 10 and still reported everything as OK. Set the statement's <code>baseline_cfu</code> to the pool's size, and read it back to check.</p>
+  <div class="viz">
+    <div class="lab">20 CFU pool, left to the autoscaler: 10 used</div>
+    <div class="cfu"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i><i class="off"></i></div>
+    <div class="lab" style="margin-top:18px">With <code>baseline_cfu</code> = 20: all 20 used</div>
+    <div class="cfu"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></div>
+  </div>
+</section>
+
+<!-- 2 -->
+<section class="slide">
+  <p class="num">TIP 2 OF 9</p>
+  <h2>Choose a partition count that divides evenly by every pool size</h2>
+  <p class="body">Each worker reads a share of the topic's partitions. With 6 partitions and 4 workers, two workers get 2 and two get 1. The job runs at the pace of its busiest workers, so 4 workers do the work of 3.</p>
+  <div class="viz">
+    <div class="workers">
+      <div class="worker"><b class="busy"></b><b class="busy"></b><span>worker 1</span></div>
+      <div class="worker"><b class="busy"></b><b class="busy"></b><span>worker 2</span></div>
+      <div class="worker"><b></b><span>worker 3</span></div>
+      <div class="worker"><b></b><span>worker 4</span></div>
+    </div>
+    <div class="lab">6 partitions over 4 workers. Pick a count every pool size divides into, such as 40 for pools of 5, 10 and 20.</div>
+  </div>
+</section>
+
+<!-- 3 -->
+<section class="slide">
+  <p class="num">TIP 3 OF 9</p>
+  <h2>Give the Kafka cluster enough capacity for your largest pool</h2>
+  <p class="body">A Flink benchmark needs Kafka to keep up, or it measures Kafka instead. Confluent measures Kafka capacity in eCKU; if you cap it to control cost, set the cap for your largest test.</p>
+  <div class="viz">
+    <div class="row"><span class="lab">job, doubled</span><div class="bar" style="width:720px"><div class="seg keep" style="width:720px">could do 120</div></div></div>
+    <div class="row"><span class="lab">Kafka limit</span><div class="bar" style="width:600px"><div class="seg warmseg" style="width:600px">100</div></div></div>
+    <div class="row"><span class="lab">you measure</span><div class="bar" style="width:600px"><div class="seg keepdim" style="width:600px">100, not 120</div></div></div>
+    <div class="lab">Records a second, made-up numbers. The job looks as if it scales worse than it does.</div>
+  </div>
+</section>
+
+<!-- 4 -->
+<section class="slide">
+  <p class="num">TIP 4 OF 9</p>
+  <h2>Count your test data by reading it, not from the topic's size</h2>
+  <p class="body">A topic's size also includes records whose write was cancelled, and Flink skips those. A benchmark needs to know exactly how many records it starts with.</p>
+  <div class="viz">
+    <div class="lab">A loading job writes 1,000 records and is stopped before the last 400 are committed</div>
+    <div class="row"><span class="lab">topic size</span><div class="bar" style="width:700px"><div class="seg keep" style="width:420px">600</div><div class="seg warmseg" style="width:280px">400 cancelled</div></div></div>
+    <div class="row"><span class="lab">Flink reads</span><div class="bar" style="width:420px"><div class="seg keep" style="width:420px">600</div></div></div>
+  </div>
+</section>
+
+<!-- 5 -->
+<section class="slide">
+  <p class="num">TIP 5 OF 9</p>
+  <h2>Check your results with a snapshot query</h2>
+  <p class="body">After a benchmark you count records to make sure nothing was lost. A normal Flink SQL count sends a new running total for every record, and you have to read through all of them to reach the final number.</p>
+  <div class="viz">
+    <div class="pair">
+      <div class="box no"><span class="head">Normal count</span><span class="txt">Counting 100 million records sends 100 million updates.<br><span class="big">Hours</span></span></div>
+      <div class="box yes"><span class="head">Snapshot query</span><span class="txt">Sends only the final total.<br><span class="big">About a minute</span></span></div>
+    </div>
+    <div class="lab">Set <code>sql.snapshot.mode = now</code></div>
+  </div>
+</section>
+
+<!-- 6 -->
+<section class="slide">
+  <p class="num">TIP 6 OF 9</p>
+  <h2>Create a new compute pool for each size you test</h2>
+  <p class="body">Confluent won't let you lower a pool's maximum size, so to test a smaller size after a larger one you need a new pool. We used a new pool for every size we tested.</p>
+  <div class="viz">
+    <div class="pair">
+      <div class="box no"><span class="head">Not allowed</span><span class="txt">Lower one pool from 20 CFU to 10</span></div>
+      <div class="box yes"><span class="head">Instead</span><span class="txt">A new 10 CFU pool</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 -->
+<section class="slide">
+  <p class="num">TIP 7 OF 9</p>
+  <h2>Wait for the usage figures before you measure</h2>
+  <div class="viz">
+    <div class="tl">
+      <div>Create the pool and start the job</div>
+      <div>Usage figures appear<small>a few minutes later</small></div>
+      <div>Figures keep coming<small>about three minutes behind</small></div>
+      <div class="go">Start measuring<small>once they show the job using the whole pool</small></div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 -->
+<section class="slide">
+  <p class="num">TIP 8 OF 9</p>
+  <h2>Make sure a benchmark deletes what it creates, even if it crashes</h2>
+  <p class="body">A test that stops halfway can leave a cluster running, and billing, for hours.</p>
+  <div class="viz">
+    <div class="pair">
+      <div class="box no"><span class="head">Cleanup at the end</span><span class="txt">A crash skips it. The cluster keeps running.</span></div>
+      <div class="box yes"><span class="head">Cleanup on every exit</span><span class="txt">Runs whether the test passes, stops or crashes.</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 -->
+<section class="slide">
+  <p class="num">TIP 9 OF 9</p>
+  <h2>Allow for the cost report's delay</h2>
+  <p class="body">Confluent's daily cost list runs about a day behind, so today's spend isn't in it yet.</p>
+  <div class="viz">
+    <div class="row"><span class="lab">yesterday</span><div class="bar" style="width:520px"><div class="seg keep" style="width:520px">in the cost list</div></div></div>
+    <div class="row"><span class="lab">today</span><div class="bar" style="width:520px"><div class="seg empty" style="width:520px">not there yet</div></div></div>
+  </div>
+</section>
+
+<!-- 10: close -->
+<section class="slide" style="justify-content:center">
+  <p class="kicker">Flink SQL · Confluent Cloud</p>
+  <h2 style="margin-top:28px">All nine are built into our open-source skill</h2>
+  <p class="body">It measures whether a Flink pipeline scales, and now runs Flink SQL on a laptop and on Confluent Cloud.</p>
+  <p class="link">github.com/jimzucker/scalable-flink-skill</p>
+</section>
