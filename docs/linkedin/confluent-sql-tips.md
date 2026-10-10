@@ -6,11 +6,13 @@ override etc, postive and helpful stuff"; then, 2026-10-08, "remove #2 /
 overall make context about running benchmarks" (watermark alignment removed).
 Figures and their sources are in the table under the post.
 
-**Posted on LinkedIn on 2026-10-09**, with the navy card (`confluent-sql-tips-card.png`): https://www.linkedin.com/feed/update/urn:li:activity:7514484972531957760/
+**Posted on LinkedIn on 2026-10-09**, with the light card (`confluent-sql-tips-card.png`): https://www.linkedin.com/feed/update/urn:li:activity:7514513162612695040/
+
+An earlier post the same day used a navy card; the author deleted it, then had the card redrawn for reading at feed size ("when its on LI its very busy hard to read", "heading too small", "title on these loses 9 tips angle") and posted again with five hashtags.
 
 ## As posted
 
-Read back from LinkedIn after publishing. It is the shortened text (the full draft below is longer than LinkedIn's 3,000-character limit), with the author's own edit after posting: the closing paragraph and its link replaced by three hashtags.
+Read back from LinkedIn after publishing: the shortened text (the full draft below is longer than LinkedIn's 3,000-character limit), ending with hashtags instead of a link; the link is on the card.
 
 ```text
 Nine tips for benchmarking Flink SQL on Confluent Cloud
@@ -35,7 +37,7 @@ We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measu
 
 9. Allow for the cost report's delay. Confluent's daily cost list runs about a day behind.
 
-#confluent #flink #kafka
+#confluent #flink #kafka #flinksql #dataengineering
 ```
 
 ## The full draft
