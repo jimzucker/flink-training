@@ -6,6 +6,40 @@ override etc, postive and helpful stuff"; then, 2026-10-08, "remove #2 /
 overall make context about running benchmarks" (watermark alignment removed).
 Figures and their sources are in the table under the post.
 
+**Posted on LinkedIn on 2026-10-09**, with the navy card (`confluent-sql-tips-card.png`): https://www.linkedin.com/feed/update/urn:li:activity:7514484972531957760/
+
+## As posted
+
+Read back from LinkedIn after publishing. It is the shortened text (the full draft below is longer than LinkedIn's 3,000-character limit), with the author's own edit after posting: the closing paragraph and its link replaced by three hashtags.
+
+```text
+Nine tips for benchmarking Flink SQL on Confluent Cloud
+
+We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measuring how its throughput grew as we added compute. The SQL needed no changes, but several Confluent Cloud settings did. These are nine tips from that work:
+
+1. Make the job use the whole compute pool. Confluent's autoscaler decides how much of a pool a job uses: in a 20 CFU pool it used 10 and still reported everything as OK. Set baseline_cfu to the pool's size, and read it back to check.
+
+2. Choose a partition count that divides evenly by every pool size you test. With 6 partitions and 4 workers, two workers get 2 and two get 1, and the job runs at the pace of the busiest: 4 workers do the work of 3.
+
+3. Give the Kafka cluster enough capacity for your largest pool. A Flink benchmark needs Kafka to keep up, or it measures Kafka instead. If you cap Kafka's capacity (eCKU) to control cost, set the cap for your largest test.
+
+4. Count your test data by reading it, not from the topic's size. The size includes records whose write was cancelled, and Flink skips those.
+
+5. Check your results with a snapshot query. A normal Flink SQL count sends a new running total for every record, so counting 100 million records can take hours to read. A snapshot query (sql.snapshot.mode = now) sends only the final total, in about a minute.
+
+6. Create a new compute pool for each size you test. Confluent won't let you lower a pool's maximum size.
+
+7. Wait for the usage figures before you measure. They appear a few minutes after a pool is created, and after that they run about three minutes behind.
+
+8. Make sure a benchmark deletes what it creates, even if it crashes. A test that stops halfway can leave a cluster running, and billing, for hours.
+
+9. Allow for the cost report's delay. Confluent's daily cost list runs about a day behind.
+
+#confluent #flink #kafka
+```
+
+## The full draft
+
 ---
 
 We benchmarked one Flink SQL statement on a laptop and on Confluent Cloud, measuring how its throughput grew as we added compute. The SQL needed no changes, but several Confluent Cloud settings did. These are nine tips from that work:
