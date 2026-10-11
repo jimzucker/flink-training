@@ -303,3 +303,23 @@ What this establishes, and does not:
 Raw results, scripts and the Query Profiler readings:
 [confluent-cloud/](confluent-cloud/). The figures above are recomputed from
 those files with `analyse.py`.
+
+## 9. A busy laptop, an out-of-date skill, and what a run leaves behind — 2026-10-10/11
+
+One test project (`skill-test`, the default business case in DataStream, build
+`078dc8aaf0caa40c`), one reference run, and six skill changes
+(scalable-flink-skill #148–#153). Rates compare only within one run.
+
+| # | what happened | what it showed |
+|---|---|---|
+| 1 | Preflight said "quiet" (other programs on 0.50 of 8 cores). Later that night Photos analysis and Spotlight were busy while the short proof ran | Its 2→4 was out of bounds twice (1.49×, then 1.482×) and stopped the chain. The next morning, with the Mac quiet, the same build read 4 cores at 609,550 and 615,001/s and 2 cores at 297,733 and 304,937/s: 2→4 of 2.00–2.07×. **What made the night's readings slow is not measured.** Both the machine and the backlog topic changed between night and morning |
+| 2 | The short proof measured 1, 2 and 4 cores, then all three again, to stop on 2→4 | The two 1-core cases (about 7 minutes) could not change a 2→4 verdict. Now it runs the largest case first and stops on the step that fails (#148). Across 27 recorded suites, the 4-core case read a median 1.1% higher when it ran first in its pass: inside the ±4% noise, but not the same as running first after the fill |
+| 3 | The project ended with no README, `results/` ignored in git, and no diagram, because the suite never ran | The numbers survived only because the agent copied them into its journal. The harness now checks the README at preflight (#150), writes `results/.gitignore` itself (#151), and draws the job during completeness (#152). Only 2 of 39 recorded projects had a README, and both were missing names the new check looks for (fixed in #131) |
+| 4 | What `results/` keeps | Goes by file name, not size: a suite file reached 1.26 MB (run 52), larger than any manifest (0.84 MB). On the 2026-10-10 run the rule keeps 13 of 30 files, 1.07 MB |
+| 5 | The diagram drew 5 boxes for a job of 4 tasks and 13 operators, and showed as a code block in viewers without Mermaid | #153 draws every operator, one box per task, and renders a PNG. Mermaid's default layout ran run 51's lines behind boxes they do not connect to; ELK did not. At the default width, run 51's picture was 1568 × 230 pixels and unreadable; at `-w 1600` it is 3168 × 462 |
+| 6 | **The skill Claude Code loads was 89 commits behind GitHub** (`~/.claude/skills/scalable-flink-skill` at #61, its files closest to #115) | Every skill change since then had reached the repository but not the agents. Brought up to date on 2026-10-11; the old files are kept in `git stash` and in a tar backup |
+| 7 | The reference run on the updated skill ([`reference-pipeline/run-2026-10-11/`](reference-pipeline/run-2026-10-11/)) | Every new check worked: README PASS, the short proof ran 4, 2, 1 and passed (1→2 1.979×, 2→4 1.735×), cases waited 34 s for a busy Mac, `graph.png`, `records.md` and `headline.md` were written, and 20 kept files were committed. The suite **stopped at the report**: the 2-core readings were 23% apart (1,441,040, 1,149,816 and 1,192,266/s), so neither step was reported. 8 of 10 cases kept, against run 44's 10 of 10 |
+| 8 | What the reference run's own records say about the Mac | The slow 2-core passes ran with 7.1–9.2 GB swapped out, the fast one with 3.5–5.8 GB. Other programs used up to **4.46 of 8 cores at window open**, after the case had waited to start: the wait checks only before a case starts. The 1-core sentinel read 41% of its cap; across the 1-core cases Kafka's memory filled 235 times. **Whether the harness changes played any part is not measured** |
+| 9 | macOS upgraded itself to 27.0.1 and restarted after the reference run | Load average 23 / 50 / 45 seventeen minutes after the restart, from re-indexing. Runs before and after the upgrade are not on the same machine and should not be compared |
+| 10 | `prove.py selftest-pure` took 98 s instead of 8 s | The same on main before any of today's changes (358d582), at 1% CPU, in the dashboard self-tests. **Cause not measured** |
+| 11 | `scripts/build-runs-ledger.py` stopped with an error | Broken since cloud-sql-app's Confluent Cloud short proof (#127), which keeps its case records under `runs`. Unnoticed because the ledger was last rebuilt on 2026-10-01. Fixed; it now has 650 rows |

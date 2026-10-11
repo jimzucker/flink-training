@@ -145,7 +145,12 @@ def from_tinyproofs():
         sibling = os.path.join(os.path.dirname(path), "suite.json")
         tm_memory = tm_memory_of(json.load(open(sibling))) if os.path.exists(sibling) else ""
         suite = os.path.splitext(os.path.basename(path))[0]
-        for r in doc.get("cases", []):
+        # A laptop tiny proof keeps its case records in "cases"; the Confluent
+        # Cloud one (cloud-sql-app, 2026-10-06) keeps the case sizes there and
+        # the records in "runs", like a suite -- read whichever holds records.
+        recs = [x for x in doc.get("cases", []) if isinstance(x, dict)] or \
+               [x for x in doc.get("runs", []) if isinstance(x, dict)]
+        for r in recs:
             row = pass_row(r, study, run, suite, "tinyproof", rel(path),
                            doc.get("build"), "", tm_memory)
             if not row["tm_memory_config"] and os.path.exists(sibling) is False:

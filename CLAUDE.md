@@ -100,6 +100,19 @@ proof. So:
 - **Verify the launch.** After starting a long job, confirm a few seconds later
   that it is alive and its log advanced before reporting an ETA; say "issued"
   vs "confirmed running". Chain the next step onto the end of the current one.
+- **The skill agents load is `~/.claude/skills/scalable-flink-skill`, not
+  this repository's sibling checkout.** On 2026-10-11 it was 89 commits behind
+  GitHub, so no skill change since #61 had reached an agent (findings §9).
+  Before any run, `git -C ~/.claude/skills/scalable-flink-skill status -sb`
+  after a fetch must show it level with `origin/main`; `run-reference.sh`
+  stops otherwise.
+- **The busy-machine wait checks only before a case starts.** The 2026-10-11
+  reference run saw other programs on 4.46 of 8 cores at window open after a
+  case had waited. Read `otherCoresOpen`/`Close` and `hostSwapOpenMB` in the
+  case records before reading a thrown-out case as a harness fault.
+- **A macOS upgrade makes it a different machine.** Numbers from before and
+  after one are not compared, and the hours of re-indexing after it are not a
+  time to measure.
 - **One clean-room run at a time** on this machine, and check host free disk
   (`df -h /System/Volumes/Data`) before starting one.
 - **Don't send output to `/dev/null`** while finding out whether a command works.
