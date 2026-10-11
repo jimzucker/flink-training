@@ -1,0 +1,22 @@
+---
+config:
+  layout: elk
+---
+flowchart LR
+  subgraph t1["Task 1: 2 operators"]
+    t1o0["Source: read temperature readings"]
+    t1o1["parse reading"]
+    t1o0 --> t1o1
+  end
+  subgraph t2["Task 2: 3 operators"]
+    t2o0["hourly average by location"]
+    t2o1["publish hourly average: Writer"]
+    t2o0 --> t2o1
+    t2o2["publish hourly average: Committer"]
+    t2o1 --> t2o2
+  end
+  t1o1 -->|"keyBy hourly average by location, 100 keys"| t2o0
+  in0(["temperature-readings<br/>8 partitions"])
+  in0 --> t1o0
+  out0(["hourly-average-by-location<br/>100 keys"])
+  t2o1 --->|"every 1 hour"| out0

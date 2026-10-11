@@ -1,0 +1,41 @@
+{
+  "manifest-small.json": {
+    "closedWindowCount": 694,
+    "hourMs": 3600000,
+    "locationCount": 100,
+    "locationStaggerSeconds": 36,
+    "partitions": 8,
+    "readingCount": 25000000,
+    "readingsInClosedWindows": 23202000,
+    "recordBytes": 103,
+    "seed": 46,
+    "sensorCount": 1000,
+    "sensorsPerLocation": 10
+  },
+  "manifest-tiny.json": {
+    "closedWindowCount": 16666,
+    "hourMs": 3600000,
+    "locationCount": 100,
+    "locationStaggerSeconds": 36,
+    "partitions": 8,
+    "readingCount": 600000000,
+    "readingsInClosedWindows": 598194000,
+    "recordBytes": 103,
+    "seed": 45,
+    "sensorCount": 1000,
+    "sensorsPerLocation": 10
+  },
+  "manifest.json": {
+    "closedWindowCount": 24999,
+    "hourMs": 3600000,
+    "locationCount": 100,
+    "locationStaggerSeconds": 36,
+    "partitions": 8,
+    "readingCount": 900000000,
+    "readingsInClosedWindows": 898182000,
+    "recordBytes": 103,
+    "seed": 44,
+    "sensorCount": 1000,
+    "sensorsPerLocation": 10
+  }
+}

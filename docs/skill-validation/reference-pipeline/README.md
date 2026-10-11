@@ -105,6 +105,24 @@ reached load 15.4 — so a rate 10% away is not news. These are:
   case records (`otherCoresOpen`, `hostSwapOpenMB`) before reading a stop as a
   regression.
 
+## Re-runs
+
+| run | harness | result | 1→2 | 2→4 | cases measured | kept results |
+|---|---|---|---:|---:|---|---|
+| 2026-10-11, first | scalable-flink-skill `ada7890` | stopped at the report: the 2-core readings were 23% apart | — | — | 8 of 10 | [`run-2026-10-11/`](run-2026-10-11/) |
+| 2026-10-11, third | scalable-flink-skill `ada7890`, macOS 27.0.1 | passed, 82.9 min | 1.940× (1.845–2.035×) | 1.837× (1.756–1.948×) | 10 of 10, plus 4 settling passes | [`run-2026-10-11c/`](run-2026-10-11c/) |
+
+The second run that day (`refpipe-20261011b`) passed its short proof and then
+stopped at the suite: Photos analysis and Spotlight kept 3–5 of 8 cores busy
+after the macOS upgrade, and the busy-machine guard waited its full 10 minutes
+before the first suite case. Its results were not kept.
+
+The third run's rates were 823,178 / 1,596,840 / 2,933,062 records per second
+at 1 / 2 / 4 cores, each case's passes 4.7–5.2% apart, sentinel drift +2.9%.
+The busy-machine guard held the 2-core and 4-core cases while Photos analysis
+and file sync were busy, and each wait cleared before its limit. Both steps
+meet today's rule; 2→4's lowest pair is 0.5% under 1.80×, inside the 1% margin.
+
 ## Do not let a clean-room agent read this directory
 
 It is a worked answer to the interview a clean-room run exists to answer for

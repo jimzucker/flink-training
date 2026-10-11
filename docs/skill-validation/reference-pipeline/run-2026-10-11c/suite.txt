@@ -1,0 +1,67 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      1    823,178/s         —         1 / 100%      1536m / 1.3%     2.5 / 1%      5.5g, full 58x   Pipeline CPU    check it matches
+      2  1,596,840/s     1.94x          2 / 99%      2048m / 0.6%     2.5 / 1%     5.5g, full 696x   Pipeline CPU    add cores for more
+      4  2,933,062/s     1.84x         4 / 100%      3072m / 0.4%     2.5 / 3%   5.5g, full 2,091x   Pipeline CPU    add cores for more
+
+  Each pair is the limit it had and how much of that it used:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what is being claimed. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  the 4-core settle-4: the machine's load reached 11.1 on 8 cores while measuring. This run's
+      own containers are limited to about 7.0 of them, so some or all of that is the run itself.
+      If this pass reads like the others at its size it cost nothing; if it does not, close what
+      else is running and measure again.
+
+
+  1->2 cores: doubling gave 1.94x, target 1.80x  ->  met — the low end of its range, 1.864x, is 3.6% over the 1.80x target
+  2->4 cores: doubling gave 1.84x, target 1.80x  ->  met — the low end of its range, 1.791x, is 0.5% under the 1.80x target, within the 1% margin
+
+======================================================================================================================
+axis                 : one machine, more cores
+API level            : DataStream
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent (the absolute total and count per location and hour)
+checkpoint interval  : 10000 ms
+build hash           : 8071c9e3f9dd9e9f  (completeness passed for 8071c9e3f9dd9e9f)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 900,000,000 records, locationCount 100, sensorCount 1,000, sensorsPerLocation 10, recordBytes 103, hourMs 3,600,000, locationStaggerSeconds 36, partitions 8, closedWindowCount 24,999, readingsInClosedWindows 898,182,000
+backlog              : 900,000,000 records, 8 partitions; outputs are not a constant multiple of the input
+suite span           : 2026-10-11 17:27:02 -> 2026-10-11 18:24:40 EDT (58m)  dashboard: from=1791754022629&to=1791757480072
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     806,425           -   0.99/1   99.3%   100   0.02/2.5   11.0%   0.0%   970s  0.2%       OK
+    2   p1-asc   1,640,826           -   2.00/2   100.2%   100   0.04/2.5   10.3%   0.0%   398s  0.6%       OK
+    4   p1-asc   2,905,561           -   3.97/4   99.4%   100   0.07/2.5   14.8%   0.0%   156s  0.5%       OK
+    4  p2-desc   2,882,004           -   3.98/4   99.4%   100   0.07/2.5   17.0%   0.0%   161s  0.3%       OK
+    2  p2-desc   1,602,619           -   2.00/2   100.2%   100   0.04/2.5    9.5%   0.0%   414s  0.4%       OK
+    1  p2-desc     844,996           -   1.00/1   99.6%   100   0.02/2.5   12.2%   0.0%   921s  0.2%       OK
+    1   p3-asc     810,785           -   0.96/1   96.2%   100   0.03/2.5   10.3%   0.0%   968s  3.4%       OK
+    2   p3-asc   1,601,479           -   1.99/2   99.3%   100   0.03/2.5    9.8%   0.0%   415s  0.3%       OK
+    4   p3-asc   2,905,330           -   4.00/4   100.1%   100   0.07/2.5   15.3%   0.0%   159s  0.4%       OK
+    1 sentinel     830,505           -   1.00/1   100.0%   100   0.02/2.5   13.8%   0.0%   932s  0.7%       OK
+    2 settle-1   1,558,663           -   2.00/2   100.2%   100   0.04/2.5    8.6%   0.0%   419s  0.2%       OK
+    4 settle-2   2,936,634           -   3.99/4   99.8%   100   0.07/2.5   15.3%   0.0%   148s  0.4%       OK
+    2 settle-3   1,580,614           -   1.99/2   99.4%   100   0.03/2.5    9.8%   0.0%   419s  0.5%       OK
+    4 settle-4   3,035,779           -   3.99/4   99.7%   100   0.07/2.5   17.0%   0.0%   142s  0.1%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     823,178           -   0.99/1   98.8%   100   0.02/2.5   11.8%   0.0%   948s  3.4%   spread 4.7%
+    2     MEAN   1,596,840           -   2.00/2   99.9%   100   0.04/2.5    9.6%   0.0%   413s  0.6%   spread 5.1%
+    4     MEAN   2,933,062           -   3.99/4   99.7%   100   0.07/2.5   15.9%   0.0%   153s  0.5%   spread 5.2%
+======================================================================================================================
+STEP 1->2 cores: 1.940x  (ideal 2x, target 1.80x, range across passes 1.845x-2.035x)
+STEP 2->4 cores: 1.837x  (ideal 2x, target 1.80x, range across passes 1.756x-1.948x)
+order effect (descending / ascending): {1: 1.045, 2: 0.9886, 4: 0.9919}
+sentinel: 1c first 806,425 -> last 830,505 rec/s, drift +2.9% across the suite (counted in the 1c spread)
+======================================================================================================================
+dashboard            : opens on the suite, 17:26–18:25; every panel shows data over the suite
+metric names         : all 19 series SKILL.md section 7 names returned data on this image
