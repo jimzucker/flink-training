@@ -39,6 +39,20 @@ if [ ! -f "$SKILL/harness/prove.py" ]; then
     echo "no harness at $SKILL/harness/prove.py — set SKILL_DIR"
     exit 2
 fi
+# The skill Claude Code loads must be the one on GitHub. On 2026-10-11 it was
+# 89 commits behind (findings section 9): every skill change had reached the
+# repository and none had reached the agents. SKIP_SKILL_CHECK=1 to test a
+# harness that is deliberately not on main.
+if [ -z "$SKIP_SKILL_CHECK" ] && [ -d "$SKILL/.git" ]; then
+    git -C "$SKILL" fetch -q origin main || { echo "could not reach GitHub to check the installed skill"; exit 2; }
+    if [ "$(git -C "$SKILL" rev-parse HEAD)" != "$(git -C "$SKILL" rev-parse origin/main)" ] \
+            || [ -n "$(git -C "$SKILL" status --porcelain)" ]; then
+        echo "the installed skill at $SKILL is not GitHub main:"
+        git -C "$SKILL" status -sb | head -5
+        echo "bring it up to date (git -C $SKILL pull --ff-only), or set SKIP_SKILL_CHECK=1"
+        exit 2
+    fi
+fi
 if ! java -version 2>&1 | grep -q '"17'; then
     echo "java 17 is not on PATH. In this repo: source scripts/env.sh"
     java -version 2>&1 | head -1

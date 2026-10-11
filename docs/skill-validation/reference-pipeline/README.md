@@ -77,7 +77,7 @@ per case plus the sentinel:
 | 2 | 1,409,446/s | 8.7% | 99.6% of cap |
 | 4 | 2,567,941/s | 10.4% | 99.8% of cap |
 
-| step | ratio | reportable | meets the 1.90× target |
+| step | ratio | reportable | met the target in force then (1.90×) |
 |---|---:|---|---|
 | 1→2 | 1.775× | yes | no |
 | 2→4 | 1.822× | yes | no |
@@ -92,10 +92,18 @@ reached load 15.4 — so a rate 10% away is not news. These are:
   cases this pipeline used to pass is a regression, and it is exactly what run
   46 hit.
 - **a step that stops being reportable is news**, for the same reason.
-- **a verdict other than "the pipeline did not meet the target" is news.** This
-  pipeline does not meet 1.90× on this machine. If a re-run says it does, or
-  says `PASS`, something is wrong with the harness rather than right with the
-  pipeline.
+- **the target has changed since run 44.** It was 1.90× on the mean. Since
+  scalable-flink-skill #145 a step is met when the low end of its range is above
+  1.782× (1.80× less 1%). Run 44's per-pass rates are not in this repository, so
+  its verdict under today's rule cannot be recomputed, and a re-run that says
+  "met" for 2→4 is not news by itself. Compare ratios and case counts, not
+  verdicts judged by different rules.
+- **a re-run on a busy or memory-short Mac is not a test of the harness.** The
+  2026-10-11 re-run ([`run-2026-10-11/`](run-2026-10-11/), findings §9) stopped
+  with the 2-core readings 23% apart while the Mac had 7–9 GB swapped out and
+  other programs used up to 4.46 of 8 cores at window open. Check both in the
+  case records (`otherCoresOpen`, `hostSwapOpenMB`) before reading a stop as a
+  regression.
 
 ## Do not let a clean-room agent read this directory
 

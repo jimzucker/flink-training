@@ -1,0 +1,16 @@
+2026-10-11 10:57:52 phase=all start
+2026-10-11 10:57:52 phase=up start
+2026-10-11 10:58:14 phase=up end rc=0 22s
+2026-10-11 10:58:14 phase=preflight start
+2026-10-11 11:01:02 phase=preflight end rc=0 168s
+2026-10-11 11:01:02 phase=completeness start
+2026-10-11 11:07:13 phase=completeness end rc=0 371s
+2026-10-11 11:07:13 phase=tinyproof start
+2026-10-11 11:20:12 phase=tinyproof end rc=0 779s
+2026-10-11 11:20:12 phase=fill start
+2026-10-11 11:28:19 phase=fill end rc=0 487s
+2026-10-11 11:28:19 phase=suite start
+2026-10-11 12:33:13 phase=suite end rc=0 3895s
+2026-10-11 12:33:13 phase=report start
+2026-10-11 12:33:16 phase=report end rc=1 2s
+2026-10-11 12:33:16 phase=all end STOPPED at report: no scaling result — too many cases were thrown out to compare one core count with another 95.4 min
