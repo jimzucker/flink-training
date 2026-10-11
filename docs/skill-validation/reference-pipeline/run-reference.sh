@@ -56,6 +56,8 @@ echo "copying the reference pipeline to $DEST"
 mkdir -p "$DEST"
 cp -R "$HERE/job" "$HERE/dashboard" "$DEST/"
 cp "$HERE/ANSWERS.md" "$HERE/ASSUMPTIONS.md" "$HERE/PLAN.md" "$DEST/"
+# The pipeline's own README, which preflight checks names every topic and operator.
+cp "$HERE/PIPELINE.md" "$DEST/README.md"
 sed -e "s#{RUNDIR}#$DEST#g" -e "s#{PREFIX}#$PREFIX#g" \
     "$HERE/pipeline.json" > "$DEST/pipeline.json"
 for f in "$DEST/dashboard/prometheus/prometheus.yml" \

@@ -8,6 +8,7 @@ platforms, 2026-10-05 to 06. One Flink SQL statement,
 INSERT INTO enriched SELECT order_id, symbol, account, qty, price, qty * price AS notional FROM `{in}`
 ```
 
+It reads the `orders` topic and writes one row per order to `enriched`.
 Only the tables around it differ. On the laptop `job/` wraps the statement in a
 small Java job, with a seeded generator and a verifier. On Confluent Cloud the
 harness writes the tables and fills the input with Flink's faker connector.
