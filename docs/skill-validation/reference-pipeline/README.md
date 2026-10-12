@@ -111,6 +111,7 @@ reached load 15.4 — so a rate 10% away is not news. These are:
 |---|---|---|---:|---:|---|---|
 | 2026-10-11, first | scalable-flink-skill `ada7890` | stopped at the report: the 2-core readings were 23% apart | — | — | 8 of 10 | [`run-2026-10-11/`](run-2026-10-11/) |
 | 2026-10-11, third | scalable-flink-skill `ada7890`, macOS 27.0.1 | passed, 82.9 min | 1.940× (1.845–2.035×) | 1.837× (1.756–1.948×) | 10 of 10, plus 4 settling passes | [`run-2026-10-11c/`](run-2026-10-11c/) |
+| 2026-10-12 | scalable-flink-skill `df12dcf` (#154, #155), macOS 27.0.1 | passed, 83.1 min | 1.980× (1.819–2.115×) | 1.819× (1.711–1.940×) | 10 of 10, plus 5 settling passes | [`run-2026-10-12/`](run-2026-10-12/) |
 
 The second run that day (`refpipe-20261011b`) passed its short proof and then
 stopped at the suite: Photos analysis and Spotlight kept 3–5 of 8 cores busy

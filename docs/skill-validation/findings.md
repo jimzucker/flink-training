@@ -323,3 +323,23 @@ One test project (`skill-test`, the default business case in DataStream, build
 | 9 | macOS upgraded itself to 27.0.1 and restarted after the reference run | Load average 23 / 50 / 45 seventeen minutes after the restart, from re-indexing. Runs before and after the upgrade are not on the same machine and should not be compared |
 | 10 | `prove.py selftest-pure` took 98 s instead of 8 s | The same on main before any of today's changes (358d582), at 1% CPU, in the dashboard self-tests. **Cause not measured** |
 | 11 | `scripts/build-runs-ledger.py` stopped with an error | Broken since cloud-sql-app's Confluent Cloud short proof (#127), which keeps its case records under `runs`. Unnoticed because the ledger was last rebuilt on 2026-10-01. Fixed; it now has 650 rows |
+
+## 10. Clean-room run 53 and the fixes it led to — 2026-10-11/12
+
+The first clean-room run on the skill after #148–#153
+([clean-room-run-53.md](clean-room/clean-room-run-53.md)), the two skill
+changes made from it (scalable-flink-skill #154, #155), and the reference run
+that tested them. Rates compare only within one run.
+
+| # | what happened | what it showed |
+|---|---|---|
+| 1 | Run 53 met 1→2 at 1.88× (within the 1% margin) and stopped with 2→4 not met at 1.80×, the low end of its range 1.725× | The harness's verdict and its advice ("more passes could change that; change nothing in the pipeline") were followed. Kafka was ruled out (a squeeze from 2.5 to 0.5 cores moved the 4-core rate 3%); this Mac's memory-heavy 2→4 reads 1.65×, so the machine was not |
+| 2 | Run 53's 4-core passes rose late in the suite on an unchanged build: 410,837–429,480/s in the first four, then 467,289 and 492,953/s | The 2-core passes show no trend, and other programs were under 2 cores at every window. **Cause not measured** |
+| 3 | The README check counted the operator `orders-source` as naming the topic `orders`, and its own self-test missed | It was a text search. #154 matches whole names; replayed on the three READMEs on record, the result is unchanged |
+| 4 | A deliberate "STOPPED:" from the self-test in `harness.log` ended the agent's wait loop early | #154 sends the self-test's messages to `selftest.log`, each marked "self-test:" |
+| 5 | Section 6 told an unattended agent to measure, to tune, and to stop, for the same short step | #154 replaces the three with one table keyed on the scorecard's verdict; the doc check holds it |
+| 6 | Flink's metrics reporter writes `position-mv-by-symbol` as `position_mv_by_symbol`, so a panel written with dashes is empty and the chain stops | #155: section 7 says so, and the empty-panel message gives the spelling to use |
+| 7 | Compose values were written without quotes, so `"true"` became a true/false value (read from the code, not hit) | #155 quotes text values. Every `pipeline.json` on disk (40) rendered with the old code and the new: the 22 that render read identically in `docker compose config`, 11 with extra services; the other 18 are turned away by today's guards either way |
+| 8 | Completeness could stop a run for a busy Mac though it measures no speed; the probe's file was not kept in git; the examples' verifiers left out `{arm}` | All three fixed in #155, with self-tests or doc checks |
+| 9 | Starting the 2026-10-12 reference run, the harness's sweep for leftover chains killed the shell watching it, because that shell's command line named `prove.py all` | The run was unaffected. The same trap as run 53's own wait loop: watch `results/DONE` or a process id, never a command line that names `prove.py` |
+| 10 | The reference run on #154 and #155 ([`reference-pipeline/run-2026-10-12/`](reference-pipeline/run-2026-10-12/)) | Passed in 83.1 min: 1→2 1.980×, 2→4 1.819× (low end 1.796×, within the 1% margin), 10 of 10 cases plus 5 settling passes. README PASS; `harness.log` carried no self-test stop; both completeness arms recorded the Mac's load (0.22 and 0.45 cores) |

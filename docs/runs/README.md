@@ -20,7 +20,7 @@ empty — never estimated.
 
 ## What is in it
 
-667 rows as of 2026-10-11: 365 from `suite.json`, 136 tiny-proof, 82 record and 84 transcribed. The table below gives the counts and sources as of 2026-09-20, when it was written.
+704 rows as of 2026-10-12: 396 from `suite.json`, 142 tiny-proof, 82 record and 84 transcribed. The table below gives the counts and sources as of 2026-09-20, when it was written.
 
 | source_kind | rows | from | covers |
 |---|---:|---|---|
