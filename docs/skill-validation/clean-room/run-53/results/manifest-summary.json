@@ -1,0 +1,44 @@
+{
+  "manifest-small.json": {
+    "accountKeysPredicted": 16384,
+    "accountKeysWithOrders": 16384,
+    "duplicateRecords": 74290,
+    "outputsPerUniqueOrder": 5,
+    "partitions": 8,
+    "priceSeed": 20261011,
+    "pricesPerSymbol": 3,
+    "records": 15000000,
+    "seed": 55,
+    "symbolKeysPredicted": 4096,
+    "symbolKeysWithOrders": 4096,
+    "uniqueOrders": 14925710
+  },
+  "manifest-tiny.json": {
+    "accountKeysPredicted": 16384,
+    "accountKeysWithOrders": 16384,
+    "duplicateRecords": 894345,
+    "outputsPerUniqueOrder": 5,
+    "partitions": 8,
+    "priceSeed": 20261011,
+    "pricesPerSymbol": 3,
+    "records": 180000000,
+    "seed": 54,
+    "symbolKeysPredicted": 4096,
+    "symbolKeysWithOrders": 4096,
+    "uniqueOrders": 179105655
+  },
+  "manifest.json": {
+    "accountKeysPredicted": 16384,
+    "accountKeysWithOrders": 16384,
+    "duplicateRecords": 1244579,
+    "outputsPerUniqueOrder": 5,
+    "partitions": 8,
+    "priceSeed": 20261011,
+    "pricesPerSymbol": 3,
+    "records": 250000000,
+    "seed": 53,
+    "symbolKeysPredicted": 4096,
+    "symbolKeysWithOrders": 4096,
+    "uniqueOrders": 248755421
+  }
+}

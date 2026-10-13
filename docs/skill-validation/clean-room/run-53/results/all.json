@@ -1,0 +1,42 @@
+{
+  "build": "b0d1448e7640f0c3",
+  "steps": [
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 1.7
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 160.4
+    },
+    {
+      "step": "completeness",
+      "rc": 0,
+      "seconds": 745.3
+    },
+    {
+      "step": "tinyproof",
+      "rc": 0,
+      "seconds": 714.4
+    },
+    {
+      "step": "fill",
+      "rc": 0,
+      "seconds": 154.0
+    },
+    {
+      "step": "suite",
+      "rc": 0,
+      "seconds": 3848.7
+    },
+    {
+      "step": "report",
+      "rc": 1,
+      "seconds": 2.2
+    }
+  ],
+  "verdict": "STOPPED at report: not met \u2014 2\u21924 reads 1.80x, and the low end of its range, 1.725x, is 4.2% under the 1.80x target. More passes could change that; change nothing in the pipeline",
+  "seconds": 5626.7
+}

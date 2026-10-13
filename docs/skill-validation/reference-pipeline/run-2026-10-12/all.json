@@ -1,0 +1,42 @@
+{
+  "build": "2fc501e9bece7d23",
+  "steps": [
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 17.5
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 149.9
+    },
+    {
+      "step": "completeness",
+      "rc": 0,
+      "seconds": 330.2
+    },
+    {
+      "step": "tinyproof",
+      "rc": 0,
+      "seconds": 671.8
+    },
+    {
+      "step": "fill",
+      "rc": 0,
+      "seconds": 253.7
+    },
+    {
+      "step": "suite",
+      "rc": 0,
+      "seconds": 3559.6
+    },
+    {
+      "step": "report",
+      "rc": 0,
+      "seconds": 2.8
+    }
+  ],
+  "verdict": "PASS",
+  "seconds": 4985.5
+}
