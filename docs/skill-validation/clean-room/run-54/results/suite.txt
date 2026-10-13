@@ -1,0 +1,66 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      1    108,433/s         —         1 / 100%      1536m / 3.4%     2.5 / 5%     5.5g, full 308x   Pipeline CPU    check it matches
+      2    217,213/s     2.00x          2 / 99%      2048m / 2.1%     2.5 / 9%   5.5g, full 3,611x   Pipeline CPU    add cores for more
+    4 *    358,160/s         —          4 / 98%      3072m / 0.8%    2.5 / 20%   5.5g, full 7,382x   Pipeline CPU    no usable step
+
+  Each pair is the limit it had and how much of that it used:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what is being claimed. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  4 cores: no usable step into this case, so there is nothing to judge it by.
+  * the 4 cores row is not counted in the table: its readings are 20% apart and the limit is
+      20%. Its numbers are still shown, and what to do about them still applies.
+  the 4-core p1-asc: the machine's load reached 8.6 on 8 cores while measuring. This run's own
+      containers are limited to about 7.0 of them, so some or all of that is the run itself. If
+      this pass reads like the others at its size it cost nothing; if it does not, close what
+      else is running and measure again.
+
+
+  1->2 cores: doubling gave 2.00x, target 1.80x  ->  met — the low end of its range, 1.919x, is 6.6% over the 1.80x target
+  2->4 cores: not reported — voided: 4c its readings are 20% apart and the limit is 20%
+
+======================================================================================================================
+axis                 : one machine, more cores: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing every 10 s; sink = at-least-once Kafka sinks, idempotent by publishing the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : d7e14e7505068416  (completeness passed for d7e14e7505068416)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 250,000,000 records, uniqueOrders 249,501,308, duplicateRecords 498,692, partitions 8, allocationsPerOrder 4, outputsPerUniqueOrder 5, symbolKeys 4,096, accountKeys 16,384, grandTotal -40,607,965, pricesPerSymbol 3, 5 outputs per input
+backlog              : 250,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-10-12 22:43:23 -> 2026-10-12 23:25:01 EDT (42m)  dashboard: from=1791859403975&to=1791861901931
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     103,314     516,568   1.00/1   100.1%   100   0.11/2.5    0.0%  45.9%  2285s  0.1%       OK
+    2   p1-asc     213,594   1,067,968   1.94/2   96.7%   100   0.25/2.5    0.3%  29.9%  1032s  0.1%       OK
+    4   p1-asc     333,487   1,667,437   3.86/4   96.6%   100   0.51/2.5    0.8%  29.9%   606s  0.0%       OK
+    4  p2-desc     406,141   2,030,707   3.99/4   99.9%   100   0.62/2.5    2.1%  16.0%   465s  0.4%       OK
+    2  p2-desc     222,730   1,113,652   1.99/2   99.6%   100   0.27/2.5    0.5%  28.6%   977s  0.4%       OK
+    1  p2-desc     119,562     597,810   1.00/1   99.6%   100   0.12/2.5    0.0%  35.9%  1957s  0.0%       OK
+    1   p3-asc     102,230     511,149   1.00/1   99.8%   100   0.10/2.5    0.0%  43.0%  2300s  0.3%       OK
+    2   p3-asc     215,316   1,076,578   1.97/2   98.7%    98   0.22/2.5    0.4%  30.6%  1014s  0.0%       OK
+    4   p3-asc     334,852   1,674,263   3.94/4   98.5%    99   0.50/2.5    1.8%  25.0%   592s  0.8%       OK
+    1 sentinel     108,628     543,141   1.00/1   100.2%   100   0.12/2.5    0.0%  41.9%  2165s  0.3%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     108,433     542,167   1.00/1   99.9%   100   0.12/2.5    0.0%  41.7%  2177s  0.3%   spread 16.0%
+    2     MEAN     217,213   1,086,066   1.97/2   98.3%    99   0.25/2.5    0.4%  29.7%  1008s  0.4%   spread 4.2%
+    4     MEAN     358,160   1,790,802   3.93/4   98.3%    99   0.54/2.5    1.6%  23.6%   554s  0.8%   spread 20.3%   UNREPORTABLE (its readings are 20% apart and the limit is 20%)
+======================================================================================================================
+STEP 1->2 cores: 2.003x  (ideal 2x, target 1.80x, range across passes 1.786x-2.179x)
+STEP 2->4 cores: NOT REPORTED — voided: 4c its readings are 20% apart and the limit is 20%
+order effect (descending / ascending): {1: 1.1634, 2: 1.0386, 4: 1.2154}
+sentinel: 1c first 103,314 -> last 108,628 rec/s, drift +5.0% across the suite (counted in the 1c spread)
+======================================================================================================================
+dashboard            : opens on the suite, 22:42–23:25; every panel shows data over the suite
+metric names         : all 19 series SKILL.md section 7 names returned data on this image

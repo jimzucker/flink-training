@@ -1,0 +1,323 @@
+{
+  "build": "d7e14e7505068416",
+  "records": 6000000,
+  "cores": 1,
+  "arms": [
+    {
+      "group": "st54-complete-clean",
+      "killed": false,
+      "drainS": 96.5,
+      "killedAtCommitted": null,
+      "busyBefore": {
+        "otherCores": 1.13,
+        "waitedS": 0
+      },
+      "shape": {
+        "vertexCount": 4,
+        "signature": [
+          [
+            "Source: orders-source<br/>+- parse-orders<br/>",
+            []
+          ],
+          [
+            "Source: prices-source<br/>",
+            []
+          ],
+          [
+            "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ],
+          [
+            "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          128
+        ],
+        "plan": {
+          "jid": "636fe520462f93b00d57bc896f33214a",
+          "name": "st54-positions",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "bdadaf4c410d782c8aa581ec7de2a9b3",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "f508cc66ed585342a4ec16e2dbeed26e",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: orders-source<br/>+- parse-orders<br/>",
+              "optimizer_properties": {}
+            },
+            {
+              "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: prices-source<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "{\"arm\":\"clean\",\"positions-by-symbol\":{\"rows\":5987976,\"keys\":4096,\"backwardSteps\":0,\"keysThatWentBackwards\":0},\"positions-by-account\":{\"rows\":23951904,\"keys\":16384,\"backwardSteps\":0,\"keysThatWentBackwards\":0},\"market-values-by-symbol\":{\"rows\":32768,\"keys\":4096,\"backwardSteps\":0,\"keysThatWentBackwards\":0},\"market-values-by-account\":{\"rows\":131072,\"keys\":16384,\"backwardSteps\":0,\"keysThatWentBackwards\":0},\"uniqueOrders\":5987976,\"duplicateRecordsInInput\":12024,\"grandTotal\":7728602,\"failures\":0}\nevery assertion held on the clean arm\n"
+    },
+    {
+      "group": "st54-complete-kill",
+      "killed": true,
+      "drainS": 162.2,
+      "killedAtCommitted": 2988356,
+      "busyBefore": {
+        "otherCores": 0.76,
+        "waitedS": 34
+      },
+      "shape": {
+        "vertexCount": 4,
+        "signature": [
+          [
+            "Source: orders-source<br/>+- parse-orders<br/>",
+            []
+          ],
+          [
+            "Source: prices-source<br/>",
+            []
+          ],
+          [
+            "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ],
+          [
+            "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          128
+        ],
+        "plan": {
+          "jid": "80f00ed11d443024a69be12520b83efe",
+          "name": "st54-positions",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "bdadaf4c410d782c8aa581ec7de2a9b3",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "f508cc66ed585342a4ec16e2dbeed26e",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "45b0254a46cabbc3efeea5d2e170ea5b",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: orders-source<br/>+- parse-orders<br/>",
+              "optimizer_properties": {}
+            },
+            {
+              "id": "d1f45bd48db625b66eabc89f33b0ff2a",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: prices-source<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "{\"arm\":\"killed\",\"positions-by-symbol\":{\"rows\":6068550,\"keys\":4096,\"backwardSteps\":4096,\"keysThatWentBackwards\":4096},\"positions-by-account\":{\"rows\":24272457,\"keys\":16384,\"backwardSteps\":16384,\"keysThatWentBackwards\":16384},\"market-values-by-symbol\":{\"rows\":36864,\"keys\":4096,\"backwardSteps\":0,\"keysThatWentBackwards\":0},\"market-values-by-account\":{\"rows\":147456,\"keys\":16384,\"backwardSteps\":0,\"keysThatWentBackwards\":0},\"uniqueOrders\":5987976,\"duplicateRecordsInInput\":12024,\"grandTotal\":7728602,\"failures\":0}\nevery assertion held on the killed arm\n"
+    }
+  ],
+  "at": "2026-10-12 22:16:17",
+  "designDiff": [
+    {
+      "area": "operator",
+      "declared": "parse-orders",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "position-mv-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "position-mv-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-positions-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-positions-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-market-values-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-market-values-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "input",
+      "declared": "orders",
+      "built": true,
+      "detail": "not created yet -- the fill has not run"
+    },
+    {
+      "area": "input",
+      "declared": "prices",
+      "built": true,
+      "detail": "12,288 records on the broker"
+    },
+    {
+      "area": "output",
+      "declared": "positions-by-symbol",
+      "built": true,
+      "detail": "5,987,976 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "positions-by-account",
+      "built": true,
+      "detail": "23,951,904 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "market-values-by-symbol",
+      "built": true,
+      "detail": "32,768 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "market-values-by-account",
+      "built": true,
+      "detail": "131,072 records after the drain"
+    },
+    {
+      "area": "constraint",
+      "declared": "outputsPerInput = 5.0",
+      "built": true,
+      "detail": "read back 4.99"
+    },
+    {
+      "area": "constraint",
+      "declared": "maxParallelism = 128",
+      "built": true,
+      "detail": "read back 128"
+    },
+    {
+      "area": "in the build only",
+      "declared": "Source: prices-source",
+      "built": true,
+      "detail": "not named in the design; that passes"
+    }
+  ],
+  "result": "PASS"
+}

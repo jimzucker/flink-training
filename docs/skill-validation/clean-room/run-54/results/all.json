@@ -1,0 +1,42 @@
+{
+  "build": "d7e14e7505068416",
+  "steps": [
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 2.0
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 152.1
+    },
+    {
+      "step": "completeness",
+      "rc": 0,
+      "seconds": 557.6
+    },
+    {
+      "step": "tinyproof",
+      "rc": 0,
+      "seconds": 919.0
+    },
+    {
+      "step": "fill",
+      "rc": 0,
+      "seconds": 162.4
+    },
+    {
+      "step": "suite",
+      "rc": 0,
+      "seconds": 2505.0
+    },
+    {
+      "step": "report",
+      "rc": 1,
+      "seconds": 2.2
+    }
+  ],
+  "verdict": "STOPPED at report: a step the claim needs was not measured \u2014 2\u21924: the 4-core case does not count: its readings are 20% apart and the limit is 20%",
+  "seconds": 4300.3
+}
