@@ -343,3 +343,23 @@ that tested them. Rates compare only within one run.
 | 8 | Completeness could stop a run for a busy Mac though it measures no speed; the probe's file was not kept in git; the examples' verifiers left out `{arm}` | All three fixed in #155, with self-tests or doc checks |
 | 9 | Starting the 2026-10-12 reference run, the harness's sweep for leftover chains killed the shell watching it, because that shell's command line named `prove.py all` | The run was unaffected. The same trap as run 53's own wait loop: watch `results/DONE` or a process id, never a command line that names `prove.py` |
 | 10 | The reference run on #154 and #155 ([`reference-pipeline/run-2026-10-12/`](reference-pipeline/run-2026-10-12/)) | Passed in 83.1 min: 1→2 1.980×, 2→4 1.819× (low end 1.796×, within the 1% margin), 10 of 10 cases plus 5 settling passes. README PASS; `harness.log` carried no self-test stop; both completeness arms recorded the Mac's load (0.22 and 0.45 cores) |
+
+## 11. Clean-room run 54 and the wording it led to — 2026-10-12/13
+
+The first clean-room run on the skill after #154 and #155
+([clean-room-run-54.md](clean-room/clean-room-run-54.md)), and the skill
+change made from it (scalable-flink-skill #156). Rates compare only within one
+run.
+
+| # | what happened | what it showed |
+|---|---|---|
+| 1 | Run 54 met 1→2 at 2.00× (low end 1.919×) and stopped with no 2→4: the 4-core readings, 333,487, 406,141 and 334,852/s, were 20.3% apart against a 20% limit | The spread guard did its job: a case that cannot say which of two rates is right gives no step. The two 4-core readings that agree give about 1.54× against the 2-core mean, which is not a reported step |
+| 2 | The second pass read high at every core count: +21% at 4 cores, about +14% at 1 core, +4% at 2 cores | Other programs' load at each window does not separate the high passes from the normal ones. **Cause not measured** |
+| 3 | The stop line said "its readings are 20% apart and the limit is 20%" about 20.3% | Both numbers were rounded to whole percent, so the reason read as no reason. #156 prints one decimal and the direction: "20.3% apart, over the 20% limit" |
+| 4 | Messages said "the claim" — "a step the claim needs was not measured", "CLAIM NOT MET" | The author, 2026-10-13: "stop say 'claim' that not english, goal or target". #156 says target or goal throughout, and the doc check fails on the word; JSON keys stay, so recorded runs replay |
+| 5 | `harness.log` said "the chain measured a valid table whose step ratios do not meet the claim" for a table that had thrown out its 4-core case | One sentence was logged for every stop. #156 logs what actually stopped the report |
+| 6 | `headline.md` printed 1→2's range as 1.786–2.179× beside "the low end of its range, 1.919x" | Two different ranges under one name: the lowest and highest pass, and the 95% range from same-time pairs the verdict uses. #156 prints the one the verdict uses |
+| 7 | Preflight printed PASS for "nothing else is using the cores" beside "busy: 2.20 of 8 cores" | The row is reported, never a stop; its name stated the hoped-for answer. #156 names it "other programs' use of the cores" |
+| 8 | The harness README said preflight stops a run that does not leave the VM a spare gigabyte | That rule was removed on 2026-09-07; the code only reports the sum. #156 corrects the README and writes the sum down (the example: 4,560 + 6,144 + 2,048 = 12,752 MiB on a 12,955 MiB VM) |
+| 9 | The agent's verifier crashed on a Jackson version clash, and chain 1 stopped at completeness after 6.5 minutes | A defect in the agent's own build, caught where it should be. Fixed by pinning the version the Kafka connector brings |
+| 10 | The agent handed back at 22:41 with the suite's backlog still filling, and three times more as steps passed | No scorecard reached the agent, and the probe and ceiling were not run. The chain itself finished at 23:25 |

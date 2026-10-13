@@ -1,0 +1,16 @@
+2026-10-12 22:13:30 phase=all start
+2026-10-12 22:13:30 phase=up start
+2026-10-12 22:13:32 phase=up end rc=0 2s
+2026-10-12 22:13:32 phase=preflight start
+2026-10-12 22:16:04 phase=preflight end rc=0 152s
+2026-10-12 22:16:04 phase=completeness start
+2026-10-12 22:25:22 phase=completeness end rc=0 558s
+2026-10-12 22:25:22 phase=tinyproof start
+2026-10-12 22:40:41 phase=tinyproof end rc=0 919s
+2026-10-12 22:40:41 phase=fill start
+2026-10-12 22:43:23 phase=fill end rc=0 162s
+2026-10-12 22:43:23 phase=suite start
+2026-10-12 23:25:08 phase=suite end rc=0 2505s
+2026-10-12 23:25:08 phase=report start
+2026-10-12 23:25:10 phase=report end rc=1 2s
+2026-10-12 23:25:10 phase=all end STOPPED at report: a step the claim needs was not measured — 2→4: the 4-core case does not count: its readings are 20% apart and the limit is 20% 71.7 min

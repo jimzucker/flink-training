@@ -1,0 +1,41 @@
+{
+  "manifest-small.json": {
+    "accountKeys": 16384,
+    "allocationsPerOrder": 4,
+    "duplicateRecords": 12024,
+    "grandTotal": 7728602,
+    "outputsPerUniqueOrder": 5,
+    "partitions": 8,
+    "pricesPerSymbol": 3,
+    "seed": 20261014,
+    "symbolKeys": 4096,
+    "tradeCount": 6000000,
+    "uniqueOrders": 5987976
+  },
+  "manifest-tiny.json": {
+    "accountKeys": 16384,
+    "allocationsPerOrder": 4,
+    "duplicateRecords": 299019,
+    "grandTotal": 29418583,
+    "outputsPerUniqueOrder": 5,
+    "partitions": 8,
+    "pricesPerSymbol": 3,
+    "seed": 20261013,
+    "symbolKeys": 4096,
+    "tradeCount": 150000000,
+    "uniqueOrders": 149700981
+  },
+  "manifest.json": {
+    "accountKeys": 16384,
+    "allocationsPerOrder": 4,
+    "duplicateRecords": 498692,
+    "grandTotal": -40607965,
+    "outputsPerUniqueOrder": 5,
+    "partitions": 8,
+    "pricesPerSymbol": 3,
+    "seed": 20261012,
+    "symbolKeys": 4096,
+    "tradeCount": 250000000,
+    "uniqueOrders": 249501308
+  }
+}
