@@ -10,9 +10,11 @@ examples, completeness never stopped by a busy Mac and the probe's file kept
 254k tokens. Files: [run-54/](run-54/), including the job,
 [PositionsJob.java](run-54/job/src/st54/PositionsJob.java).
 
-The agent handed back at 22:41, while the suite's backlog was filling, so it
-never saw the result: there was no scorecard to report, and the probe and
-ceiling were not run.
+The agent handed back at 22:13, 71 minutes before the chain finished, and
+sent three more reports as steps passed, the last at 22:41 while the suite's
+backlog was filling. It never saw the result: there was no scorecard to
+report, and the probe and ceiling were not run. It had started the watcher in
+the background and ended its turn to wait (scalable-flink-skill #158).
 
 ## What it produced
 
@@ -41,7 +43,10 @@ give 2→4 about 1.54× against the 2-core mean; that is not a reported step.
 2 cores 222,730/s against 213,594 and 215,316. Other programs used 0.08–0.12
 of the 8 cores at the start and end of the two high 4- and 1-core passes, but
 the 2-core third pass and the closing 1-core pass read normally with the same
-0.08–0.12, so those figures do not separate the passes. Cause not measured.
+0.08–0.12, so those figures do not separate the passes. The high passes are
+the three descending ones, back to back from 22:58 to 23:08, and in them the
+source was held back by the later stages for less of its time on the same
+cores (4 cores 16% against 25–30%). Cause not measured.
 
 Other readings, not tested as causes:
 
