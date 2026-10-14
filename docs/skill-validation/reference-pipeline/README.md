@@ -112,6 +112,7 @@ reached load 15.4 — so a rate 10% away is not news. These are:
 | 2026-10-11, first | scalable-flink-skill `ada7890` | stopped at the report: the 2-core readings were 23% apart | — | — | 8 of 10 | [`run-2026-10-11/`](run-2026-10-11/) |
 | 2026-10-11, third | scalable-flink-skill `ada7890`, macOS 27.0.1 | passed, 82.9 min | 1.940× (1.845–2.035×) | 1.837× (1.756–1.948×) | 10 of 10, plus 4 settling passes | [`run-2026-10-11c/`](run-2026-10-11c/) |
 | 2026-10-12 | scalable-flink-skill `df12dcf` (#154, #155), macOS 27.0.1 | passed, 83.1 min | 1.980× (1.819–2.115×) | 1.819× (1.711–1.940×) | 10 of 10, plus 5 settling passes | [`run-2026-10-12/`](run-2026-10-12/) |
+| 2026-10-13 | scalable-flink-skill `28ce501` (#156, #157), macOS 27.0.1 | passed, 66.4 min | 1.868× (1.813–1.926×) | 1.899× (1.877–1.899×) | 10 of 10, plus 1 settling pass | [`run-2026-10-13/`](run-2026-10-13/) |
 
 The second run that day (`refpipe-20261011b`) passed its short proof and then
 stopped at the suite: Photos analysis and Spotlight kept 3–5 of 8 cores busy
@@ -123,6 +124,13 @@ at 1 / 2 / 4 cores, each case's passes 4.7–5.2% apart, sentinel drift +2.9%.
 The busy-machine guard held the 2-core and 4-core cases while Photos analysis
 and file sync were busy, and each wait cleared before its limit. Both steps
 meet today's rule; 2→4's lowest pair is 0.5% under 1.80×, inside the 1% margin.
+
+The 2026-10-13 run's rates were 838,207 / 1,565,813 / 2,973,908 records per
+second at 1 / 2 / 4 cores, each case's passes 7.0–7.9% apart, sentinel drift
+−5.9%. Other programs used at most 1.66 of the 8 cores at any window open,
+with 727 MB swapped out. Its output was the first with #156's wording: no
+"claim", the step table's "range it is judged on" column, and the preflight
+row "other programs' use of the cores (reported)".
 
 ## Do not let a clean-room agent read this directory
 
