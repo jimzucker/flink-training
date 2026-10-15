@@ -1,0 +1,72 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      1    128,653/s         —          1 / 96%      1664m / 4.5%     2.5 / 4%     5.5g, full 756x   Pipeline CPU    check it matches
+      2    235,385/s     1.83x          2 / 99%      2304m / 2.0%     2.5 / 8%   5.5g, full 3,190x   Pipeline CPU    more passes
+      4    438,463/s     1.86x          4 / 97%      3584m / 1.0%    2.5 / 20%   5.5g, full 6,892x   Pipeline CPU    add cores for more
+
+  Each pair is the limit it had and how much of that it used:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what the target is about. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  2 cores: doubling gave 1.83x, not met: the low end of its range, 1.763x, is 2.1% under the
+      1.80x target. More passes could change that; change nothing in the pipeline on it.
+  the 1-core p2-desc: the machine's load reached 9.7 on 8 cores while measuring. This run's own
+      containers are limited to about 4.0 of them, so some or all of that is the run itself. If
+      this pass reads like the others at its size it cost nothing; if it does not, close what
+      else is running and measure again.
+
+
+  1->2 cores: doubling gave 1.83x, target 1.80x  ->  not met — the low end of its range, 1.763x, is 2.1% under the 1.80x target; more passes could change that
+  2->4 cores: doubling gave 1.86x, target 1.80x  ->  met — the low end of its range, 1.784x, is 0.9% under the 1.80x target, within the 1% margin
+
+======================================================================================================================
+axis                 : one machine, more cores: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API (KeyedBroadcastProcessFunction per key space), Flink 1.20.1
+guarantee            : state = exactly-once checkpointing every 5 s; sink = at-least-once Kafka sinks, idempotent by emitting the absolute position per key
+checkpoint interval  : 5000 ms
+build hash           : 55e693b915fbe2a6  (completeness passed for 55e693b915fbe2a6)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 300,000,000 records, uniqueOrders 298,506,588, duplicateRecords 1,493,412, partitions 8, fanOut 5, distinctSymbols 4,096, distinctAccountKeys 16,384, accountSubAccountPairs 4, 5 outputs per input
+backlog              : 300,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-10-14 20:26:45 -> 2026-10-14 21:32:06 EDT (1h 05m)  dashboard: from=1792024005015&to=1792027926934
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     133,982     669,909   0.99/1   99.3%   100   0.11/2.5    0.0%  31.2%  2103s  0.3%       OK
+    2   p1-asc     241,924   1,209,618   2.00/2   100.2%   100   0.22/2.5    0.8%  23.9%  1096s  1.0%       OK
+    4   p1-asc     455,338   2,276,691   3.98/4   99.4%    99   0.47/2.5    2.5%  13.5%   514s  0.3%       OK
+    4  p2-desc     425,876   2,129,380   3.78/4   94.5%    99   0.44/2.5    1.8%  14.9%   566s  0.1%  CEILING
+        ceiling: the pipeline only used 94.5% of the 4 cores it was given, and it needs 95% to count. Kafka hit its memory limit 6,229 times during the window and had to read the backlog back off disk (270,430 page refaults), which is the likely reason. Raise caps.kafkaMemory from 5632m to about 8960m. It shows where scaling stops, and is kept in the table and left out of the ratios.
+    2  p2-desc     235,642   1,178,212   1.99/2   99.4%   100   0.23/2.5    0.7%  29.5%  1134s  0.5%       OK
+    1  p2-desc     120,403     602,013   0.97/1   97.0%   100   0.12/2.5    0.0%  27.8%  2360s  0.3%       OK
+    1   p3-asc     132,430     662,150   1.00/1   100.0%   100   0.10/2.5    0.1%  30.7%  2135s  0.4%       OK
+    2   p3-asc     239,018   1,195,088   1.98/2   99.2%   100   0.21/2.5    0.6%  25.3%  1108s  0.2%       OK
+    4   p3-asc     421,588   2,107,939   3.88/4   96.9%    96   0.51/2.5    4.3%  14.9%   559s  0.9%       OK
+    1 sentinel     123,611     618,056   0.97/1   97.1%   100   0.10/2.5    0.0%  25.9%  2289s  0.9%       OK
+    2 settle-1     232,266   1,161,329   1.96/2   98.2%    98   0.21/2.5    0.5%  23.2%  1145s  0.0%       OK
+    1 settle-2     128,954     644,769   0.98/1   98.4%   100   0.10/2.5    0.1%  28.9%  2188s  1.0%       OK
+    2 settle-3     226,074   1,130,371   1.93/2   96.4%   100   0.20/2.5    0.5%  25.3%  1190s  0.2%       OK
+    1 settle-4     128,564     642,822   0.97/1   96.7%   100   0.11/2.5    0.0%  26.2%  2200s  0.1%       OK
+    2 settle-5     237,388   1,186,942   1.97/2   98.6%    98   0.21/2.5    0.9%  24.2%  1118s  0.2%       OK
+    1 settle-6     132,625     663,125   0.95/1   95.5%   100   0.10/2.5    0.0%  26.9%  2132s  0.1%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     128,653     643,264   0.98/1   97.7%   100   0.11/2.5    0.0%  28.2%  2201s  1.0%   spread 10.5%
+    2     MEAN     235,385   1,176,926   1.97/2   98.7%    99   0.22/2.5    0.7%  25.2%  1132s  1.0%   spread 6.7%
+    4     MEAN     438,463   2,192,314   3.93/4   98.1%    98   0.49/2.5    3.4%  14.2%   537s  0.9%   spread 7.7%
+======================================================================================================================
+STEP 1->2 cores: 1.830x  (ideal 2x, target 1.80x, range it is judged on 1.763x to 1.847x)
+STEP 2->4 cores: 1.863x  (ideal 2x, target 1.80x, range it is judged on 1.784x to 1.980x)
+order effect (descending / ascending): {1: 0.9039, 2: 0.9799, 4: None}
+sentinel: 1c first 133,982 -> last 123,611 rec/s, drift -8.1% across the suite (counted in the 1c spread)
+======================================================================================================================
+dashboard            : opens on the suite, 20:25–21:32; every panel shows data over the suite
+metric names         : all 19 series SKILL.md section 7 names returned data on this image

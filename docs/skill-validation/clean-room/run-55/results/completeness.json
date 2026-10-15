@@ -1,0 +1,335 @@
+{
+  "build": "55e693b915fbe2a6",
+  "records": 10000000,
+  "cores": 1,
+  "arms": [
+    {
+      "group": "st55-complete-clean",
+      "killed": false,
+      "drainS": 123.8,
+      "killedAtCommitted": null,
+      "busyBefore": {
+        "otherCores": 0.7,
+        "waitedS": 0
+      },
+      "shape": {
+        "vertexCount": 4,
+        "signature": [
+          [
+            "Source: kafka-source-orders<br/>+- parse-orders<br/>",
+            []
+          ],
+          [
+            "Source: kafka-source-prices<br/>+- parse-prices<br/>",
+            []
+          ],
+          [
+            "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ],
+          [
+            "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          128
+        ],
+        "plan": {
+          "jid": "8e13d9cabac3a4326df167ff300fee9b",
+          "name": "st55-positions",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "bdadaf4c410d782c8aa581ec7de2a9b3",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "094edc014b314f7bdce4abaf26b2f783",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "4fc74540b074de2be0d88cfbb3200aef",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "f508cc66ed585342a4ec16e2dbeed26e",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "094edc014b314f7bdce4abaf26b2f783",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "4fc74540b074de2be0d88cfbb3200aef",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "094edc014b314f7bdce4abaf26b2f783",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: kafka-source-orders<br/>+- parse-orders<br/>",
+              "optimizer_properties": {}
+            },
+            {
+              "id": "4fc74540b074de2be0d88cfbb3200aef",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: kafka-source-prices<br/>+- parse-prices<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "verifier: arm=clean, manifest 10,000,000 records, 9,950,320 unique orders, 49,680 repeated on purpose\n  read 9,950,320 records off positions-by-symbol (4,096 keys) in 5.1 s\n  read 39,801,280 records off positions-by-account (16,384 keys) in 21.6 s\n  read 37,297 records off market-values-by-symbol (4,096 keys) in 0.1 s\n  read 148,123 records off market-values-by-account (16,384 keys) in 0.2 s\n  ok    the input holds every one of the 4096 symbols the interview predicted (it holds 4096)\n  ok    positions-by-symbol: distinct keys 4096, predicted 4096 (missing 0, unexpected 0)\n  ok    positions-by-symbol: every key in exactly one partition (0 keys in more than one)\n  ok    positions-by-symbol: no key's count of inputs applied ever goes backwards or repeats (0 steps that did not move forwards)\n  ok    positions-by-symbol: every position is exactly one input after the one before it, nothing skipped (0 steps skip)\n  ok    positions-by-account: distinct keys 16384, predicted 16384 (missing 0, unexpected 0)\n  ok    positions-by-account: every key in exactly one partition (0 keys in more than one)\n  ok    positions-by-account: no key's count of inputs applied ever goes backwards or repeats (0 steps that did not move forwards)\n  ok    positions-by-account: every position is exactly one input after the one before it, nothing skipped (0 steps skip)\n  ok    market-values-by-symbol: distinct keys 4096, predicted 4096 (missing 0, unexpected 0)\n  ok    market-values-by-symbol: every key in exactly one partition (0 keys in more than one)\n  ok    market-values-by-symbol: no key's count of inputs applied ever goes backwards or repeats (0 steps that did not move forwards)\n  ok    market-values-by-account: distinct keys 16384, predicted 16384 (missing 0, unexpected 0)\n  ok    market-values-by-account: every key in exactly one partition (0 keys in more than one)\n  ok    market-values-by-account: no key's count of inputs applied ever goes backwards or repeats (0 steps that did not move forwards)\n  ok    positions-by-symbol holds one record per unique order: 9,950,320 records, 9,950,320 orders\n  ok    positions-by-account holds four records per unique order: 39,801,280 records, 39,801,280 expected\n  ok    final position by symbol equals the manifest for every symbol (0 differ)\n  ok    final count of orders applied by symbol equals the manifest (0 differ)\n  ok    final position by account/sub-account/symbol equals the manifest for every key (0 differ)\n  ok    the two paths agree: account positions summed per symbol equal the symbol position (0 differ)\n  ok    final market value by symbol = final position x latest price for every symbol (0 differ)\n  ok    final market value by account/sub-account/symbol = final position x latest price for every key (0 differ)\nVERIFY PASS (clean)\n"
+    },
+    {
+      "group": "st55-complete-kill",
+      "killed": true,
+      "drainS": 196.0,
+      "killedAtCommitted": 4156959,
+      "busyBefore": {
+        "otherCores": 0.7,
+        "waitedS": 0
+      },
+      "shape": {
+        "vertexCount": 4,
+        "signature": [
+          [
+            "Source: kafka-source-orders<br/>+- parse-orders<br/>",
+            []
+          ],
+          [
+            "Source: kafka-source-prices<br/>+- parse-prices<br/>",
+            []
+          ],
+          [
+            "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ],
+          [
+            "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+            [
+              "BROADCAST",
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          128
+        ],
+        "plan": {
+          "jid": "0d3f0ca3d7c0d0dad56c8be03fb5cb2a",
+          "name": "st55-positions",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "bdadaf4c410d782c8aa581ec7de2a9b3",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-symbol<br/>:- sink-positions-by-symbol: Writer<br/>:  +- sink-positions-by-symbol: Committer<br/>+- sink-market-values-by-symbol: Writer<br/>   +- sink-market-values-by-symbol: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "094edc014b314f7bdce4abaf26b2f783",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "4fc74540b074de2be0d88cfbb3200aef",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "f508cc66ed585342a4ec16e2dbeed26e",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "position-mv-by-account<br/>:- sink-positions-by-account: Writer<br/>:  +- sink-positions-by-account: Committer<br/>+- sink-market-values-by-account: Writer<br/>   +- sink-market-values-by-account: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "094edc014b314f7bdce4abaf26b2f783",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                },
+                {
+                  "num": 1,
+                  "id": "4fc74540b074de2be0d88cfbb3200aef",
+                  "ship_strategy": "BROADCAST",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "094edc014b314f7bdce4abaf26b2f783",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: kafka-source-orders<br/>+- parse-orders<br/>",
+              "optimizer_properties": {}
+            },
+            {
+              "id": "4fc74540b074de2be0d88cfbb3200aef",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: kafka-source-prices<br/>+- parse-prices<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "verifier: arm=killed, manifest 10,000,000 records, 9,950,320 unique orders, 49,680 repeated on purpose\n  read 10,032,227 records off positions-by-symbol (4,096 keys) in 5.0 s\n  read 40,122,709 records off positions-by-account (16,384 keys) in 21.4 s\n  read 44,039 records off market-values-by-symbol (4,096 keys) in 0.1 s\n  read 176,160 records off market-values-by-account (16,384 keys) in 0.2 s\n  ok    the input holds every one of the 4096 symbols the interview predicted (it holds 4096)\n  ok    positions-by-symbol: distinct keys 4096, predicted 4096 (missing 0, unexpected 0)\n  ok    positions-by-symbol: every key in exactly one partition (0 keys in more than one)\n  ok    positions-by-symbol: after the kill, each key goes backwards (or repeats its last record) at most once (4069 keys did, most 1 times)\n  ok    positions-by-symbol: every position is exactly one input after the one before it, nothing skipped (0 steps skip)\n  ok    positions-by-account: distinct keys 16384, predicted 16384 (missing 0, unexpected 0)\n  ok    positions-by-account: every key in exactly one partition (0 keys in more than one)\n  ok    positions-by-account: after the kill, each key goes backwards (or repeats its last record) at most once (16276 keys did, most 1 times)\n  ok    positions-by-account: every position is exactly one input after the one before it, nothing skipped (0 steps skip)\n  ok    market-values-by-symbol: distinct keys 4096, predicted 4096 (missing 0, unexpected 0)\n  ok    market-values-by-symbol: every key in exactly one partition (0 keys in more than one)\n  ok    market-values-by-symbol: after the kill, each key goes backwards (or repeats its last record) at most once (0 keys did, most 0 times)\n  ok    market-values-by-account: distinct keys 16384, predicted 16384 (missing 0, unexpected 0)\n  ok    market-values-by-account: every key in exactly one partition (0 keys in more than one)\n  ok    market-values-by-account: after the kill, each key goes backwards (or repeats its last record) at most once (0 keys did, most 0 times)\n  ok    positions-by-symbol holds at least one record per unique order: 10,032,227 records, 9,950,320 orders\n  ok    positions-by-account holds at least four records per unique order: 40,122,709 records, 39,801,280 expected\n  ok    final position by symbol equals the manifest for every symbol (0 differ)\n  ok    final count of orders applied by symbol equals the manifest (0 differ)\n  ok    final position by account/sub-account/symbol equals the manifest for every key (0 differ)\n  ok    the two paths agree: account positions summed per symbol equal the symbol position (0 differ)\n  ok    final market value by symbol = final position x latest price for every symbol (0 differ)\n  ok    final market value by account/sub-account/symbol = final position x latest price for every key (0 differ)\nVERIFY PASS (killed)\n"
+    }
+  ],
+  "at": "2026-10-14 19:55:08",
+  "designDiff": [
+    {
+      "area": "operator",
+      "declared": "kafka-source-orders",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "parse-orders",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "kafka-source-prices",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "parse-prices",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "position-mv-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "position-mv-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-positions-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-positions-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-market-values-by-symbol",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "sink-market-values-by-account",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "input",
+      "declared": "orders",
+      "built": true,
+      "detail": "not created yet -- the fill has not run"
+    },
+    {
+      "area": "input",
+      "declared": "prices",
+      "built": true,
+      "detail": "12,288 records on the broker"
+    },
+    {
+      "area": "output",
+      "declared": "positions-by-symbol",
+      "built": true,
+      "detail": "9,950,320 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "positions-by-account",
+      "built": true,
+      "detail": "39,801,280 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "market-values-by-symbol",
+      "built": true,
+      "detail": "37,297 records after the drain"
+    },
+    {
+      "area": "output",
+      "declared": "market-values-by-account",
+      "built": true,
+      "detail": "148,123 records after the drain"
+    },
+    {
+      "area": "constraint",
+      "declared": "outputsPerInput = 5.0",
+      "built": true,
+      "detail": "read back 4.975"
+    },
+    {
+      "area": "constraint",
+      "declared": "maxParallelism = 128",
+      "built": true,
+      "detail": "read back 128"
+    }
+  ],
+  "result": "PASS"
+}

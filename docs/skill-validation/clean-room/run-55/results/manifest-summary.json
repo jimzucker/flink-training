@@ -1,0 +1,38 @@
+{
+  "manifest-small.json": {
+    "accountSubAccountPairs": 4,
+    "distinctAccountKeys": 16384,
+    "distinctSymbols": 4096,
+    "dupRate": 0.005,
+    "duplicateRecords": 49680,
+    "fanOut": 5,
+    "partitions": 8,
+    "recordCount": 10000000,
+    "seed": 20261016,
+    "uniqueOrders": 9950320
+  },
+  "manifest-tiny.json": {
+    "accountSubAccountPairs": 4,
+    "distinctAccountKeys": 16384,
+    "distinctSymbols": 4096,
+    "dupRate": 0.005,
+    "duplicateRecords": 596304,
+    "fanOut": 5,
+    "partitions": 8,
+    "recordCount": 120000000,
+    "seed": 20261015,
+    "uniqueOrders": 119403696
+  },
+  "manifest.json": {
+    "accountSubAccountPairs": 4,
+    "distinctAccountKeys": 16384,
+    "distinctSymbols": 4096,
+    "dupRate": 0.005,
+    "duplicateRecords": 1493412,
+    "fanOut": 5,
+    "partitions": 8,
+    "recordCount": 300000000,
+    "seed": 20261014,
+    "uniqueOrders": 298506588
+  }
+}

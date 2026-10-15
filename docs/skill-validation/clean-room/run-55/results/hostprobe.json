@@ -1,0 +1,96 @@
+{
+  "perCore": {
+    "alu": {
+      "1": 633182121.0,
+      "2": 613944296.0,
+      "4": 605010842.0
+    },
+    "mem": {
+      "1": 542091046.0,
+      "2": 484110389.0,
+      "4": 365056704.0
+    }
+  },
+  "ofLinear": {
+    "alu": {
+      "1->2": 0.97,
+      "2->4": 0.986
+    },
+    "mem": {
+      "1->2": 0.901,
+      "2->4": 0.755
+    }
+  },
+  "ofLinearRange": {
+    "alu": {
+      "1->2": {
+        "low": 0.959,
+        "high": 0.979,
+        "spread": 0.02,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.964,
+          "high": 0.974,
+          "spread": 0.01
+        }
+      },
+      "2->4": {
+        "low": 0.978,
+        "high": 0.993,
+        "spread": 0.015,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.981,
+          "high": 0.988,
+          "spread": 0.007
+        }
+      }
+    },
+    "mem": {
+      "1->2": {
+        "low": 0.84,
+        "high": 0.971,
+        "spread": 0.131,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.887,
+          "high": 0.925,
+          "spread": 0.038
+        }
+      },
+      "2->4": {
+        "low": 0.683,
+        "high": 0.786,
+        "spread": 0.103,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.723,
+          "high": 0.764,
+          "spread": 0.041
+        }
+      }
+    }
+  },
+  "repeats": 9,
+  "spread": {
+    "widest": {
+      "envelope": 0.131,
+      "middleHalf": 0.041,
+      "repeats": 9,
+      "mode": null
+    },
+    "alu": {
+      "envelope": 0.02,
+      "middleHalf": 0.01,
+      "repeats": 9,
+      "mode": "alu"
+    },
+    "mem": {
+      "envelope": 0.131,
+      "middleHalf": 0.041,
+      "repeats": 9,
+      "mode": "mem"
+    }
+  },
+  "at": "2026-10-14 21:38:35"
+}
