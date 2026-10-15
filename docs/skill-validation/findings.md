@@ -363,3 +363,20 @@ run.
 | 8 | The harness README said preflight stops a run that does not leave the VM a spare gigabyte | That rule was removed on 2026-09-07; the code only reports the sum. #156 corrects the README and writes the sum down (the example: 4,560 + 6,144 + 2,048 = 12,752 MiB on a 12,955 MiB VM) |
 | 9 | The agent's verifier crashed on a Jackson version clash, and chain 1 stopped at completeness after 6.5 minutes | A defect in the agent's own build, caught where it should be. Fixed by pinning the version the Kafka connector brings |
 | 10 | The agent handed back at 22:13, 71 minutes before the chain finished, and three times more as steps passed, the last at 22:41 with the suite's backlog still filling. Its transcript shows why: it started the watcher in the background and ended its turn to wait, and ending a turn hands a subagent's report back. scalable-flink-skill #158 tells an agent to wait inside its turn, with a time limit on `watch.sh` | No scorecard reached the agent, and the probe and ceiling were not run. The chain itself finished at 23:25 |
+
+## 12. Clean-room run 55: the agent waited, and 1→2 fell short — 2026-10-14/15
+
+The first clean-room run on the skill after #158
+([clean-room-run-55.md](clean-room/clean-room-run-55.md)), and the skill
+change made from it (scalable-flink-skill #159). Rates compare only within one
+run.
+
+| # | what happened | what it showed |
+|---|---|---|
+| 1 | The agent re-ran `watch.sh` with a time limit 12 times, reported after `results/DONE` with the scorecard, and ran the probe and the ceiling | #158 fixed what row 10 of §11 found. One wait ran over a 10-minute tool limit at `WATCH_MINUTES=9`; #159 says 8 |
+| 2 | 1→2 read 1.830× and was not met: it could be as low as 1.763×, 2.1% under 1.80×, after six extra settling passes. 2→4 read 1.863×, met inside the 1% margin | The probe's memory-heavy 1→2 is about 1.80× with a spread wider than the shortfall, so the Mac is neither ruled in nor out. The ceiling shows Kafka is not the limit. **Cause not measured** |
+| 3 | The tiny proof passed 1→2 at 1.778×, under the target, and said nothing | One short pass per case cannot judge the target, but it can warn. #159 prints a warning and carries on |
+| 4 | The verdict sentence "the low end of its range, 1.763x, is 2.1% under the 1.80x target" sat beside 1.83× | The author, 2026-10-15: "this does not make sense". #159 names both numbers: "measured 1.830x, but it could be as low as 1.763x" |
+| 5 | The Mac slept from 20:01 to 20:06 on battery, inside completeness | It fell between the drain and the verifier, so no reading moved. Nothing notices sleep; not fixed |
+| 6 | The agent's findings F1–F4 and F10 were gaps in `harness/README.md` and an error message | Fixed in #159. F5–F8 are not |
+
