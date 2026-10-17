@@ -68,25 +68,34 @@ PREFIX=${PREFIX:-refpipe}
 
 echo "copying the reference pipeline to $DEST"
 mkdir -p "$DEST"
-cp -R "$HERE/job" "$HERE/dashboard" "$DEST/"
+cp -R "$HERE/job" "$DEST/"
 cp "$HERE/ANSWERS.md" "$HERE/ASSUMPTIONS.md" "$HERE/PLAN.md" "$DEST/"
 # The pipeline's own README, which preflight checks names every topic and operator.
 cp "$HERE/PIPELINE.md" "$DEST/README.md"
 sed -e "s#{RUNDIR}#$DEST#g" -e "s#{PREFIX}#$PREFIX#g" \
     "$HERE/pipeline.json" > "$DEST/pipeline.json"
-for f in "$DEST/dashboard/prometheus/prometheus.yml" \
-         "$DEST/dashboard/grafana/provisioning/datasources/prometheus.yml"; do
-    sed "s#{PREFIX}#$PREFIX#g" "$f" > "$f.tmp" && mv "$f.tmp" "$f"
-done
 
-# Assert the effect: nothing unsubstituted, and the prefix reached the dashboard.
-if grep -rl '{RUNDIR}\|{PREFIX}' "$DEST/pipeline.json" "$DEST/dashboard/prometheus/prometheus.yml" \
-        "$DEST/dashboard/grafana/provisioning/datasources/prometheus.yml" 2>/dev/null | grep .; then
-    echo "a placeholder was left behind in the files above"
+# STORE=redis turns on the harness's optional Redis store, to measure the
+# pipeline with it beside the jobs; anything else leaves it off.
+if [ -n "$STORE" ]; then
+    python3 - "$DEST/pipeline.json" "$STORE" <<'PY'
+import json, sys
+p, store = sys.argv[1], sys.argv[2]
+d = json.load(open(p))
+d["dashboard"] = dict(d.get("dashboard") or {}, store=store)
+json.dump(d, open(p, "w"), indent=2, ensure_ascii=False)
+PY
+fi
+
+# Assert the effect: nothing unsubstituted, and the prefix and the store reached the file.
+if grep -l '{RUNDIR}\|{PREFIX}' "$DEST/pipeline.json" | grep .; then
+    echo "a placeholder was left behind in pipeline.json"
     exit 2
 fi
-grep -q "\"$PREFIX-statsexporter\"" "$DEST/pipeline.json" || { echo "prefix did not reach pipeline.json"; exit 2; }
-grep -q "$PREFIX-tm:9249" "$DEST/dashboard/prometheus/prometheus.yml" || { echo "prefix did not reach prometheus.yml"; exit 2; }
+grep -q "\"project\": \"$PREFIX\"" "$DEST/pipeline.json" || { echo "prefix did not reach pipeline.json"; exit 2; }
+if [ -n "$STORE" ]; then
+    grep -q "\"store\": \"$STORE\"" "$DEST/pipeline.json" || { echo "the store did not reach pipeline.json"; exit 2; }
+fi
 
 echo "building the jar"
 (cd "$DEST/job" && mvn -q -DskipTests package)

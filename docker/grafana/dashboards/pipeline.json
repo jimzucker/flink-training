@@ -1,7 +1,7 @@
 {
   "uid": "flink-training",
   "title": "Block Trade Pipeline",
-  "description": "Sources on the left, sinks on the right, numbered as on the pipeline diagram.",
+  "description": "Input, input lag, output, checkpoints, broker, Flink, then the Redis store. Topics are numbered as on the pipeline diagram.",
   "tags": [
     "flink-training"
   ],
@@ -17,7 +17,7 @@
     {
       "id": 100,
       "type": "row",
-      "title": "The pipeline \u2014 six topics, in the order the talk covers them",
+      "title": "1. Input \u2014 orders and prices",
       "collapsed": false,
       "gridPos": {
         "h": 1,
@@ -26,6 +26,59 @@
         "y": 0
       },
       "panels": []
+    },
+    {
+      "id": 51,
+      "type": "timeseries",
+      "title": "Records written per second, by input topic \u2014 the generators",
+      "description": "How fast records arrive on each input topic, read from the broker: the rise in the sum of the topic's end offsets. This is what the order and price generators offer, whether or not the jobs keep up.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 1
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (topic) (rate(kafka_topic_records_written_total{topic=~\"orders|prices\"}[1m]))",
+          "legendFormat": "{{topic}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
     },
     {
       "id": 1,
@@ -37,10 +90,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 1,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 12,
+        "y": 1
       },
       "fieldConfig": {
         "defaults": {
@@ -81,59 +134,6 @@
       ]
     },
     {
-      "id": 2,
-      "type": "timeseries",
-      "title": "\u2462 positions-by-symbol \u2014 one update per trade",
-      "description": "Sink 3. Emits at the trade rate over one key per symbol.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 1,
-        "w": 12,
-        "h": 7
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "showPoints": "never",
-            "spanNulls": true,
-            "gradientMode": "opacity"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"aggregate_by_symbol\"})",
-          "legendFormat": "records/sec"
-        }
-      ]
-    },
-    {
       "id": 3,
       "type": "timeseries",
       "title": "\u2461 prices \u2014 price ticks in",
@@ -143,10 +143,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 8,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 0,
+        "y": 9
       },
       "fieldConfig": {
         "defaults": {
@@ -187,59 +187,6 @@
       ]
     },
     {
-      "id": 4,
-      "type": "timeseries",
-      "title": "\u2463 positions-by-account \u2014 one update per allocation",
-      "description": "Sink 4. Four allocations per trade, so four times the rate of sink 3.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 8,
-        "w": 12,
-        "h": 7
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 10,
-            "showPoints": "never",
-            "spanNulls": true,
-            "gradientMode": "opacity"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"aggregate_by_account\"})",
-          "legendFormat": "records/sec"
-        }
-      ]
-    },
-    {
       "id": 5,
       "type": "stat",
       "title": "\u2460 orders total",
@@ -249,10 +196,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 15,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 12,
+        "y": 9
       },
       "fieldConfig": {
         "defaults": {
@@ -303,10 +250,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 6,
-        "y": 15,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 18,
+        "y": 9
       },
       "fieldConfig": {
         "defaults": {
@@ -348,6 +295,323 @@
       ]
     },
     {
+      "id": 101,
+      "type": "row",
+      "title": "2. Input lag",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 16
+      },
+      "panels": []
+    },
+    {
+      "id": 52,
+      "type": "timeseries",
+      "title": "Records waiting, by input topic and consumer group \u2014 near zero",
+      "description": "Records written to each input that the job's consumer group has not committed past: end offsets less the committed position, from the broker. Positions are committed at each checkpoint, so it saw-tooths once per interval; climbing means a job is not keeping up.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (topic, group) (kafka_group_lag_records{topic=~\"orders|prices\"})",
+          "legendFormat": "{{topic}} \u2014 {{group}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "type": "timeseries",
+      "title": "Consumer lag \u2014 records each source is behind",
+      "description": "How many records are sitting in Kafka that the job has not read yet. This is the signal that defines saturation: a bounded, sawtooth lag is a pipeline keeping up, and a line that climbs and never comes back down is one that is not, no matter how healthy throughput looks.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 16,
+        "x": 0,
+        "y": 25
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (operator_name) (flink_taskmanager_job_task_operator_pendingRecords)",
+          "legendFormat": "{{operator_name}}"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "type": "stat",
+      "title": "\u2460 orders lag",
+      "description": "Records waiting in the orders topic. Growing steadily means the offered load is above what this parallelism and core count can absorb.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 8,
+        "x": 16,
+        "y": 25
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 50000
+              },
+              {
+                "color": "red",
+                "value": 500000
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_taskmanager_job_task_operator_pendingRecords{operator_name=\"Source:_orders\"})",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "type": "text",
+      "title": "Diagnosing a slow pipeline",
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 0,
+        "y": 32
+      },
+      "options": {
+        "mode": "markdown",
+        "content": "Lag climbing? Find the task at 100% busy \u2014 that operator is the ceiling. The back-pressured tasks are everything queued behind it. If no single task stands out, the cluster is out of cores, not out of parallelism."
+      }
+    },
+    {
+      "id": 102,
+      "type": "row",
+      "title": "3. Output \u2014 positions and market values",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 35
+      },
+      "panels": []
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "\u2462 positions-by-symbol \u2014 one update per trade",
+      "description": "Sink 3. Emits at the trade rate over one key per symbol.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 36
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"aggregate_by_symbol\"})",
+          "legendFormat": "records/sec"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "timeseries",
+      "title": "\u2463 positions-by-account \u2014 one update per allocation",
+      "description": "Sink 4. Four allocations per trade, so four times the rate of sink 3.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 36
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum(flink_taskmanager_job_task_operator_numRecordsOutPerSecond{operator_name=\"aggregate_by_account\"})",
+          "legendFormat": "records/sec"
+        }
+      ]
+    },
+    {
       "id": 7,
       "type": "stat",
       "title": "\u2462 unique keys",
@@ -357,10 +621,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 15,
+        "h": 4,
         "w": 3,
-        "h": 4
+        "x": 0,
+        "y": 43
       },
       "fieldConfig": {
         "defaults": {
@@ -411,10 +675,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 15,
-        "y": 15,
+        "h": 4,
         "w": 3,
-        "h": 4
+        "x": 3,
+        "y": 43
       },
       "fieldConfig": {
         "defaults": {
@@ -465,10 +729,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 18,
-        "y": 15,
+        "h": 4,
         "w": 3,
-        "h": 4
+        "x": 6,
+        "y": 43
       },
       "fieldConfig": {
         "defaults": {
@@ -519,10 +783,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 21,
-        "y": 15,
+        "h": 4,
         "w": 3,
-        "h": 4
+        "x": 9,
+        "y": 43
       },
       "fieldConfig": {
         "defaults": {
@@ -573,10 +837,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 19,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 12,
+        "y": 43
       },
       "fieldConfig": {
         "defaults": {
@@ -626,10 +890,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 19,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 0,
+        "y": 50
       },
       "fieldConfig": {
         "defaults": {
@@ -679,10 +943,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 26,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 12,
+        "y": 50
       },
       "fieldConfig": {
         "defaults": {
@@ -733,10 +997,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 6,
-        "y": 26,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 18,
+        "y": 50
       },
       "fieldConfig": {
         "defaults": {
@@ -787,10 +1051,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 26,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 0,
+        "y": 57
       },
       "fieldConfig": {
         "defaults": {
@@ -841,10 +1105,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 18,
-        "y": 26,
+        "h": 4,
         "w": 6,
-        "h": 4
+        "x": 6,
+        "y": 57
       },
       "fieldConfig": {
         "defaults": {
@@ -886,17 +1150,57 @@
       ]
     },
     {
-      "id": 101,
-      "type": "row",
-      "title": "Latency \u2014 what a consumer actually waits for",
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 30
+      "id": 53,
+      "type": "timeseries",
+      "title": "Records waiting, by output topic and reader \u2014 near zero",
+      "description": "Lag on every output, for every group reading it: the market-value job on the position topics, the dashboard's own reader on the market values (which have no other consumer), and the Redis store's loader when it runs.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
       },
-      "panels": []
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 57
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum by (topic, group) (kafka_group_lag_records{topic=~\"positions-by-symbol|positions-by-account|mv-by-symbol|mv-by-account\"})",
+          "legendFormat": "{{topic}} \u2014 {{group}}",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          }
+        }
+      ]
     },
     {
       "id": 17,
@@ -908,10 +1212,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 31,
+        "h": 8,
         "w": 16,
-        "h": 8
+        "x": 0,
+        "y": 65
       },
       "fieldConfig": {
         "defaults": {
@@ -988,10 +1292,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 16,
-        "y": 31,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 16,
+        "y": 65
       },
       "fieldConfig": {
         "defaults": {
@@ -1042,10 +1346,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 20,
-        "y": 31,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 20,
+        "y": 65
       },
       "fieldConfig": {
         "defaults": {
@@ -1091,15 +1395,28 @@
       "type": "text",
       "title": "What a consumer waits for",
       "gridPos": {
-        "x": 16,
-        "y": 35,
+        "h": 4,
         "w": 8,
-        "h": 4
+        "x": 0,
+        "y": 73
       },
       "options": {
         "mode": "markdown",
         "content": "Add the checkpoint interval. A record is not readable until the checkpoint that produced it commits, so visible latency is roughly processing plus a uniform wait of up to one interval.\n\nMeasured: **p50 2.5s / max 5.0s** at a 5s interval, **p50 0.5s / max 1.0s** at 1s."
       }
+    },
+    {
+      "id": 103,
+      "type": "row",
+      "title": "4. Checkpoints",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 77
+      },
+      "panels": []
     },
     {
       "id": 21,
@@ -1111,10 +1428,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 39,
+        "h": 7,
         "w": 16,
-        "h": 7
+        "x": 0,
+        "y": 78
       },
       "fieldConfig": {
         "defaults": {
@@ -1198,10 +1515,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 16,
-        "y": 39,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 16,
+        "y": 78
       },
       "fieldConfig": {
         "defaults": {
@@ -1252,10 +1569,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 20,
-        "y": 39,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 20,
+        "y": 78
       },
       "fieldConfig": {
         "defaults": {
@@ -1301,10 +1618,10 @@
       "type": "text",
       "title": "Reading these together",
       "gridPos": {
-        "x": 16,
-        "y": 43,
+        "h": 3,
         "w": 8,
-        "h": 3
+        "x": 0,
+        "y": 85
       },
       "options": {
         "mode": "markdown",
@@ -1312,36 +1629,166 @@
       }
     },
     {
-      "id": 102,
+      "id": 104,
       "type": "row",
-      "title": "Saturation \u2014 is it keeping up, and if not, what is the ceiling",
+      "title": "5. Broker \u2014 memory, CPU, network, disk",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 46
+        "y": 88
       },
       "panels": []
     },
     {
-      "id": 31,
-      "type": "timeseries",
-      "title": "Consumer lag \u2014 records each source is behind",
-      "description": "How many records are sitting in Kafka that the job has not read yet. This is the signal that defines saturation: a bounded, sawtooth lag is a pipeline keeping up, and a line that climbs and never comes back down is one that is not, no matter how healthy throughput looks.",
+      "id": 47,
+      "type": "stat",
+      "title": "broker heap",
+      "description": "The broker's own heap. Its page cache matters more than its heap for write speed, and neither is visible from Flink's metrics.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
+        "h": 4,
+        "w": 4,
         "x": 0,
-        "y": 47,
-        "w": 16,
-        "h": 7
+        "y": 89
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "decimals": 0,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 75
+              },
+              {
+                "color": "red",
+                "value": 90
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "ft:broker_heap_used_percent",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 46,
+      "type": "stat",
+      "title": "broker CPU cores",
+      "description": "Read against the host's core count and the TaskManager's usage: on one machine they are spending the same eight.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 4,
+        "y": 89
       },
       "fieldConfig": {
         "defaults": {
           "unit": "short",
+          "min": 0,
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 2
+              },
+              {
+                "color": "red",
+                "value": 4
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "ft:broker_cpu_cores",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 43,
+      "type": "timeseries",
+      "title": "Broker \u2014 bytes in and out",
+      "description": "What the broker is actually absorbing and serving, measured at the broker rather than inferred from the job. Compare with the Flink network panel above: they should agree, and when they do not, something else is talking to this cluster.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 8,
+        "y": 89
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "Bps",
           "min": 0,
           "custom": {
             "drawStyle": "line",
@@ -1372,110 +1819,39 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum by (operator_name) (flink_taskmanager_job_task_operator_pendingRecords)",
-          "legendFormat": "{{operator_name}}"
-        }
-      ]
-    },
-    {
-      "id": 32,
-      "type": "stat",
-      "title": "\u2460 orders lag",
-      "description": "Records waiting in the orders topic. Growing steadily means the offered load is above what this parallelism and core count can absorb.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 16,
-        "y": 47,
-        "w": 8,
-        "h": 4
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "min": 0,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 50000
-              },
-              {
-                "color": "red",
-                "value": 500000
-              }
-            ]
-          }
+          "expr": "ft:broker_bytes_in_per_sec",
+          "legendFormat": "in"
         },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "area",
-        "textMode": "auto",
-        "justifyMode": "auto"
-      },
-      "targets": [
         {
-          "refId": "A",
+          "refId": "B",
           "datasource": {
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "sum(flink_taskmanager_job_task_operator_pendingRecords{operator_name=\"Source:_orders\"})",
-          "legendFormat": ""
+          "expr": "ft:broker_bytes_out_per_sec",
+          "legendFormat": "out"
         }
       ]
     },
     {
-      "id": 33,
-      "type": "text",
-      "title": "Diagnosing a slow pipeline",
-      "gridPos": {
-        "x": 16,
-        "y": 51,
-        "w": 8,
-        "h": 3
-      },
-      "options": {
-        "mode": "markdown",
-        "content": "Lag climbing? Find the task at 100% busy \u2014 that operator is the ceiling. The back-pressured tasks are everything queued behind it. If no single task stands out, the cluster is out of cores, not out of parallelism."
-      }
-    },
-    {
-      "id": 25,
+      "id": 42,
       "type": "timeseries",
-      "title": "Saturation \u2014 where the work is, and where it is stuck",
-      "description": "Busy is the share of each second a task spends doing work; back-pressured is the share it spends blocked because the task downstream of it cannot keep up. Busy near 100% with no back-pressure means the pipeline is working at its limit and keeping up. Sustained back-pressure means it is not: the offered load is above what this parallelism can absorb, and adding parallelism is what fixes it.",
+      "title": "Disk \u2014 broker storage in use",
+      "description": "Per topic where the broker publishes it, which locally shows the account topic at roughly four times the symbol topic -- the same four-to-one that makes the write path the ceiling, visible on disk. MSK's exporter does not publish per-topic log size, so on AWS only the total is available: how much disk, but not which topic is spending it.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
+        "h": 7,
+        "w": 12,
         "x": 0,
-        "y": 54,
-        "w": 16,
-        "h": 7
+        "y": 96
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
+          "unit": "bytes",
           "min": 0,
-          "max": 100,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 2,
@@ -1495,7 +1871,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "none"
+          "sort": "desc"
         }
       },
       "targets": [
@@ -1505,8 +1881,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 10",
-          "legendFormat": "busiest task"
+          "expr": "ft:broker_log_size_bytes",
+          "legendFormat": "{{topic}}"
         },
         {
           "refId": "B",
@@ -1514,63 +1890,53 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10",
-          "legendFormat": "most back-pressured task"
+          "expr": "ft:broker_disk_used_bytes",
+          "legendFormat": "all topics"
         }
       ]
     },
     {
-      "id": 26,
-      "type": "stat",
-      "title": "busiest task",
-      "description": "Share of the second the hottest task spends working.",
+      "id": 44,
+      "type": "timeseries",
+      "title": "Broker \u2014 capacity left",
+      "description": "The share of the time the broker's request handlers are idle, in its own words rather than inferred from back-pressure upstream. Falling toward zero is the broker saying it is the bottleneck. Step 10 spent a long time establishing that by elimination; this panel answers it directly.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 16,
-        "y": 54,
-        "w": 4,
-        "h": 4
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 96
       },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
           "min": 0,
           "max": 100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 80
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
+          "decimals": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "colorMode": "value",
-        "graphMode": "area",
-        "textMode": "auto",
-        "justifyMode": "auto"
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -1579,63 +1945,51 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 10",
-          "legendFormat": ""
+          "expr": "ft:broker_request_handler_idle_percent",
+          "legendFormat": "request handlers idle"
         }
       ]
     },
     {
-      "id": 27,
-      "type": "stat",
-      "title": "back-pressure",
-      "description": "Sustained non-zero means the offered load exceeds this parallelism.",
+      "id": 45,
+      "type": "timeseries",
+      "title": "Broker \u2014 produce request time",
+      "description": "How long a produce request takes and where it goes. Queue time rising while local time stays flat means the broker is saturated rather than slow.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 20,
-        "y": 54,
-        "w": 4,
-        "h": 4
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 103
       },
       "fieldConfig": {
         "defaults": {
-          "unit": "percent",
+          "unit": "ms",
           "min": 0,
-          "max": 100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 5
-              },
-              {
-                "color": "red",
-                "value": 25
-              }
-            ]
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity"
           }
         },
         "overrides": []
       },
       "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
         },
-        "colorMode": "value",
-        "graphMode": "area",
-        "textMode": "auto",
-        "justifyMode": "auto"
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
       },
       "targets": [
         {
@@ -1644,176 +1998,54 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10",
-          "legendFormat": ""
+          "expr": "kafka_request_totaltimems{request=\"Produce\",quantile=\"0.99\"}",
+          "legendFormat": "total p99"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_request_localtimems{request=\"Produce\",quantile=\"0.99\"}",
+          "legendFormat": "local p99"
+        },
+        {
+          "refId": "C",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "kafka_request_requestqueuetimems{request=\"Produce\",quantile=\"0.99\"}",
+          "legendFormat": "queued p99"
         }
       ]
     },
     {
-      "id": 28,
+      "id": 48,
       "type": "text",
-      "title": "Proving it scales",
+      "title": "Why the broker is on this dashboard",
       "gridPos": {
-        "x": 16,
-        "y": 58,
-        "w": 8,
-        "h": 3
+        "h": 4,
+        "w": 16,
+        "x": 0,
+        "y": 110
       },
       "options": {
         "mode": "markdown",
-        "content": "Offer more load than the job can take and back-pressure goes red while throughput flattens \u2014 that flat number is the ceiling for this parallelism. Double the parallelism and the ceiling should move, not the back-pressure."
+        "content": "It was left off deliberately at first: the dashboard is about what the pipeline produced, not the plumbing. Step 10 changed that. One broker absorbs about **750,000 records/sec**, each order becomes five records, and the pipeline pins at ~150,000 orders/sec under every parallelism, partition count and core budget tried.\n\nThat took a week of `docker stats` and elimination to establish. **Capacity left** answers it in one panel."
       }
     },
     {
-      "id": 29,
-      "type": "bargauge",
-      "title": "Where the work is \u2014 busy by task",
-      "description": "Share of each second every task spends doing work. One task near 100% while the rest sit low is a bottleneck, and it names the operator to fix: adding parallelism helps only the pinned one. Even bars mean the work is spread and the whole job is the constraint.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 61,
-        "w": 12,
-        "h": 8
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 80
-              },
-              {
-                "color": "red",
-                "value": 95
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "valueMode": "color",
-        "showUnfilled": true,
-        "namePlacement": "left",
-        "sizing": "auto",
-        "minVizWidth": 8,
-        "minVizHeight": 16
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sort_desc(label_replace(label_replace(max by (task_name) (flink_taskmanager_job_task_busyTimeMsPerSecond) / 10, \"task\", \"$1\", \"task_name\", \"(.*)\"), \"task\", \"$1\", \"task_name\", \"(.*?)____.*\"))",
-          "instant": true,
-          "legendFormat": "{{task}}"
-        }
-      ]
-    },
-    {
-      "id": 30,
-      "type": "bargauge",
-      "title": "Where it is stuck \u2014 back-pressure by task",
-      "description": "Share of each second every task spends blocked because the task downstream cannot keep up. Read it with the panel to the left: the back-pressured task is the victim, and the busy task it feeds is the cause.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 61,
-        "w": 12,
-        "h": 8
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "percent",
-          "min": 0,
-          "max": 100,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 5
-              },
-              {
-                "color": "red",
-                "value": 25
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "orientation": "horizontal",
-        "displayMode": "gradient",
-        "valueMode": "color",
-        "showUnfilled": true,
-        "namePlacement": "left",
-        "sizing": "auto",
-        "minVizWidth": 8,
-        "minVizHeight": 16
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "sort_desc(label_replace(label_replace(max by (task_name) (flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10, \"task\", \"$1\", \"task_name\", \"(.*)\"), \"task\", \"$1\", \"task_name\", \"(.*?)____.*\"))",
-          "instant": true,
-          "legendFormat": "{{task}}"
-        }
-      ]
-    },
-    {
-      "id": 103,
+      "id": 105,
       "type": "row",
-      "title": "Resources \u2014 the ceilings underneath all of it",
+      "title": "6. Flink \u2014 CPU and memory, then where the work is",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 69
+        "y": 114
       },
       "panels": []
     },
@@ -1827,10 +2059,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 70,
+        "h": 7,
         "w": 8,
-        "h": 7
+        "x": 0,
+        "y": 115
       },
       "fieldConfig": {
         "defaults": {
@@ -1890,10 +2122,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 8,
-        "y": 70,
+        "h": 7,
         "w": 8,
-        "h": 7
+        "x": 8,
+        "y": 115
       },
       "fieldConfig": {
         "defaults": {
@@ -1945,10 +2177,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 16,
-        "y": 70,
+        "h": 7,
         "w": 8,
-        "h": 7
+        "x": 16,
+        "y": 115
       },
       "fieldConfig": {
         "defaults": {
@@ -2008,10 +2240,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 77,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 0,
+        "y": 122
       },
       "fieldConfig": {
         "defaults": {
@@ -2079,10 +2311,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 77,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 12,
+        "y": 122
       },
       "fieldConfig": {
         "defaults": {
@@ -2152,10 +2384,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 84,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 0,
+        "y": 129
       },
       "fieldConfig": {
         "defaults": {
@@ -2216,10 +2448,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 4,
-        "y": 84,
+        "h": 4,
         "w": 4,
-        "h": 4
+        "x": 4,
+        "y": 129
       },
       "fieldConfig": {
         "defaults": {
@@ -2275,174 +2507,36 @@
       "type": "text",
       "title": "What runs out first",
       "gridPos": {
-        "x": 8,
-        "y": 84,
+        "h": 4,
         "w": 16,
-        "h": 4
+        "x": 8,
+        "y": 129
       },
       "options": {
         "mode": "markdown",
-        "content": "Work down this row, but do not stop at the first plausible answer. **Cores** is the usual suspect and was the wrong one here: the TaskManager sat at 3.85 of 8 with throughput pinned, because its threads were blocked on Kafka rather than computing. Low CPU with high back-pressure means the constraint is downstream, not local.\n\n**Heap and GC** is the quietest failure: latency and back-pressure rise with no operator looking busy. **Network** matters once bytes rather than records are the constraint. **Buffers** move first of all; they are the mechanism back-pressure is made of.\n\nThe broker is the blind spot -- Prometheus scrapes Flink only. It is also what actually capped this pipeline: one broker absorbs about 750k records/sec, and each order becomes five records, so ~137k orders/sec is the ceiling no parallelism can move."
+        "content": "Work down this row, but do not stop at the first plausible answer. **Cores** is the usual suspect and was the wrong one here: the TaskManager sat at 3.85 of 8 with throughput pinned, because its threads were blocked on Kafka rather than computing. Low CPU with high back-pressure means the constraint is downstream, not local.\n\n**Heap and GC** is the quietest failure: latency and back-pressure rise with no operator looking busy. **Network** matters once bytes rather than records are the constraint. **Buffers** move first of all; they are the mechanism back-pressure is made of.\n\nThe broker, in the row above, is what actually capped this pipeline: one broker absorbs about 750k records/sec, and each order becomes five records, so ~137k orders/sec is the ceiling no parallelism can move."
       }
     },
     {
-      "id": 104,
-      "type": "row",
-      "title": "The broker \u2014 the ceiling step 10 ran into",
-      "collapsed": false,
-      "gridPos": {
-        "h": 1,
-        "w": 24,
-        "x": 0,
-        "y": 88
-      },
-      "panels": []
-    },
-    {
-      "id": 42,
+      "id": 25,
       "type": "timeseries",
-      "title": "Disk \u2014 broker storage in use",
-      "description": "Per topic where the broker publishes it, which locally shows the account topic at roughly four times the symbol topic -- the same four-to-one that makes the write path the ceiling, visible on disk. MSK's exporter does not publish per-topic log size, so on AWS only the total is available: how much disk, but not which topic is spending it.",
+      "title": "Saturation \u2014 where the work is, and where it is stuck",
+      "description": "Busy is the share of each second a task spends doing work; back-pressured is the share it spends blocked because the task downstream of it cannot keep up. Busy near 100% with no back-pressure means the pipeline is working at its limit and keeping up. Sustained back-pressure means it is not: the offered load is above what this parallelism can absorb, and adding parallelism is what fixes it.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
+        "h": 7,
+        "w": 16,
         "x": 0,
-        "y": 89,
-        "w": 12,
-        "h": 7
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "bytes",
-          "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "never",
-            "spanNulls": true,
-            "gradientMode": "opacity"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "ft:broker_log_size_bytes",
-          "legendFormat": "{{topic}}"
-        },
-        {
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "ft:broker_disk_used_bytes",
-          "legendFormat": "all topics"
-        }
-      ]
-    },
-    {
-      "id": 43,
-      "type": "timeseries",
-      "title": "Broker \u2014 bytes in and out",
-      "description": "What the broker is actually absorbing and serving, measured at the broker rather than inferred from the job. Compare with the Flink network panel above: they should agree, and when they do not, something else is talking to this cluster.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 89,
-        "w": 12,
-        "h": 7
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "Bps",
-          "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "never",
-            "spanNulls": true,
-            "gradientMode": "opacity"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "ft:broker_bytes_in_per_sec",
-          "legendFormat": "in"
-        },
-        {
-          "refId": "B",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "ft:broker_bytes_out_per_sec",
-          "legendFormat": "out"
-        }
-      ]
-    },
-    {
-      "id": 44,
-      "type": "timeseries",
-      "title": "Broker \u2014 capacity left",
-      "description": "The share of the time the broker's request handlers are idle, in its own words rather than inferred from back-pressure upstream. Falling toward zero is the broker saying it is the bottleneck. Step 10 spent a long time establishing that by elimination; this panel answers it directly.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 0,
-        "y": 96,
-        "w": 12,
-        "h": 7
+        "y": 133
       },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
           "min": 0,
           "max": 100,
-          "decimals": 0,
           "custom": {
             "drawStyle": "line",
             "lineWidth": 2,
@@ -2462,7 +2556,7 @@
         },
         "tooltip": {
           "mode": "multi",
-          "sort": "desc"
+          "sort": "none"
         }
       },
       "targets": [
@@ -2472,61 +2566,8 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "ft:broker_request_handler_idle_percent",
-          "legendFormat": "request handlers idle"
-        }
-      ]
-    },
-    {
-      "id": 45,
-      "type": "timeseries",
-      "title": "Broker \u2014 produce request time",
-      "description": "How long a produce request takes and where it goes. Queue time rising while local time stays flat means the broker is saturated rather than slow.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 12,
-        "y": 96,
-        "w": 12,
-        "h": 7
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "ms",
-          "min": 0,
-          "custom": {
-            "drawStyle": "line",
-            "lineWidth": 2,
-            "fillOpacity": 8,
-            "showPoints": "never",
-            "spanNulls": true,
-            "gradientMode": "opacity"
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "mode": "multi",
-          "sort": "desc"
-        }
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "kafka_request_totaltimems{request=\"Produce\",quantile=\"0.99\"}",
-          "legendFormat": "total p99"
+          "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 10",
+          "legendFormat": "busiest task"
         },
         {
           "refId": "B",
@@ -2534,105 +2575,31 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "kafka_request_localtimems{request=\"Produce\",quantile=\"0.99\"}",
-          "legendFormat": "local p99"
-        },
-        {
-          "refId": "C",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "kafka_request_requestqueuetimems{request=\"Produce\",quantile=\"0.99\"}",
-          "legendFormat": "queued p99"
+          "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10",
+          "legendFormat": "most back-pressured task"
         }
       ]
     },
     {
-      "id": 46,
+      "id": 26,
       "type": "stat",
-      "title": "broker CPU cores",
-      "description": "Read against the host's core count and the TaskManager's usage: on one machine they are spending the same eight.",
+      "title": "busiest task",
+      "description": "Share of the second the hottest task spends working.",
       "datasource": {
         "type": "prometheus",
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 103,
+        "h": 4,
         "w": 4,
-        "h": 4
-      },
-      "fieldConfig": {
-        "defaults": {
-          "unit": "short",
-          "min": 0,
-          "decimals": 2,
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "yellow",
-                "value": 2
-              },
-              {
-                "color": "red",
-                "value": 4
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "options": {
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "colorMode": "value",
-        "graphMode": "area",
-        "textMode": "auto",
-        "justifyMode": "auto"
-      },
-      "targets": [
-        {
-          "refId": "A",
-          "datasource": {
-            "type": "prometheus",
-            "uid": "prometheus"
-          },
-          "expr": "ft:broker_cpu_cores",
-          "legendFormat": ""
-        }
-      ]
-    },
-    {
-      "id": 47,
-      "type": "stat",
-      "title": "broker heap",
-      "description": "The broker's own heap. Its page cache matters more than its heap for write speed, and neither is visible from Flink's metrics.",
-      "datasource": {
-        "type": "prometheus",
-        "uid": "prometheus"
-      },
-      "gridPos": {
-        "x": 4,
-        "y": 103,
-        "w": 4,
-        "h": 4
+        "x": 16,
+        "y": 133
       },
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
           "min": 0,
-          "decimals": 0,
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -2642,11 +2609,11 @@
               },
               {
                 "color": "yellow",
-                "value": 75
+                "value": 80
               },
               {
                 "color": "red",
-                "value": 90
+                "value": 95
               }
             ]
           }
@@ -2673,36 +2640,241 @@
             "type": "prometheus",
             "uid": "prometheus"
           },
-          "expr": "ft:broker_heap_used_percent",
+          "expr": "max(flink_taskmanager_job_task_busyTimeMsPerSecond) / 10",
           "legendFormat": ""
         }
       ]
     },
     {
-      "id": 48,
-      "type": "text",
-      "title": "Why the broker is on this dashboard",
+      "id": 27,
+      "type": "stat",
+      "title": "back-pressure",
+      "description": "Sustained non-zero means the offered load exceeds this parallelism.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
       "gridPos": {
-        "x": 8,
-        "y": 103,
-        "w": 16,
-        "h": 4
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 133
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto",
+        "justifyMode": "auto"
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "max(flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10",
+          "legendFormat": ""
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "type": "bargauge",
+      "title": "Where the work is \u2014 busy by task",
+      "description": "Share of each second every task spends doing work. One task near 100% while the rest sit low is a bottleneck, and it names the operator to fix: adding parallelism helps only the pinned one. Even bars mean the work is spread and the whole job is the constraint.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 140
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 80
+              },
+              {
+                "color": "red",
+                "value": 95
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "namePlacement": "left",
+        "sizing": "auto",
+        "minVizWidth": 8,
+        "minVizHeight": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sort_desc(label_replace(label_replace(max by (task_name) (flink_taskmanager_job_task_busyTimeMsPerSecond) / 10, \"task\", \"$1\", \"task_name\", \"(.*)\"), \"task\", \"$1\", \"task_name\", \"(.*?)____.*\"))",
+          "instant": true,
+          "legendFormat": "{{task}}"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "type": "bargauge",
+      "title": "Where it is stuck \u2014 back-pressure by task",
+      "description": "Share of each second every task spends blocked because the task downstream cannot keep up. Read it with the panel to the left: the back-pressured task is the victim, and the busy task it feeds is the cause.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 140
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "yellow",
+                "value": 5
+              },
+              {
+                "color": "red",
+                "value": 25
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "valueMode": "color",
+        "showUnfilled": true,
+        "namePlacement": "left",
+        "sizing": "auto",
+        "minVizWidth": 8,
+        "minVizHeight": 16
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sort_desc(label_replace(label_replace(max by (task_name) (flink_taskmanager_job_task_backPressuredTimeMsPerSecond) / 10, \"task\", \"$1\", \"task_name\", \"(.*)\"), \"task\", \"$1\", \"task_name\", \"(.*?)____.*\"))",
+          "instant": true,
+          "legendFormat": "{{task}}"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "type": "text",
+      "title": "Proving it scales",
+      "gridPos": {
+        "h": 3,
+        "w": 8,
+        "x": 0,
+        "y": 148
       },
       "options": {
         "mode": "markdown",
-        "content": "It was left off deliberately at first: the dashboard is about what the pipeline produced, not the plumbing. Step 10 changed that. One broker absorbs about **750,000 records/sec**, each order becomes five records, and the pipeline pins at ~150,000 orders/sec under every parallelism, partition count and core budget tried.\n\nThat took a week of `docker stats` and elimination to establish. **Capacity left** answers it in one panel."
+        "content": "Offer more load than the job can take and back-pressure goes red while throughput flattens \u2014 that flat number is the ceiling for this parallelism. Double the parallelism and the ceiling should move, not the back-pressure."
       }
     },
     {
-      "id": 105,
+      "id": 106,
       "type": "row",
-      "title": "Redis store \u2014 only with the store profile",
+      "title": "7. Redis store \u2014 only with the store profile",
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 107
+        "y": 151
       },
       "panels": []
     },
@@ -2716,10 +2888,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 0,
-        "y": 108,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 0,
+        "y": 152
       },
       "fieldConfig": {
         "defaults": {
@@ -2769,10 +2941,10 @@
         "uid": "prometheus"
       },
       "gridPos": {
-        "x": 12,
-        "y": 108,
+        "h": 7,
         "w": 12,
-        "h": 7
+        "x": 12,
+        "y": 152
       },
       "fieldConfig": {
         "defaults": {
