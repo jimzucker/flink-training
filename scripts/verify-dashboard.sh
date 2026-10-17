@@ -60,8 +60,14 @@ MISSING=0
 # The Redis store's panels have data only when the store profile is running.
 STORE_UP=$(curl -sfG "$PROM/api/v1/query" --data-urlencode 'query=up{job="store-loader"}' \
   | jq -r '.data.result[0].value[1] // "0"')
+# A panel may use a dashboard variable, such as the broker link speed box;
+# Prometheus is asked with each variable's current value in its place.
+VARS=$(echo "$DASH" | jq -r '.templating.list[]? | "\(.name)=\(.current.value)"')
 while read -r expr; do
   [ -z "$expr" ] && continue
+  while IFS='=' read -r name value; do
+    [ -n "$name" ] && expr="${expr//\$$name/$value}"
+  done <<< "$VARS"
   if [[ "$expr" == *store_loader_* ]] && [ "$STORE_UP" != "1" ]; then
     printf "  not checked, the store profile is not running: %s\n" "$expr"
     continue
