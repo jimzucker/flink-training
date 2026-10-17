@@ -1834,6 +1834,85 @@
       ]
     },
     {
+      "id": 54,
+      "type": "timeseries",
+      "title": "Broker network, share of its link \u2014 in and out, under 100%",
+      "description": "The broker's bytes in and out as a share of its network link, set in the box at the top (broker link, Gbit/s; 10 unless changed). A link carries its full speed each way at once, so in and out are each read against all of it. A line that flattens near 100% while the pipeline falls behind is the network card being the constraint. These are the bytes clients send and read; on a cluster of several brokers, copying to the other brokers adds to it. On a laptop the broker and Flink share one machine and their traffic never reaches a real network card, so the share is a reference, not a limit.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 103
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": true,
+            "gradientMode": "opacity",
+            "thresholdsStyle": {
+              "mode": "line"
+            }
+          },
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 100
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "ft:broker_bytes_in_per_sec * 8 / ($broker_link_gbps * 1e9) * 100",
+          "legendFormat": "in"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "ft:broker_bytes_out_per_sec * 8 / ($broker_link_gbps * 1e9) * 100",
+          "legendFormat": "out"
+        }
+      ]
+    },
+    {
       "id": 42,
       "type": "timeseries",
       "title": "Disk \u2014 broker storage in use",
@@ -2993,5 +3072,27 @@
         }
       ]
     }
-  ]
+  ],
+  "templating": {
+    "list": [
+      {
+        "type": "textbox",
+        "name": "broker_link_gbps",
+        "label": "Broker link, Gbit/s",
+        "query": "10",
+        "current": {
+          "text": "10",
+          "value": "10"
+        },
+        "options": [
+          {
+            "selected": true,
+            "text": "10",
+            "value": "10"
+          }
+        ],
+        "hide": 0
+      }
+    ]
+  }
 }

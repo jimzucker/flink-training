@@ -413,6 +413,12 @@ five records (one symbol-side, four account-side), so the pipeline tops out near
 back-pressure is the signature: **Flink parallelism scales the work inside the
 job and cannot scale a broker outside it.**
 
+The row also shows the broker's network as a share of its link, in and out, so a
+network card near its limit shows before it caps the pipeline. Set the link
+speed in the box at the top of the dashboard (Gbit/s, 10 unless changed). On a
+laptop the traffic never reaches a real network card, so there the share is a
+reference, not a limit.
+
 Flink has no metric for distinct keys, so the jobs publish one. Keys are
 partitioned across subtasks, which is what makes summing the gauge give the total
 without double counting. It counts from when a subtask started, so a restart
