@@ -13,7 +13,7 @@ docker compose -f docker/compose.yml --profile store up -d
 |---|---|
 | Redis | `localhost:6379`, saved to disk every second, 256 MB cap, nothing evicted |
 | Viewer | RedisInsight, <http://localhost:5540>. Accept its licence once on first open; the connection to this Redis is then already there |
-| Dashboard | the last row, "Redis store — only with the store profile": the loader's lag, and records read against keys written |
+| Dashboard | row 7, "Redis store — only with the store profile": the loader's lag, and records read against keys written. Its lag is also in row 3 with every other reader's |
 | Proof | `scripts/verify-store.sh`, after stopping the generators |
 
 ![RedisInsight showing one account-level market value](redisinsight.png)

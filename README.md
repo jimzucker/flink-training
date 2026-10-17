@@ -363,16 +363,24 @@ docker compose -f docker/compose.yml up -d --wait kafka jobmanager taskmanager p
 | Flink UI | <http://localhost:8081> |
 | Prometheus | <http://localhost:9090> |
 
-Sources on the left, sinks on the right, numbered as on the pipeline diagram. The
-key counts are the expected-output table made visible: sinks 3 and 5 hold 4 keys,
-sinks 4 and 6 hold 16.
+Topics are numbered as on the pipeline diagram. The key counts are the
+expected-output table made visible: sinks 3 and 5 hold 4 keys, sinks 4 and 6
+hold 16. (The picture above is from step 8, before the rows were reordered.)
 
-The dashboard is in four sections, in the order they get used. **The pipeline**
-first, because it is the demo: the six numbered topics, sources on the left and
-sinks on the right. **Latency**, then **Saturation**, then **Resources** — each
-one the answer to "why" for the section above it.
+The dashboard is in seven rows, in the same order as the dashboard the
+scalable-flink-skill harness builds for every pipeline: **Input** (orders and
+prices), **Input lag**, **Output** (the four sinks, their key counts and their
+latency), **Checkpoints**, **Broker**, **Flink**, and the **Redis store** when it
+runs. The first four are what you check on a pipeline left running; the last
+three are where you look when one of them is wrong.
 
-Sections two through four are for diagnosis rather than demonstration:
+**Consumer lag is on every topic**, read from the broker by the `kafka-metrics`
+service: every consumer group's committed position against each topic's end.
+The jobs' groups cover the inputs, the market-value job's covers the position
+topics, and the service reads the two market-value topics itself, since nothing
+else does. The store's loader shows up there too when it runs.
+
+The Input lag and Flink rows are for diagnosis rather than demonstration:
 
 | Panel | The question it answers |
 |---|---|
@@ -388,7 +396,7 @@ case parallelism cannot fix. Step 10 found the account chain at
 99% busy against 57% for the next task this way — `split_by_allocation` fans each
 order into four allocations, so that branch carries four times the record rate.
 
-The **Resources** section is where that distinction gets settled:
+The **Flink** row is where that distinction gets settled:
 
 | Panel | The question it answers |
 |---|---|
@@ -398,13 +406,18 @@ The **Resources** section is where that distinction gets settled:
 | **Network buffers** | back-pressure is not a policy, it is these filling. Output pool usage moves before latency does |
 | **free task slots** | a submission with none free does not queue, it fails |
 
-One blind spot, deliberately: Prometheus scrapes Flink only, so the broker's own
-throughput is not charted — and in step 10 the broker turned out to be the
+The **Broker** row is there because in step 10 the broker turned out to be the
 ceiling. One broker absorbs about 750,000 records/sec, and each order becomes
 five records (one symbol-side, four account-side), so the pipeline tops out near
 137,000 orders/sec no matter what parallelism is set to. Low CPU with high
 back-pressure is the signature: **Flink parallelism scales the work inside the
 job and cannot scale a broker outside it.**
+
+The row also shows the broker's network as a share of its link, in and out, so a
+network card near its limit shows before it caps the pipeline. Set the link
+speed in the box at the top of the dashboard (Gbit/s, 10 unless changed). On a
+laptop the traffic never reaches a real network card, so there the share is a
+reference, not a limit.
 
 Flink has no metric for distinct keys, so the jobs publish one. Keys are
 partitioned across subtasks, which is what makes summing the gauge give the total
@@ -689,7 +702,7 @@ assumed.
 assignment.pptx        the requirements
 pom.xml                parent POM -- versions, dependency and plugin management
 common/                domain model and JSON encoding
-generators/            block trade and price generators, and the Redis store loader
+generators/            block trade and price generators, the Redis store loader, and the Kafka metrics service
 jobs/                  Flink jobs
 docker/                local stack: Kafka, Flink, Prometheus, Grafana
 docker/grafana/        dashboard and provisioning

@@ -29,6 +29,13 @@ scrape_configs:
         labels:
           component: broker
 
+  # End offsets, disk per topic and every consumer group's lag, from the broker.
+  - job_name: kafka-metrics
+    static_configs:
+      - targets: ["kafka-metrics:9500"]
+        labels:
+          component: kafka-metrics
+
   # Only there under the "store" profile; the target reads as down otherwise.
   - job_name: store-loader
     static_configs:
