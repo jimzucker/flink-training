@@ -2692,6 +2692,134 @@
         "mode": "markdown",
         "content": "It was left off deliberately at first: the dashboard is about what the pipeline produced, not the plumbing. Step 10 changed that. One broker absorbs about **750,000 records/sec**, each order becomes five records, and the pipeline pins at ~150,000 orders/sec under every parallelism, partition count and core budget tried.\n\nThat took a week of `docker stats` and elimination to establish. **Capacity left** answers it in one panel."
       }
+    },
+    {
+      "id": 105,
+      "type": "row",
+      "title": "Redis store \u2014 only with the store profile",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 107
+      },
+      "panels": []
+    },
+    {
+      "id": 49,
+      "type": "timeseries",
+      "title": "Store loader lag \u2014 records not yet in Redis",
+      "description": "Records the jobs have committed to each output topic that the loader has not written to Redis yet. A small sawtooth is the loader keeping up. A climb means Redis is slow or away; the jobs carry on regardless, and the line comes back down when Redis does.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 0,
+        "y": 108,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": false,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (topic) (store_loader_lag_records)",
+          "legendFormat": "{{topic}}"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "type": "timeseries",
+      "title": "Store loader \u2014 records read and keys written per second",
+      "description": "Records read from the output topics, and keys whose value in Redis changed. Keys written sits far below records read under load: only the last record per key in each batch is written, which is what lets one loader keep up with a drain.",
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "gridPos": {
+        "x": 12,
+        "y": 108,
+        "w": 12,
+        "h": 7
+      },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "short",
+          "min": 0,
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 8,
+            "showPoints": "never",
+            "spanNulls": false,
+            "gradientMode": "opacity"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "multi",
+          "sort": "desc"
+        }
+      },
+      "targets": [
+        {
+          "refId": "A",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (topic) (rate(store_loader_records_read_total[30s]))",
+          "legendFormat": "read {{topic}}"
+        },
+        {
+          "refId": "B",
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "expr": "sum by (topic) (rate(store_loader_keys_written_total[30s]))",
+          "legendFormat": "written {{topic}}"
+        }
+      ]
     }
   ]
 }

@@ -255,6 +255,86 @@ services:
     environment:
       ENABLE_METRICS: "false"
 
+  # ---------------------------------------------------------------- the store
+  # Optional, under the "store" profile, so every scale script keeps measuring
+  # the stack it always has:
+  #
+  #   docker compose -f docker/compose.yml --profile store up -d
+  #
+  # The loader reads the four output topics as one more consumer group and keeps
+  # the latest value per key in Redis. The jobs never know it is there, so a slow
+  # or stopped Redis cannot back-pressure them -- it only lets the loader fall
+  # behind, and the topics hold the difference. See docs/store/README.md.
+  redis:
+    image: redis:7.4.2
+    container_name: ft-redis
+    profiles: ["store"]
+    ports:
+      - "6379:6379"
+    # Saved to disk every second, so a restart keeps the store. The cap is
+    # generous: the latest value per key is about 40,000 small hashes. No
+    # eviction, because a store that silently drops keys is wrong, not slow.
+    command:
+      - redis-server
+      - --appendonly
+      - "yes"
+      - --appendfsync
+      - everysec
+      - --maxmemory
+      - 256mb
+      - --maxmemory-policy
+      - noeviction
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  store-loader:
+    build:
+      context: ..
+      target: generators
+    image: flink-training/generators
+    container_name: ft-store-loader
+    profiles: ["store"]
+    # One core. The loader averaged under half a core reading 666,000 records a
+    # second at four units, but in bursts of up to two cores each time a
+    # checkpoint made a batch visible -- and those bursts land on the same
+    # machine as the jobs. The cap keeps them off Flink's cores; the lag absorbs
+    # the burst instead. See docs/store/README.md for the measurement.
+    deploy:
+      resources:
+        limits:
+          cpus: "${LOADER_CPUS:-1}"
+    depends_on:
+      redis:
+        condition: service_healthy
+      topics:
+        condition: service_completed_successfully
+    environment:
+      BOOTSTRAP_SERVERS: "${KAFKA_INTERNAL:-kafka:19092}"
+      REDIS_HOST: redis
+      LOADER_THREADS: "${LOADER_THREADS:-4}"
+    entrypoint: ["java", "-Xmx512m", "-cp", "/app/generators.jar",
+                 "io.github.jimzucker.flinktraining.store.StoreLoader"]
+    restart: unless-stopped
+
+  # Redis's own browser viewer: http://localhost:5540, the connection to this
+  # Redis already set up.
+  redisinsight:
+    image: redis/redisinsight:2.70.0
+    container_name: ft-redisinsight
+    profiles: ["store"]
+    ports:
+      - "5540:5540"
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      RI_REDIS_HOST: redis
+      RI_REDIS_PORT: "6379"
+      RI_REDIS_ALIAS: flink-training store
+
   # Produces the demo load. Waits for the jobs to be submitted, so the topics are
   # being consumed before anything is written to them.
   generators:
