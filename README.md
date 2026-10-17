@@ -598,6 +598,26 @@ Full analysis: [`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling
 
 ---
 
+## The Redis store
+
+Optional: the four outputs copied into Redis, the latest value per key, updated
+in place, with a browser viewer beside it.
+
+```bash
+docker compose -f docker/compose.yml --profile store up -d
+# viewer: http://localhost:5540    proof: scripts/verify-store.sh
+```
+
+A separate loader reads the output topics as one more consumer group, so the
+jobs never wait on Redis. Stopped for a minute at 1,000 orders a second, Redis
+cost Flink nothing: 5,000 positions a second throughout, no back-pressure, and
+the loader caught up 15 seconds after Redis came back. With the store running
+beside a 50-million-order drain, throughput moved by less than two passes
+without it differ from each other, and 2→4 units still returned 1.91–1.98×.
+Details and every pass: [`docs/store/`](docs/store/).
+
+---
+
 ## Versions
 
 | Component | Version | Why |
@@ -669,7 +689,7 @@ assumed.
 assignment.pptx        the requirements
 pom.xml                parent POM -- versions, dependency and plugin management
 common/                domain model and JSON encoding
-generators/            block trade and price generators
+generators/            block trade and price generators, and the Redis store loader
 jobs/                  Flink jobs
 docker/                local stack: Kafka, Flink, Prometheus, Grafana
 docker/grafana/        dashboard and provisioning
@@ -677,6 +697,7 @@ scripts/               helper scripts, including the deck build
 docs/deck/             the final demo deck, both versions
 docs/design/           pipeline diagram and design notes
 docs/steps/            per-step evidence: logs, metrics, screenshots
+docs/store/            the Redis store: how it avoids back-pressure, and what was measured
 docs/reviews/          review exchanges for each step
 JOURNAL.md             what was built at each step, and how it was verified
 ```

@@ -57,8 +57,15 @@ check "targets with no query" "0" \
 echo
 echo "every panel query returns data"
 MISSING=0
+# The Redis store's panels have data only when the store profile is running.
+STORE_UP=$(curl -sfG "$PROM/api/v1/query" --data-urlencode 'query=up{job="store-loader"}' \
+  | jq -r '.data.result[0].value[1] // "0"')
 while read -r expr; do
   [ -z "$expr" ] && continue
+  if [[ "$expr" == *store_loader_* ]] && [ "$STORE_UP" != "1" ]; then
+    printf "  not checked, the store profile is not running: %s\n" "$expr"
+    continue
+  fi
   n=$(curl -sfG "$PROM/api/v1/query" --data-urlencode "query=$expr" | jq '.data.result | length')
   if [ "${n:-0}" -eq 0 ]; then
     printf "  NO DATA  %s\n" "$expr"

@@ -28,3 +28,10 @@ scrape_configs:
       - targets: ["kafka:9404"]
         labels:
           component: broker
+
+  # Only there under the "store" profile; the target reads as down otherwise.
+  - job_name: store-loader
+    static_configs:
+      - targets: ["store-loader:9400"]
+        labels:
+          component: store-loader
