@@ -74,6 +74,13 @@ proof. So:
 
 ## Testing and runs
 
+- **Run the largest case first and work backwards, to fail fast** — in the
+  suite, the tiny proof and every experiment. The largest case is the one that
+  fails (a ceiling, broker memory, a rate that never settles); measured third,
+  it spent ten minutes of smaller cases first. Said more than once before it
+  was written down; the author, 2026-10-18: "make that a rule run largest
+  first and work backwards to fail fast". The skill's suite does this since
+  scalable-flink-skill #167.
 - **Stop at the first failure.** Don't run the rest of a battery on code that is
   already broken. Probe the hardest case first.
 - **Run only the case that can show the effect, then work backwards** — on the
