@@ -1,0 +1,77 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+    1 *    116,161/s         —         1 / 100%      1728m / 3.1%     2.5 / 7%       5g, full 934x   Pipeline CPU    check it matches
+      2    200,254/s         —         2 / 100%      2368m / 1.3%    2.5 / 14%     5g, full 3,999x   Pipeline CPU    no usable step
+    4 *    341,760/s         —         4 / 100%      3648m / 0.5%    2.5 / 28%    5g, full 12,139x   Pipeline CPU    no usable step
+
+  Each pair is the limit it had and how much of that it used:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what the target is about. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  * the 1 core row is not counted in the table: its readings are 21.0% apart, over the 20%
+      limit. Its numbers are still shown, and what to do about them still applies.
+  2 cores: no usable step into this case, so there is nothing to judge it by.
+  4 cores: no usable step into this case, so there is nothing to judge it by.
+  * the 4 cores row is not counted in the table: its readings are 28.9% apart, over the 20%
+      limit. Its numbers are still shown, and what to do about them still applies.
+  1 core: the slower pass (103,820/s) was measured while the machine had 4.4-4.6 GB of its
+      memory moved out to disk, the faster passes (116,469/s, 125,258/s, 128,193/s) at 1.6-2.5
+      GB. The machine was short of memory, not the pipeline. Close what else is using memory and
+      measure again.
+  4 cores: the slower passes (301,274/s, 323,899/s) were measured while the machine had 4.6-5.1
+      GB of its memory moved out to disk, the faster pass (400,108/s) at 1.6-1.6 GB. The machine
+      was short of memory, not the pipeline. Close what else is using memory and measure again.
+  the 4-core p2-desc: the machine's load reached 11.3 on 8 cores while measuring. This run's own
+      containers are limited to about 7.0 of them, so some or all of that is the run itself. If
+      this pass reads like the others at its size it cost nothing; if it does not, close what
+      else is running and measure again.
+
+
+  1->2 cores: not reported — the 1-core case does not count: its readings are 21.0% apart, over the 20% limit
+  2->4 cores: not reported — the 4-core case does not count: its readings are 28.9% apart, over the 20% limit
+
+======================================================================================================================
+axis                 : one machine, more cores: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once Kafka sinks, idempotent by publishing the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : e35f29848e13cb4f  (completeness passed for e35f29848e13cb4f)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 250,000,000 records, duplicateRecords 1,243,401, uniqueOrders 248,756,599, partitions 8, allocationsPerOrder 4, symbolKeyCount 4,096, accountKeyCount 16,384, priceRecords 16,384, 5 outputs per input
+backlog              : 250,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-10-18 15:30:32 -> 2026-10-18 16:13:27 EDT (43m)  dashboard: from=1792351832451&to=1792354407742
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     103,820     519,100   1.00/1   100.3%   100   0.23/2.5    0.0%  30.1%  2267s  0.1%       OK
+    2   p1-asc     195,952     979,758   1.99/2   99.4%    99   0.40/2.5    0.6%  29.3%  1066s  0.5%       OK
+    4   p1-asc     301,274   1,506,370   3.95/4   98.8%    95   0.83/2.5    0.5%  26.7%   669s  1.1%       OK
+    4  p2-desc     323,899   1,619,496   3.96/4   98.9%    95   0.81/2.5    0.7%  24.8%   610s  0.2%       OK
+    2  p2-desc     184,726     923,628   2.01/2   100.4%   100   0.42/2.5    0.6%  29.3%  1214s  0.0%       OK
+    1  p2-desc     116,469     582,345   1.00/1   100.0%   100   0.17/2.5    0.0%  35.8%  2006s  0.2%       OK
+    1   p3-asc     125,258     626,292   0.95/1   95.0%   100   0.16/2.5    0.0%  33.3%  1864s  0.5%  CEILING
+        ceiling: the pipeline only used 95.0% of the 1 cores it was given, and it needs 95% to count. Kafka hit its memory limit 365 times during the window and had to read the backlog back off disk (0 page refaults), which is the likely reason. Raise caps.kafkaMemory from 5120m to about 8192m. It shows where scaling stops, and is kept in the table and left out of the ratios.
+    2   p3-asc     220,085   1,100,423   2.00/2   100.0%   100   0.34/2.5    1.2%  24.5%   995s  0.3%       OK
+    4   p3-asc     400,108   2,000,540   3.99/4   99.7%    98   0.70/2.5    0.7%  24.7%   480s  0.4%       OK
+    1 sentinel     128,193     640,966   1.00/1   100.3%   100   0.17/2.5    0.0%  34.2%  1809s  1.0%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     116,161     580,804   1.00/1   100.2%   100   0.19/2.5    0.0%  33.4%  2027s  1.0%   spread 21.0%   UNREPORTABLE (its readings are 21.0% apart, over the 20% limit)
+    2     MEAN     200,254   1,001,270   2.00/2   99.9%   100   0.39/2.5    0.8%  27.7%  1092s  0.5%   spread 17.7%
+    4     MEAN     341,760   1,708,802   3.97/4   99.2%    96   0.78/2.5    0.6%  25.4%   586s  1.1%   spread 28.9%   UNREPORTABLE (its readings are 28.9% apart, over the 20% limit)
+======================================================================================================================
+STEP 1->2 cores: NOT REPORTED — the 1-core case does not count: its readings are 21.0% apart, over the 20% limit
+STEP 2->4 cores: NOT REPORTED — the 4-core case does not count: its readings are 28.9% apart, over the 20% limit
+order effect (descending / ascending): {1: 1.1218, 2: 0.888, 4: 0.9236}
+sentinel: 1c first 103,820 -> last 128,193 rec/s, drift +21.0% across the suite (counted in the 1c spread)
+======================================================================================================================
+dashboard            : opens on the suite, 15:29–16:13; every panel shows data over the suite
+metric names         : all 31 series SKILL.md section 7 names returned data on this image

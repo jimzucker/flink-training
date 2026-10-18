@@ -1,0 +1,77 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      1    120,080/s         —          1 / 99%      1728m / 3.1%     2.5 / 8%       5g, full 258x   Pipeline CPU    check it matches
+    2 *    214,065/s         —         2 / 100%      2368m / 1.3%    2.5 / 17%     5g, full 3,945x   Pipeline CPU    no usable step
+    4 *    375,851/s         —         4 / 100%      3648m / 0.5%    2.5 / 33%    5g, full 10,357x   Pipeline CPU    no usable step
+
+  Each pair is the limit it had and how much of that it used:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what the target is about. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  2 cores: no usable step into this case, so there is nothing to judge it by.
+  * the 2 cores row is not counted in the table: its readings are 24.4% apart, over the 20%
+      limit. Its numbers are still shown, and what to do about them still applies.
+  4 cores: no usable step into this case, so there is nothing to judge it by.
+  * the 4 cores row is not counted in the table: its readings are 28.8% apart, over the 20%
+      limit. Its numbers are still shown, and what to do about them still applies.
+  2 cores: the slower pass (181,374/s) was measured while the machine had 2.7-2.7 GB of its
+      memory moved out to disk, the faster passes (227,223/s, 233,598/s) at 1.5-1.8 GB. The
+      machine was short of memory, not the pipeline. Close what else is using memory and measure
+      again.
+  4 cores: the slower pass (313,830/s) was measured while the machine had 3.8-3.9 GB of its
+      memory moved out to disk, the faster passes (391,822/s, 421,902/s) at 1.6-1.6 GB. The
+      machine was short of memory, not the pipeline. Close what else is using memory and measure
+      again.
+  the 4-core p2-desc: the machine's load reached 13.3 on 8 cores while measuring. This run's own
+      containers are limited to about 7.0 of them, so some or all of that is the run itself. If
+      this pass reads like the others at its size it cost nothing; if it does not, close what
+      else is running and measure again.
+
+
+  1->2 cores: not reported — the 2-core case does not count: its readings are 24.4% apart, over the 20% limit
+  2->4 cores: not reported — the 2-core case does not count: its readings are 24.4% apart, over the 20% limit; the 4-core case does not count: its readings are 28.8% apart, over the 20% limit
+
+======================================================================================================================
+axis                 : one machine, more cores: one task manager container capped at N cores, parallelism N, N slots
+API level            : Flink DataStream API, hand-written operators (no SQL, no Table API)
+guarantee            : state = exactly-once checkpointing; sink = at-least-once Kafka sinks, idempotent by publishing the absolute position per key
+checkpoint interval  : 10000 ms
+build hash           : e35f29848e13cb4f  (completeness passed for e35f29848e13cb4f)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 250,000,000 records, duplicateRecords 1,243,401, uniqueOrders 248,756,599, partitions 8, allocationsPerOrder 4, symbolKeyCount 4,096, accountKeyCount 16,384, priceRecords 16,384, 5 outputs per input
+backlog              : 250,000,000 records, 8 partitions, 5 outputs per input
+suite span           : 2026-10-18 14:39:03 -> 2026-10-18 15:29:36 EDT (51m)  dashboard: from=1792348743886&to=1792351776744
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    1   p1-asc     122,940     614,703   1.00/1   100.0%   100   0.19/2.5    0.0%  34.1%  1895s  0.5%       OK
+    2   p1-asc     233,598   1,167,992   2.00/2   99.8%   100   0.32/2.5    0.7%  26.6%   914s  0.4%       OK
+    4   p1-asc     421,902   2,109,510   3.98/4   99.5%    99   0.60/2.5    0.6%  22.9%   437s  0.9%       OK
+    4  p2-desc     391,822   1,959,111   4.00/4   100.1%    97   0.71/2.5    1.0%  23.3%   466s  0.6%       OK
+    2  p2-desc     227,223   1,136,115   2.00/2   100.3%   100   0.33/2.5    0.6%  27.8%   950s  0.1%       OK
+    1  p2-desc     121,436     607,181   0.99/1   99.5%   100   0.16/2.5    0.1%  35.8%  1915s  1.0%       OK
+    1   p3-asc     121,815     609,074   1.00/1   99.8%   100   0.17/2.5    0.0%  34.8%  1908s  0.8%       OK
+    2   p3-asc     181,374     906,870   1.99/2   99.7%   100   0.41/2.5    0.8%  25.7%  1211s  0.3%       OK
+    4   p3-asc     313,830   1,569,148   3.98/4   99.5%    95   0.82/2.5    0.6%  25.6%   647s  0.9%       OK
+    1 sentinel     114,128     570,640   0.99/1   99.1%   100   0.21/2.5    0.1%  32.7%  2057s  0.5%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     120,080     600,400   1.00/1   99.6%   100   0.18/2.5    0.0%  34.4%  1944s  1.0%   spread 7.3%
+    2     MEAN     214,065   1,070,326   2.00/2   99.9%   100   0.36/2.5    0.7%  26.7%  1025s  0.4%   spread 24.4%   UNREPORTABLE (its readings are 24.4% apart, over the 20% limit)
+    4     MEAN     375,851   1,879,256   3.99/4   99.7%    97   0.71/2.5    0.7%  23.9%   517s  0.9%   spread 28.7%   UNREPORTABLE (its readings are 28.8% apart, over the 20% limit)
+======================================================================================================================
+STEP 1->2 cores: NOT REPORTED — the 2-core case does not count: its readings are 24.4% apart, over the 20% limit
+STEP 2->4 cores: NOT REPORTED — the 2-core case does not count: its readings are 24.4% apart, over the 20% limit; the 4-core case does not count: its readings are 28.8% apart, over the 20% limit
+order effect (descending / ascending): {1: 0.9923, 2: 1.0951, 4: 1.0651}
+sentinel: 1c first 122,940 -> last 114,128 rec/s, drift -7.4% across the suite (counted in the 1c spread)
+======================================================================================================================
+dashboard            : opens on the suite, 14:38–15:30; every panel shows data over the suite
+metric names         : all 31 series SKILL.md section 7 names returned data on this image
