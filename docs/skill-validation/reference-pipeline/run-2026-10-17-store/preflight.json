@@ -1,0 +1,256 @@
+{
+  "checks": [
+    {
+      "check": "every image is native to the host arch",
+      "result": "PASS",
+      "detail": "host=arm64 apache/kafka=arm64 flink=arm64"
+    },
+    {
+      "check": "the JDK the engine needs resolves, pinned",
+      "result": "PASS",
+      "detail": "host openjdk version \"17.0.20\" 2026-07-21 | image openjdk version \"17.0.15\" 2025-04-15"
+    },
+    {
+      "check": "the engine can write its state directory",
+      "result": "PASS",
+      "detail": "uid 9999 (flink) can mkdir under /ckpt"
+    },
+    {
+      "check": "the metrics reporter is not duplicated",
+      "result": "PASS",
+      "detail": "no reporter jar copied into lib/; slf4j reporter used from plugins/"
+    },
+    {
+      "check": "disk budget on the HOST, not the container",
+      "result": "PASS",
+      "detail": "93.8 GB free, about 29.1 GB needed: 900,000,000 records at 18 bytes each (measured on the broker) = 16.3 GB, plus 0.0 GB of outputs, 2 GB of checkpoints and 10 GB spare"
+    },
+    {
+      "check": "retention on every topic written but never drained",
+      "result": "PASS",
+      "detail": "retention.bytes=2147483648 set and read back on none; retention declared by the run and read back on hourly-average-by-location (a periodic sweep, not a bound)"
+    },
+    {
+      "check": "the generator is deterministic",
+      "result": "PASS",
+      "detail": "identical sha256=f38fc0b928c6 for 200,000 records at seed 44"
+    },
+    {
+      "check": "CPU cap mechanism chosen once",
+      "result": "PASS",
+      "detail": "--cpus throughout; read back NanoCpus=2000000000 and cgroup cpu.max = 2.0 cores"
+    },
+    {
+      "check": "slots >= parallelism x jobs",
+      "result": "PASS",
+      "detail": "slots-total=4 >= parallelism 4 x 1 job"
+    },
+    {
+      "check": "partitions divide evenly by every parallelism",
+      "result": "PASS",
+      "detail": "8 partitions / parallelism [1, 2, 4] = 8 per subtask at 1, 4 per subtask at 2, 2 per subtask at 4"
+    },
+    {
+      "check": "memory is per subtask, not per container",
+      "result": "PASS",
+      "detail": "1024m base + 512m per subtask: 1536m at 1, 2048m at 2, 3072m at 4"
+    },
+    {
+      "check": "keys divide evenly across subtasks",
+      "result": "PASS",
+      "detail": "maxParallelism 369 (pipeline.max-parallelism, set in flinkProperties); keys per subtask at 4 cores: hourly average by location 25/25/25/25"
+    },
+    {
+      "check": "other programs' use of the cores (reported)",
+      "result": "PASS",
+      "detail": "quiet: 0.86 of 8 cores are being used by something that is not this run (load average 2.70 / 3.53 / 4.52, which also counts this run's own containers) \u2014 busiest: WindowServer 49%; iTerm2 18%; claude 15%"
+    },
+    {
+      "check": "what this host's own cores do",
+      "result": "PASS",
+      "detail": "alu 1->2 98%, 2->4 99%; mem 1->2 84%, 2->4 79%"
+    },
+    {
+      "check": "backlog covers warm-up, window and headroom",
+      "result": "PASS",
+      "detail": "backlog 900,000,000 covers 180s x 1.5 at the 4-core rate, so up to 3,333,333 rec/s; the tiny proof checks this against the measured rate"
+    },
+    {
+      "check": "the interview and the plan were written down",
+      "result": "PASS",
+      "detail": "the plan names every disclosure"
+    },
+    {
+      "check": "the README names every topic and operator",
+      "result": "PASS",
+      "detail": "README.md names all 6 topics and operators"
+    },
+    {
+      "check": "the Docker VM against the machine's memory (reported)",
+      "result": "PASS",
+      "detail": "the machine has 16.0 GB and the Docker VM takes 12.7 GB, leaving 3.3 GB for macOS, this harness and the generator, which runs on the host. Run 45 swapped 3 GB and stalled its generator with 3.3 GB left over, so watch the fill if this figure is near that."
+    },
+    {
+      "check": "pipeline, broker and job manager against the VM (reported)",
+      "result": "PASS",
+      "detail": "worker limit 3840m at 4 cores + broker 5632m + job manager 2048m + other services 3136m = 14656m of 12955m VM (over-committed, which is normal \u2014 the broker's cache is elastic)"
+    },
+    {
+      "check": "group / txn-id prefix scoped per run",
+      "result": "PASS",
+      "detail": "consumer group = refpipe-<runid>-c<cores>-<pass>; sink is at-least-once (no txn ids)"
+    },
+    {
+      "check": "back-pressure counters exist on the endpoint read",
+      "result": "PASS",
+      "detail": "Flink 1.20.1: busy/idle/backPressured read from the slf4j reporter; REST path deprecated"
+    },
+    {
+      "check": "the VM trim command is known",
+      "result": "PASS",
+      "detail": "docker run --rm --privileged --pid=host alpine nsenter -t 1 -m -u -n -i -- fstrim -v /var/lib/docker"
+    },
+    {
+      "check": "the job jar exists and hashes",
+      "result": "PASS",
+      "detail": "build 8ada16a74ff53772"
+    },
+    {
+      "check": "the build runs on either Kafka (reported)",
+      "result": "PASS",
+      "detail": "no Confluent-only classes in the job jar, so this build runs on Apache Kafka or Confluent with only images.kafka and images.kafkaLibs changed in pipeline.json"
+    },
+    {
+      "check": "the diagram can show how often each output is written (reported)",
+      "result": "PASS",
+      "detail": "design.every gives an interval for hourly-average-by-location (1 hour)"
+    },
+    {
+      "check": "the job graph can be drawn as a picture (reported)",
+      "result": "PASS",
+      "detail": "npx at /opt/homebrew/bin/npx; the graph is rendered with @mermaid-js/mermaid-cli@11.4.0"
+    },
+    {
+      "check": "the dashboard's panels name a data source that exists",
+      "result": "PASS",
+      "detail": "1 dashboard(s), 31 panels, data source(s) Prometheus, harnessprom"
+    },
+    {
+      "check": "the dashboard is loaded and its data source answers",
+      "result": "PASS",
+      "detail": "Grafana on port 13000 has loaded 1 dashboard(s); data source(s) Prometheus answer"
+    }
+  ],
+  "keySpread": {
+    "maxParallelism": 369,
+    "stages": {
+      "hourly average by location": {
+        "keys": 100,
+        "cases": {
+          "1": {
+            "keysPerSubtask": [
+              100
+            ],
+            "busiestShare": 1.0,
+            "evenShare": 1.0,
+            "idleSubtasks": [],
+            "stageCeiling": 1.0
+          },
+          "2": {
+            "keysPerSubtask": [
+              50,
+              50
+            ],
+            "busiestShare": 0.5,
+            "evenShare": 0.5,
+            "idleSubtasks": [],
+            "stageCeiling": 1.0
+          },
+          "4": {
+            "keysPerSubtask": [
+              25,
+              25,
+              25,
+              25
+            ],
+            "busiestShare": 0.25,
+            "evenShare": 0.25,
+            "idleSubtasks": [],
+            "stageCeiling": 1.0
+          }
+        }
+      }
+    },
+    "idle": [],
+    "worst": {
+      "stage": "hourly average by location",
+      "cores": 1,
+      "keysPerSubtask": [
+        100
+      ],
+      "busiestShare": 1.0,
+      "stageCeiling": 1.0,
+      "idleSubtasks": []
+    }
+  },
+  "hostScaling": {
+    "perCore": {
+      "alu": {
+        "1": 612483490.0,
+        "2": 597548568.0,
+        "4": 589388633.0
+      },
+      "mem": {
+        "1": 524068068.0,
+        "2": 441048839.0,
+        "4": 353761762.0
+      }
+    },
+    "ofLinear": {
+      "alu": {
+        "1->2": 0.975,
+        "2->4": 0.988
+      },
+      "mem": {
+        "1->2": 0.836,
+        "2->4": 0.791
+      }
+    },
+    "ofLinearRange": {
+      "alu": {
+        "1->2": {
+          "low": 0.974,
+          "high": 1.216,
+          "spread": 0.242,
+          "n": 3,
+          "middleHalf": null
+        },
+        "2->4": {
+          "low": 0.55,
+          "high": 0.996,
+          "spread": 0.446,
+          "n": 3,
+          "middleHalf": null
+        }
+      },
+      "mem": {
+        "1->2": {
+          "low": 0.797,
+          "high": 0.909,
+          "spread": 0.112,
+          "n": 3,
+          "middleHalf": null
+        },
+        "2->4": {
+          "low": 0.79,
+          "high": 0.847,
+          "spread": 0.057,
+          "n": 3,
+          "middleHalf": null
+        }
+      }
+    },
+    "repeats": 3
+  },
+  "dashboard": "1 dashboard(s), 31 panels, data source(s) Prometheus, harnessprom"
+}

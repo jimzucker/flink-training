@@ -112,6 +112,8 @@ reached load 15.4 — so a rate 10% away is not news. These are:
 | 2026-10-11, third | scalable-flink-skill `ada7890`, macOS 27.0.1 | passed, 82.9 min | 1.940× (1.845–2.035×) | 1.837× (1.756–1.948×) | 10 of 10, plus 4 settling passes | [`run-2026-10-11c/`](run-2026-10-11c/) |
 | 2026-10-12 | scalable-flink-skill `df12dcf` (#154, #155), macOS 27.0.1 | passed, 83.1 min | 1.980× (1.819–2.115×) | 1.819× (1.711–1.940×) | 10 of 10, plus 5 settling passes | [`run-2026-10-12/`](run-2026-10-12/) |
 | 2026-10-13 | scalable-flink-skill `28ce501` (#156, #157), macOS 27.0.1 | passed, 66.4 min | 1.868× (1.813–1.926×) | 1.899× (1.877–1.899×) | 10 of 10, plus 1 settling pass | [`run-2026-10-13/`](run-2026-10-13/) |
+| 2026-10-17, dashboard built by the harness | scalable-flink-skill `461649a` (branch of #161), macOS 27.0.1 | stopped at the report: the 2-core readings were 29.4% apart | — | — | 10 of 10, plus 1 settling pass; the 2-core case not counted | [`run-2026-10-17/`](run-2026-10-17/) |
+| 2026-10-17, the same with the Redis store | scalable-flink-skill `6162f55` (#161, merged as `4ffa99a`), macOS 27.0.1 | passed, 66.6 min | 1.842× (1.830–1.879×) | 1.907× (1.807–1.941×) | 10 of 10 | [`run-2026-10-17-store/`](run-2026-10-17-store/) |
 
 The second run that day (`refpipe-20261011b`) passed its short proof and then
 stopped at the suite: Photos analysis and Spotlight kept 3–5 of 8 cores busy
@@ -130,6 +132,27 @@ second at 1 / 2 / 4 cores, each case's passes 7.0–7.9% apart, sentinel drift
 with 727 MB swapped out. Its output was the first with #156's wording: no
 "claim", the step table's "range it is judged on" column, and the preflight
 row "other programs' use of the cores (reported)".
+
+The two 2026-10-17 runs were the first with the dashboard the harness builds
+(scalable-flink-skill #161): seven rows, consumer lag on every topic, and the
+broker's network as a share of its link. In both, every panel showed data over
+the suite and all 31 metric names in the skill's section 7 returned data.
+
+The first, with the store off, stopped at the report. Its 2-core settling pass
+read 1,128,874 records per second against 1,490,756–1,548,117 for the other
+three, and the 1-core sentinel read 16.4% under the first 1-core pass. The Mac
+had 4.1–6.0 GB of memory moved out to disk at window open throughout, against
+1.5–2.0 GB in the store-on run. What slowed those two passes was not measured.
+
+The store-on run passed. Its rates were 822,298 / 1,514,724 / 2,888,082 records
+per second at 1 / 2 / 4 cores, each case's passes 6.1%, 5.2% and 0.9% apart,
+sentinel drift −1.3%. Other programs used at most 2.36 of the 8 cores at any
+window open. One 1-core pass was measured again because its two ways of
+counting were 5.2% apart, over the 5% limit; the repeat agreed. Redis held 100
+keys, the output's 100 distinct keys. An earlier store-on attempt that day
+stopped at completeness with the four store panels empty: the store was
+switched on for a stack already up, and the running Prometheus kept its old
+configuration. #161 fixed that before merging; its results were not kept.
 
 ## Do not let a clean-room agent read this directory
 
