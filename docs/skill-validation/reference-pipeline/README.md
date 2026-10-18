@@ -114,6 +114,7 @@ reached load 15.4 — so a rate 10% away is not news. These are:
 | 2026-10-13 | scalable-flink-skill `28ce501` (#156, #157), macOS 27.0.1 | passed, 66.4 min | 1.868× (1.813–1.926×) | 1.899× (1.877–1.899×) | 10 of 10, plus 1 settling pass | [`run-2026-10-13/`](run-2026-10-13/) |
 | 2026-10-17, dashboard built by the harness | scalable-flink-skill `461649a` (branch of #161), macOS 27.0.1 | stopped at the report: the 2-core readings were 29.4% apart | — | — | 10 of 10, plus 1 settling pass; the 2-core case not counted | [`run-2026-10-17/`](run-2026-10-17/) |
 | 2026-10-17, the same with the Redis store | scalable-flink-skill `6162f55` (#161, merged as `4ffa99a`), macOS 27.0.1 | passed, 66.6 min | 1.842× (1.830–1.879×) | 1.907× (1.807–1.941×) | 10 of 10 | [`run-2026-10-17-store/`](run-2026-10-17-store/) |
+| 2026-10-18, from an empty broker | scalable-flink-skill `9e6846f` (#162, #163, #164), macOS 27.0.1 | passed, 67.5 min | 1.870× (1.795–1.906×) | 1.864× (1.813–1.936×) | 10 of 10, one 4-core pass a ceiling, plus 1 settling pass | [`run-2026-10-18/`](run-2026-10-18/) |
 
 The second run that day (`refpipe-20261011b`) passed its short proof and then
 stopped at the suite: Photos analysis and Spotlight kept 3–5 of 8 cores busy
@@ -153,6 +154,28 @@ keys, the output's 100 distinct keys. An earlier store-on attempt that day
 stopped at completeness with the four store panels empty: the store was
 switched on for a stack already up, and the running Prometheus kept its old
 configuration. #161 fixed that before merging; its results were not kept.
+
+The 2026-10-18 run tested three skill changes: #162 (a case whose window
+spans a sleep is thrown out, and preflight reports mains or battery), #163
+(wording only) and #164. Every case recorded 0.0 s asleep inside its window,
+11 in the suite and 3 in the tiny proof, and every step of the chain
+recorded its sleep. Preflight said "on mains power, battery 95%".
+
+It is also the first run here from an empty broker since the disk row
+guessed at record size. A first attempt that morning stopped at preflight:
+the row guessed 120 bytes a record and projected 121 GB against 114 GB free,
+for a run that needs about 29 GB. #164 makes a guess that does not fit a
+report, leaving the decision to the tiny proof, which measures the size
+before the fill. The attempt's results were not kept.
+
+Rates were 832,922 / 1,557,917 / 2,904,055 records per second at 1 / 2 / 4
+cores, each case's passes 5.8%, 6.1% and 4.4% apart, sentinel drift −1.4%.
+The descending 4-core pass was a ceiling: 94.7% of its cores, with Kafka at
+its memory limit 1,835 times in the window. It is kept in the table and left
+out of the ratios. The 1→2 range reached under the target, so one settling
+pass ran; the step was then met inside the 1% margin. Other programs used at
+most 1.23 of the 8 cores at any window open, with 1.8–3.4 GB of memory moved
+out to disk.
 
 ## Do not let a clean-room agent read this directory
 
