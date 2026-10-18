@@ -64,9 +64,11 @@ The two measurements the skill asks for when a step is not met, both kept:
 Ten findings in [SKILL-FEEDBACK.md](run-55/SKILL-FEEDBACK.md). F1–F4, F9 and
 F10 are fixed in scalable-flink-skill #159: how `keySets` names label the job
 graph, the `keySets` error's field list, where to start `all` from, a second
-input written once, the tiny-proof warning, and `WATCH_MINUTES=8`. F5 (sleep),
-F6 (the tiny proof's advice after a ceiling), F7 (the start sweep and `tail
--F`) and F8 (the sink-name rule only in SKILL.md §4) are not fixed.
+input written once, the tiny-proof warning, and `WATCH_MINUTES=8`. F5 (sleep) is
+fixed in #160 and #162: `all` keeps the Mac awake, a case whose window spans a
+sleep is thrown out, and preflight reports mains or battery. F6 (the tiny
+proof's advice after a ceiling), F7 (the start sweep and `tail -F`) and F8 (the
+sink-name rule only in SKILL.md §4) are not fixed.
 
 Reading the run's output found one more: the verdict sentence "the low end of
 its range, 1.763x, is 2.1% under the 1.80x target" printed beside 1.83×, with
