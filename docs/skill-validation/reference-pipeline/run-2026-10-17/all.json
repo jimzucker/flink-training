@@ -1,0 +1,42 @@
+{
+  "build": "8ada16a74ff53772",
+  "steps": [
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 2.1
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 149.4
+    },
+    {
+      "step": "completeness",
+      "rc": 0,
+      "seconds": 365.1
+    },
+    {
+      "step": "tinyproof",
+      "rc": 0,
+      "seconds": 738.9
+    },
+    {
+      "step": "fill",
+      "rc": 0,
+      "seconds": 260.1
+    },
+    {
+      "step": "suite",
+      "rc": 0,
+      "seconds": 2530.1
+    },
+    {
+      "step": "report",
+      "rc": 1,
+      "seconds": 2.7
+    }
+  ],
+  "verdict": "STOPPED at report: no scaling result \u2014 too many cases were thrown out to compare one core count with another",
+  "seconds": 4048.3
+}

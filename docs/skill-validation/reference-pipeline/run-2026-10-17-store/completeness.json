@@ -1,0 +1,173 @@
+{
+  "build": "8ada16a74ff53772",
+  "records": 25000000,
+  "cores": 1,
+  "arms": [
+    {
+      "group": "refpipe-complete-clean",
+      "killed": false,
+      "drainS": 60.5,
+      "killedAtCommitted": null,
+      "busyBefore": {
+        "otherCores": 1.99,
+        "waitedS": 0
+      },
+      "shape": {
+        "vertexCount": 2,
+        "signature": [
+          [
+            "Source: read temperature readings<br/>+- parse reading<br/>",
+            []
+          ],
+          [
+            "hourly average by location<br/>+- publish hourly average: Writer<br/>   +- publish hourly average: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          369
+        ],
+        "plan": {
+          "jid": "5c75e1c943d7e1ed604b7a902c4cea70",
+          "name": "temperature hourly average by location",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "ce67902ecbd1f72c9ea827a780d093c9",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "hourly average by location<br/>+- publish hourly average: Writer<br/>   +- publish hourly average: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "1e014df68450aba629c1010ad5218a6c",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "1e014df68450aba629c1010ad5218a6c",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: read temperature readings<br/>+- parse reading<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "verifier: arm=clean topic=hourly-average-by-location manifest=/tmp/refpipe-20261017-store/results/manifest-small.json (25,000,000 readings, 694 expected rows)\n  PASS  every one of the 694 published rows matches the input exactly (total in tenths of a degree, and count -- integers, no tolerance)\n  PASS  every row is keyed by its location\n  PASS  all 694 hourly rows the input calls for were published (no window missing)\n  PASS  no row was published twice on a clean run\n  PASS  distinct locations published = 100, the number the interview predicted\n  PASS  every location's rows are in exactly one partition, so per-location order means something end to end\n  PASS  no location's published hour ever went backwards on a clean run\n  PASS  the published rows account for 23,202,000 readings, exactly the number the input puts in closed hours (23,202,000 of 25,000,000 readings; the newest hour of each location is still open and is not published)\n  NOTE  section 4's \"two paths over the same input agree\" does not apply: this pipeline has one aggregation and one path (ASSUMPTIONS.md B9)\nCOMPLETENESS OK (clean): 8 assertions, no tolerances\n"
+    },
+    {
+      "group": "refpipe-complete-kill",
+      "killed": true,
+      "drainS": 95.2,
+      "killedAtCommitted": 12930973,
+      "busyBefore": {
+        "otherCores": 0.08,
+        "waitedS": 0
+      },
+      "shape": {
+        "vertexCount": 2,
+        "signature": [
+          [
+            "Source: read temperature readings<br/>+- parse reading<br/>",
+            []
+          ],
+          [
+            "hourly average by location<br/>+- publish hourly average: Writer<br/>   +- publish hourly average: Committer<br/>",
+            [
+              "HASH"
+            ]
+          ]
+        ],
+        "maxParallelism": [
+          369
+        ],
+        "plan": {
+          "jid": "96249405cdd9913cb6ce027fb27831fd",
+          "name": "temperature hourly average by location",
+          "type": "STREAMING",
+          "nodes": [
+            {
+              "id": "ce67902ecbd1f72c9ea827a780d093c9",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "hourly average by location<br/>+- publish hourly average: Writer<br/>   +- publish hourly average: Committer<br/>",
+              "inputs": [
+                {
+                  "num": 0,
+                  "id": "1e014df68450aba629c1010ad5218a6c",
+                  "ship_strategy": "HASH",
+                  "exchange": "pipelined_bounded"
+                }
+              ],
+              "optimizer_properties": {}
+            },
+            {
+              "id": "1e014df68450aba629c1010ad5218a6c",
+              "parallelism": 1,
+              "operator": "",
+              "operator_strategy": "",
+              "description": "Source: read temperature readings<br/>+- parse reading<br/>",
+              "optimizer_properties": {}
+            }
+          ]
+        }
+      },
+      "verify": "verifier: arm=killed topic=hourly-average-by-location manifest=/tmp/refpipe-20261017-store/results/manifest-small.json (25,000,000 readings, 694 expected rows)\n  PASS  every one of the 702 published rows matches the input exactly (total in tenths of a degree, and count -- integers, no tolerance)\n  PASS  every row is keyed by its location\n  PASS  all 694 hourly rows the input calls for were published (no window missing)\n  PASS  8 duplicate rows over 8 (location, hour) keys after the kill -- allowed, and every copy was identical, which is what makes the at-least-once sink idempotent\n  PASS  distinct locations published = 100, the number the interview predicted\n  PASS  every location's rows are in exactly one partition, so per-location order means something end to end\n  PASS  after the kill, 0 of 100 locations stepped back exactly once and none more than once, and every total still matches the input\n  PASS  the published rows account for 23,202,000 readings, exactly the number the input puts in closed hours (23,202,000 of 25,000,000 readings; the newest hour of each location is still open and is not published)\n  NOTE  section 4's \"two paths over the same input agree\" does not apply: this pipeline has one aggregation and one path (ASSUMPTIONS.md B9)\nCOMPLETENESS OK (killed): 8 assertions, no tolerances\n"
+    }
+  ],
+  "at": "2026-10-17 19:17:55",
+  "designDiff": [
+    {
+      "area": "operator",
+      "declared": "read temperature readings",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "parse reading",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "hourly average by location",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "operator",
+      "declared": "publish hourly average",
+      "built": true,
+      "detail": "in the running plan"
+    },
+    {
+      "area": "input",
+      "declared": "temperature-readings",
+      "built": true,
+      "detail": "900,000,000 records on the broker"
+    },
+    {
+      "area": "output",
+      "declared": "hourly-average-by-location",
+      "built": true,
+      "detail": "694 records after the drain"
+    },
+    {
+      "area": "constraint",
+      "declared": "maxParallelism = 369",
+      "built": true,
+      "detail": "read back 369"
+    }
+  ],
+  "result": "PASS"
+}
