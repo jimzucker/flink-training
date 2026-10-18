@@ -1,0 +1,80 @@
+{
+  "project": "st56",
+  "topics": {
+    "in": "orders",
+    "out": ["positions-by-symbol", "positions-by-account"]
+  },
+  "topicsAlsoWritten": ["market-values-by-symbol", "market-values-by-account"],
+  "outputsPerInput": 5,
+  "design": {
+    "operators": [
+      "kafka-source-orders",
+      "kafka-source-prices",
+      "parse-orders",
+      "position-and-market-value-by-symbol",
+      "position-and-market-value-by-account",
+      "sink-positions-by-symbol",
+      "sink-positions-by-account",
+      "sink-market-values-by-symbol",
+      "sink-market-values-by-account"
+    ],
+    "inputs": ["orders", "prices"],
+    "sources": {"prices": "kafka-source-prices"},
+    "every": {"market-values-by-symbol": "10 s", "market-values-by-account": "10 s"}
+  },
+  "partitions": 8,
+  "checkpointMs": 10000,
+  "settleS": 25,
+  "job": {
+    "jar": "job/target/positions-1.0.jar",
+    "mainClass": "st56.PositionsJob",
+    "args": "--bootstrap {bootstrap} --in {in} --prices {in1} --outSym {out0} --outAcct {out1} --mvSym {also0} --mvAcct {also1} --group {group} --parallelism {par} --checkpointMs {ckptMs} --mvIntervalMs 10000",
+    "sourceVertexMatch": "kafka-source-orders"
+  },
+  "generator": {
+    "cmd": "{java} -cp {jar} st56.GenerateBacklog --mode=produce --count={count} --seed={seed} --partitions={partitions} --bootstrap={bootstrapExt} --topic={topic} --manifest={manifest} --prices={in1} --mvTopics={alsos}",
+    "manifestCmd": "{java} -cp {jar} st56.GenerateBacklog --mode=manifest --count={count} --seed={seed} --partitions={partitions} --manifest={manifest}",
+    "manifestCountField": "recordCount"
+  },
+  "verifier": {
+    "cmd": "{java} -cp {jar} st56.VerifyCompleteness --bootstrap={bootstrapExt} --outSym={out0} --outAcct={out1} --mvSym={also0} --mvAcct={also1} --manifest={manifest} --arm={arm}"
+  },
+  "keySets": {
+    "symbol": "positionBySymbol",
+    "account": "positionByAccount"
+  },
+  "cases": [1, 2, 4],
+  "baseline": 1,
+  "passes": 3,
+  "backlog": {
+    "count": 250000000,
+    "seed": 56056,
+    "smallCount": 8000000,
+    "tinyCount": 120000000,
+    "killAtFraction": 0.4
+  },
+  "caps": {
+    "kafka": 2.5,
+    "jobmanager": 0.5,
+    "kafkaMemory": "5g",
+    "kafkaHeap": "1G",
+    "tmMemoryBase": "1088m",
+    "tmMemoryPerCore": "640m"
+  },
+  "images": {
+    "flink": "flink:1.20.1-scala_2.12-java17",
+    "kafka": "apache/kafka:3.9.0",
+    "kafkaLibs": "/opt/kafka/libs"
+  },
+  "flinkProperties": {
+    "env.java.opts.taskmanager": "-XX:+UseG1GC"
+  },
+  "ports": {"kafka": 19092, "rest": 18081},
+  "jdk": "/opt/homebrew/opt/openjdk@17",
+  "axis": "one machine, more cores: one task manager container capped at N cores, parallelism N, N slots",
+  "apiLevel": "Flink DataStream API, hand-written operators (no SQL, no Table API)",
+  "guarantee": {
+    "state": "exactly-once checkpointing",
+    "sink": "at-least-once Kafka sinks, idempotent by publishing the absolute position per key"
+  }
+}

@@ -1,0 +1,96 @@
+{
+  "perCore": {
+    "alu": {
+      "1": 626406537.0,
+      "2": 613480654.0,
+      "4": 601415110.0
+    },
+    "mem": {
+      "1": 488569046.0,
+      "2": 471586322.0,
+      "4": 356377815.0
+    }
+  },
+  "ofLinear": {
+    "alu": {
+      "1->2": 0.98,
+      "2->4": 0.981
+    },
+    "mem": {
+      "1->2": 0.979,
+      "2->4": 0.749
+    }
+  },
+  "ofLinearRange": {
+    "alu": {
+      "1->2": {
+        "low": 0.923,
+        "high": 1.073,
+        "spread": 0.15,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.973,
+          "high": 0.985,
+          "spread": 0.012
+        }
+      },
+      "2->4": {
+        "low": 0.457,
+        "high": 1.003,
+        "spread": 0.546,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.978,
+          "high": 0.984,
+          "spread": 0.006
+        }
+      }
+    },
+    "mem": {
+      "1->2": {
+        "low": 0.93,
+        "high": 1.044,
+        "spread": 0.114,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.944,
+          "high": 1.01,
+          "spread": 0.066
+        }
+      },
+      "2->4": {
+        "low": 0.731,
+        "high": 0.881,
+        "spread": 0.15,
+        "n": 9,
+        "middleHalf": {
+          "low": 0.745,
+          "high": 0.802,
+          "spread": 0.057
+        }
+      }
+    }
+  },
+  "repeats": 9,
+  "spread": {
+    "widest": {
+      "envelope": 0.546,
+      "middleHalf": 0.066,
+      "repeats": 9,
+      "mode": null
+    },
+    "alu": {
+      "envelope": 0.546,
+      "middleHalf": 0.012,
+      "repeats": 9,
+      "mode": "alu"
+    },
+    "mem": {
+      "envelope": 0.15,
+      "middleHalf": 0.066,
+      "repeats": 9,
+      "mode": "mem"
+    }
+  },
+  "at": "2026-10-18 16:20:07"
+}
