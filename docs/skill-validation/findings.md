@@ -380,3 +380,47 @@ run.
 | 5 | The Mac slept from 20:01 to 20:06 on battery, inside completeness | It fell between the drain and the verifier, so no reading moved. Nothing notices sleep; not fixed |
 | 6 | The agent's findings F1–F4 and F10 were gaps in `harness/README.md` and an error message | Fixed in #159. F5–F8 are not |
 
+
+## 13. What the dashboard's output reader costs — 2026-10-18
+
+The harness-built dashboard (scalable-flink-skill #161) runs one more consumer
+over the pipeline's outputs, `<project>-kafkametrics`, which counts their
+records and distinct keys. On a pipeline whose outputs grow with its input it
+reads five records for every input record, so it was the part of the dashboard
+most likely to slow the pipeline down.
+
+**How it was measured.** Clean-room run 55's build (`6cdf0a365d09554f`), the
+skill at `4ffa99a`, the tiny proof's 4-core case. One stack, one backlog of
+120,000,000 orders, the dashboard on. The only change between cases was
+whether the reader's container was running: stopped for the reader-off cases,
+started for the reader-on ones, alternating, three of each. Its state was read
+back before every case, and Prometheus's count of the records it read was
+taken before and after every reader-on case. The script, the log and every
+case record are in [reader-cost/](reader-cost/).
+
+| case | reader | records per second | against the reader-off cases on either side | records the reader read |
+|---|---|---|---|---|
+| 1 | off | 463,095 | | |
+| 2 | on | 448,325 | +0.5% | 187,515,936 |
+| 3 | off | 429,472 | | |
+| 4 | on | 419,972 | +0.6% | 204,475,390 |
+| 5 | off | 405,478 | | |
+| 6 | on | 415,801 | +2.5% (case 5 only) | 158,513,582 |
+
+**No cost that can be measured.** Every reader-on case read within 2.5% of
+the reader-off cases beside it, and the three are all higher, not lower. A
+two-pass ratio carries about ±4% on this laptop. Taken across all six, the
+reader-on average is 1.1% under the reader-off average, which is inside the
+same range. All six cases passed every check, with the worker at 98.8–100.4%
+of its core limit.
+
+**The rate fell 12.4% over the hour, whether the reader was off or on** (case
+1 to case 5). That is why each reader-on case is compared with its neighbours
+and not with the averages. **Cause not measured.** Other programs used 3.22
+cores at the close of case 3 and under 0.62 at every other open and close.
+
+**An earlier single reading is superseded.** A tiny proof of each half that
+morning, with the whole dashboard off and then on, read 4 cores 6.9% lower with
+it on (485,360 against 452,029 records per second). One reading per half, taken
+with the rate drifting as above, cannot separate a cost from the drift. The
+alternating cases above can.
