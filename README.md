@@ -621,6 +621,9 @@ docker compose -f docker/compose.yml --profile store up -d
 # viewer: http://localhost:5540    proof: scripts/verify-store.sh
 ```
 
+Safe on a stack that is already running: the submit step leaves a job that is
+already running under its name alone, so the jobs are not started twice.
+
 A separate loader reads the output topics as one more consumer group, so the
 jobs never wait on Redis. Stopped for a minute at 1,000 orders a second, Redis
 cost Flink nothing: 5,000 positions a second throughout, no back-pressure, and
