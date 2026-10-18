@@ -1,0 +1,1 @@
+STOPPED at report: not met — 1→2 measured 1.786x, but it could be as low as 1.759x, 2.3% under the 1.80x target; a step may fall at most 1% under. More passes could change that; change nothing in the pipeline 84.9 min

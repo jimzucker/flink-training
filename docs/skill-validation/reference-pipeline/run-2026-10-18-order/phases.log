@@ -1,0 +1,16 @@
+2026-10-18 16:58:06 phase=all start
+2026-10-18 16:58:06 phase=up start
+2026-10-18 16:58:25 phase=up end rc=0 18s
+2026-10-18 16:58:25 phase=preflight start
+2026-10-18 17:01:06 phase=preflight end rc=0 161s
+2026-10-18 17:01:06 phase=completeness start
+2026-10-18 17:06:44 phase=completeness end rc=0 338s
+2026-10-18 17:06:44 phase=tinyproof start
+2026-10-18 17:18:06 phase=tinyproof end rc=0 682s
+2026-10-18 17:18:06 phase=fill start
+2026-10-18 17:22:08 phase=fill end rc=0 242s
+2026-10-18 17:22:08 phase=suite start
+2026-10-18 18:22:58 phase=suite end rc=0 3650s
+2026-10-18 18:22:58 phase=report start
+2026-10-18 18:23:01 phase=report end rc=1 2s
+2026-10-18 18:23:01 phase=all end STOPPED at report: not met — 1→2 measured 1.786x, but it could be as low as 1.759x, 2.3% under the 1.80x target; a step may fall at most 1% under. More passes could change that; change nothing in the pipeline 84.9 min
