@@ -1,0 +1,49 @@
+{
+  "build": "da70e36c1e600ecd",
+  "steps": [
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 18.6,
+      "sleptS": -0.0
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 167.0,
+      "sleptS": -0.0
+    },
+    {
+      "step": "completeness",
+      "rc": 0,
+      "seconds": 393.3,
+      "sleptS": 0.0
+    },
+    {
+      "step": "tinyproof",
+      "rc": 0,
+      "seconds": 711.8,
+      "sleptS": 0.0
+    },
+    {
+      "step": "fill",
+      "rc": 0,
+      "seconds": 256.7,
+      "sleptS": 0.0
+    },
+    {
+      "step": "suite",
+      "rc": 0,
+      "seconds": 2497.9,
+      "sleptS": 0.0
+    },
+    {
+      "step": "report",
+      "rc": 0,
+      "seconds": 2.3,
+      "sleptS": 0.0
+    }
+  ],
+  "verdict": "PASS",
+  "seconds": 4047.6
+}
