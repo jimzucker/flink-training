@@ -1,0 +1,21 @@
+[10:02:23] stack up: st55d-kafka (cap 2.5), st55d-jm (cap 0.5); task manager is started per case
+[10:02:23] stack up; reader running: True
+[10:02:26] fill: /opt/homebrew/opt/openjdk@17/bin/java -cp /tmp/readercost/ab/job/target/positions-1.0.jar st55.Gen --mode=produce --count=120000000 --seed=20261015 --partitions=8 --bootstrap=localhost:19092 --topic=orders-tiny --pricesTopic=prices --manifest=/tmp/readercost/ab/results/manifest-tiny.json
+[10:03:29] fill: 89,566,287 of 120,000,000 records written to orders-tiny (75%), 1 min in
+[10:03:50] fill done: produced: 120,000,000 records (119,403,696 unique orders, 596,304 written twice on purpose) in 82.9 s
+[10:03:51] backlog orders-tiny: 120,000,000 records read back over 8 partitions
+[10:04:07] case 1/6 arm=off reader running=False reader records so far=None
+[10:06:46]   -> {'case': 1, 'arm': 'off', 'status': 'measured', 'recordsPerSec': 463095.3, 'otherCoresOpen': 0.43, 'otherCoresClose': 0.14, 'hostSwapOpenMB': 1252.4, 'tmCapFrac': 0.9997, 'readerRecordsBefore': None, 'readerRecordsAfter': None, 'readerRunningAtStart': False}
+[10:07:02] case 2/6 arm=on reader running=True reader records so far=13581341.0
+[10:09:32]   -> {'case': 2, 'arm': 'on', 'status': 'measured', 'recordsPerSec': 448325.3, 'otherCoresOpen': 0.55, 'otherCoresClose': 0.17, 'hostSwapOpenMB': 1204.4, 'tmCapFrac': 0.9877, 'readerRecordsBefore': 13581341.0, 'readerRecordsAfter': 201097277.0, 'readerRunningAtStart': True}
+[10:09:48] case 3/6 arm=off reader running=False reader records so far=None
+[10:12:27]   -> {'case': 3, 'arm': 'off', 'status': 'measured', 'recordsPerSec': 429471.5, 'otherCoresOpen': 0.61, 'otherCoresClose': 3.22, 'hostSwapOpenMB': 1204.4, 'tmCapFrac': 0.9966, 'readerRecordsBefore': None, 'readerRecordsAfter': None, 'readerRunningAtStart': False}
+[10:12:42] case 4/6 arm=on reader running=True reader records so far=13782253.0
+[10:15:23]   -> {'case': 4, 'arm': 'on', 'status': 'measured', 'recordsPerSec': 419971.7, 'otherCoresOpen': 0.22, 'otherCoresClose': 0.17, 'hostSwapOpenMB': 1326.4, 'tmCapFrac': 0.9903, 'readerRecordsBefore': 13782253.0, 'readerRecordsAfter': 218257643.0, 'readerRunningAtStart': True}
+[10:15:39] case 5/6 arm=off reader running=False reader records so far=None
+[10:17:53]   -> {'case': 5, 'arm': 'off', 'status': 'measured', 'recordsPerSec': 405477.5, 'otherCoresOpen': 0.15, 'otherCoresClose': 0.47, 'hostSwapOpenMB': 1326.4, 'tmCapFrac': 0.9919, 'readerRecordsBefore': None, 'readerRecordsAfter': None, 'readerRunningAtStart': False}
+[10:18:08] case 6/6 arm=on reader running=True reader records so far=9005447.0
+[10:20:33]   -> {'case': 6, 'arm': 'on', 'status': 'measured', 'recordsPerSec': 415800.8, 'otherCoresOpen': 0.14, 'otherCoresClose': 0.15, 'hostSwapOpenMB': 1310.4, 'tmCapFrac': 1.0042, 'readerRecordsBefore': 9005447.0, 'readerRecordsAfter': 167519029.0, 'readerRunningAtStart': True}
+[10:20:37] fstrim: /var/lib/docker: 10.8 GiB (11617275904 bytes) trimmed
+[10:20:37] stack down; nothing with prefix st55d survives
+[10:20:37] AB DONE

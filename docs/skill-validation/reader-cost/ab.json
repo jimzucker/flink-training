@@ -1,0 +1,83 @@
+{
+  "arms": [
+    {
+      "case": 1,
+      "arm": "off",
+      "status": "measured",
+      "recordsPerSec": 463095.3,
+      "otherCoresOpen": 0.43,
+      "otherCoresClose": 0.14,
+      "hostSwapOpenMB": 1252.4,
+      "tmCapFrac": 0.9997,
+      "readerRecordsBefore": null,
+      "readerRecordsAfter": null,
+      "readerRunningAtStart": false
+    },
+    {
+      "case": 2,
+      "arm": "on",
+      "status": "measured",
+      "recordsPerSec": 448325.3,
+      "otherCoresOpen": 0.55,
+      "otherCoresClose": 0.17,
+      "hostSwapOpenMB": 1204.4,
+      "tmCapFrac": 0.9877,
+      "readerRecordsBefore": 13581341.0,
+      "readerRecordsAfter": 201097277.0,
+      "readerRunningAtStart": true
+    },
+    {
+      "case": 3,
+      "arm": "off",
+      "status": "measured",
+      "recordsPerSec": 429471.5,
+      "otherCoresOpen": 0.61,
+      "otherCoresClose": 3.22,
+      "hostSwapOpenMB": 1204.4,
+      "tmCapFrac": 0.9966,
+      "readerRecordsBefore": null,
+      "readerRecordsAfter": null,
+      "readerRunningAtStart": false
+    },
+    {
+      "case": 4,
+      "arm": "on",
+      "status": "measured",
+      "recordsPerSec": 419971.7,
+      "otherCoresOpen": 0.22,
+      "otherCoresClose": 0.17,
+      "hostSwapOpenMB": 1326.4,
+      "tmCapFrac": 0.9903,
+      "readerRecordsBefore": 13782253.0,
+      "readerRecordsAfter": 218257643.0,
+      "readerRunningAtStart": true
+    },
+    {
+      "case": 5,
+      "arm": "off",
+      "status": "measured",
+      "recordsPerSec": 405477.5,
+      "otherCoresOpen": 0.15,
+      "otherCoresClose": 0.47,
+      "hostSwapOpenMB": 1326.4,
+      "tmCapFrac": 0.9919,
+      "readerRecordsBefore": null,
+      "readerRecordsAfter": null,
+      "readerRunningAtStart": false
+    },
+    {
+      "case": 6,
+      "arm": "on",
+      "status": "measured",
+      "recordsPerSec": 415800.8,
+      "otherCoresOpen": 0.14,
+      "otherCoresClose": 0.15,
+      "hostSwapOpenMB": 1310.4,
+      "tmCapFrac": 1.0042,
+      "readerRecordsBefore": 9005447.0,
+      "readerRecordsAfter": 167519029.0,
+      "readerRunningAtStart": true
+    }
+  ],
+  "build": null
+}
