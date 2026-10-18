@@ -115,6 +115,7 @@ reached load 15.4 — so a rate 10% away is not news. These are:
 | 2026-10-17, dashboard built by the harness | scalable-flink-skill `461649a` (branch of #161), macOS 27.0.1 | stopped at the report: the 2-core readings were 29.4% apart | — | — | 10 of 10, plus 1 settling pass; the 2-core case not counted | [`run-2026-10-17/`](run-2026-10-17/) |
 | 2026-10-17, the same with the Redis store | scalable-flink-skill `6162f55` (#161, merged as `4ffa99a`), macOS 27.0.1 | passed, 66.6 min | 1.842× (1.830–1.879×) | 1.907× (1.807–1.941×) | 10 of 10 | [`run-2026-10-17-store/`](run-2026-10-17-store/) |
 | 2026-10-18, from an empty broker | scalable-flink-skill `9e6846f` (#162, #163, #164), macOS 27.0.1 | passed, 67.5 min | 1.870× (1.795–1.906×) | 1.864× (1.813–1.936×) | 10 of 10, one 4-core pass a ceiling, plus 1 settling pass | [`run-2026-10-18/`](run-2026-10-18/) |
+| 2026-10-18, largest case first | scalable-flink-skill `cf7627c` (#166, #167, #168), macOS 27.0.1 | stopped at the report: 1→2 could be as low as 1.759×, 2.3% under the target | 1.786× (1.759–1.849×) | 1.882× (1.857–2.108×) | 10 of 10, plus 6 settling passes | [`run-2026-10-18-order/`](run-2026-10-18-order/) |
 
 The second run that day (`refpipe-20261011b`) passed its short proof and then
 stopped at the suite: Photos analysis and Spotlight kept 3–5 of 8 cores busy
@@ -176,6 +177,27 @@ out of the ratios. The 1→2 range reached under the target, so one settling
 pass ran; the step was then met inside the 1% margin. Other programs used at
 most 1.23 of the 8 cores at any window open, with 1.8–3.4 GB of memory moved
 out to disk.
+
+The second 2026-10-18 run tested three more skill changes: #166 (a self-test
+that works at any backlog size), #167 (the largest case first) and #168 (a
+case waits while 4 GB or more of memory is moved out to disk, and the tiny
+proof stops at the first problem with the machine). The order held: the tiny
+proof measured 4, 2, then 1 cores; the suite ran 4, 2, 1, then 1, 2, 4, then
+4, 2, 1, and the sentinel was a 4-core pass. The memory wait held no case:
+1.0–3.4 GB was moved out to disk before each one. Every case recorded 0.0 s
+asleep.
+
+It stopped at the report after 84.9 minutes. 1→2 measured 1.786×, and its
+lowest reading, 1.759×, is 2.3% under the 1.80× target, more than the 1%
+allowed; six settling passes at 1 and 2 cores did not bring it inside. 2→4
+was met at 1.882×. Rates were 844,045 / 1,507,136 / 2,836,615 records per
+second at 1 / 2 / 4 cores, each case's passes 3.8%, 10.2% and 18.6% apart.
+The 4-core sentinel read 19.4% under the first 4-core pass, with the
+machine's load at 21.1 on 8 cores while it was measured; other programs used
+0.30 of the 8 cores at its window open and 1.18 at its close. Other programs
+used at most 1.6 of the 8 cores at any window open. What slowed the sentinel
+and the slowest 2-core pass was not measured, and one run cannot say whether
+the new order changed the result.
 
 ## Do not let a clean-room agent read this directory
 

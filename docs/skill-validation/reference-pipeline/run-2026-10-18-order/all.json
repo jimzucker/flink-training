@@ -1,0 +1,49 @@
+{
+  "build": "16a07060336b9172",
+  "steps": [
+    {
+      "step": "up",
+      "rc": 0,
+      "seconds": 18.2,
+      "sleptS": 0.0
+    },
+    {
+      "step": "preflight",
+      "rc": 0,
+      "seconds": 161.3,
+      "sleptS": 0.0
+    },
+    {
+      "step": "completeness",
+      "rc": 0,
+      "seconds": 337.9,
+      "sleptS": 0.0
+    },
+    {
+      "step": "tinyproof",
+      "rc": 0,
+      "seconds": 681.9,
+      "sleptS": 0.0
+    },
+    {
+      "step": "fill",
+      "rc": 0,
+      "seconds": 242.4,
+      "sleptS": 0.0
+    },
+    {
+      "step": "suite",
+      "rc": 0,
+      "seconds": 3650.3,
+      "sleptS": 0.0
+    },
+    {
+      "step": "report",
+      "rc": 1,
+      "seconds": 2.5,
+      "sleptS": 0.0
+    }
+  ],
+  "verdict": "STOPPED at report: not met \u2014 1\u21922 measured 1.786x, but it could be as low as 1.759x, 2.3% under the 1.80x target; a step may fall at most 1% under. More passes could change that; change nothing in the pipeline",
+  "seconds": 5094.5
+}

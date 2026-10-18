@@ -1,0 +1,73 @@
+SCORECARD
+
+  cores        speed   scaling     pipeline CPU   pipeline memory    Kafka CPU        Kafka memory   blocked by      what to do
+      1    844,045/s         —          1 / 99%      1536m / 1.7%     2.5 / 1%    5.5g, never full   Pipeline CPU    check it matches
+      2  1,507,136/s     1.79x         2 / 100%      2048m / 0.5%     2.5 / 2%    5.5g, never full   Pipeline CPU    more passes
+      4  2,836,615/s     1.88x          4 / 99%      3072m / 0.3%     2.5 / 7%   5.5g, full 1,660x   Pipeline CPU    add cores for more
+
+  Each pair is the limit it had and how much of that it used:
+    scaling           what the step into this case gave — nothing on the baseline
+    pipeline CPU      cores it could use / how much of them it used
+    pipeline memory   memory it could use / share of the time spent tidying memory up
+    Kafka CPU         cores Kafka could use / how much of them it used
+    Kafka memory      memory Kafka could use, and how often it filled up
+
+  1 core is the baseline. Do not tune it: making the baseline faster makes the step off it
+      smaller, and the steps are what the target is about. The only thing worth fixing here is a
+      way it differs from the other cases — a different garbage collector, a different job
+      graph, a cap that did not apply.
+  2 cores: doubling gave 1.79x, not met: measured 1.786x, but it could be as low as 1.759x, 2.3%
+      under the 1.80x target; a step may fall at most 1% under. More passes could change that;
+      change nothing in the pipeline on it.
+  the 4-core sentinel: the machine's load reached 21.1 on 8 cores while measuring. This run's
+      own containers are limited to about 7.0 of them, so some or all of that is the run itself.
+      If this pass reads like the others at its size it cost nothing; if it does not, close what
+      else is running and measure again.
+
+
+  1->2 cores: doubling gave 1.79x, target 1.80x  ->  not met — it could be as low as 1.759x, 2.3% under the 1.80x target; more passes could change that
+     a step is met when its lowest reading is no more than 1% under the target
+  2->4 cores: doubling gave 1.88x, target 1.80x  ->  met — at its lowest, 1.857x, it is 3.2% over the 1.80x target
+
+======================================================================================================================
+axis                 : one machine, more cores
+API level            : DataStream
+guarantee            : state = exactly-once checkpointing; sink = at-least-once, idempotent (the absolute total and count per location and hour)
+checkpoint interval  : 10000 ms
+build hash           : 16a07060336b9172  (completeness passed for 16a07060336b9172)
+passes per case      : 3
+study                : scaling: every case configured identically
+workload             : 900,000,000 records, locationCount 100, sensorCount 1,000, sensorsPerLocation 10, recordBytes 103, hourMs 3,600,000, locationStaggerSeconds 36, partitions 8, closedWindowCount 24,999, readingsInClosedWindows 898,182,000
+backlog              : 900,000,000 records, 8 partitions; outputs are not a constant multiple of the input
+suite span           : 2026-10-18 17:22:08 -> 2026-10-18 18:22:48 EDT (1h 01m)  dashboard: from=1792358528636&to=1792362168521
+======================================================================================================================
+cores     pass   records/s   out rec/s     tm cpu   %cap  thr%      kafka  srcIdle   srcBP   hdrm   vant   status
+-----------------------------------------------------------------------------------------------------------------
+    4  p1-desc   2,978,430           -   3.98/4   99.4%   100   0.09/2.5   15.6%   0.0%   156s  0.3%       OK
+    2  p1-desc   1,502,310           -   1.98/2   98.9%   100   0.05/2.5    8.5%   0.0%   452s  0.9%       OK
+    1  p1-desc     826,533           -   0.99/1   99.4%   100   0.03/2.5   13.1%   0.0%   936s  0.5%       OK
+    1   p2-asc     848,918           -   0.97/1   96.7%   100   0.03/2.5   12.6%   0.0%   909s  3.9%       OK
+    2   p2-asc   1,568,412           -   2.00/2   100.0%   100   0.04/2.5   11.0%   0.0%   424s  0.1%       OK
+    4   p2-asc   2,946,208           -   3.80/4   95.1%   100   0.10/2.5   16.5%   0.0%   159s  4.2%       OK
+    4  p3-desc   2,970,848           -   3.99/4   99.8%   100   0.10/2.5   16.3%   0.0%   156s  0.3%       OK
+    2  p3-desc   1,415,059           -   1.95/2   97.2%   100   0.06/2.5   10.5%   0.0%   485s  1.5%       OK
+    1  p3-desc     858,152           -   1.00/1   100.4%   100   0.03/2.5   11.1%   0.0%   902s  1.2%       OK
+    4 sentinel   2,450,975           -   3.96/4   99.1%    96   0.17/2.5   13.6%   0.0%   206s  4.0%       OK
+    1 settle-1     841,417           -   0.99/1   99.5%   100   0.03/2.5   13.0%   0.0%   916s  1.0%       OK
+    2 settle-2   1,473,048           -   1.91/2   95.5%   100   0.05/2.5    9.3%   0.0%   468s  4.0%       OK
+    1 settle-3     840,451           -   0.99/1   99.5%   100   0.02/2.5   12.1%   0.0%   926s  0.0%       OK
+    2 settle-4   1,523,560           -   2.00/2   100.0%   100   0.05/2.5   11.3%   0.0%   438s  0.6%       OK
+    1 settle-5     848,797           -   0.99/1   99.4%   100   0.03/2.5   11.8%   0.0%   910s  1.1%       OK
+    2 settle-6   1,560,425           -   2.00/2   99.8%   100   0.04/2.5   10.0%   0.0%   424s  0.8%       OK
+-----------------------------------------------------------------------------------------------------------------
+    1     MEAN     844,045           -   0.99/1   99.2%   100   0.03/2.5   12.3%   0.0%   916s  3.9%   spread 3.8%
+    2     MEAN   1,507,136           -   1.97/2   98.6%   100   0.05/2.5   10.1%   0.0%   449s  4.0%   spread 10.2%
+    4     MEAN   2,836,615           -   3.93/4   98.4%    99   0.11/2.5   15.5%   0.0%   169s  4.2%   spread 18.6%
+======================================================================================================================
+STEP 1->2 cores: 1.786x  (ideal 2x, target 1.80x, range it is judged on 1.759x to 1.849x)
+STEP 2->4 cores: 1.882x  (ideal 2x, target 1.80x, range it is judged on 1.857x to 2.108x)
+order effect (descending / ascending): {1: 0.9923, 2: 0.93, 4: 1.0097}
+sentinel: 4c first 2,978,430 -> last 2,450,975 rec/s, drift -19.4% across the suite (counted in the 4c spread)
+======================================================================================================================
+dashboard            : opens on the suite, 17:21–18:23; every panel shows data over the suite
+metric names         : all 31 series SKILL.md section 7 names returned data on this image
