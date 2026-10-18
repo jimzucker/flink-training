@@ -68,7 +68,9 @@ input written once, the tiny-proof warning, and `WATCH_MINUTES=8`. F5 (sleep) is
 fixed in #160 and #162: `all` keeps the Mac awake, a case whose window spans a
 sleep is thrown out, and preflight reports mains or battery. F6 (the tiny
 proof's advice after a ceiling), F7 (the start sweep and `tail -F`) and F8 (the
-sink-name rule only in SKILL.md §4) are not fixed.
+sink-name rule only in SKILL.md §4) are fixed in #163. F8 has no preflight
+check: replayed against the recorded configs, a check on the declared operators
+would have stopped three valid ones.
 
 Reading the run's output found one more: the verdict sentence "the low end of
 its range, 1.763x, is 2.1% under the 1.80x target" printed beside 1.83×, with
