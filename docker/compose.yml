@@ -255,6 +255,32 @@ services:
     environment:
       ENABLE_METRICS: "false"
 
+  # Lag on every topic, from the broker: each topic's end offsets, every
+  # consumer group's committed position, and the bytes each topic holds. The
+  # market-value outputs have no consumer of their own, so it also reads those
+  # two (group dashboard-reader) to give them a lag and a count of distinct
+  # keys. The position topics already have one: the market-value job.
+  kafka-metrics:
+    build:
+      context: ..
+      target: generators
+    image: flink-training/generators
+    container_name: ft-kafka-metrics
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+    depends_on:
+      topics:
+        condition: service_completed_successfully
+    environment:
+      BOOTSTRAP_SERVERS: "${KAFKA_INTERNAL:-kafka:19092}"
+      READ_TOPICS: "mv-by-symbol,mv-by-account"
+      READER_GROUP: dashboard-reader
+    entrypoint: ["java", "-Xmx256m", "-cp", "/app/generators.jar",
+                 "io.github.jimzucker.flinktraining.metrics.KafkaMetrics"]
+    restart: unless-stopped
+
   # ---------------------------------------------------------------- the store
   # Optional, under the "store" profile, so every scale script keeps measuring
   # the stack it always has:

@@ -3,7 +3,7 @@
   "_secondVantage": "The outputs are PER WINDOW -- one row per location per hour, however many readings arrived -- so there is no constant fan-out anywhere in the job and outputsPerInput would be a property of the test data rather than of the pipeline. The second reading is therefore a command: st44.Progress sums the count field the pipeline already publishes, which is exactly how much input its own output accounts for. It moves one closed hour at a time, and ASSUMPTIONS.md B4 staggers the 100 locations so that step is 36,000 readings and not 3,600,000.",
   "_topicsOut": "Empty, and allowed to be empty only because secondVantage is a command. The hourly rows are declared in topicsAlsoWritten instead, which is what makes the completeness drain refuse a build that never writes them.",
   "_backlogs": "GUESSES, written before anything was measured, as section 3 says they must be. They are re-derived from the rate the tiny proof measures and the numbers in this file at the end of the run are the measured ones.",
-  "project": "refpipe",
+  "project": "{PREFIX}",
   "topics": {
     "in": "temperature-readings",
     "out": []
@@ -30,7 +30,9 @@
     "inputs": [
       "temperature-readings"
     ],
-    "every": {"hourly-average-by-location": "1 hour"},
+    "every": {
+      "hourly-average-by-location": "1 hour"
+    },
     "outputs": [
       "hourly-average-by-location"
     ]
@@ -81,71 +83,8 @@
     "env.java.opts.taskmanager": "-XX:+UseG1GC",
     "pipeline.max-parallelism": "369"
   },
-  "extraServices": {
-    "statsexporter": {
-      "image": "python:3.12-alpine",
-      "container_name": "{PREFIX}-statsexporter",
-      "hostname": "{PREFIX}-statsexporter",
-      "cpus": 0.2,
-      "mem_limit": "64m",
-      "ports": [
-        "\"19110:9110\""
-      ],
-      "environment": [
-        "PREFIX={PREFIX}-",
-        "INTERVAL_S=5"
-      ],
-      "command": [
-        "python3",
-        "/app/docker_cpu_exporter.py"
-      ],
-      "volumes": [
-        "{RUNDIR}/dashboard/exporter:/app:ro",
-        "/var/run/docker.sock:/var/run/docker.sock:ro"
-      ]
-    },
-    "prometheus": {
-      "image": "prom/prometheus:v2.53.2",
-      "container_name": "{PREFIX}-prometheus",
-      "hostname": "{PREFIX}-prometheus",
-      "cpus": 0.3,
-      "mem_limit": "192m",
-      "ports": [
-        "\"19090:9090\""
-      ],
-      "command": [
-        "--config.file=/etc/prometheus/prometheus.yml",
-        "--storage.tsdb.path=/prometheus",
-        "--storage.tsdb.retention.time=48h",
-        "--web.enable-lifecycle"
-      ],
-      "volumes": [
-        "{RUNDIR}/dashboard/prometheus:/etc/prometheus:ro"
-      ]
-    },
-    "grafana": {
-      "image": "grafana/grafana:11.2.0",
-      "container_name": "{PREFIX}-grafana",
-      "hostname": "{PREFIX}-grafana",
-      "cpus": 0.2,
-      "mem_limit": "224m",
-      "ports": [
-        "\"13000:3000\""
-      ],
-      "environment": [
-        "GF_AUTH_ANONYMOUS_ENABLED=true",
-        "GF_AUTH_ANONYMOUS_ORG_ROLE=Admin",
-        "GF_AUTH_BASIC_ENABLED=false",
-        "GF_SECURITY_ALLOW_EMBEDDING=true",
-        "GF_USERS_DEFAULT_THEME=light",
-        "GF_FEATURE_TOGGLES_ENABLE=publicDashboards"
-      ],
-      "volumes": [
-        "{RUNDIR}/dashboard/grafana/provisioning:/etc/grafana/provisioning:ro",
-        "{RUNDIR}/dashboard/grafana/dashboards:/var/lib/grafana/dashboards:ro"
-      ]
-    }
-  },
+  "_dashboard": "Built by the harness from this file (scalable-flink-skill harness/board.py): input, input lag, output, checkpoints, broker, Flink, and the Redis store when run-reference.sh is given STORE=redis. Run 44 built its own; that is what the harness now does for every run.",
+  "dashboard": {},
   "images": {
     "flink": "flink:1.20.1-scala_2.12-java17",
     "kafka": "apache/kafka:3.9.0",

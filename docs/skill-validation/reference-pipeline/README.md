@@ -41,9 +41,9 @@ both arms, clean and killed, with no tolerances.
 
 ```
 job/           the Flink job, generator, verifier and progress command (1,170 lines of Java)
-dashboard/     Prometheus, Grafana and the container CPU exporter; the dashboard is
-               built by dashboard/build_dashboard.py in the skill's four rows
-pipeline.json  run 44's own, with {RUNDIR} where the absolute paths were
+pipeline.json  run 44's own, with {RUNDIR} where the absolute paths were; its dashboard
+               is built by the harness, in the skill's seven rows, and
+               `STORE=redis sh run-reference.sh` adds the Redis store
 ANSWERS.md     the six interview answers it was built from
 ASSUMPTIONS.md run 44's own assumptions and PLAN.md its plan, word for word; preflight
 PLAN.md        stops the chain without them
@@ -58,8 +58,7 @@ sh docs/skill-validation/reference-pipeline/run-reference.sh
 ```
 
 Every container, volume and network is named with `PREFIX` (default `refpipe`),
-which the script substitutes into `pipeline.json` and both Prometheus files as it
-copies them. Run 44 hardcoded its own `st44-` prefix there, and the first re-run
+which the script substitutes into `pipeline.json` as it copies it. Run 44 hardcoded its own `st44-` prefix there, and the first re-run
 started a Prometheus scraping two hosts that did not exist.
 
 It copies itself to a scratch directory, builds the jar, and runs
