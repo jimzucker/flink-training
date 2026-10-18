@@ -378,7 +378,7 @@ run.
 | 3 | The tiny proof passed 1→2 at 1.778×, under the target, and said nothing | One short pass per case cannot judge the target, but it can warn. #159 prints a warning and carries on |
 | 4 | The verdict sentence "the low end of its range, 1.763x, is 2.1% under the 1.80x target" sat beside 1.83× | The author, 2026-10-15: "this does not make sense". #159 names both numbers: "measured 1.830x, but it could be as low as 1.763x" |
 | 5 | The Mac slept from 20:01 to 20:06 on battery, inside completeness | It fell between the drain and the verifier, so no reading moved. Fixed in scalable-flink-skill #160 (`all` keeps the Mac awake) and #162 (a case whose window spans a sleep is thrown out, each step records how long the machine slept, and preflight reports mains or battery) |
-| 6 | The agent's findings F1–F4 and F10 were gaps in `harness/README.md` and an error message | Fixed in #159. F6–F8 are not; F5 is row 5 |
+| 6 | The agent's findings F1–F4 and F10 were gaps in `harness/README.md` and an error message | Fixed in #159. F6–F8 are fixed in #163: the broker advice says to carry on with nobody to ask, the README warns that the start of `all` kills a watcher, and the sink-name rule is in the README's `design` row. F5 is row 5 |
 
 
 ## 13. What the dashboard's output reader costs — 2026-10-18
