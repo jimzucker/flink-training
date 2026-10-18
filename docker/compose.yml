@@ -186,12 +186,20 @@ services:
           [ "$${slots:-0}" -ge 1 ] && break
           sleep 2
         done
-        flink run -d -m jobmanager:8081 \
-          -c io.github.jimzucker.flinktraining.job.PositionsJob \
-          /opt/jobs/jobs.jar
-        flink run -d -m jobmanager:8081 \
-          -c io.github.jimzucker.flinktraining.job.MarketValueJob \
-          /opt/jobs/jobs.jar
+        # Compose starts an exited one-shot service again on every `up`, so
+        # starting the store profile on a running stack ran this a second time
+        # and left two copies of each job (2026-10-17). A job already running
+        # under its name is left alone; the scale scripts cancel theirs first.
+        submit_once() {  # job name, main class
+          if flink list -r -m jobmanager:8081 2>/dev/null \
+              | grep -qE ": $$1 \((RUNNING|RESTARTING)\)$$"; then
+            echo "already running, not submitted again: $$1"
+            return
+          fi
+          flink run -d -m jobmanager:8081 -c "$$2" /opt/jobs/jobs.jar
+        }
+        submit_once "Part 1 - positions" io.github.jimzucker.flinktraining.job.PositionsJob
+        submit_once "Part 2 - market value" io.github.jimzucker.flinktraining.job.MarketValueJob
         flink list -m jobmanager:8081
     restart: "no"
 
