@@ -38,6 +38,15 @@ The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 Details for each: [correctness](#verifying-the-numbers) · [latency](#latency) ·
 [load and scaling](#scaling) · [how it was built](#how-this-project-is-built).
 
+![Double the cores, double the throughput: 30,505, 65,721 and 129,056 orders a second at 1, 2 and 4 cores](docs/img/scaling-linear.png)
+
+The graphic from the LinkedIn post *Proving Apache Flink scales linearly*. The
+text of the post is in [`docs/linkedin-article.txt`](docs/linkedin-article.txt);
+the figures come from one laptop run, recorded in
+[`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling-demo.md), and
+[`scripts/article-chart.py`](scripts/article-chart.py) draws the graphic from
+them. It is this pipeline only, not every Flink job — see [Scaling](#scaling).
+
 ## The deck
 
 The live demo is the deliverable; the slides are the handout and the backup.
@@ -711,10 +720,14 @@ docker/                local stack: Kafka, Flink, Prometheus, Grafana
 docker/grafana/        dashboard and provisioning
 scripts/               helper scripts, including the deck build
 docs/deck/             the final demo deck, both versions
+docs/img/              the scaling graphic from the LinkedIn post
+docs/linkedin/         LinkedIn posts, their graphics, and the rules for writing them
 docs/design/           pipeline diagram and design notes
 docs/steps/            per-step evidence: logs, metrics, screenshots
 docs/store/            the Redis store: how it avoids back-pressure, and what was measured
 docs/reviews/          review exchanges for each step
+docs/runs/             the ledger of every scaling pass
+docs/skill-validation/ every run of the skill, and what each one found
 JOURNAL.md             what was built at each step, and how it was verified
 ```
 
