@@ -40,7 +40,7 @@ Details for each: [correctness](#verifying-the-numbers) Â· [latency](#latency) Â
 
 ![Double the cores, double the throughput: 30,505, 65,721 and 129,056 orders a second at 1, 2 and 4 cores](docs/img/scaling-linear.png)
 
-The graphic from the LinkedIn post *Proving Apache Flink scales linearly*. The
+The graphic from the LinkedIn post [*Proving Apache Flink scales linearly*](https://www.linkedin.com/posts/jim-zucker_proving-apache-flink-scales-linearly-4-activity-7499988112819765251-zyc1). The
 text of the post is in [`docs/linkedin-article.txt`](docs/linkedin-article.txt);
 the figures come from one laptop run, recorded in
 [`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling-demo.md), and
