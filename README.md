@@ -2,6 +2,10 @@
 
 [![CI](https://github.com/jimzucker/flink-training/actions/workflows/ci.yml/badge.svg)](https://github.com/jimzucker/flink-training/actions/workflows/ci.yml)
 
+[![Double the cores, double the throughput: 30,505, 65,721 and 129,056 orders a second at 1, 2 and 4 cores](docs/img/scaling-linear.png)](https://www.linkedin.com/posts/jim-zucker_proving-apache-flink-scales-linearly-4-activity-7499988112819765251-zyc1)
+
+On LinkedIn: [Proving Apache Flink scales linearly](https://www.linkedin.com/posts/jim-zucker_proving-apache-flink-scales-linearly-4-activity-7499988112819765251-zyc1)
+
 Final project: calculate **positions** and **market value** from a stream of block
 trades, using Apache Flink and Kafka.
 
@@ -37,15 +41,6 @@ The demo deck is in [`docs/deck/`](docs/deck/); the runbook for presenting it is
 
 Details for each: [correctness](#verifying-the-numbers) · [latency](#latency) ·
 [load and scaling](#scaling) · [how it was built](#how-this-project-is-built).
-
-![Double the cores, double the throughput: 30,505, 65,721 and 129,056 orders a second at 1, 2 and 4 cores](docs/img/scaling-linear.png)
-
-The graphic from the LinkedIn post [*Proving Apache Flink scales linearly*](https://www.linkedin.com/posts/jim-zucker_proving-apache-flink-scales-linearly-4-activity-7499988112819765251-zyc1). The
-text of the post is in [`docs/linkedin-article.txt`](docs/linkedin-article.txt);
-the figures come from one laptop run, recorded in
-[`docs/steps/step-12/scaling-demo.md`](docs/steps/step-12/scaling-demo.md), and
-[`scripts/article-chart.py`](scripts/article-chart.py) draws the graphic from
-them. It is this pipeline only, not every Flink job — see [Scaling](#scaling).
 
 ## The deck
 
